@@ -45,7 +45,9 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v270)
+
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose.v277)
     implementation(libs.logging.interceptor)
     implementation(libs.jwtdecode)

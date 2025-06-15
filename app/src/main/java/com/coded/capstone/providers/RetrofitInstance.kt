@@ -26,5 +26,5 @@ object RetrofitInstance {
     }
 
 
-    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
+    private fun getBaseUrl(port: Int): String = "http://192.168.1.9:$port/"
 }
