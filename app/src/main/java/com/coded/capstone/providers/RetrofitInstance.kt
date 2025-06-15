@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val AUTH_SERVICE_PORT = 8001
+    private const val AUTH_SERVICE_PORT = 8000
     private const val BANK_SERVICE_PORT = 8002
 
     private fun createOkHttpClient(context: Context): OkHttpClient {
@@ -26,5 +26,5 @@ object RetrofitInstance {
     }
 
 
-    private fun getBaseUrl(port: Int): String = "http://192.168.1.9:$port/"
+    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
 }
