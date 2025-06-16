@@ -1,0 +1,267 @@
+[
+  {
+    "name": "Xcite",
+    "description": "Get1% in NBK Rewards Points upon spending KD 100 or more at Xcite's store",
+    "start_date": "2024-01-01",
+    "end_date": "2025-06-30"
+  },
+  {
+    "name": "Aisha Alraqum Physiotherapy",
+    "description": "Get8% in NBK Rewards Points upon spending KD 40 or more at Aisha Alraqum Physiotherapy",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Toyota",
+    "description": "Enjoy0% interest on selected Toyota car models",
+    "start_date": "2024-01-01",
+    "end_date": "2025-06-30"
+  },
+  {
+    "name": "GAMZLAND",
+    "description": "Get15% in NBK Rewards Points upon spending KD 20 or more at GAMZLAND in the playground",
+    "start_date": "2024-01-01",
+    "end_date": "2025-06-30"
+  },
+  {
+    "name": "Grand Hyatt Kuwait - Privilege",
+    "description": "Getspecial room rates and enjoy 15% discount at Stambul and Liberté restaurants",
+    "start_date": "2024-01-01",
+    "end_date": "2025-06-30"
+  },
+  {
+    "name": "Petsmarket",
+    "description": "Enjoy10% instant discount when shopping through Petsmarket's website or app and using promo code NBK2025",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Waha Lifestyle",
+    "description": "Enjoy15% instant discount when shopping from Waha Lifestyle's store, website or app and using promo code NBK15",
+    "start_date": "2024-01-01",
+    "end_date": "2025-08-03"
+  },
+  {
+    "name": "Umrah Special Offers - Visa",
+    "description": "Getup to 30% discount and many special offers at selected hotels when you book your Umrah trip",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Chicster",
+    "description": "Enjoy10% instant discount upon spending KD 10 or more at Chicster in the restaurant",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Travel Rewards - Mastercard",
+    "description": "Getup to 25% cashback on your purchases at participating merchants when using your eligible NBK Card",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Di Pietro",
+    "description": "Get10% in NBK Rewards Points upon spending KD 5 or more at Di Pietro",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Triple M",
+    "description": "Get5% in NBK Rewards Points upon spending KD 250 or more at Triple M",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Grand Hyatt Kuwait - Thahabi",
+    "description": "Getspecial room rates and enjoy 15% discount at Stambul and Liberté restaurants",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "The Japanese Butcher",
+    "description": "Enjoy10% instant discount upon spending KD 10 or more at The Japanese Butcher in the restaurant",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Swaikhat Avenues",
+    "description": "Enjoy10% instant discount upon spending KD 10 or more at Swaikhat Avenues in the restaurant",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Maryool",
+    "description": "Enjoy10% instant discount upon spending KD 10 or more at Maryool in the restaurant",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Wafretto",
+    "description": "Enjoy10% instant discount upon spending KD 10 or more at Wafretto's store",
+    "start_date": "2024-01-01",
+    "end_date": "2025-07-31"
+  },
+  {
+    "name": "ARGAN Riaya Specialized Hospital",
+    "description": "Get15% in NBK Rewards Points upon spending KD 20 or more at ARGAN Riaya Specialized Hospital",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Joy Kids",
+    "description": "Get15% in NBK Rewards Points upon spending KD 20 or more at Joy Kids in the playground",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "Motery App",
+    "description": "Enjoyup to 35% instant discount upon spending KD 5 or more through Motery's app and using promo code NBKKW",
+    "start_date": "2024-01-01",
+    "end_date": "2026-12-31"
+  },
+  {
+    "name": "The Cake Boutique",
+    "description": "Get10% in NBK Rewards Points upon spending KD 10 or more at The Cake Boutique",
+    "start_date": "2024-01-01",
+    "end_date": "2025-11-01"
+  },
+  {
+    "name": "Eleventy",
+    "description": "Get5% in NBK Rewards Points upon spending KD 100 or more at Eleventy's store",
+    "start_date": "2024-01-01",
+    "end_date": "2025-12-31"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 10% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 15% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 20% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 25% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 30% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 35% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 40% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 45% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 50% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 55% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 60% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 65% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 70% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 75% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 80% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 85% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 90% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 95% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  },
+  {
+    "name": "NBK Al Watani",
+    "description": "Get 100% cashback on all purchases made with NBK Al Watani credit card",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "category": "Banking"
+  }
+]

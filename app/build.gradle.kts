@@ -60,6 +60,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
