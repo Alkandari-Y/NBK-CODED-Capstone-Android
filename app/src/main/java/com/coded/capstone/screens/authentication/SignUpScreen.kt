@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.R
 import androidx.navigation.NavHostController
-import com.coded.capstone.navigvation.NavRoutes
+import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.viewModels.AuthUiState
 import com.coded.capstone.viewModels.AuthViewModel
 import androidx.compose.runtime.*
@@ -132,14 +132,7 @@ fun SignUpScreen(
                 }
             )
 
-            OutlinedTextField(
-                value = formState.civilId,
-                onValueChange = { formState = formState.copy(civilId = it).validate() },
-                label = { Text("Civil ID") },
-                modifier = Modifier.fillMaxWidth(),
-                isError = formState.civilIdError != null,
-                supportingText = { formState.civilIdError?.let { Text(it, color = Color.Red) } }
-            )
+
 
 
             OutlinedTextField(
@@ -201,8 +194,7 @@ fun SignUpScreen(
                         viewModel.register(
                             username = formState.username,
                             email = formState.email,
-                            password = formState.password,
-                            civilId = formState.civilId
+                            password = formState.password
                         )
                     } else {
                         Toast.makeText(context, "Fix errors before submitting", Toast.LENGTH_SHORT).show()

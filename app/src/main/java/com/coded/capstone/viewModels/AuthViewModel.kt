@@ -49,7 +49,7 @@ class AuthViewModel(
         }
     }
 
-    fun register(username: String, email: String, password: String, civilId: String) {
+    fun register(username: String, email: String, password: String) {
         viewModelScope.launch {
             uiState.value = AuthUiState.Loading
             try {
@@ -58,7 +58,6 @@ class AuthViewModel(
                         username = username,
                         email = email,
                         password = password,
-                        civilId = civilId
                     )
                 )
                 if (response.isSuccessful) {
@@ -67,7 +66,7 @@ class AuthViewModel(
                         token.value = jwtResponse
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
-//                        UserRepository.loadUserInfo(context)
+                        UserRepository.loadUserInfo(context)
                         uiState.value = AuthUiState.Success(jwtResponse)
                     }
                 } else {

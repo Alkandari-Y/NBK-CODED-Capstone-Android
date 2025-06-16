@@ -17,9 +17,7 @@ object TokenManager {
     private const val REFRESH_TOKEN_KEY = "refresh"
     private const val REMEMBER_ME_KEY = "remember_me"
 
-    fun setRememberMe(context: Context, remember: Boolean) {
-        getPrefs(context).edit().putBoolean(REMEMBER_ME_KEY, remember).apply()
-    }
+
 
     fun isRememberMeEnabled(context: Context): Boolean {
         return getPrefs(context).getBoolean(REMEMBER_ME_KEY, false)

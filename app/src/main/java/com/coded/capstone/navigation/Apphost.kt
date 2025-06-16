@@ -1,4 +1,4 @@
-package com.coded.capstone.navigvation
+package com.coded.capstone.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,9 +65,6 @@ fun AppHost(
 
             LoginScreen(
                 navController = navController,
-                onForgotPasswordClick = {
-                    navController.navigate(NavRoutes.NAV_ROUTE_FORGOT_PASSWORD)
-                },
                 viewModel = authViewModel
             )
         }

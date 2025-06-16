@@ -9,12 +9,12 @@ object UserRepository {
     var userInfo: ValidateTokenResponse? = null
     var kyc: KYCResponse? = null
 
-//    suspend fun loadUserInfo(context: Context) {
-//        val response = RetrofitInstance.getAuthServiceProvider(context).getUserInfo()
-//        if (response.isSuccessful) {
-//            userInfo = response.body()
-//        } else {
-//            userInfo = null
-//        }
-//    }
+    suspend fun loadUserInfo(context: Context) {
+        val response = RetrofitInstance.getAuthServiceProvider(context).getUserDetails()
+        if (response.isSuccessful) {
+            userInfo = response.body()
+        } else {
+            userInfo = null
+        }
+    }
 }

@@ -5,6 +5,7 @@ import com.coded.capstone.data.requests.authentication.RefreshRequest
 import com.coded.capstone.data.requests.authentication.RegisterCreateRequest
 import com.coded.capstone.data.responses.authentication.JwtResponse
 import com.coded.capstone.data.responses.authentication.UserInfoDto
+import com.coded.capstone.data.responses.authentication.ValidateTokenResponse
 import retrofit2.http.GET
 import retrofit2.Response
 import retrofit2.http.Body
@@ -32,7 +33,8 @@ interface AuthServiceProvider {
         @Body refresh: RefreshRequest
     ): Response<JwtResponse>
 
-
+    @POST("/api/v1/auth/validate")
+    suspend fun getUserDetails(): Response<ValidateTokenResponse>
     // User Controller
     // NOTE Not all controller mappings included
 

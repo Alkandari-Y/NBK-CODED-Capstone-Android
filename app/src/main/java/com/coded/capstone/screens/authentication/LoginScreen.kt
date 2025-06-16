@@ -43,7 +43,7 @@ import androidx.navigation.NavHostController
 import com.coded.capstone.viewModels.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coded.capstone.R
-import com.coded.capstone.navigvation.NavRoutes
+import com.coded.capstone.navigation.NavRoutes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.coded.capstone.formstates.authentication.LoginFormState
@@ -54,7 +54,6 @@ import com.coded.capstone.viewModels.AuthUiState
 fun LoginScreen(
     viewModel: AuthViewModel = viewModel(),
     navController: NavHostController,
-    onForgotPasswordClick: () -> Unit
 ) {
     val uiState = viewModel.uiState.value
     val context = LocalContext.current
@@ -62,7 +61,6 @@ fun LoginScreen(
 
     var showPassword by remember { mutableStateOf(false) }
     var formState by remember { mutableStateOf(LoginFormState()) }
-    var rememberMe by remember { mutableStateOf(TokenManager.isRememberMeEnabled(context)) }
 
     LaunchedEffect(token) {
         if (token?.access?.isNotBlank() == true) {
@@ -145,28 +143,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = rememberMe,
-                        onCheckedChange = { rememberMe = it }
-                    )
-                    Text(
-                        text = "Remember Me",
-                        color = Color(0xFF2196F3),
-                    )
-                }
-
-                Text(
-                    text = "Forgot Password ?",
-                    modifier = Modifier.clickable { onForgotPasswordClick() },
-                    fontWeight = FontWeight.Medium
-                )
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -188,7 +164,6 @@ fun LoginScreen(
                             password = validated.password
                         )
 
-                        TokenManager.setRememberMe(context, rememberMe)
                     } else {
                         formState = validated
                         Toast.makeText(context, "Fix errors before submitting", Toast.LENGTH_SHORT).show()

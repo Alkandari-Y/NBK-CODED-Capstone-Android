@@ -8,5 +8,7 @@ data class KYCRequest(
     val dateOfBirth: String,
     val salary: BigDecimal,
     val nationality: String,
+   val mobileNumber: String,
+   val civilId: String
 )
 
