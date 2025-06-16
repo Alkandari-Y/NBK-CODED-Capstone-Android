@@ -8,19 +8,18 @@ data class RegisterFormState(
     val password: String = "",
     val confirmPassword: String = "",
     val email: String = "",
-    val civilId: String = "",
+
 
     val usernameError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
     val emailError: String? = null,
-    val civilIdError: String? = null,
+
 ) {
     val formIsValid: Boolean
         get() = listOfNotNull(
             usernameError, passwordError,
             confirmPasswordError, emailError,
-            civilIdError
         ).isEmpty()
 
     fun validate(): RegisterFormState {
@@ -46,7 +45,6 @@ data class RegisterFormState(
                 !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Invalid email"
                 else -> null
             },
-            civilIdError = if (civilId.isBlank()) "Civil ID is required" else null
         )
     }
 
@@ -55,7 +53,7 @@ data class RegisterFormState(
             usernameError = fieldErrors.find { it.field == "username" }?.message ?: usernameError,
             emailError = fieldErrors.find { it.field == "email" }?.message ?: emailError,
             passwordError = fieldErrors.find { it.field == "password" }?.message ?: passwordError,
-            civilIdError = fieldErrors.find { it.field == "civilId" }?.message ?: civilIdError
+//            civilIdError = fieldErrors.find { it.field == "civilId" }?.message ?: civilIdError
         )
     }
 
