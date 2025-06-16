@@ -1,5 +1,6 @@
 package com.coded.capstone.navigation
 
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -42,52 +43,55 @@ fun AppHost(
     val context = LocalContext.current
 
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         if (
             TokenManager.getToken(context) != null &&
             TokenManager.isRememberMeEnabled(context) &&
             !TokenManager.isAccessTokenExpired(context)
-        )
-        {
+        ) {
             println("navigate to home")
 //            navController.navigate(TODO())
         }
     }
 
-    NavHost(
-        modifier = modifier,
-        navController = navController,
-        startDestination = NavRoutes.NAV_ROUTE_LOGIN
-    ) {
+        NavHost(
+            modifier = modifier,
+            navController = navController,
+            startDestination = NavRoutes.NAV_ROUTE_LOGIN
+        ) {
 
-        composable(NavRoutes.NAV_ROUTE_LOGIN) {
-            val authViewModel = remember { AuthViewModel(context) }
+            composable(NavRoutes.NAV_ROUTE_LOGIN) {
+                val authViewModel = remember { AuthViewModel(context) }
 
-            LoginScreen(
-                navController = navController,
-                viewModel = authViewModel
-            )
-        }
-        composable(NavRoutes.NAV_ROUTE_SIGNUP) {
-            val authViewModel = remember { AuthViewModel(context) }
-            SignUpScreen(
-                navController = navController,
-                viewModel = authViewModel
-            )
-        }
-
-        composable(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
-            LoadingDashboardScreen(
-                navController = navController,
-//                viewModel= dashboardViewModel
-            )
-        }
-
-        composable(NavRoutes.NAV_ROUTE_DASHBOARD) {
-            DashboardScreen(
-                navController = navController,
-
+                LoginScreen(
+                    navController = navController,
+                    viewModel = authViewModel
                 )
+            }
+            composable(NavRoutes.NAV_ROUTE_SIGNUP) {
+                val authViewModel = remember { AuthViewModel(context) }
+                SignUpScreen(
+                    navController = navController,
+                    viewModel = authViewModel
+                )
+            }
+
+            composable(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
+                LoadingDashboardScreen(
+                    navController = navController,
+//                viewModel= dashboardViewModel
+                )
+            }
+
+            composable(NavRoutes.NAV_ROUTE_DASHBOARD) {
+                DashboardScreen(
+                    navController = navController,
+                    onLogoutClick = {
+                        navController.navigate(NavRoutes.NAV_ROUTE_LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    )
+            }
         }
     }
-}
