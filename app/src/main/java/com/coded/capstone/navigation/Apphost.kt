@@ -16,6 +16,8 @@ import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen
 import com.coded.capstone.screens.OffersScreen
+import com.coded.capstone.screens.kyc.KycScreen
+import com.coded.capstone.viewModels.KycViewModel
 
 
 object NavRoutes {
@@ -83,6 +85,13 @@ fun AppHost(
             LoadingDashboardScreen(
                 navController = navController,
             )
+        }
+
+        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
+            val kycViewModel = remember { KycViewModel(context) }
+            KycScreen(
+                navController = navController,
+                viewModel= kycViewModel)
         }
         composable(NavRoutes.NAV_ROUTE_HOME) {
             val authViewModel = remember { AuthViewModel(context) }
