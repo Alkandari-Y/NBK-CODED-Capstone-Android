@@ -54,6 +54,14 @@ object RetrofitInstance {
             .create(AuthServiceProvider::class.java)
     }
 
+    fun getBankingServiceProvide(context: Context): BankingServiceProvider {
+        return Retrofit.Builder()
+            .baseUrl(getBaseUrl(BANK_SERVICE_PORT))
+            .client(createOkHttpClient(context))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(BankingServiceProvider::class.java)
+    }
 
     private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
 }
