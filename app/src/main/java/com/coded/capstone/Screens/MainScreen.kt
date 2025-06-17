@@ -357,3 +357,29 @@ fun MainScreen() {
         }
     }
 }
+
+@Composable
+fun CalendarScreen() {
+    MainScreen()
+}
+
+@Composable
+fun WalletScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Wallet", style = MaterialTheme.typography.headlineMedium)
+    }
+}
+
+@Composable
+fun OffersScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Offers", style = MaterialTheme.typography.headlineMedium)
+    }
+}
+
+@Composable
+fun HomeScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Home", style = MaterialTheme.typography.headlineMedium)
+    }
+}

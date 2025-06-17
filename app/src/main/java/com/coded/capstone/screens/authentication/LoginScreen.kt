@@ -109,7 +109,7 @@ fun LoginScreen(
 
     LaunchedEffect(token) {
         if (token?.access?.isNotBlank() == true) {
-            navController.navigate(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
+            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
                 popUpTo(NavRoutes.NAV_ROUTE_LOGIN) { inclusive = true }
             }
         }
