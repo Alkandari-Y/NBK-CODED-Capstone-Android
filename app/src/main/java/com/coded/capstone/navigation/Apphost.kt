@@ -1,6 +1,5 @@
 package com.coded.capstone.navigation
 
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -10,30 +9,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.coded.capstone.screens.MainScreen
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.viewModels.AuthViewModel
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.LocalOffer
-import com.coded.capstone.screens.HomeScreen
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.screens.WalletScreen
 import com.coded.capstone.screens.OffersScreen
-import androidx.compose.material3.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import com.coded.capstone.composables.home.BottomNavBar
 
 
 object NavRoutes {
@@ -57,24 +39,7 @@ object NavRoutes {
 
 }
 
-@Composable
-fun MainScaffoldWithTabs() {
-    var selectedTab by remember { mutableStateOf(0) }
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when (selectedTab) {
-                0 -> HomeScreen()
-                1 -> WalletScreen()
-                2 -> CalendarScreen()
-                3 -> OffersScreen()
-            }
-        }
-    }
-}
+
 
 @Composable
 fun AppHost(
@@ -120,7 +85,8 @@ fun AppHost(
             )
         }
         composable(NavRoutes.NAV_ROUTE_HOME) {
-            MainScaffoldWithTabs()
+            val authViewModel = remember { AuthViewModel(context) }
+            MainScaffoldWithTabs(navController , authViewModel)
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
