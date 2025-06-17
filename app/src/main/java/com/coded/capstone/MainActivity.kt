@@ -28,11 +28,11 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-//                            LocationPermissionHandler(
-//                                onPermissionGranted = {
-//                                    // Permissions granted, geofence service will be started by LocationPermissionHandler
-//                                }
-//                            )
+                            LocationPermissionHandler(
+                                onPermissionGranted = {
+                                    // Permissions granted, geofence service will be started by LocationPermissionHandler
+                                }
+                            )
                             AppHost()
                         }
                     }

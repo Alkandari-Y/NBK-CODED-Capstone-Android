@@ -247,14 +247,21 @@ object GeofenceManager {
     }
 
     private fun hasRequiredPermissions(context: Context): Boolean {
-        return ContextCompat.checkSelfPermission(
+        val hasFineLocation = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-        ContextCompat.checkSelfPermission(
+        ) == PackageManager.PERMISSION_GRANTED
+        val hasBackgroundLocation = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+        val hasForegroundServiceLocation = if (android.os.Build.VERSION.SDK_INT >= 34) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.FOREGROUND_SERVICE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        } else true
+        return hasFineLocation && hasBackgroundLocation && hasForegroundServiceLocation
     }
 
     fun createNotificationChannel(context: Context) {

@@ -10,10 +10,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.coded.capstone.screens.MainScreen
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.screens.authentication.SignUpScreen
-import com.coded.capstone.screens.home.DashboardScreen
 import com.coded.capstone.viewModels.AuthViewModel
 
 
@@ -64,15 +64,15 @@ fun AppHost(
                 val authViewModel = remember { AuthViewModel(context) }
 
                 LoginScreen(
-                    navController = navController,
-                    viewModel = authViewModel
+                    authViewModel,
+                    navController
                 )
             }
             composable(NavRoutes.NAV_ROUTE_SIGNUP) {
                 val authViewModel = remember { AuthViewModel(context) }
                 SignUpScreen(
-                    navController = navController,
-                    viewModel = authViewModel
+                    authViewModel,
+                    navController
                 )
             }
 
@@ -84,14 +84,7 @@ fun AppHost(
             }
 
             composable(NavRoutes.NAV_ROUTE_DASHBOARD) {
-                DashboardScreen(
-                    navController = navController,
-                    onLogoutClick = {
-                        navController.navigate(NavRoutes.NAV_ROUTE_LOGIN) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    )
+                MainScreen()
             }
         }
     }

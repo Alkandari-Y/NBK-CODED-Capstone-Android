@@ -16,6 +16,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import com.google.android.gms.location.LocationServices
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import android.Manifest
 
 class GeofenceService : Service() {
     private val TAG = "GeofenceService"
@@ -27,6 +30,17 @@ class GeofenceService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "GeofenceService onCreate")
+        // Permission check before proceeding
+        val hasFineLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasBackgroundLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasForegroundServiceLocation = if (android.os.Build.VERSION.SDK_INT >= 34) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        } else true
+        if (!(hasFineLocation && hasBackgroundLocation && hasForegroundServiceLocation)) {
+            Log.w(TAG, "Stopping GeofenceService: required location permissions not granted.")
+            stopSelf()
+            return
+        }
         createNotificationChannel()
         acquireWakeLock()
         startForeground(NOTIFICATION_ID, createNotification())

@@ -7,6 +7,9 @@ import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.GeofenceStatusCodes
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import android.Manifest
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     private val TAG = "GeofenceReceiver"
@@ -19,11 +22,21 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             intent.action == "android.intent.action.QUICKBOOT_POWERON" ||
             intent.action == "android.intent.action.MY_PACKAGE_REPLACED") {
             Log.d(TAG, "Device booted or app updated, starting geofence service")
-            val serviceIntent = Intent(context, GeofenceService::class.java)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                context.startForegroundService(serviceIntent)
+            // Check permissions before starting service
+            val hasFineLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            val hasBackgroundLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+            val hasForegroundServiceLocation = if (android.os.Build.VERSION.SDK_INT >= 34) {
+                ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            } else true
+            if (hasFineLocation && hasBackgroundLocation && hasForegroundServiceLocation) {
+                val serviceIntent = Intent(context, GeofenceService::class.java)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent)
+                } else {
+                    context.startService(serviceIntent)
+                }
             } else {
-                context.startService(serviceIntent)
+                Log.w(TAG, "Not starting GeofenceService: required location permissions not granted.")
             }
             return
         }
@@ -76,11 +89,20 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         Log.d(TAG, "Processing ${triggeringGeofences.size} geofence events")
 
         // Start the service if it's not running
-        val serviceIntent = Intent(context, GeofenceService::class.java)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            context.startForegroundService(serviceIntent)
+        val hasFineLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasBackgroundLocation = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasForegroundServiceLocation = if (android.os.Build.VERSION.SDK_INT >= 34) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        } else true
+        if (hasFineLocation && hasBackgroundLocation && hasForegroundServiceLocation) {
+            val serviceIntent = Intent(context, GeofenceService::class.java)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                context.startForegroundService(serviceIntent)
+            } else {
+                context.startService(serviceIntent)
+            }
         } else {
-            context.startService(serviceIntent)
+            Log.w(TAG, "Not starting GeofenceService: required location permissions not granted.")
         }
 
         when (geofenceTransition) {

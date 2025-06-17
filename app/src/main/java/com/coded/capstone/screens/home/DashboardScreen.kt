@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.coded.capstone.composables.dashboard.DashboardCard
-import com.coded.capstone.composables.ui.TopBar
 
 import com.coded.capstone.respositories.UserRepository
 
