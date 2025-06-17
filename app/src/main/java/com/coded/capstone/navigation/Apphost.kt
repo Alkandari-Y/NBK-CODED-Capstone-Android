@@ -10,8 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.managers.TokenManager
-import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.screens.authentication.SignUpScreen
+import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen

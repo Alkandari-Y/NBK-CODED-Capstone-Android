@@ -1,7 +1,10 @@
 package com.coded.capstone.Wallet
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -9,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -17,6 +21,12 @@ import com.coded.capstone.Wallet.components.CardStack
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.enums.AccountType
 import java.math.BigDecimal
+import com.coded.capstone.SVG.CardTransferBoldIcon
+import com.coded.capstone.SVG.TransferUsersIcon
+import com.coded.capstone.SVG.CreditCardCloseIcon
+import androidx.compose.material.icons.filled.Info
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,33 +68,30 @@ fun WalletScreen(
     }
     
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
+    var showAccountNumber by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
-
-    
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("My Wallet") },
-                actions = {
-                    IconButton(onClick = onNavigateToMap) {
-                        Icon(Icons.Default.Map, contentDescription = "Map")
-                    }
-                    IconButton(onClick = { /* Add new account */ }) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Account")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("My Wallet") },
+//                actions = {
+//                    IconButton(onClick = onNavigateToMap) {
+//                        Icon(Icons.Default.Map, contentDescription = "Map")
+//                    }
+//                    IconButton(onClick = { /* Add new account */ }) {
+//                        Icon(Icons.Default.Add, contentDescription = "Add Account")
+//                    }
+//                }
+//            )
+//        }
+//    ) { padding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
-
-            
-            // Card Stack
+            // Card Stack (bigger size)
             CardStack(
                 accounts = sampleAccounts,
                 selectedCard = selectedCard,
@@ -92,18 +99,27 @@ fun WalletScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
-                    .padding(16.dp)
+                    .padding(horizontal = 0.dp)
             )
+            
+            // Show services row above details card when a card is selected
+            if (selectedCard != null) {
+                ServicesRow(
+                    onTransfer = { /* handle transfer */ },
+                    onTransferToOthers = { /* handle transfer to others */ },
+                    onCloseAccount = { /* handle close account */ }
+                )
+            }
             
             // Selected Card Details
             selectedCard?.let { card ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(top = 4.dp, start = 16.dp, end = 16.dp, bottom = 4.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(8.dp)
                     ) {
                         Text(
                             text = "Account Details",
@@ -113,80 +129,44 @@ fun WalletScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         
                         DetailRow("Account Name", card.name)
-                        DetailRow("Account Number", card.accountNumber)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Account Number",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            IconButton(onClick = {
+                                showAccountNumber = true
+                                coroutineScope.launch {
+                                    delay(3000)
+                                    showAccountNumber = false
+                                }
+                            }) {
+                                Icon(Icons.Default.Info, contentDescription = "Show Info")
+                            }
+                        }
+                        Text(
+                            text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
                         DetailRow("Balance", "${card.balance} KWD")
                         DetailRow("Type", card.accountType.name)
                         DetailRow("Status", if (card.active) "Active" else "Inactive")
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = { /* Transfer money */ },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Icon(Icons.Default.Send, contentDescription = null)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Transfer")
-                            }
-                            
-                            OutlinedButton(
-                                onClick = { /* View transactions */ },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Icon(Icons.Default.History, contentDescription = null)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("History")
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Quick Actions
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Quick Actions",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        QuickActionButton(
-                            icon = Icons.Default.Send,
-                            label = "Send",
-                            onClick = { /* Send money */ }
-                        )
-                        QuickActionButton(
-                            icon = Icons.Default.QrCode,
-                            label = "Scan",
-                            onClick = { /* Scan QR */ }
-                        )
-                        QuickActionButton(
-                            icon = Icons.Default.Payment,
-                            label = "Pay",
-                            onClick = { /* Make payment */ }
-                        )
+
                     }
                 }
             }
         }
     }
-}
+
 
 @Composable
 private fun DetailRow(label: String, value: String) {
@@ -210,25 +190,52 @@ private fun DetailRow(label: String, value: String) {
 }
 
 @Composable
-private fun QuickActionButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
+private fun ServiceRoundButton(
+    icon: @Composable () -> Unit,
     onClick: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(56.dp)
+            .clip(CircleShape)
+            .background(Color(0xFF1A1A1D))
+            .clickable { onClick() }
+            .padding(8.dp)
     ) {
-        FloatingActionButton(
-            onClick = onClick,
-            modifier = Modifier.size(56.dp),
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        ) {
-            Icon(icon, contentDescription = label)
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall
+        icon()
+    }
+}
+
+private fun formatAccountNumber(accountNumber: String): String {
+    // Mask all but last 4 digits
+    return accountNumber.replaceRange(0, accountNumber.length - 4, "*".repeat(accountNumber.length - 4))
+}
+
+@Composable
+fun ServicesRow(
+    onTransfer: () -> Unit,
+    onTransferToOthers: () -> Unit,
+    onCloseAccount: () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
+    ) {
+        ServiceRoundButton(
+            icon = { CardTransferBoldIcon(modifier = Modifier.size(28.dp)) },
+            onClick = onTransfer
+        )
+        ServiceRoundButton(
+            icon = { TransferUsersIcon(modifier = Modifier.size(28.dp)) },
+            onClick = onTransferToOthers
+        )
+        ServiceRoundButton(
+            icon = { CreditCardCloseIcon(modifier = Modifier.size(28.dp)) },
+            onClick = onCloseAccount
         )
     }
 } 
