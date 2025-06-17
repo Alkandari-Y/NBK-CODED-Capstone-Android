@@ -1,4 +1,4 @@
-package com.coded.capstone.Screens
+package com.coded.capstone.screens
 
 import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
