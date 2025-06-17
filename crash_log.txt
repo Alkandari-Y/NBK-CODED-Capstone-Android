@@ -1,0 +1,1093 @@
+--------- beginning of system
+06-17 16:23:09.358   546   637 D ActivityManager: freezing 2002 com.android.vending
+--------- beginning of main
+06-17 16:23:09.371   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+06-17 16:23:09.375   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+06-17 16:23:09.381   546   687 D InetDiagMessage: Destroyed live tcp sockets for uids={10141} in 11ms
+06-17 16:23:10.606   546   637 D ActivityManager: freezing 1490 com.google.android.gms
+06-17 16:23:12.697   546   637 D ActivityManager: freezing 1592 com.android.keychain
+06-17 16:23:12.700   546   637 D ActivityManager: freezing 941 com.android.settings
+06-17 16:23:12.701   546   637 D ActivityManager: freezing 2487 com.google.android.settings.intelligence
+06-17 16:23:12.753   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+06-17 16:23:12.755   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+06-17 16:23:12.755   546   687 D InetDiagMessage: Destroyed live tcp sockets for uids={10140} in 5ms
+06-17 16:23:14.209  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:340): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_authsecret_default:s0 tclass=binder permissive=0
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:341): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_face_default:s0 tclass=binder permissive=0
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:342): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_fingerprint_default:s0 tclass=binder permissive=0
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:343): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_bluetooth_default:s0 tclass=binder permissive=0
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:344): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_audio_default:s0 tclass=binder permissive=0
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:345): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_camera_default:s0 tclass=binder permissive=0
+06-17 16:23:14.215  4298  4298 E IPCThreadState: Binder transaction failure. id: 291177, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.215  4298  4298 E IPCThreadState: Binder transaction failure. id: 291181, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.215  4298  4298 E IPCThreadState: Binder transaction failure. id: 291185, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.215  4298  4298 E IPCThreadState: Binder transaction failure. id: 291189, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.216  4298  4298 E IPCThreadState: Binder transaction failure. id: 291193, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.216  4298  4298 E IPCThreadState: Binder transaction failure. id: 291197, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.217  4298  4298 E IPCThreadState: Binder transaction failure. id: 291206, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.210  4298  4298 W service : type=1400 audit(0.0:346): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_camera_default:s0 tclass=binder permissive=0
+06-17 16:23:14.214  4298  4298 W service : type=1400 audit(0.0:347): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_contexthub_default:s0 tclass=binder permissive=0
+06-17 16:23:14.219  4298  4298 E IPCThreadState: Binder transaction failure. id: 291215, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.219  4298  4298 E IPCThreadState: Binder transaction failure. id: 291219, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.214  4298  4298 W service : type=1400 audit(0.0:348): avc:  denied  { call } for  scontext=u:r:shell:s0 tcontext=u:r:hal_gnss_default:s0 tclass=binder permissive=0
+06-17 16:23:14.219  4298  4298 E IPCThreadState: Binder transaction failure. id: 291223, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.219  4298  4298 E IPCThreadState: Binder transaction failure. id: 291227, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.219  4298  4298 E IPCThreadState: Binder transaction failure. id: 291231, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.221  4298  4298 E IPCThreadState: Binder transaction failure. id: 291255, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.222  4298  4298 E IPCThreadState: Binder transaction failure. id: 291259, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.222  4298  4298 E IPCThreadState: Binder transaction failure. id: 291263, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.223  4298  4298 E IPCThreadState: Binder transaction failure. id: 291267, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.223  4298  4298 E IPCThreadState: Binder transaction failure. id: 291271, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.224  4298  4298 E IPCThreadState: Binder transaction failure. id: 291276, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.224  4298  4298 E IPCThreadState: Binder transaction failure. id: 291280, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.224  4298  4298 E IPCThreadState: Binder transaction failure. id: 291284, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.224  4298  4298 E IPCThreadState: Binder transaction failure. id: 291288, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.224  4298  4298 E IPCThreadState: Binder transaction failure. id: 291292, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.224  4298  4298 E IPCThreadState: Binder transaction failure. id: 291296, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.225  4298  4298 E IPCThreadState: Binder transaction failure. id: 291300, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.226  4298  4298 E IPCThreadState: Binder transaction failure. id: 291315, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.226  4298  4298 E IPCThreadState: Binder transaction failure. id: 291319, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.226  4298  4298 E IPCThreadState: Binder transaction failure. id: 291323, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.226  4298  4298 E IPCThreadState: Binder transaction failure. id: 291327, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.226  4298  4298 E IPCThreadState: Binder transaction failure. id: 291331, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.226  4298  4298 E IPCThreadState: Binder transaction failure. id: 291335, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.230  4298  4298 E IPCThreadState: Binder transaction failure. id: 291381, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.230  4298  4298 E IPCThreadState: Binder transaction failure. id: 291385, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.231  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.238  4298  4298 E IPCThreadState: Binder transaction failure. id: 291424, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.243  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.244  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.245  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.250  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.251  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.252  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.253  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.253  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.256  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.258  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.263  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.264  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.269  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.272  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.276  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.279  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.282  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.284  4298  4298 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.287  4298  4298 E IPCThreadState: Binder transaction failure. id: 292483, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.332  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.334  4300  4300 E IPCThreadState: Binder transaction failure. id: 292590, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.334  4300  4300 E IPCThreadState: Binder transaction failure. id: 292594, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.334  4300  4300 E IPCThreadState: Binder transaction failure. id: 292598, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.335  4300  4300 E IPCThreadState: Binder transaction failure. id: 292602, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.335  4300  4300 E IPCThreadState: Binder transaction failure. id: 292606, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.335  4300  4300 E IPCThreadState: Binder transaction failure. id: 292610, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.336  4300  4300 E IPCThreadState: Binder transaction failure. id: 292614, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.336  4300  4300 E IPCThreadState: Binder transaction failure. id: 292623, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.336  4300  4300 E IPCThreadState: Binder transaction failure. id: 292632, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.336  4300  4300 E IPCThreadState: Binder transaction failure. id: 292636, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.337  4300  4300 E IPCThreadState: Binder transaction failure. id: 292640, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.337  4300  4300 E IPCThreadState: Binder transaction failure. id: 292644, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.337  4300  4300 E IPCThreadState: Binder transaction failure. id: 292648, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.337  4300  4300 E IPCThreadState: Binder transaction failure. id: 292672, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.338  4300  4300 E IPCThreadState: Binder transaction failure. id: 292676, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.338  4300  4300 E IPCThreadState: Binder transaction failure. id: 292680, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.338  4300  4300 E IPCThreadState: Binder transaction failure. id: 292684, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.339  4300  4300 E IPCThreadState: Binder transaction failure. id: 292688, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.339  4300  4300 E IPCThreadState: Binder transaction failure. id: 292692, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.339  4300  4300 E IPCThreadState: Binder transaction failure. id: 292696, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.340  4300  4300 E IPCThreadState: Binder transaction failure. id: 292700, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.340  4300  4300 E IPCThreadState: Binder transaction failure. id: 292704, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.341  4300  4300 E IPCThreadState: Binder transaction failure. id: 292709, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.341  4300  4300 E IPCThreadState: Binder transaction failure. id: 292713, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.342  4300  4300 E IPCThreadState: Binder transaction failure. id: 292717, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.343  4300  4300 E IPCThreadState: Binder transaction failure. id: 292732, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.343  4300  4300 E IPCThreadState: Binder transaction failure. id: 292736, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.343  4300  4300 E IPCThreadState: Binder transaction failure. id: 292740, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.343  4300  4300 E IPCThreadState: Binder transaction failure. id: 292744, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.344  4300  4300 E IPCThreadState: Binder transaction failure. id: 292748, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.344  4300  4300 E IPCThreadState: Binder transaction failure. id: 292752, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.345  4300  4300 E IPCThreadState: Binder transaction failure. id: 292798, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.345  4300  4300 E IPCThreadState: Binder transaction failure. id: 292802, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.346  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.347  4300  4300 E IPCThreadState: Binder transaction failure. id: 292841, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.348  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.348  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.349  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.351  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.351  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.351  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.352  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.353  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.353  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.354  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.356  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.357  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.359  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.360  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.362  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.363  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.364  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.365  4300  4300 E Parcel  : Reading a NULL string not supported here.
+06-17 16:23:14.366  4300  4300 E IPCThreadState: Binder transaction failure. id: 293898, BR_*: 29201, error: -1 (Operation not permitted)
+06-17 16:23:14.508   546   637 D ActivityManager: freezing 2636 com.google.android.gms.unstable
+06-17 16:23:14.847   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.848   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.855   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.856   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.858   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.859   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.859   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.861   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.861   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.862   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.863   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.864   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.866   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.866   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.867   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.868   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.870   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.872   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.874   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.876   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.879   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.881   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.883   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.885   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.887   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.890   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.896   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.897   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.897   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.899   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.901   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.903   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.905   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.908   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.910   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.914   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.927   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.936   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.944   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.947   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.954   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.958   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.962   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.964   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.967   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.970   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.977   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.982   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.984   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.987   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.989   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.990   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.992   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.996   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:14.999   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.012   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.017   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.024   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.036   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.037   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.037   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.042   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.048   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.073   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.075   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.076   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: No service published for: persistent_data_block
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.os.ServiceManager.getServiceOrThrow(ServiceManager.java:203)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.app.SystemServiceRegistry$81.createService(SystemServiceRegistry.java:1071)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.app.SystemServiceRegistry$81.createService(SystemServiceRegistry.java:1068)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.app.SystemServiceRegistry$StaticServiceFetcher.getService(SystemServiceRegistry.java:2293)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.app.SystemServiceRegistry.getSystemService(SystemServiceRegistry.java:1812)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.app.ContextImpl.getSystemService(ContextImpl.java:2241)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.content.Context.getSystemService(Context.java:4503)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageInstallerSession.markAsSealed(PackageInstallerSession.java:2394)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageInstallerSession.commit(PackageInstallerSession.java:2143)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.content.pm.PackageInstaller$Session.commit(PackageInstaller.java:1977)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageManagerShellCommand.doCommitSession(PackageManagerShellCommand.java:4298)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageManagerShellCommand.doRunInstall(PackageManagerShellCommand.java:1634)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageManagerShellCommand.runInstall(PackageManagerShellCommand.java:1561)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageManagerShellCommand.onCommand(PackageManagerShellCommand.java:245)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.modules.utils.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:97)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.os.ShellCommand.exec(ShellCommand.java:38)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onShellCommand(PackageManagerService.java:6561)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.os.Binder.shellCommand(Binder.java:1230)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.os.Binder.onTransact(Binder.java:1043)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.content.pm.IPackageManager$Stub.onTransact(IPackageManager.java:4620)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at com.android.server.pm.PackageManagerService$IPackageManagerImpl.onTransact(PackageManagerService.java:6545)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.os.Binder.execTransactInternal(Binder.java:1505)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: 	at android.os.Binder.execTransact(Binder.java:1444)
+06-17 16:23:15.081   546  1768 E SystemServiceRegistry: Manager wrapper not available: persistent_data_block
+06-17 16:23:15.140   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.142   546   612 D FileSystemUtils: Punching holes in file: /data/app/vmdl416664169.tmp/base.apk programHeaderOffset: 64 programHeaderNum: 9
+06-17 16:23:15.142   546   612 D FileSystemUtils: Total number of LOAD segments 3
+06-17 16:23:15.142   546   612 D FileSystemUtils: Size before punching holes st_blocks: 126744, st_blksize: 4096, st_size: 64888696
+06-17 16:23:15.142   546   612 D FileSystemUtils: Size after punching holes st_blocks: 126744, st_blksize: 4096, st_size: 64888696
+06-17 16:23:15.142   546   612 D FileSystemUtils: Extra field length: 8340,  Size before punching holes st_blocks: 126744, st_blksize: 4096, st_size: 64888696
+06-17 16:23:15.142   546   612 D FileSystemUtils: Extra field length: 8340 content near offset: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+06-17 16:23:15.142   546   612 D FileSystemUtils: Punching hole in file - start: 64053248 len:8192
+06-17 16:23:15.142   546   612 D FileSystemUtils: punchHolesInApk:: Size after punching holes st_blocks: 126728, st_blksize: 4096, st_size: 64888696
+06-17 16:23:15.143   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.151   546   652 W PackageParsing: Ignoring duplicate uses-permissions/uses-permissions-sdk-m: android.permission.INTERNET in package: com.coded.capstone at: Binary XML file line #21
+06-17 16:23:15.154   546   599 I PackageManager: Integrity check passed for file:///data/app/vmdl416664169.tmp
+06-17 16:23:15.158   546   599 W PackageParsing: Ignoring duplicate uses-permissions/uses-permissions-sdk-m: android.permission.INTERNET in package: com.coded.capstone at: Binary XML file line #21
+06-17 16:23:15.161   546   576 I ActivityManager: Force stopping com.coded.capstone appid=10207 user=-1: installPackageLI
+06-17 16:23:15.162   546   576 E ActivityManager: Unable to freeze binder for 4259: -11
+06-17 16:23:15.166   546   566 D DisplayManagerService: Drop pending events for gone uid 10207
+06-17 16:23:15.172   546   599 I PackageManager: Update package com.coded.capstone code path from /data/app/~~zD4r9133Lz0d6OH0O7mcSg==/com.coded.capstone-rtc-rnQNrohSg4DUOx8m-w== to /data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==; Retain data and using new
+06-17 16:23:15.173   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+06-17 16:23:15.176   546   576 I ActivityManager: Killing 4259:com.coded.capstone/u0a207 (adj 0): stop com.coded.capstone due to installPackageLI
+06-17 16:23:15.177   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+06-17 16:23:15.180   546   687 D InetDiagMessage: Destroyed live tcp sockets for uids={10207} in 8ms
+06-17 16:23:15.181   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+06-17 16:23:15.181   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+06-17 16:23:15.181   546   687 D InetDiagMessage: Destroyed live tcp sockets for uids={20207} in 0ms
+06-17 16:23:15.189   546   576 D CompatChangeReporter: Compat change id reported: 311208629; UID 10207; state: ENABLED
+06-17 16:23:15.192   546   566 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@4909960
+06-17 16:23:15.192   546   566 D CoreBackPreview: Window{517e948 u0 Application Error: com.coded.capstone}: Setting back callback null
+06-17 16:23:15.199   546  2374 W ActivityManager: Ignoring remove of inactive process: ProcessRecord{9439ced 0:com.coded.capstone/u0a207}
+06-17 16:23:15.272   546  1766 V ActivityManager: Got obituary of 4259:com.coded.capstone
+06-17 16:23:15.273   389   389 I adbd    : Remote process closed the socket (on MSG_PEEK)
+06-17 16:23:15.278   546   566 W InputManager-JNI: Input channel object '517e948 Application Error: com.coded.capstone (client)' was disposed without first being removed with the input manager!
+06-17 16:23:15.280   546   578 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_10207/pid_4259
+06-17 16:23:15.336   320   320 I Zygote  : Process 4259 exited due to signal 9 (Killed)
+06-17 16:23:15.446  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/YouTube/YouTube.apk' with 1 weak references
+06-17 16:23:15.530   546   566 W Looper  : Slow dispatch took 319ms android.ui h=com.android.server.am.ActivityManagerService$UiHandler c=com.android.server.am.ErrorDialogController$$ExternalSyntheticLambda4@397515 m=0
+06-17 16:23:15.530   546   566 W Looper  : Slow delivery took 340ms android.ui h=com.android.server.am.ActivityManagerService$UiHandler c=null m=32
+06-17 16:23:15.537  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/DisplayCutoutEmulationCorner/DisplayCutoutEmulationCornerOverlay.apk' with 1 weak references
+06-17 16:23:15.539  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.extservices/priv-app/GoogleExtServices@350820300/GoogleExtServices.apk' with 1 weak references
+06-17 16:23:15.540  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/DisplayCutoutEmulationDouble/DisplayCutoutEmulationDoubleOverlay.apk' with 1 weak references
+06-17 16:23:15.540  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/TelephonyProvider/TelephonyProvider.apk' with 1 weak references
+06-17 16:23:15.540  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/TelephonyProvider__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.544   546   566 W Looper  : Drained
+06-17 16:23:15.545  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/DynamicSystemInstallationService/DynamicSystemInstallationService.apk' with 1 weak references
+06-17 16:23:15.545  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/Velvet/Velvet.apk' with 1 weak references
+06-17 16:23:15.546  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/CalendarProvider/CalendarProvider.apk' with 1 weak references
+06-17 16:23:15.546  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/GoogleOneTimeInitializer/GoogleOneTimeInitializer.apk' with 1 weak references
+06-17 16:23:15.546  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/GoogleExtShared/GoogleExtShared.apk' with 1 weak references
+06-17 16:23:15.547  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/ExternalStorageProvider/ExternalStorageProvider.apk' with 1 weak references
+06-17 16:23:15.547  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/HTMLViewer/HTMLViewer.apk' with 1 weak references
+06-17 16:23:15.547  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/CompanionDeviceManager/CompanionDeviceManager.apk' with 1 weak references
+06-17 16:23:15.547  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/DownloadProvider/DownloadProvider.apk' with 1 weak references
+06-17 16:23:15.547  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/PrebuiltBugle/PrebuiltBugle.apk' with 1 weak references
+06-17 16:23:15.547  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/SoundPickerPrebuilt/SoundPickerPrebuilt.apk' with 1 weak references
+06-17 16:23:15.548  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.mediaprovider/priv-app/MediaProviderGoogle@350820300/MediaProviderGoogle.apk' with 1 weak references
+06-17 16:23:15.548  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/SafetyHubPrebuilt/SafetyHubPrebuilt.apk' with 1 weak references
+06-17 16:23:15.551   546   568 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+06-17 16:23:15.561  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~zD4r9133Lz0d6OH0O7mcSg==/com.coded.capstone-rtc-rnQNrohSg4DUOx8m-w==/base.apk' with 1 weak references
+06-17 16:23:15.563  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/DownloadProviderUi/DownloadProviderUi.apk' with 1 weak references
+06-17 16:23:15.565  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.wifi/app/OsuLoginGoogle@350820300/OsuLoginGoogle.apk' with 1 weak references
+06-17 16:23:15.566  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~-0Ow9N3_oRoELwyFkSyVkQ==/com.android.vending-SJxcQmb395VWksHRRSeXcw==/base.apk' with 1 weak references
+06-17 16:23:15.566  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~-0Ow9N3_oRoELwyFkSyVkQ==/com.android.vending-SJxcQmb395VWksHRRSeXcw==/split_config.arm64_v8a.apk' with 1 weak references
+06-17 16:23:15.567  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~-0Ow9N3_oRoELwyFkSyVkQ==/com.android.vending-SJxcQmb395VWksHRRSeXcw==/split_config.en.apk' with 1 weak references
+06-17 16:23:15.567  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~-0Ow9N3_oRoELwyFkSyVkQ==/com.android.vending-SJxcQmb395VWksHRRSeXcw==/split_phonesky_data_loader.apk' with 1 weak references
+06-17 16:23:15.567  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~-0Ow9N3_oRoELwyFkSyVkQ==/com.android.vending-SJxcQmb395VWksHRRSeXcw==/split_phonesky_data_loader.config.arm64_v8a.apk' with 1 weak references
+06-17 16:23:15.568  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/PacProcessor/PacProcessor.apk' with 1 weak references
+06-17 16:23:15.569  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/SimAppDialog/SimAppDialog.apk' with 1 weak references
+06-17 16:23:15.569   546   653 I ImeTracker: com.google.android.apps.nexuslauncher:3013545a: onRequestHide at ORIGIN_SERVER reason HIDE_SAME_WINDOW_FOCUSED_WITHOUT_EDITOR fromUser false
+06-17 16:23:15.569  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/SimAppDialog__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.569  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.adservices/priv-app/AdServicesApkGoogle@350820260/AdServicesApkGoogle.apk' with 1 weak references
+06-17 16:23:15.570  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/DisplayCutoutEmulationHole/DisplayCutoutEmulationHoleOverlay.apk' with 1 weak references
+06-17 16:23:15.570   546   653 I ImeTracker: com.google.android.apps.nexuslauncher:3013545a: onCancelled at PHASE_SERVER_SHOULD_HIDE
+06-17 16:23:15.573  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/DisplayCutoutEmulationTall/DisplayCutoutEmulationTallOverlay.apk' with 1 weak references
+06-17 16:23:15.573  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/CertInstaller/CertInstaller.apk' with 1 weak references
+06-17 16:23:15.573  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+06-17 16:23:15.574  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+06-17 16:23:15.577  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/NavigationBarMode3Button/NavigationBarMode3ButtonOverlay.apk' with 1 weak references
+06-17 16:23:15.577  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/Camera2/Camera2.apk' with 1 weak references
+06-17 16:23:15.578  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/EasterEgg/EasterEgg.apk' with 1 weak references
+06-17 16:23:15.578  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/MtpService/MtpService.apk' with 1 weak references
+06-17 16:23:15.579  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.nfcservices/priv-app/NfcNciApexGoogle@AE3A.240806.036/NfcNciApexGoogle.apk' with 1 weak references
+06-17 16:23:15.591  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/Stk/Stk.apk' with 1 weak references
+06-17 16:23:15.594  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/PrebuiltDeskClockGoogle/PrebuiltDeskClockGoogle.apk' with 1 weak references
+06-17 16:23:15.596  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/NavigationBarMode2Button/NavigationBarMode2ButtonOverlay.apk' with 1 weak references
+06-17 16:23:15.597  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/DevicePersonalizationPrebuiltPixel2021-aiai_20240329.00_RC16/DevicePersonalizationPrebuiltPixel2021-aiai_20240329.00_RC16.apk' with 1 weak references
+06-17 16:23:15.601  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/PrebuiltGmail/PrebuiltGmail.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.permission/priv-app/GooglePermissionController@350820360/GooglePermissionController.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/GooglePermissionControllerOverlay.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.btservices/app/BluetoothGoogle@342010060/BluetoothGoogle.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/SettingsProvider/SettingsProvider.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/LargeScreenSettingsProviderOverlay.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/SettingsProvider__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.605  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/PrintSpooler/PrintSpooler.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/BasicDreams/BasicDreams.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/DeviceIntelligenceNetworkPrebuilt-astrea_20240329.00_RC02/DeviceIntelligenceNetworkPrebuilt-astrea_20240329.00_RC02.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/InputDevices/InputDevices.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.devicelock/priv-app/DeviceLockControllerGoogle@AE3A.240806.036/DeviceLockControllerGoogle.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/GoogleDialer/GoogleDialer.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/BuiltInPrintService/BuiltInPrintService.apk' with 1 weak references
+06-17 16:23:15.606  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/BuiltInPrintService__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.607  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/CaptivePortalLoginGoogle/CaptivePortalLoginGoogle.apk' with 1 weak references
+06-17 16:23:15.614  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3157 
+06-17 16:23:15.616  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/MusicFX/MusicFX.apk' with 1 weak references
+06-17 16:23:15.616  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/Drive/Drive.apk' with 1 weak references
+06-17 16:23:15.618  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/Maps/Maps.apk' with 1 weak references
+06-17 16:23:15.619  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/ModuleMetadataGoogle/ModuleMetadataGoogle.apk' with 1 weak references
+06-17 16:23:15.619  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/DisplayCutoutEmulationEmu01/DisplayCutoutEmulationEmu01Overlay.apk' with 1 weak references
+06-17 16:23:15.619  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/AvatarPickerGoogle/AvatarPickerGoogle.apk' with 1 weak references
+06-17 16:23:15.619  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/MarkupGoogle_v2/MarkupGoogle_v2.apk' with 1 weak references
+06-17 16:23:15.620  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/NetworkStackGoogle/NetworkStackGoogle.apk' with 1 weak references
+06-17 16:23:15.620  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.rkpd/priv-app/rkpdapp.google@350820300/rkpdapp.google.apk' with 1 weak references
+06-17 16:23:15.620  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/GoogleContacts/GoogleContacts.apk' with 1 weak references
+06-17 16:23:15.623  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/Telecom/Telecom.apk' with 1 weak references
+06-17 16:23:15.626  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/Telecom__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.627  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/KeyChain/KeyChain.apk' with 1 weak references
+06-17 16:23:15.627  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~_MGoreFcpih9hUDKAyUjRA==/com.android.chrome-8PX9sBsTn4GwWSNRzaWuEQ==/Chrome.apk' with 1 weak references
+06-17 16:23:15.631  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~xLF8iYaC-c79sSSSiLn8Bw==/com.google.android.trichromelibrary_636771932-W2p1GGUGQdX1iZvqA36tHw==/TrichromeLibrary.apk' with 1 weak references
+06-17 16:23:15.631  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/GooglePackageInstaller/GooglePackageInstaller.apk' with 1 weak references
+06-17 16:23:15.631  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/PixelThemesStub/PixelThemesStub.apk' with 1 weak references
+06-17 16:23:15.631  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk' with 1 weak references
+06-17 16:23:15.631  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/TagGoogle/TagGoogle.apk' with 1 weak references
+06-17 16:23:15.631  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/GoogleTTS/GoogleTTS.apk' with 1 weak references
+06-17 16:23:15.632  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/CallLogBackup/CallLogBackup.apk' with 1 weak references
+06-17 16:23:15.632  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/PartnerSetupPrebuilt/PartnerSetupPrebuilt.apk' with 1 weak references
+06-17 16:23:15.632  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/CameraExtensionsProxy/CameraExtensionsProxy.apk' with 1 weak references
+06-17 16:23:15.653  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/NexusWallpapersStubPrebuilt2018/NexusWallpapersStubPrebuilt2018.apk' with 1 weak references
+06-17 16:23:15.654  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/NexusLauncherRelease/NexusLauncherRelease.apk' with 1 weak references
+06-17 16:23:15.655  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/CarrierDefaultApp/CarrierDefaultApp.apk' with 1 weak references
+06-17 16:23:15.655  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/CredentialManager/CredentialManager.apk' with 1 weak references
+06-17 16:23:15.655  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/FontNotoSerifSource/FontNotoSerifSourceOverlay.apk' with 1 weak references
+06-17 16:23:15.656  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/DeviceAsWebcam/DeviceAsWebcam.apk' with 1 weak references
+06-17 16:23:15.658  1073  1073 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+06-17 16:23:15.660  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/ProxyHandler/ProxyHandler.apk' with 1 weak references
+06-17 16:23:15.661  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.permission/priv-app/GoogleSafetyCenterResources@350820360/GoogleSafetyCenterResources.apk' with 1 weak references
+06-17 16:23:15.663  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/DisplayCutoutEmulationWaterfall/DisplayCutoutEmulationWaterfallOverlay.apk' with 1 weak references
+06-17 16:23:15.663  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/IntentResolver/IntentResolver.apk' with 1 weak references
+06-17 16:23:15.664  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/TransparentNavigationBar/TransparentNavigationBarOverlay.apk' with 1 weak references
+06-17 16:23:15.664  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/E2eeContactKeysProvider/E2eeContactKeysProvider.apk' with 1 weak references
+06-17 16:23:15.664  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.tethering/priv-app/ServiceConnectivityResourcesGoogle@350820300/ServiceConnectivityResourcesGoogle.apk' with 1 weak references
+06-17 16:23:15.664  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/vendor/overlay/goldfish_overlay_connectivity_google.apk' with 1 weak references
+06-17 16:23:15.666  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2248 repeatCheckTimes = 0, locked = false
+06-17 16:23:15.666  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.google.android.apps.nexuslauncher, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+06-17 16:23:15.666  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/GoogleFeedback/GoogleFeedback.apk' with 1 weak references
+06-17 16:23:15.666  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/GooglePrintRecommendationService/GooglePrintRecommendationService.apk' with 1 weak references
+06-17 16:23:15.667  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/Photos/Photos.apk' with 1 weak references
+06-17 16:23:15.667  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/CalendarGooglePrebuilt/CalendarGooglePrebuilt.apk' with 1 weak references
+06-17 16:23:15.670  1043  1427 D EGL_emulation: app_time_stats: avg=15516.37ms min=15516.37ms max=15516.37ms count=1
+06-17 16:23:15.671  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2248 repeatCheckTimes = 1, locked = false
+06-17 16:23:15.672  1302  1302 I AndroidIME: InputBundleManager.loadActiveInputBundleId():450 loadActiveInputBundleId: und-Latn-x-password, password_floating_hard_qwerty
+06-17 16:23:15.673  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/ManagedProvisioning/ManagedProvisioning.apk' with 1 weak references
+06-17 16:23:15.673  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/SoundPicker/SoundPicker.apk' with 1 weak references
+06-17 16:23:15.674   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=20
+06-17 16:23:15.676   546   599 I ActivityManager: Force stopping com.coded.capstone appid=10207 user=0: pkg removed
+06-17 16:23:15.676  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/DocumentsUIGoogle/DocumentsUIGoogle.apk' with 1 weak references
+06-17 16:23:15.677  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/PrebuiltGoogleTelemetryTvp/PrebuiltGoogleTelemetryTvp.apk' with 1 weak references
+06-17 16:23:15.677  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/MultiDisplayProvider/MultiDisplayProvider.apk' with 1 weak references
+06-17 16:23:15.677  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/DeviceDiagnostics/DeviceDiagnostics.apk' with 1 weak references
+06-17 16:23:15.677  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/DeviceDiagnostics__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.677  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/NotesRoleEnabled/NotesRoleEnabledOverlay.apk' with 1 weak references
+06-17 16:23:15.677  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/LiveWallpapersPicker/LiveWallpapersPicker.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/PrebuiltGoogleAdservicesTvp/PrebuiltGoogleAdservicesTvp.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.healthfitness/priv-app/HealthConnectControllerGoogle@350820300/HealthConnectControllerGoogle.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/KidsSupervisionStub/KidsSupervisionStub.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/StorageManager/StorageManager.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/StorageManager__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/BookmarkProvider/BookmarkProvider.apk' with 1 weak references
+06-17 16:23:15.678  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/SettingsGoogle/SettingsGoogle.apk' with 1 weak references
+06-17 16:23:15.679  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/SettingsGoogle__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.679  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/SettingsIntelligenceGooglePrebuilt/SettingsIntelligenceGooglePrebuilt.apk' with 1 weak references
+06-17 16:23:15.679  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.uwb/priv-app/ServiceUwbResourcesGoogle@350820300/ServiceUwbResourcesGoogle.apk' with 1 weak references
+06-17 16:23:15.679  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.wifi/priv-app/ServiceWifiResourcesGoogle@350820300/ServiceWifiResourcesGoogle.apk' with 1 weak references
+06-17 16:23:15.679  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/ThemePicker/ThemePicker.apk' with 1 weak references
+06-17 16:23:15.680  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/WallpaperPickerGoogleRelease/WallpaperPickerGoogleRelease.apk' with 1 weak references
+06-17 16:23:15.680  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/OdadPrebuilt/OdadPrebuilt.apk' with 1 weak references
+06-17 16:23:15.685   546  2374 W PackageConfigPersister: App-specific configuration not found for packageName: com.google.android.apps.nexuslauncher and userId: 0
+06-17 16:23:15.687   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.687   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.687   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.687   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.691   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=21
+06-17 16:23:15.692   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.696   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.696  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/TeleService/TeleService.apk' with 1 weak references
+06-17 16:23:15.696  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/vendor/overlay/TeleService__sdk_gphone64_arm64__auto_generated_rro_vendor.apk' with 1 weak references
+06-17 16:23:15.697  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/TeleService__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.697  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/Shell/Shell.apk' with 1 weak references
+06-17 16:23:15.697  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/BlockedNumberProvider/BlockedNumberProvider.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/UserDictionaryProvider/UserDictionaryProvider.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/app/EmergencyInfoGoogleNoUi/EmergencyInfoGoogleNoUi.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/FusedLocation/FusedLocation.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/priv-app/SystemUIGoogle/SystemUIGoogle.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/vendor/overlay/SystemUIGoogle__sdk_gphone64_arm64__auto_generated_rro_vendor.apk' with 1 weak references
+06-17 16:23:15.698  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/SystemUIGoogle__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.702  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/YouTubeMusicPrebuilt/YouTubeMusicPrebuilt.apk' with 1 weak references
+06-17 16:23:15.703  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/BluetoothMidiService/BluetoothMidiService.apk' with 1 weak references
+06-17 16:23:15.703  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/app/Traceur/Traceur.apk' with 1 weak references
+06-17 16:23:15.704  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /apex/com.android.cellbroadcast/priv-app/GoogleCellBroadcastApp@350820300/GoogleCellBroadcastApp.apk' with 1 weak references
+06-17 16:23:15.705   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/ContactsProvider/ContactsProvider.apk' with 1 weak references
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.707  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '/product/overlay/ContactsProvider__sdk_gphone64_arm64__auto_generated_rro_product.apk' with 1 weak references
+06-17 16:23:15.708  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/LatinIMEGooglePrebuilt/LatinIMEGooglePrebuilt.apk' with 1 weak references
+06-17 16:23:15.708   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=22
+06-17 16:23:15.710  1244  1255 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/GoogleRestorePrebuilt-v526684/GoogleRestorePrebuilt-v526684.apk' with 1 weak references
+06-17 16:23:15.724   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=23
+06-17 16:23:15.732   546   732 D ShortcutService: received package broadcast intent: Intent { act=android.intent.action.PACKAGE_REMOVED dat=package: flg=0x4000010 (has extras) }
+06-17 16:23:15.741   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=24
+06-17 16:23:15.745   546   693 E AppOps  : attributionTag VCN not declared in manifest of android
+06-17 16:23:15.752   546   546 D ActivityManager: sync unfroze 1592 com.android.keychain for 10
+06-17 16:23:15.754   546   546 D ActivityManager: sync unfroze 941 com.android.settings for 10
+06-17 16:23:15.754   546   546 D ActivityManager: sync unfroze 2487 com.google.android.settings.intelligence for 10
+06-17 16:23:15.758   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=25
+06-17 16:23:15.765   546   546 I Telecom : CarModeTracker: Package com.coded.capstone is not tracked.: SSH.oR@AGY
+06-17 16:23:15.765   546   546 I Telecom : InCallController: updateCarModeForConnections: car mode apps: : SSH.oR@AGY
+06-17 16:23:15.765   546   546 I Telecom : InCallController: update carmode current:UserHandle{0} parent:null: SSH.oR@AGY
+06-17 16:23:15.817  1043  1049 W s.nexuslauncher: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~zD4r9133Lz0d6OH0O7mcSg==/com.coded.capstone-rtc-rnQNrohSg4DUOx8m-w==/base.apk' with 1 weak references
+06-17 16:23:15.818  1043  1049 W System  : A resource failed to call release. 
+06-17 16:23:15.819   546   693 E AppOps  : attributionTag VCN not declared in manifest of android
+06-17 16:23:15.819  1043  1049 W System  : A resource failed to call release. 
+06-17 16:23:15.820  1043  1049 W System  : A resource failed to call release. 
+06-17 16:23:15.821   938   938 E SmsApplication: com.google.android.apps.messaging lost android:read_cell_broadcasts:  (fixing)
+06-17 16:23:15.822   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 10142, code = READ_CELL_BROADCASTS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.824   938   938 E CellBroadcastUtils: getDefaultCellBroadcastReceiverPackageName: no package found
+06-17 16:23:15.824   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = READ_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.824   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = RECEIVE_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.824   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = RECEIVE_WAP_PUSH, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.829   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.829   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.829   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.829   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.829   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.829  1244  1244 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.830   546   663 W PackageConfigPersister: App-specific configuration not found for packageName: com.coded.capstone and userId: 0
+06-17 16:23:15.830  2566  2566 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.830  1043  1043 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.830  1592  1592 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.833  1446  1446 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.838   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.838   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.838   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.838   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.838   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.838   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.839  1302  1302 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.839  2487  2487 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.841   941   941 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.844  1326  1326 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.844   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = SEND_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.844   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = READ_CELL_BROADCASTS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.846   779   779 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.847  1073  1073 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.847  1281  1281 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.848   845   845 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.849  1366  1366 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.849  1342  1342 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.850   926   926 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.854  1291  1291 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.855   546   693 E AppOps  : attributionTag VCN not declared in manifest of android
+06-17 16:23:15.856   546   546 V BackupManagerConstants: getFullBackupIntervalMilliseconds(...) returns 86400000
+06-17 16:23:15.856   546   546 V BackupManagerConstants: getFullBackupRequiredNetworkType(...) returns 2
+06-17 16:23:15.856   546   546 V BackupManagerConstants: getFullBackupRequireCharging(...) returns true
+06-17 16:23:15.864   938   938 D CarrierSvcBindHelper: onPackageUpdateFinished: com.coded.capstone
+06-17 16:23:15.865   546   576 D ActivityManager: sync unfroze 1146 com.google.android.permissioncontroller for 3
+06-17 16:23:15.867   938   938 D CarrierSvcBindHelper: No carrier app for: 0
+06-17 16:23:15.867   938   938 D CarrierSvcBindHelper: onPackageModified: com.coded.capstone
+06-17 16:23:15.867   938   938 D CarrierSvcBindHelper: No carrier app for: 0
+06-17 16:23:15.868   938   938 E SmsApplication: com.google.android.apps.messaging lost android:read_cell_broadcasts:  (fixing)
+06-17 16:23:15.868   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 10142, code = READ_CELL_BROADCASTS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.868   938   938 E CellBroadcastUtils: getDefaultCellBroadcastReceiverPackageName: no package found
+06-17 16:23:15.868   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = READ_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.868   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = RECEIVE_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.868   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = RECEIVE_WAP_PUSH, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.868   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = SEND_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.868   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = READ_CELL_BROADCASTS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.870   938   938 E SmsApplication: com.google.android.apps.messaging lost android:read_cell_broadcasts:  (fixing)
+06-17 16:23:15.870   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 10142, code = READ_CELL_BROADCASTS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.871   938   938 E CellBroadcastUtils: getDefaultCellBroadcastReceiverPackageName: no package found
+06-17 16:23:15.871   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = READ_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.871   546  1053 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = RECEIVE_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.871   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = RECEIVE_WAP_PUSH, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.871   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = SEND_SMS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.872   546  2374 W AppOpService: Ignored setUidMode call for runtime permission app op: uid = 1001, code = READ_CELL_BROADCASTS, mode = allow, callingUid = 1001, oldMode = allow
+06-17 16:23:15.873  1146  1146 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.882  1146  1146 I SafetyLabelChangedBroadcastReceiver: received broadcast packageName: com.coded.capstone, current user: UserHandle{0}, packageChangeEvent: UPDATE, intent user: UserHandle{0}
+06-17 16:23:15.894   546   546 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.897  1043  1043 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.897   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.897   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.897   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.897   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.897  1244  1244 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.897  2566  2566 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.898   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.898   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.898   941   941 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.898   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.898   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.898   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.898   546   599 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.898  2487  2487 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.898  1302  1302 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.899   926   926 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.900  1291  1291 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.900  1073  1073 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.900  1342  1342 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.901  1366  1366 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.901   845   845 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.902  1326  1326 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.903  1146  1146 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.904  1281  1281 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.905  1446  1446 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.906  1592  1592 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.907   546   546 W AlarmManager: Package com.coded.capstone, uid 10207 lost permission to set exact alarms!
+06-17 16:23:15.908   546   576 D CompatChangeReporter: Compat change id reported: 151861875; UID 10207; state: ENABLED
+06-17 16:23:15.908   546   576 V GrammaticalInflectionUtils: AttributionSource: android.content.AttributionSource@d0c17649 does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+06-17 16:23:15.909   546   599 D PackageInstallerSession: Marking session 416664169 as applied
+06-17 16:23:15.913   938  1129 D ImsResolver: maybeAddedImsService, packageName: com.coded.capstone
+06-17 16:23:15.914   938   938 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.914   546   546 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.924   546   744 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10207, mPackageName='com.coded.capstone, mAppProcessToken='null'}
+06-17 16:23:15.924   546   744 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10207, mPackageName='com.coded.capstone, mAppProcessToken='null'}
+06-17 16:23:15.951   546   732 D ShortcutService: received package broadcast intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package: flg=0x4000010 (has extras) }
+06-17 16:23:15.951   546   732 D ShortcutService: replacing package: com.coded.capstone userId0
+06-17 16:23:15.951   546   732 D ShortcutService: handlePackageUpdateFinished: com.coded.capstone user=0
+06-17 16:23:15.952   546   732 D ShortcutService: rescanPackageIfNeeded 0@com.coded.capstone, forceRescan=true , isNewApp=true
+06-17 16:23:15.953   320   320 D Zygote  : Forked child process 4314
+06-17 16:23:15.953   546   732 D ShortcutService: Package com.coded.capstone has 0 manifest shortcut(s), and 0 share target(s)
+06-17 16:23:15.957   938   938 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.963   546   577 W ActivityManager: Slow operation: 55ms so far, now at startProcess: returned from zygote!
+06-17 16:23:15.963   546   577 W ActivityManager: Slow operation: 55ms so far, now at startProcess: done updating battery stats
+06-17 16:23:15.963   546   577 W ActivityManager: Slow operation: 55ms so far, now at startProcess: building log message
+06-17 16:23:15.963   546   577 I ActivityManager: Start proc 4314:com.coded.capstone/u0a207 for broadcast {com.coded.capstone/com.coded.capstone.MapAndGeofencing.GeofenceBroadcastReceiver}
+06-17 16:23:15.963   546   577 W ActivityManager: Slow operation: 55ms so far, now at startProcess: starting to update pids map
+06-17 16:23:15.963   546   577 W ActivityManager: Slow operation: 55ms so far, now at startProcess: done updating pids map
+06-17 16:23:15.965  4314  4314 I .coded.capstone: Late-enabling -Xcheck:jni
+06-17 16:23:15.975   546   612 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:15.980   968   968 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:15.995  4314  4314 I .coded.capstone: Using CollectorTypeCMC GC.
+06-17 16:23:16.000   389   405 I adbd    : jdwp connection from 4314
+06-17 16:23:16.004   968   968 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.020  4314  4314 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-17 16:23:16.022  1146  1154 I PermissionControllerServiceImpl: Updating user sensitive for uid 10207
+06-17 16:23:16.025   779   779 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.148  4314  4314 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/org.apache.http.legacy.jar
+06-17 16:23:16.149  4314  4314 W ziparchive: Unable to open '/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.dm': No such file or directory
+06-17 16:23:16.149  4314  4314 W ziparchive: Unable to open '/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.dm': No such file or directory
+06-17 16:23:16.174   968   972 I id.ext.services: Background concurrent mark compact GC freed 1880KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 1984KB/3969KB, paused 64us,708us total 145.060ms
+06-17 16:23:16.174   968   972 W id.ext.services: Reducing the number of considered missed Gc histogram windows from 103 to 100
+06-17 16:23:16.297   546   576 D ActivityManager: sync unfroze 2002 com.android.vending for 3
+06-17 16:23:16.300   546   576 D ActivityManager: sync unfroze 2344 com.android.vending:background for 3
+06-17 16:23:16.303   779   779 D ControlsListingControllerImpl: ServiceConfig reloaded, count: 0
+06-17 16:23:16.303   779   779 D ControlsListingControllerImpl: ServiceConfig reloaded, count: 0
+06-17 16:23:16.303   779   779 D ControlsListingControllerImpl: ServiceConfig reloaded, count: 0
+06-17 16:23:16.308  1281  1281 W MediaProvider: WorkProfileOwnerApps cache is empty
+06-17 16:23:16.308  1281  1281 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@c118d9a[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+06-17 16:23:16.308  1281  1281 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@c118d9a[Locked by thread main]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+06-17 16:23:16.308  1281  1281 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@c118d9a[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+06-17 16:23:16.309  2344  2344 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.325  2344  2344 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.326  2344  2344 I Finsky:background: [2] Memory trim requested to level 40
+06-17 16:23:16.338  2002  2002 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.339  2344  2344 I Finsky:background: [2] Memory trim requested to level 40
+06-17 16:23:16.339  2002  2002 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.342  2002  2002 I Finsky  : [2] Memory trim requested to level 40
+06-17 16:23:16.343  2002  2002 I Finsky  : [2] Flushing in-memory image cache
+06-17 16:23:16.345  1326  1326 I GsaVoiceInteractionSrv: (REDACTED) O received %s
+06-17 16:23:16.347  2344  2344 I Finsky:background: [2] adpn - Received: android.intent.action.PACKAGE_REMOVED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.347  2002  2002 I Finsky  : [2] Memory trim requested to level 40
+06-17 16:23:16.347  2002  2002 I Finsky  : [2] Flushing in-memory image cache
+06-17 16:23:16.351  2002  2002 I Finsky  : [2] adpz - Received: android.intent.action.PACKAGE_REMOVED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.355   546  1772 D ActivityManager: sync unfroze 1490 com.google.android.gms for 6
+06-17 16:23:16.379  1490  1490 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.383  1326  1326 I GsaVoiceInteractionSrv: (REDACTED) O received %s
+06-17 16:23:16.384  1326  1326 I GsaVoiceInteractionSrv: (REDACTED) O received %s
+06-17 16:23:16.393  2344  2344 I Finsky:background: [2] IQ: onPackageRemoved com.coded.capstone, replacing=true, uninstallingFromPlay=false
+06-17 16:23:16.394  1490  1490 D ActivityThread: Package [com.coded.capstone] reported as REPLACED, but missing application info. Assuming REMOVED.
+06-17 16:23:16.398  2344  2344 I Finsky:background: [2] adpn - Received: android.intent.action.PACKAGE_ADDED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.429  2002  2002 I Finsky  : [2] adpz - Received: android.intent.action.PACKAGE_ADDED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.430  2344  4332 I Finsky:background: [125] IQ: handled package removed
+06-17 16:23:16.431  2344  4330 I Finsky:background: [123] Wrote row to frosting DB: 410
+06-17 16:23:16.433  2344  2344 I Finsky:background: [2] adpn - Received: android.intent.action.PACKAGE_ADDED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.437  2002  4152 I Finsky  : [169] SCH: Received scheduling request: Id: 12-1, Constraints: [{ L: 15000, D: 86400000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+06-17 16:23:16.476  2344  4330 I Finsky:background: [123] Wrote row to frosting DB: 411
+06-17 16:23:16.484  2344  2344 I Finsky:background: [2] adpn - Deduping intent android.intent.action.PACKAGE_ADDED
+06-17 16:23:16.487  2344  2344 I Finsky:background: [2] adpn - Received: android.intent.action.PACKAGE_ADDED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.493  2344  2344 I Finsky:background: [2] adpn - Deduping intent android.intent.action.PACKAGE_ADDED
+06-17 16:23:16.493  2344  2424 I Finsky:background: [50] RECEIVER_PACKAGE_MONITOR_BACKGROUND#logWorkEndAndFinishGoAsync: SUCCESS
+06-17 16:23:16.495  2002  2002 I Finsky  : [2] DTU: Received onPackageAdded, replacing: true
+06-17 16:23:16.514  2002  2028 W android.vending: Couldn't lock the profile file /data/misc/profiles/cur/0/com.android.vending/primary.prof: Failed to lock file '/data/misc/profiles/cur/0/com.android.vending/primary.prof': Try again
+06-17 16:23:16.515  1446  1793 W SearchServiceCore: Abort, client detached.
+06-17 16:23:16.524  2002  2002 I Finsky  : [2] adpz - Received: android.intent.action.PACKAGE_ADDED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.524  2002  4152 I Finsky  : [169] SCH: Received scheduling request: Id: 12-1, Constraints: [{ L: 15000, D: 86400000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+06-17 16:23:16.524  2002  2028 W android.vending: Could not forcefully load profile /data/misc/profiles/cur/0/com.android.vending/primary.prof
+06-17 16:23:16.530  1073  4342 I ProximityAuth: [RecentAppsMediator] Package added: (user=UserHandle{0}) com.coded.capstone
+06-17 16:23:16.533  1446  1793 W SearchServiceCore: Abort, client detached.
+06-17 16:23:16.535  2002  2002 I Finsky  : [2] adpz - Deduping intent android.intent.action.PACKAGE_ADDED
+06-17 16:23:16.539  2002  2002 I Finsky  : [2] adpz - Received: android.intent.action.PACKAGE_ADDED, [aQtctcXo_RtcB70ubLnUNruw8iU4vEnSAF2XfTPococ]
+06-17 16:23:16.549  1446  1793 W SearchServiceCore: Abort, client detached.
+06-17 16:23:16.564  2002  2002 I Finsky  : [2] adpz - Deduping intent android.intent.action.PACKAGE_ADDED
+06-17 16:23:16.565  2002  2047 I Finsky  : [42] RECEIVER_PACKAGE_MONITOR#logWorkEndAndFinishGoAsync: SUCCESS
+06-17 16:23:16.572  2002  4151 D TrafficStats: tagSocket(134) with statsTag=0xffffffff, statsUid=-1
+06-17 16:23:16.573  2002  4180 D TrafficStats: tagSocket(139) with statsTag=0xffffffff, statsUid=-1
+06-17 16:23:16.589   546   981 V SafetySourceDataValidat: Package: com.android.vending has expected signature
+06-17 16:23:16.590  1073  4335 I Fitness : (REDACTED) FitCleanupIntentOperation received Intent %s
+06-17 16:23:16.594   546   981 V SafetySourceDataValidat: Package: com.android.vending has expected signature
+06-17 16:23:16.632  2344  4330 I Finsky:background: [123] Wrote row to frosting DB: 412
+06-17 16:23:16.664  1490  4367 I Auth    : (REDACTED) [SupervisedAccountIntentOperationV2] onHandleIntent: %s
+06-17 16:23:16.689  1490  4367 I NearbyDiscovery: (REDACTED) processGrantSlicePermission: %s
+06-17 16:23:16.694  1073  1073 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-17 16:23:16.708  1490  1490 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.auth.service.START pkg=com.google.android.gms }
+06-17 16:23:16.744   546  1756 W ActivityTaskManager: callingPackage for (uid=2000, pid=4374) has no WPC
+06-17 16:23:16.747   546  1756 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_OVERRIDE
+06-17 16:23:16.753  1490  4361 W SQLiteLog: (28) double-quoted string literal: "com.coded.capstone"
+06-17 16:23:16.753  2344  4330 I Finsky:background: [123] Wrote row to frosting DB: 413
+06-17 16:23:16.755   546  1756 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_USER_ASPECT_RATIO_FULLSCREEN_OVERRIDE
+06-17 16:23:16.755   546  1756 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_ORIENTATION_OVERRIDE
+06-17 16:23:16.759   546  1756 V GrammaticalInflectionUtils: AttributionSource: android.content.AttributionSource@d0c17649 does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+06-17 16:23:16.769  2344  4330 I Finsky:background: [123] Wrote row to frosting DB: 414
+06-17 16:23:16.769   546  1756 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES
+06-17 16:23:16.769   546  1756 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE
+06-17 16:23:16.777  2344  4330 I Finsky:background: [123] Wrote row to frosting DB: 415
+06-17 16:23:16.777  2002  2002 I Finsky  : [2] Memory trim requested to level 40
+06-17 16:23:16.777  2002  2002 I Finsky  : [2] Flushing in-memory image cache
+06-17 16:23:16.795   779   856 V WindowManagerShell: Transition requested (#13): android.os.BinderProxy@a28785e TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=81 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.coded.capstone/.MainActivity } baseActivity=ComponentInfo{com.coded.capstone/com.coded.capstone.MainActivity} topActivity=ComponentInfo{com.coded.capstone/com.coded.capstone.MainActivity} origActivity=null realActivity=ComponentInfo{com.coded.capstone/com.coded.capstone.MainActivity} numActivities=1 lastActiveTime=1080264 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@e9c143f} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{e5a010c com.coded.capstone.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 13 }
+06-17 16:23:16.796   546   981 D CompatChangeReporter: Compat change id reported: 309578419; UID 10207; state: ENABLED
+06-17 16:23:16.796  2344  2344 I Finsky:background: [2] Memory trim requested to level 40
+06-17 16:23:16.817   546  1756 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.coded.capstone/.MainActivity} with LAUNCH_MULTIPLE from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+06-17 16:23:16.823  1043  1043 W SplitSelectStateCtor: Missing session instanceIds
+06-17 16:23:16.823  1043  1043 D StatsLog: LAUNCHER_SPLIT_SELECTION_EXIT_INTERRUPTED
+06-17 16:23:16.824   384   384 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+06-17 16:23:16.831   779   856 D WindowManagerShell: setLauncherKeepClearAreaHeight: visible=false, height=527
+06-17 16:23:16.835   546  1772 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ENABLE_FAKE_FOCUS
+06-17 16:23:16.835   546  1772 D CompatChangeReporter: Compat change id reported: 324203798; UID 10207; state: ENABLED
+06-17 16:23:16.869  1043  1043 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=81, baseIntent=Intent { flg=0x10000000 cmp=com.coded.capstone/.MainActivity }
+06-17 16:23:16.897   546   981 D CoreBackPreview: Window{7f0d082 u0 Splash Screen com.coded.capstone}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@70f63f4, mPriority=0, mIsAnimationCallback=false}
+06-17 16:23:16.900  1043  1427 D EGL_emulation: app_time_stats: avg=199.05ms min=3.70ms max=1154.02ms count=6
+06-17 16:23:16.908   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=26
+06-17 16:23:16.924   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=27
+06-17 16:23:16.941   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=28
+06-17 16:23:16.955  1490  1490 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+06-17 16:23:16.955  1490  1490 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+06-17 16:23:16.958   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=29
+06-17 16:23:16.971  2002  4152 I android.vending: IncrementDisableThreadFlip blocked for 8.225ms
+06-17 16:23:16.974   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=30
+06-17 16:23:16.985  1490  2646 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=AppsCorpus serviceId=36
+06-17 16:23:16.991   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=31
+06-17 16:23:17.008   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=32
+06-17 16:23:17.010   779   890 V WindowManagerShell: onTransitionReady(transaction=2345052144397)
+06-17 16:23:17.010   779   856 V WindowManagerShell: onTransitionReady (#13) android.os.BinderProxy@a28785e: {id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@e3357e6} m=OPEN f=NONE leash=Surface(name=Task=81)/@0x5b8141a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{WCT{android.window.IWindowContainerToken$Stub$Proxy@288b127} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x4e7f928 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1}]}
+06-17 16:23:17.010   779   856 V WindowManagerShell: Playing animation for (#13) android.os.BinderProxy@a28785e@0
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultMixedHandler@79313ec
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.keyguard.KeyguardTransitionHandler@e3993b5
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.pip.PipTransition@c833a4a
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.activityembedding.ActivityEmbeddingController@ede8dbb
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.recents.RecentsTransitionHandler@d9382d8
+06-17 16:23:17.010   779   856 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.splitscreen.StageCoordinator@4bcb631
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.transition.RemoteTransitionHandler@ec2b116
+06-17 16:23:17.010   779   856 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@e3357e6} m=OPEN f=NONE leash=Surface(name=Task=81)/@0x5b8141a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{WCT{android.window.IWindowContainerToken$Stub$Proxy@288b127} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x4e7f928 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1}]}
+06-17 16:23:17.010   779   856 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x0 checks=[{atype=undefined independent=true modes=[OPEN,TO_FRONT] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null},{atype=undefined independent=true modes=[CLOSE,TO_BACK] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@7de4a97, appThread = android.app.IApplicationThread$Stub$Proxy@c29f484, debugName = OverlaySwipeBack }}
+06-17 16:23:17.010   779   856 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x0 checks=[{atype=dream independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null},{atype=home independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@875846d, appThread = android.app.IApplicationThread$Stub$Proxy@1b0c8a2, debugName = LauncherToDream }}
+06-17 16:23:17.010   779   856 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=TOP topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@4b2f933, appThread = android.app.IApplicationThread$Stub$Proxy@893d4f0, debugName = QuickstepLaunchHome }}
+06-17 16:23:17.010   779   856 V WindowManagerShell:  Delegate animation for (#13) to null
+06-17 16:23:17.010   779   856 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultTransitionHandler@372fa69
+06-17 16:23:17.010   779   856 V WindowManagerShell: start default transition animation, info = {id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@e3357e6} m=OPEN f=NONE leash=Surface(name=Task=81)/@0x5b8141a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{WCT{android.window.IWindowContainerToken$Stub$Proxy@288b127} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x4e7f928 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1}]}
+06-17 16:23:17.010   779   856 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@5577fd4 animAttr=0x13 type=OPEN isEntrance=false
+06-17 16:23:17.011   779   856 V WindowManagerShell: loadAnimation: anim=android.view.animation.AnimationSet@12c357d animAttr=0x12 type=OPEN isEntrance=true
+06-17 16:23:17.011   779   856 V WindowManagerShell:  animated by com.android.wm.shell.transition.DefaultTransitionHandler@372fa69
+06-17 16:23:17.013   546   565 V WindowManager: Sent Transition (#13) createdAt=06-17 16:23:16.771 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=81 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=com.coded.capstone/.MainActivity } baseActivity=ComponentInfo{com.coded.capstone/com.coded.capstone.MainActivity} topActivity=ComponentInfo{com.coded.capstone/com.coded.capstone.MainActivity} origActivity=null realActivity=ComponentInfo{com.coded.capstone/com.coded.capstone.MainActivity} numActivities=1 lastActiveTime=1080264 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{c3367b1 Task{d2a3e0d #81 type=standard A=10207:com.coded.capstone}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{f614496 com.coded.capstone.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= falseisLetterboxEducationEnabled= true isLetterboxDoubleTapEnabled= false topActivityEligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=1080 topActivityLetterboxHeight=2400 isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false cameraCompatTaskInfo=CameraCompatTaskInfo { cameraCompatControlState=hidden freeformCameraCompatMode=inactive}}}, pipTask = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 13 }
+06-17 16:23:17.013   546   565 V WindowManager:     startWCT=WindowContainerTransaction { changes = {} hops = [] errorCallbackToken=null taskFragmentOrganizer=null }
+06-17 16:23:17.013   546   565 V WindowManager:     info={id=13 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[
+06-17 16:23:17.013   546   565 V WindowManager:         {WCT{RemoteToken{c3367b1 Task{d2a3e0d #81 type=standard A=10207:com.coded.capstone}}} m=OPEN f=NONE leash=Surface(name=Task=81)/@0x9ca833b sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
+06-17 16:23:17.013   546   565 V WindowManager:         {WCT{RemoteToken{85f03f4 Task{3425b92 #1 type=home}}} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x95afd77 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1}
+06-17 16:23:17.013   546   565 V WindowManager:     ]}
+06-17 16:23:17.018   546  1756 W UserManagerService: Requested status bar icon for non-badged user 0
+06-17 16:23:17.029  2002  2127 I Finsky  : [57] SCH: Scheduling phonesky job Id: 12-1, CT: 1750166596524, Constraints: [{ L: 15000, D: 86400000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+06-17 16:23:17.037  1291  1296 I ogle.android.as: Background concurrent mark compact GC freed 1636KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 6620KB/12MB, paused 304us,72.280ms total 1.325s
+06-17 16:23:17.040  1291  1298 W ogle.android.as: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~zD4r9133Lz0d6OH0O7mcSg==/com.coded.capstone-rtc-rnQNrohSg4DUOx8m-w==/base.apk' with 1 weak references
+06-17 16:23:17.052  2002  2127 I Finsky  : [57] SCH: Scheduling 1 system job(s)
+06-17 16:23:17.053  2002  2127 I Finsky  : [57] SCH: Scheduling system job Id: 9398, L: 14472, D: 65184216, C: false, I: false, N: 1
+06-17 16:23:17.065  1043  1427 D EGL_emulation: app_time_stats: avg=5965.29ms min=5.61ms max=41187.80ms count=7
+06-17 16:23:17.074   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=4 frameNumber=334 -> producedId=4 frameNumber=33
+06-17 16:23:17.100   779   904 D EGL_emulation: app_time_stats: avg=17026.49ms min=17026.49ms max=17026.49ms count=1
+06-17 16:23:17.123  2002  2069 I Finsky  : [51] SCH: Scheduling phonesky job Id: 12-1, CT: 1750166596495, Constraints: [{ L: 15000, D: 86400000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+06-17 16:23:17.124  2002  2066 I Finsky  : [49] [ContentSync] finished, scheduled=true
+06-17 16:23:17.128  2002  2127 I Finsky  : [57] SCH: Scheduling 1 system job(s)
+06-17 16:23:17.128  2002  2127 I Finsky  : [57] SCH: Scheduling system job Id: 9398, L: 14367, D: 65184140, C: false, I: false, N: 1
+06-17 16:23:17.137  2002  2065 I Finsky  : [48] [ContentSync] finished, scheduled=true
+06-17 16:23:17.151  1073  1384 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-17 16:23:17.151  1073  1384 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-17 16:23:17.158   546   687 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:17.163   546   687 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:17.179  1342  1884 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[6150eaf9-eb07]>Handler" thread_id=63 ]
+06-17 16:23:17.194  1342  1739 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=58 ]
+06-17 16:23:17.249  1342  1884 I BugleRcsEngine: No RCS Configuration was found in Bugle for simID: redacted-pii:sim_id[chars:20,last3:897] [CONTEXT log_prefix="ProvisioningEngineDataRetriever" thread_id=63 ]
+06-17 16:23:17.306   779   784 I ndroid.systemui: Background concurrent mark compact GC freed 1977KB AllocSpace bytes, 6(232KB) LOS objects, 50% free, 17MB/34MB, paused 487us,7.365ms total 1.512s
+06-17 16:23:17.306   779   786 W ndroid.systemui: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~zD4r9133Lz0d6OH0O7mcSg==/com.coded.capstone-rtc-rnQNrohSg4DUOx8m-w==/base.apk' with 1 weak references
+06-17 16:23:17.307   779   786 W System  : A resource failed to call release. 
+06-17 16:23:17.307   779   786 W System  : A resource failed to call release. 
+06-17 16:23:17.307   779   786 W System  : A resource failed to call release. 
+06-17 16:23:17.307   779   786 W System  : A resource failed to call release. 
+06-17 16:23:17.309   779   856 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#13) android.os.BinderProxy@a28785e@0
+06-17 16:23:17.312   779   856 V WindowManagerShell: Track 0 became idle
+06-17 16:23:17.313   779   856 V WindowManagerShell: All active transition animations finished
+06-17 16:23:17.313   546  1170 W UserManagerService: Requested status bar icon for non-badged user 0
+06-17 16:23:17.314   546  2374 W UserManagerService: Requested status bar icon for non-badged user 0
+06-17 16:23:17.315   546   565 V WindowManager: Finish Transition (#13): created at 06-17 16:23:16.771 collect-started=0.065ms request-sent=22.289ms started=47.787ms ready=119.361ms sent=228.873ms finished=539.586ms
+06-17 16:23:17.317  1043  1043 D VRI[NexusLauncherActivity]: visibilityChanged oldVisibility=true newVisibility=false
+06-17 16:23:17.327  1043  1043 D NexusLauncherModelDelegate: notifySmartspaceEvent: SmartspaceTargetEvent{mSmartspaceTarget=null, mSmartspaceActionId='null', mEventType=7}
+06-17 16:23:17.420  1490  2646 I Icing   : IndexChimeraService.getServiceInterface callingPackage=com.google.android.gms componentName=null serviceId=30
+06-17 16:23:17.524  1073  1077 I .gms.persistent: Background concurrent mark compact GC freed 2973KB AllocSpace bytes, 2(36KB) LOS objects, 49% free, 12MB/25MB, paused 280us,12.508ms total 1.822s
+06-17 16:23:17.530  1490  4383 I Icing   : Usage reports ok 1, Failed Usage reports 0, indexed 0, rejected 0
+06-17 16:23:17.570  4314  4314 D nativeloader: Configuring clns-7 for other apk /data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/lib/arm64:/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.coded.capstone
+06-17 16:23:17.573  4314  4314 D CompatChangeReporter: Compat change id reported: 202956589; UID 10207; state: ENABLED
+06-17 16:23:17.585  4314  4314 V GraphicsEnvironment: Currently set values for:
+06-17 16:23:17.586  4314  4314 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+06-17 16:23:17.586  4314  4314 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+06-17 16:23:17.586  4314  4314 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+06-17 16:23:17.586  4314  4314 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+06-17 16:23:17.587   546   575 W MagnificationConnectionManager: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-17 16:23:17.590   546   546 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:17.591   546   546 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:17.612  1490  4383 I Icing   : Usage reports ok 0, Failed Usage reports 0, indexed 0, rejected 0
+06-17 16:23:17.614  4314  4314 D CompatChangeReporter: Compat change id reported: 279646685; UID 10207; state: ENABLED
+06-17 16:23:17.628  1490  4383 I Icing   : Indexing com.google.android.gms-apps from com.google.android.gms
+06-17 16:23:17.672   546   575 W MagnificationConnectionManager: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-17 16:23:17.675   546   546 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:17.675   546   546 W IPCThreadState: Sending oneway calls to frozen process.
+06-17 16:23:17.677  4314  4314 D CompatChangeReporter: Compat change id reported: 309578419; UID 10207; state: ENABLED
+06-17 16:23:17.708  4314  4314 W HWUI    : Unknown dataspace 0
+06-17 16:23:17.715  1043  1112 D PackageUpdatedTask: Package updated: mOp=UPDATE packages=[com.coded.capstone]
+06-17 16:23:17.717  1291  1291 I AiAiEcho: AppFetcherImpl onPackageChanged com.coded.capstone.
+06-17 16:23:17.719  1291  4246 I AiAiEcho: AppIndexer Package:[com.coded.capstone] UserProfile:[0] Enabled:[true].
+06-17 16:23:17.720  1291  4246 I AiAiEcho: AppFetcherImplV2 updateApps package:[com.coded.capstone], userId:[0], reason:[package is updated.].
+06-17 16:23:17.721  4314  4314 D GeofenceReceiver: Received broadcast: android.intent.action.MY_PACKAGE_REPLACED
+06-17 16:23:17.721  4314  4314 D GeofenceReceiver: Device booted or app updated, starting geofence service
+06-17 16:23:17.722   546  3104 D CompatChangeReporter: Compat change id reported: 311208749; UID 10207; state: ENABLED
+06-17 16:23:17.722   546  3104 I ActivityManager: Background started FGS: Allowed [callingPackage: com.coded.capstone; callingUid: 10207; uidState: TOP ; uidBFSL: [BFSL]; intent: Intent { cmp=com.coded.capstone/.MapAndGeofencing.GeofenceService }; code:PROC_STATE_TOP; tempAllowListReason:<cc94b82 android.intent.action.MY_PACKAGE_REPLACED/u0,reasonCode:PACKAGE_REPLACED,duration:20000,callingUid:1000>; targetSdkVersion:35; callerTargetSdkVersion:35; startForegroundCount:0; bindFromPackage:null: isBindService:false]
+06-17 16:23:17.722   546  3104 D CompatChangeReporter: Compat change id reported: 311208629; UID 10207; state: ENABLED
+06-17 16:23:17.777  1043  1043 D StatsLog: LAUNCHER_ALLAPPS_COUNT
+06-17 16:23:17.790  1490  4383 I Icing   : Indexing done com.google.android.gms-apps
+06-17 16:23:17.808   546   556 I system_server: Background concurrent mark compact GC freed 15MB AllocSpace bytes, 25(748KB) LOS objects, 44% free, 29MB/53MB, paused 644us,21.830ms total 2.087s
+06-17 16:23:17.813   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~zD4r9133Lz0d6OH0O7mcSg==/com.coded.capstone-rtc-rnQNrohSg4DUOx8m-w==/base.apk' with 1 weak references
+06-17 16:23:17.854   546   558 W System  : A resource failed to call HardwareBuffer.close. 
+06-17 16:23:17.860   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/PrebuiltGmail/PrebuiltGmail.apk' with 1 weak references
+06-17 16:23:17.861   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/Drive/Drive.apk' with 1 weak references
+06-17 16:23:17.861   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/CalendarGooglePrebuilt/CalendarGooglePrebuilt.apk' with 1 weak references
+06-17 16:23:17.861   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/base.apk' with 1 weak references
+06-17 16:23:17.862   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_AdsDynamite_installtime.apk' with 1 weak references
+06-17 16:23:17.862   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_CronetDynamite_installtime.apk' with 1 weak references
+06-17 16:23:17.862   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_DynamiteLoader_installtime.apk' with 1 weak references
+06-17 16:23:17.862   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_DynamiteModulesA_installtime.apk' with 1 weak references
+06-17 16:23:17.862   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_DynamiteModulesC_installtime.apk' with 1 weak references
+06-17 16:23:17.868   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_GoogleCertificates_installtime.apk' with 1 weak references
+06-17 16:23:17.868   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_MapsDynamite_installtime.apk' with 1 weak references
+06-17 16:23:17.869   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_MeasurementDynamite_installtime.apk' with 1 weak references
+06-17 16:23:17.869   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_all_locale_splits.apk' with 1 weak references
+06-17 16:23:17.869   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_config.en.apk' with 1 weak references
+06-17 16:23:17.869   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LEm5G5p-ydahWL_drNzQ9A==/com.google.android.gms-wRLJ_jGHtnxbcyEzZurLxA==/split_config.xxhdpi.apk' with 1 weak references
+06-17 16:23:17.869   546   558 W System  : A resource failed to call close. 
+06-17 16:23:17.869   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /system/priv-app/InputDevices/InputDevices.apk' with 1 weak references
+06-17 16:23:17.869   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/LatinIMEGooglePrebuilt/LatinIMEGooglePrebuilt.apk' with 1 weak references
+06-17 16:23:17.870   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/GoogleTTS/GoogleTTS.apk' with 1 weak references
+06-17 16:23:17.870   546   558 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /system_ext/app/AccessibilityMenu/AccessibilityMenu.apk' with 1 weak references
+06-17 16:23:17.870   546   558 W System  : A resource failed to call release. 
+06-17 16:23:17.984   546  3104 D CoreBackPreview: Window{5d44201 u0 com.coded.capstone/com.coded.capstone.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@f4bcf18, mPriority=0, mIsAnimationCallback=false}
+06-17 16:23:17.990  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.052  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.058  4314  4314 W .coded.capstone: Accessing hidden method Ljava/lang/invoke/MethodHandles$Lookup;-><init>(Ljava/lang/Class;I)V (unsupported, reflection, allowed)
+06-17 16:23:18.105  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.195  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.216  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.257  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.302  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.355  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.364  4314  4388 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+06-17 16:23:18.365  4314  4388 I EGL_emulation: Opening libGLESv2_emulation.so
+06-17 16:23:18.386  4314  4388 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+06-17 16:23:18.394  4314  4388 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+06-17 16:23:18.396  1291  1916 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-17 16:23:18.423   126   126 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+06-17 16:23:18.428  4314  4388 I Gralloc4: mapper 4.x is not supported
+06-17 16:23:18.463   546   565 W ziparchive: Unable to open '/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.dm': No such file or directory
+06-17 16:23:18.464   546   565 I ActivityTaskManager: Displayed com.coded.capstone/.MainActivity for user 0: +1s719ms
+06-17 16:23:18.466  4314  4314 D GeofenceService: GeofenceService onCreate
+06-17 16:23:18.472   546  1756 D CompatChangeReporter: Compat change id reported: 296558535; UID 10207; state: ENABLED
+06-17 16:23:18.474   546  1756 D CompatChangeReporter: Compat change id reported: 317799821; UID 10207; state: ENABLED
+06-17 16:23:18.474   546  1756 D CompatChangeReporter: Compat change id reported: 313677553; UID 10207; state: ENABLED
+06-17 16:23:18.479  4314  4314 D AndroidRuntime: Shutting down VM
+--------- beginning of crash
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: FATAL EXCEPTION: main
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: Process: com.coded.capstone, PID: 4314
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: java.lang.RuntimeException: Unable to create service com.coded.capstone.MapAndGeofencing.GeofenceService: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{ba53548 4314:com.coded.capstone/u0a207} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:4990)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.ActivityThread.-$$Nest$mhandleCreateService(Unknown Source:0)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2444)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:232)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:317)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: Caused by: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{ba53548 4314:com.coded.capstone/u0a207} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3242)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Parcel.createException(Parcel.java:3226)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3209)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3151)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.IActivityManager$Stub$Proxy.setServiceForeground(IActivityManager.java:7193)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.Service.startForeground(Service.java:776)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.coded.capstone.MapAndGeofencing.GeofenceService.onCreate(GeofenceService.kt:32)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:4977)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	... 9 more
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: Caused by: android.os.RemoteException: Remote stack trace:
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.android.server.am.ActiveServices.validateForegroundServiceType(ActiveServices.java:2905)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundInnerLocked(ActiveServices.java:2589)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundLocked(ActiveServices.java:1843)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at com.android.server.am.ActivityManagerService.setServiceForeground(ActivityManagerService.java:14092)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:3594)
+06-17 16:23:18.481  4314  4314 E AndroidRuntime: 
+06-17 16:23:18.499   546  1756 W ActivityTaskManager:   Force finishing activity com.coded.capstone/.MainActivity
+06-17 16:23:18.501   779   856 V WindowManagerShell: Transition requested (#14): android.os.BinderProxy@4cdb7ca TransitionRequestInfo { type = CLOSE, triggerTask = null, pipTask = null, remoteTransition = null, displayChange = null, flags = 16, debugId = 14 }
+06-17 16:23:18.502  4314  4384 I HWUI    : Davey! duration=850ms; Flags=1, FrameTimelineVsyncId=22202, IntendedVsync=1081096325267, Vsync=1081196325263, InputEventId=0, HandleInputStart=1081201992888, AnimationStart=1081201995804, PerformTraversalsStart=1081202070513, DrawStart=1081906158846, FrameDeadline=1081112991933, FrameInterval=1081201784763, FrameStartTime=16666666, SyncQueued=1081916112346, SyncStart=1081916239388, IssueDrawCommandsStart=1081916543096, SwapBuffers=1081927727305, FrameCompleted=1081946460680, DequeueBufferDuration=2375, QueueBufferDuration=187500, GpuCompleted=1081946460680, SwapBuffersCompleted=1081932369596, DisplayPresentTime=72904454231359566, CommandSubmissionCompleted=1081927727305, 
+06-17 16:23:18.504  1043  1043 D VRI[NexusLauncherActivity]: visibilityChanged oldVisibility=false newVisibility=true
+06-17 16:23:18.508   384   384 I BpBinder: onLastStrongRef automatically unlinking death recipients: 
+06-17 16:23:18.512  1043  1043 D NexusLauncherModelDelegate: notifySmartspaceEvent: SmartspaceTargetEvent{mSmartspaceTarget=null, mSmartspaceActionId='null', mEventType=6}
+06-17 16:23:18.518  4314  4314 I Process : Sending signal. PID: 4314 SIG: 9
+06-17 16:23:18.544  1043  1043 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=77, baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10000100 cmp=com.google.android.apps.nexuslauncher/.NexusLauncherActivity }
+06-17 16:23:18.559  1043  1052 E FrameEvents: addRelease: Did not find frame.
+06-17 16:23:18.569   546  1773 I WindowManager: WIN DEATH: Window{5d44201 u0 com.coded.capstone/com.coded.capstone.MainActivity}
+06-17 16:23:18.569   546  1773 W InputManager-JNI: Input channel object '5d44201 com.coded.capstone/com.coded.capstone.MainActivity (client)' was disposed without first being removed with the input manager!
+06-17 16:23:18.571   546  2557 I ActivityManager: Process com.coded.capstone (pid 4314) has died: fg  TOP 
+06-17 16:23:18.572   546  2557 W ActivityManager: Scheduling restart of crashed service com.coded.capstone/.MapAndGeofencing.GeofenceService in 1688ms for start-requested
+06-17 16:23:18.573   389   389 I adbd    : Remote process closed the socket (on MSG_PEEK)
+06-17 16:23:18.585   546   566 D DisplayManagerService: Drop pending events for gone uid 10207
+06-17 16:23:18.589   320   320 I Zygote  : Process 4314 exited due to signal 9 (Killed)
+06-17 16:23:18.593   779   890 V WindowManagerShell: onTransitionReady(transaction=2345052144427)
+06-17 16:23:18.594   779   856 V WindowManagerShell: onTransitionReady (#14) android.os.BinderProxy@4cdb7ca: {id=14 t=CLOSE f=0x10 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@26a3217} m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=1)/@0x9d2fd3b sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{WCT{android.window.IWindowContainerToken$Stub$Proxy@7448604} m=CLOSE f=NONE leash=Surface(name=Task=81)/@0xe9ffc58 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{988872b token=android.os.Binder@b7c737a})/@0xd1171b1 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+06-17 16:23:18.600   779   856 V WindowManagerShell: Playing animation for (#14) android.os.BinderProxy@4cdb7ca@0
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.transition.DefaultMixedHandler@79313ec
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.keyguard.KeyguardTransitionHandler@e3993b5
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.pip.PipTransition@c833a4a
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.activityembedding.ActivityEmbeddingController@ede8dbb
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.recents.RecentsTransitionHandler@d9382d8
+06-17 16:23:18.600   779   856 V ShellRecents: RecentsTransitionHandler.startAnimation: no controller found
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.splitscreen.StageCoordinator@4bcb631
+06-17 16:23:18.600   779   856 V WindowManagerShell:  try handler com.android.wm.shell.transition.RemoteTransitionHandler@ec2b116
+06-17 16:23:18.600   779   856 V WindowManagerShell: Transition doesn't have explicit remote, search filters for match for {id=14 t=CLOSE f=0x10 trk=0 r=[0@Point(0, 0)] c=[{WCT{android.window.IWindowContainerToken$Stub$Proxy@26a3217} m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=1)/@0x9d2fd3b sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{WCT{android.window.IWindowContainerToken$Stub$Proxy@7448604} m=CLOSE f=NONE leash=Surface(name=Task=81)/@0xe9ffc58 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},{null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{988872b token=android.os.Binder@b7c737a})/@0xd1171b1 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+06-17 16:23:18.601   779   856 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x0 checks=[{atype=undefined independent=true modes=[OPEN,TO_FRONT] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null},{atype=undefined independent=true modes=[CLOSE,TO_BACK] flags=IN_TASK_WITH_EMBEDDED_ACTIVITY mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@7de4a97, appThread = android.app.IApplicationThread$Stub$Proxy@c29f484, debugName = OverlaySwipeBack }}
+06-17 16:23:18.602   779   856 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x0 checks=[{atype=dream independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null},{atype=home independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@875846d, appThread = android.app.IApplicationThread$Stub$Proxy@1b0c8a2, debugName = LauncherToDream }}
+06-17 16:23:18.602   779   856 V WindowManagerShell:  Checking filter Pair{{types=[] flags=0x0] notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=TOP topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@4b2f933, appThread = android.app.IApplicationThread$Stub$Proxy@893d4f0, debugName = QuickstepLaunchHome }}
+06-17 16:23:18.602   779   856 D RemoteTransitionHandler: Found filterPair{{types=[] flags=0x0] notFlags=0x100 checks=[{atype=home independent=true modes=[OPEN,TO_FRONT] flags=NONE mustBeTask=false order=TOP topActivity=ComponentInfo{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity} launchCookie=null},{atype=standard independent=true modes=[CLOSE,TO_BACK] flags=NONE mustBeTask=false order=ANY topActivity=null launchCookie=null}]} RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@4b2f933, appThread = android.app.IApplicationThread$Stub$Proxy@893d4f0, debugName = QuickstepLaunchHome }}
+06-17 16:23:18.603   779   856 V WindowManagerShell:  Delegate animation for (#14) to RemoteTransition { remoteTransition = android.window.IRemoteTransition$Stub$Proxy@4b2f933, appThread = android.app.IApplicationThread$Stub$Proxy@893d4f0, debugName = QuickstepLaunchHome }
+06-17 16:23:18.607   546   568 W ActivityManager: setHasOverlayUi called on unknown pid: 4314
+06-17 16:23:18.607   779   856 V WindowManagerShell:  animated by com.android.wm.shell.transition.RemoteTransitionHandler@ec2b116
+06-17 16:23:18.615   546   565 V WindowManager: Sent Transition (#14) createdAt=06-17 16:23:18.499 via request=TransitionRequestInfo { type = CLOSE, triggerTask = null, pipTask = null, remoteTransition = null, displayChange = null, flags = 16, debugId = 14 }
+06-17 16:23:18.617   546   565 V WindowManager:     startWCT=WindowContainerTransaction { changes = {} hops = [] errorCallbackToken=null taskFragmentOrganizer=null }
+06-17 16:23:18.617   546   565 V WindowManager:     info={id=14 t=CLOSE f=0x10 trk=0 r=[0@Point(0, 0)] c=[
+06-17 16:23:18.617   546   565 V WindowManager:         {WCT{RemoteToken{85f03f4 Task{3425b92 #1 type=home}}} m=TO_FRONT f=SHOW_WALLPAPER|MOVE_TO_TOP leash=Surface(name=Task=1)/@0x95afd77 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
+06-17 16:23:18.617   546   565 V WindowManager:         {WCT{RemoteToken{c3367b1 Task{d2a3e0d #81 type=standard A=10207:com.coded.capstone}}} m=CLOSE f=NONE leash=Surface(name=Task=81)/@0x9ca833b sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0 taskParent=-1},
+06-17 16:23:18.617   546   565 V WindowManager:         {null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{988872b token=android.os.Binder@b7c737a})/@0x95d4be6 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}
+06-17 16:23:18.617   546   565 V WindowManager:     ]}
+06-17 16:23:18.620  1043  1043 D StateManager: createAtomicAnimation - fromState: Background, toState: Normal, partial trace:
+06-17 16:23:18.620  1043  1043 D StateManager: 	at com.android.quickstep.util.StaggeredWorkspaceAnim.prepareToAnimate(go/retraceme 2855a437b73635ce9cad76b9289087e631bbb67fc90008a0da13d343a00e5041:22)
+06-17 16:23:18.620  1043  1043 D StateManager: 	at com.android.quickstep.util.StaggeredWorkspaceAnim.<init>(go/retraceme 2855a437b73635ce9cad76b9289087e631bbb67fc90008a0da13d343a00e5041:4)
+06-17 16:23:18.620  1043  1043 D StateManager: 	at com.android.quickstep.util.StaggeredWorkspaceAnim.<init>(go/retraceme 2855a437b73635ce9cad76b9289087e631bbb67fc90008a0da13d343a00e5041:1)
+06-17 16:23:18.622  1043  1043 D StatsLog: LAUNCHER_ONRESUME
+06-17 16:23:18.626   546   653 I ImeTracker: com.google.android.apps.nexuslauncher:6142b11e: onRequestHide at ORIGIN_SERVER reason HIDE_SAME_WINDOW_FOCUSED_WITHOUT_EDITOR fromUser false
+06-17 16:23:18.626   546   653 I ImeTracker: com.google.android.apps.nexuslauncher:6142b11e: onCancelled at PHASE_SERVER_SHOULD_HIDE
+06-17 16:23:18.633   779   856 D WindowManagerShell: setLauncherKeepClearAreaHeight: visible=true, height=527
+06-17 16:23:18.634   779   904 D EGL_emulation: app_time_stats: avg=160.11ms min=1.31ms max=1406.06ms count=9
+06-17 16:23:18.640  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3157 
+06-17 16:23:18.641   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=2
+06-17 16:23:18.654   546  1341 W AppSearchIcing: icing-search-engine.cc:321: Error: 5, Message: Document (com.google.android.googlequicksearchbox$OneSearchZeroStateGoogleSuggestions/default, zp) not found.
+06-17 16:23:18.655  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2248 repeatCheckTimes = 0, locked = false
+06-17 16:23:18.655  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=com.google.android.apps.nexuslauncher, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+06-17 16:23:18.656  1302  1302 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2248 repeatCheckTimes = 1, locked = false
+06-17 16:23:18.657  1302  1302 I AndroidIME: InputBundleManager.loadActiveInputBundleId():450 loadActiveInputBundleId: und-Latn-x-password, password_floating_hard_qwerty
+06-17 16:23:18.660   546  1756 W PackageConfigPersister: App-specific configuration not found for packageName: com.google.android.apps.nexuslauncher and userId: 0
+06-17 16:23:18.665  1043  1112 D QuickstepModelDelegate: notifyAppTargetEvent action=1 launchLocation=workspace/0/[-1,-1]/[1,1]
+06-17 16:23:18.667  1291  1540 I AiAiEcho: Predicting[0]:  [CONTEXT sampling_count=5 ]
+06-17 16:23:18.668  1291  1540 I AiAiEcho: EchoTargets: 
+06-17 16:23:18.668  1291  1540 I AiAiEcho: Filtered by AiAi flag check: 
+06-17 16:23:18.668  1291  1540 I AiAiEcho: [CONTEXT ratelimit_period="10 SECONDS" ]
+06-17 16:23:18.668  1291  1540 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata:  [CONTEXT ratelimit_period="10 SECONDS" ]
+06-17 16:23:18.669  1291  1540 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-17 16:23:18.670  1291  1540 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0 (types=[])
+06-17 16:23:18.670   546   578 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_10207/pid_4314
+06-17 16:23:18.670   546  2557 W UserManagerService: Requested status bar icon for non-badged user 0
+06-17 16:23:18.672  1043  1427 D EGL_emulation: app_time_stats: avg=49.83ms min=0.57ms max=1183.49ms count=26
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: AppSearch 0-state cache not available, fallback to AGA
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: java.util.concurrent.CompletionException: java.util.NoSuchElementException: No value present
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:308)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:323)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:684)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:486)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at java.util.concurrent.CompletableFuture.completeExceptionally(CompletableFuture.java:2138)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at com.google.android.apps.nexuslauncher.allapps.E0.onResult(go/retraceme 2855a437b73635ce9cad76b9289087e631bbb67fc90008a0da13d343a00e5041:67)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.app.appsearch.SearchSessionUtil$1.lambda$onResult$0(go/retraceme 64eee9e9f568ff45978879ad2ff83146f2618ee8a88278736fbdf5fae931976e:144)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.app.appsearch.SearchSessionUtil$1.$r8$lambda$CEk3q8sDAQVhU3rQwVueB8FAj_M(go/retraceme 64eee9e9f568ff45978879ad2ff83146f2618ee8a88278736fbdf5fae931976e:1)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.app.appsearch.SearchSessionUtil$1$$ExternalSyntheticLambda0.run(go/retraceme 64eee9e9f568ff45978879ad2ff83146f2618ee8a88278736fbdf5fae931976e:22)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.os.Handler.handleCallback(Handler.java:959)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.os.Looper.loopOnce(Looper.java:232)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.os.Looper.loop(Looper.java:317)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: Caused by: java.util.NoSuchElementException: No value present
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at java.util.Optional.get(Optional.java:143)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	at com.google.android.apps.nexuslauncher.allapps.E0.onResult(go/retraceme 2855a437b73635ce9cad76b9289087e631bbb67fc90008a0da13d343a00e5041:28)
+06-17 16:23:18.674  1043  1465 D OneSearchSuggestProvider: 	... 8 more
+06-17 16:23:18.674   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=3
+06-17 16:23:18.691   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=4
+06-17 16:23:18.720  1043  1465 D OneSearchSuggestProvider: Established or reuse existing binder channel authority=com.google.android.googlequicksearchbox
+06-17 16:23:18.741   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=5
+06-17 16:23:18.758   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=6
+06-17 16:23:18.774   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=7
+06-17 16:23:18.785  1043  1043 D SearchTargetUtil: queryLength=0 size=15
+06-17 16:23:18.785  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=hersheypark heavy traffic monday,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=hersheypark heavy traffic monday searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 1890466a-3bab-40b3-959c-580ca7c43d6d
+06-17 16:23:18.785  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=trey hendrickson contract talks bengals,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=trey hendrickson contract talks bengals searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 4ddd9b22-71bf-42ae-93cf-5229b0edd804
+06-17 16:23:18.785  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=credit one bank class action settlement,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=credit one bank class action settlement searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 59cc655c-4d41-44ca-a923-eca1202313b7
+06-17 16:23:18.785  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=coastal carolina baseball game,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=coastal carolina baseball game searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: c7bf6dd0-3511-46b5-985e-5d72e1378d98
+06-17 16:23:18.785  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=capital one class action settlement,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=capital one class action settlement searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: c0d91f17-4526-4b9c-80f7-b388b3088fde
+06-17 16:23:18.786  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=lima peru earthquake today,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=lima peru earthquake today searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 860602a2-9580-4e1d-8003-2cbc9fd921d2
+06-17 16:23:18.786  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=mortgage rates today,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=mortgage rates today searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: d4f38ebf-3ded-43a1-9079-4f50a987851c
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=extra_tall_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{bitmap_url=data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAHwAfAMBIgACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAAEBQIDBgEABwj/xAA4EAACAQMDAgQFAgQEBwAAAAABAgMABBEFEiExQRNRYXEGIjKBkbHBFEJSoSMz0fEHFWJyguHw/8QAGgEAAwEBAQEAAAAAAAAAAAAAAgMEAQUABv/EACIRAAICAgMBAAIDAAAAAAAAAAABAhEDIQQSMUEigRMUUf/aAAwDAQACEQMRAD8A+eo2wY8jn1IqLHc7EqQuc4FWIArkHP04+9cO0psT6icnPQCuefRkOVUBhgZ4FTDZfaD1wPm7VKQKFAxnb1PepSAMoIzux1rLPF/iptfxGLcbfqzjA4+1VSzW8UYNw4UjoxI4P70M06W9vI7lcD+Ujk+1I3WS7mLuGYk9ucDyo4Yu3pPyOR/FpbY/k1PT4f8AJn8SQYOFQ7Sc89eKhea7byg/wsdyrZUqzEDae/APNLI9MzgkY926VP8A5c4bKbR+aYseNEj5Od+aOx6oIrlJFjIKsDjPcVqLT4p0xdNSJGmguPEG+N0JQ56sCOlZZtNcncwU+zYNDyWRQcxuPbmvSxYp+mLlZ47N/Jq1ldWTQw3sCrz9Lbmzgc9c+lL7DdDLGjBXMiHduXO3DEjHlWFeA/ynOO1FaZqUthdKzBpIhw0ZPb08jQ/1lGLUWNjz7ku6o+kypD4uzLKowDlM+XRgcCvJLCNjqsu3gMykYXnz7H3oK0uxdC3liiZIJFUb9+f9KMjPEotp8MHOQY/q5wQfsOlQNNaZ1E09ovub1JZhaLFI4K78s/O7PAJH2865KrGV8x72B5IJP98ivTeFdjnKyRrt8NgAfcH/AHrpSaYK0MMjLtH1DmhNMcUVuO+Oc9a7jEsitlRtIUjv6VLJPkeABg12ZywBI9z5GrBRAA4O4jeW6VArtR3LKAnfd1q0rw+QQ2R1obVD/gRoowZepH9NbFW6AyT6RchcM3k29h/hj6V/emMMIAwBVdpDyBTi1hGBxTJyrRzopydv0FS3J7UTHa5HTFHiIEYUDNFwQAAefrSu1jegjktD2oeSBl4PStUYFI5x60vurdORgZ9DRJguJlbi2UnkUvntSFJHNaO4hHNASxDYabGbQiUEwj4Uv9iG0cKSmWjBH1A9Qfv+tapirkFdsilfmYH6G8iOPSsBEWs72G4U4CON3t3/ALVs5ZAs++NAhcAYXnnz48x5eVTciC7Wvp0eHNuHV/BjFJFEha6UvEBhAuMKTg8HqB1q2Ge325ljEZbkKJxjH3agUkK7Nv8Al5yQ8YdfXr09q4t00Y2owx5EMcenGRU3UsM3GSSMHPGeld3ZBGVHvXoxGC5Y8EY5HeuNhmyFAJ7CqxRMvuyytg4wfSg7oA3HBBwoHFFsAcBVwcYoRkZ5nESNIeOEBY9PSjx+k/L1Aviwp4phamQ4IUkUHZWeoH51sXbJ/nGAPzT3T5L2Jl/idPYp38IZx+K2UG/CKM0vS21jJOWQ0Y8exMgU208afOMhWQ989qPewtOCXAFIp2VJqjHzyyjIRCTS6b+JGcxtitdqZhtwVtYEkcjqf9KzdxBqt05McZjBPBwMU6EWIyTSYomlySGGD5GqZAGU4o3UtNvoiFuVOeo6n9RStXKnawIo+ovtYPcxgqRitPplwRZQSrsy0Wxhtzk45znjnpWcnbOfanWkzyfwEEcaKpU43GPIPJ5PmaXnVxRVxHU2hhiOVgFASOTqEPU+RBrmyAk74/FccMXByD5cEVTOfD8RkdNpHKmMc48+lehnuIk2rK4zz9TL/YVLR0RIH+Y8HBOeelSTd0wQepFc2HAJ5VjwM1IFxKcFsjqBVIsut5BvRmiEgVwzL/UAelMdd1GPUIVaCWIRu7DwM7ZIiCcbhn5l2ng9Mj/pxSuJGlnVYuGc8D1NVx2ey7aJ2yd7ITnOSD/vRQ1ZHy6dKjiXUXji3WA3E3ZSC5+wq63voJjGttbBLhiVUwoVYYGTypJ4H7+Ro5dHWEb0wwPJz1q+109jIGhtY43BJEoO08+tapQJnDIE6bqdzd28zSu801qokD4y7xk4IJHXBIwT58mmMWoXF0tlGLaQSTShJDuXbHkgAjBy3XngYpHFYwi/xLtk2jLASEbj0x598/8AjTm5RWtNiHDgcENjntzQScW0NhGSTE+oanNJKywyyRQdlibaxHmzdcn0wPShpL2a1iimka7WOXIilEjYcjk4JPOPOuR2wknwiMAQBhyAT60ebB/DWOeGOZUztWTovrg0xNLTFOMntCkfEWoNGirqF0YnJKxzyMwcD/uz7eXpTz4kfTF+Hoke1t01dxHJD4S7ZGQ9WkCoAoI6ZPPbIwaXS6NHKvzbYkUcBRnFCrZLFaRyEszSKC2/6hnp/bA+1EpxAcJL0StIeS6846LzTnR8G0UBXPGWJBIAPfgUokXbcBT/AFYp/ZadLLCrwOoOwtt3EHAx+vNDlVxHcefSdl4+VSSgIGDnPTH9vzViXDFQUneMHnapA/eh2lJbIA8TuXGRj84qt8sxLMjHzHFSUdYXnaYi3Gc9RXBuD8N0/tXQB4ZPh554IPQ14ctx1/SngF9rkXVv4ecrIMHOcHdxTCxtkXVpUBB8KdthYZBIbv5ila5j+deccnA5x51bZXe2ZpAeGY815J06JOTXZWaxGmibEti0i54e3YEY9mIP60Pd3bk+HDZyh3OA8+FQfg5NRtb2SQDb9A/mrt5JHJHskIYZz96X+jE9aZLSdL2ykPIrSOeSSKaX+kywKNxTcRkAMDWetgFkBsx4b9tpJB9xTZrKSaEme4kkdBkJHlAPfByftiiUbM7UvAU6Y6TGS5CxRtliSu7Bx5Dnk4z+eelXpfaa1uvzTxkj6TDI34+XkUsAUuQGdAeoWQnI+9N1ffAqIfpAAA4wK1pfTFfwr/gLq9AaBJYLXq07HazjyVeoz5nHp6K9awHxxkCjU1Oe0kaGUna30nzpHql34spNbFb0BOWhOq775ExktIMVt5baG30VLuCVcwgpweSMlf8A3WHtGzqCOWC85BJ6Uyur4RxeEkmSAB6cGmZF4Lxe2FEJ9O9Fz3bnjz4qrxQhK7VYA8MMjIquJ2KrJuIweTjvVnjZ8m9d1TUddO9gmS6bs4IwOO/FVIzDAPTP4qZcgY64PevYB2hScn6gfOmmE5BgOSxVxjaOmQa9p0AnM0JIVuq47GuMS6hpM4A2+1C285tr/wCXIx61sCXleIf2E7xWM2PlKZzxmhbSO81C4SOC3mmaQZHt+1W6bIguHj3ZV1wCec1dZXV1YTvHZzeFMqlVcKDwfQ//AHFGq8I1b8H0fwvrUAwLHcQeDHMM9M9yPOiodE1WW2LQadcht2xnkugADnGAOtD6VqOtspaf4jaOYnndCqgduAUI8u/2ppFqOp6dabItf06WJGMgXww8jEsWPQDqSfzRKCDvJXwzF/omqWuXlsnG1yuVYHnHI/FKotUe1fEjMORw681s2+L9QRds8cMqAP8AOUKk7vT05Hnj81lnzq1+zMsaRk/4hVAoA64FeqKBkpFt9KLq6j2/Sw3mkd1guSORk0wvrpVeUoANw2Jjso70puJPlOOleihcmBKqtIwYnGOF/q9K7nCHIJB6c1AF/wCXPmcVZG7SE4ZWycbR+tZP0ZjWhjahQoPTI7DmiC6Dhgc+1DxMBGMgjsPU14tj
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=va doctors,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=va doctors searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 3e00ef6c-b6b6-411b-9b32-f8b1e4703fef
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=dominican republic travel advisory,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=dominican republic travel advisory searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 561bd108-40bd-476b-8660-579d7eb5b6cc
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=hilton playa hyatt cancellation compensation,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=hilton playa hyatt cancellation compensation searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 026faf1a-13ba-4f9d-a84b-42fd164bf701
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=liam lawson penalty canadian grand prix,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=liam lawson penalty canadian grand prix searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 32033d0b-0d67-4085-9bf4-e2c25cb648b2
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=taiwan chip export ban huawei smic,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=taiwan chip export ban huawei smic searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 97f14dcc-75f5-4cc9-9379-55eb138e9c42
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=bonnaroo music festival canceled,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=bonnaroo music festival canceled searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 2cbe2826-ce99-4780-b8af-bbcdeede00e4
+06-17 16:23:18.787  1043  1043 D SearchTargetUtil: layoutType=short_icon_row resultType=131072 packageName=com.google.android.googlequicksearchbox extras=Bundle{suggestion_type=33,suggest_truncate_start=false,is_answer=false,is_entity=false,is_personal=false,suggest_raw_text=james beard media awards 2025,input_query=android.app.search.Query@c833a4a,group_id=web1082095,response_id=e9158a37-a051-464b-baf4-2e2c66c60c3a,support_query_builder=false,} searchAction=james beard media awards 2025 searchActionExtras=Bundle{learn_more_url=https://support.google.com/websearch/answer/106230?hl=106230,suggestion_action_text=Report this,should_start_for_result=true,allow_pinning=true,skip_logging_in_target_handler=true,suggestion_action_rpc=2,}ParentID: null targetID: 9370bccb-d44f-484b-98b5-fc3c0435d5a3
+06-17 16:23:18.791   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=8
+06-17 16:23:18.808   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=9
+06-17 16:23:18.841   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=10
+06-17 16:23:18.864   779   882 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=android.view.ViewRootImpl$$ExternalSyntheticLambda11@ec5ef09
+06-17 16:23:18.864   546  3104 D CoreBackPreview: Window{7f0d082 u0 Splash Screen com.coded.capstone EXITING}: Setting back callback null
+06-17 16:23:18.865   546  3104 W InputManager-JNI: Input channel object '7f0d082 Splash Screen com.coded.capstone (client)' was disposed without first being removed with the input manager!
+06-17 16:23:18.874   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=11
+06-17 16:23:18.891   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=12
+06-17 16:23:18.908   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=13
+06-17 16:23:18.924   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=14
+06-17 16:23:18.931   384   520 W VsyncModulator: setTransactionSchedule: Unexpected EarlyEnd
+06-17 16:23:18.941   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=15
+06-17 16:23:18.958   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=16
+06-17 16:23:18.975   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=17
+06-17 16:23:18.991   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=18
+06-17 16:23:18.999   546   568 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{703340a u0 com.coded.capstone/.MainActivity t81 f} isExiting}
+06-17 16:23:19.008   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=19
+06-17 16:23:19.024   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=20
+06-17 16:23:19.041   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=21
+06-17 16:23:19.058   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=22
+06-17 16:23:19.074   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=23
+06-17 16:23:19.091   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=24
+06-17 16:23:19.108   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=25
+06-17 16:23:19.124   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=26
+06-17 16:23:19.141   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=27
+06-17 16:23:19.158   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=28
+06-17 16:23:19.175   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=29
+06-17 16:23:19.191   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=30
+06-17 16:23:19.208   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=31
+06-17 16:23:19.224   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=32
+06-17 16:23:19.227  1043  1043 D SsBaseTemplateCard: No text view can be set up
+06-17 16:23:19.227  1043  1043 D SsBaseTemplateCard: Passed-in item info is null
+06-17 16:23:19.227  1043  1043 D SsBaseTemplateCard: Passed-in item info is null
+06-17 16:23:19.227  1043  1043 D SsBaseTemplateCard: Passed-in item info is null
+06-17 16:23:19.227  1043  1043 I SsBaseTemplateCard: Secondary card pane is null
+06-17 16:23:19.229   779   856 V WindowManagerShell: Transition animation finished (aborted=false), notifying core (#14) android.os.BinderProxy@4cdb7ca@0
+06-17 16:23:19.229   546   565 V WindowManager: Finish Transition (#14): created at 06-17 16:23:18.499 collect-started=0.027ms request-sent=0.062ms started=7.83ms ready=88.772ms sent=93.773ms finished=730.681ms
+06-17 16:23:19.231   546  2557 E IPCThreadState: Binder transaction failure. id: 302211, BR_*: 29189, error: -22 (Invalid argument)
+06-17 16:23:19.231   546  2557 W ActivityManager: pid 546 system sent binder code 7 with flags 1 to frozen apps and got error -32
+06-17 16:23:19.232   546  2557 W WindowManager: Exception thrown during dispatchAppVisibility Window{5d44201 u0 com.coded.capstone/com.coded.capstone.MainActivity EXITING}
+06-17 16:23:19.232   546  2557 W WindowManager: android.os.DeadObjectException
+06-17 16:23:19.232   546  2557 W WindowManager: 	at android.os.BinderProxy.transactNative(Native Method)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at android.os.BinderProxy.transact(BinderProxy.java:586)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at android.view.IWindow$Stub$Proxy.dispatchAppVisibility(IWindow.java:553)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.WindowState.sendAppVisibilityToClients(WindowState.java:3253)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.WindowContainer.sendAppVisibilityToClients(WindowContainer.java:1289)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.WindowToken.setClientVisible(WindowToken.java:403)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.ActivityRecord.setClientVisible(ActivityRecord.java:7166)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.ActivityRecord.postApplyAnimation(ActivityRecord.java:5881)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:5823)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.Transition.finishTransition(Transition.java:1286)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.TransitionController.finishTransition(TransitionController.java:937)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.WindowOrganizerController.finishTransition(WindowOrganizerController.java:494)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at android.window.IWindowOrganizerController$Stub.onTransact(IWindowOrganizerController.java:289)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at com.android.server.wm.WindowOrganizerController.onTransact(WindowOrganizerController.java:204)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at android.os.Binder.execTransactInternal(Binder.java:1500)
+06-17 16:23:19.232   546  2557 W WindowManager: 	at android.os.Binder.execTransact(Binder.java:1444)
+06-17 16:23:19.234   546  2557 W Process : Unable to open /proc/4314/status
+06-17 16:23:19.240  1043  1043 I TopTaskTracker: onTaskRemoved: taskId=81
+06-17 16:23:19.241  1043  1043 I TopTaskTracker: onTaskRemoved: taskId=81
+06-17 16:23:19.241   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=33
+06-17 16:23:19.244   779   856 V WindowManagerShell: Track 0 became idle
+06-17 16:23:19.244   779   856 V WindowManagerShell: All active transition animations finished
+06-17 16:23:19.245   546  2557 W UserManagerService: Requested status bar icon for non-badged user 0
+06-17 16:23:19.246   546  2557 W UserManagerService: Requested status bar icon for non-badged user 0
+06-17 16:23:19.258   384   384 E SurfaceFlinger: Out of order buffers detected for RequestedLayerState{com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity#87 parentId=83} producedId=5 frameNumber=334 -> producedId=5 frameNumber=34
+06-17 16:23:19.274   384   384 E BpTransactionCompletedListener: Failed to transact (-32)
+06-17 16:23:20.265   546   576 V GrammaticalInflectionUtils: AttributionSource: android.content.AttributionSource@d0c17649 does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+06-17 16:23:20.287   320   320 D Zygote  : Forked child process 4398
+06-17 16:23:20.289   546   577 I ActivityManager: Start proc 4398:com.coded.capstone/u0a207 for service {com.coded.capstone/com.coded.capstone.MapAndGeofencing.GeofenceService}
+06-17 16:23:20.302  4398  4398 I .coded.capstone: Late-enabling -Xcheck:jni
+06-17 16:23:20.322  4398  4398 I .coded.capstone: Using CollectorTypeCMC GC.
+06-17 16:23:20.327  4398  4398 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-17 16:23:20.328   389   405 I adbd    : jdwp connection from 4398
+06-17 16:23:20.339   546  1395 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+06-17 16:23:20.362  4398  4398 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/org.apache.http.legacy.jar
+06-17 16:23:20.362  4398  4398 W ziparchive: Unable to open '/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.dm': No such file or directory
+06-17 16:23:20.363  4398  4398 W ziparchive: Unable to open '/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.dm': No such file or directory
+06-17 16:23:20.502  4398  4398 D nativeloader: Configuring clns-7 for other apk /data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/lib/arm64:/data/app/~~Gwa6LKAgUD0wiIaVqDEU3A==/com.coded.capstone-DpNVqzoMhIiPDvyDnv0K7A==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.coded.capstone
+06-17 16:23:20.503  4398  4398 D CompatChangeReporter: Compat change id reported: 202956589; UID 10207; state: ENABLED
+06-17 16:23:20.508  4398  4398 V GraphicsEnvironment: Currently set values for:
+06-17 16:23:20.508  4398  4398 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+06-17 16:23:20.508  4398  4398 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+06-17 16:23:20.508  4398  4398 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+06-17 16:23:20.509  4398  4398 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+06-17 16:23:20.518  4398  4398 D CompatChangeReporter: Compat change id reported: 279646685; UID 10207; state: ENABLED
+06-17 16:23:20.530  4398  4398 D GeofenceService: GeofenceService onCreate
+06-17 16:23:20.540  4398  4398 D AndroidRuntime: Shutting down VM
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: FATAL EXCEPTION: main
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: Process: com.coded.capstone, PID: 4398
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: java.lang.RuntimeException: Unable to create service com.coded.capstone.MapAndGeofencing.GeofenceService: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{8b750cb 4398:com.coded.capstone/u0a207} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:4990)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.ActivityThread.-$$Nest$mhandleCreateService(Unknown Source:0)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2444)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:232)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:317)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: Caused by: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{8b750cb 4398:com.coded.capstone/u0a207} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3242)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Parcel.createException(Parcel.java:3226)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3209)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3151)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.IActivityManager$Stub$Proxy.setServiceForeground(IActivityManager.java:7193)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.Service.startForeground(Service.java:776)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.coded.capstone.MapAndGeofencing.GeofenceService.onCreate(GeofenceService.kt:32)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:4977)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	... 9 more
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: Caused by: android.os.RemoteException: Remote stack trace:
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.android.server.am.ActiveServices.validateForegroundServiceType(ActiveServices.java:2905)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundInnerLocked(ActiveServices.java:2589)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundLocked(ActiveServices.java:1843)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at com.android.server.am.ActivityManagerService.setServiceForeground(ActivityManagerService.java:14092)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:3594)
+06-17 16:23:20.541  4398  4398 E AndroidRuntime: 
+06-17 16:23:20.543  4398  4398 I Process : Sending signal. PID: 4398 SIG: 9
+06-17 16:23:20.550   546  3104 I ActivityManager: Process com.coded.capstone (pid 4398) has died: fg  SVC 
+06-17 16:23:20.550   546  3104 W ActivityManager: Scheduling restart of crashed service com.coded.capstone/.MapAndGeofencing.GeofenceService in 1800000ms for start-requested
+06-17 16:23:20.551   546   566 D DisplayManagerService: Drop pending events for gone uid 10207
+06-17 16:23:20.552   389   389 I adbd    : Remote process closed the socket (on MSG_PEEK)
+06-17 16:23:20.553   320   320 I Zygote  : Process 4398 exited due to signal 9 (Killed)
+06-17 16:23:20.556   546   578 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_10207/pid_4398
+06-17 16:23:22.126  2002  2009 W android.vending: Suspending all threads took: 8.574ms
+06-17 16:23:26.792   546   637 D ActivityManager: freezing 2002 com.android.vending
+06-17 16:23:26.796   546   637 D ActivityManager: freezing 2344 com.android.vending:background
+06-17 16:23:26.960   546   687 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+06-17 16:23:26.962   546   687 D InetDiagMessage: Destroyed 2 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+06-17 16:23:26.962   546   687 D InetDiagMessage: Destroyed live tcp sockets for uids={10141} in 2ms

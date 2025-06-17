@@ -32,6 +32,22 @@ class LocationManager(private val context: Context) {
             ) == PackageManager.PERMISSION_GRANTED
         }
 
+        fun hasBackgroundLocationPermission(context: Context): Boolean {
+            return ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+
+        fun hasForegroundServiceLocationPermission(context: Context): Boolean {
+            return if (Build.VERSION.SDK_INT >= 34) {
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.FOREGROUND_SERVICE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            } else true
+        }
+
         fun hasNotificationPermission(context: Context): Boolean {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ContextCompat.checkSelfPermission(
@@ -78,13 +94,33 @@ fun LocationPermissionHandler(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var hasLocationPermission by remember { mutableStateOf(LocationManager.hasLocationPermission(context)) }
+    var hasBackgroundLocationPermission by remember { mutableStateOf(LocationManager.hasBackgroundLocationPermission(context)) }
+    var hasForegroundServiceLocationPermission by remember { mutableStateOf(LocationManager.hasForegroundServiceLocationPermission(context)) }
     var hasNotificationPermission by remember { mutableStateOf(LocationManager.hasNotificationPermission(context)) }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasLocationPermission = isGranted
-        if (isGranted && hasNotificationPermission) {
+        if (isGranted && hasBackgroundLocationPermission && hasForegroundServiceLocationPermission && hasNotificationPermission) {
+            onPermissionGranted()
+        }
+    }
+
+    val backgroundLocationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasBackgroundLocationPermission = isGranted
+        if (isGranted && hasLocationPermission && hasForegroundServiceLocationPermission && hasNotificationPermission) {
+            onPermissionGranted()
+        }
+    }
+
+    val foregroundServiceLocationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasForegroundServiceLocationPermission = isGranted
+        if (isGranted && hasLocationPermission && hasBackgroundLocationPermission && hasNotificationPermission) {
             onPermissionGranted()
         }
     }
@@ -93,7 +129,7 @@ fun LocationPermissionHandler(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasNotificationPermission = isGranted
-        if (isGranted && hasLocationPermission) {
+        if (isGranted && hasLocationPermission && hasBackgroundLocationPermission && hasForegroundServiceLocationPermission) {
             onPermissionGranted()
         }
     }
@@ -103,10 +139,16 @@ fun LocationPermissionHandler(
         if (!hasLocationPermission) {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+        if (!hasBackgroundLocationPermission) {
+            backgroundLocationPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+        if (Build.VERSION.SDK_INT >= 34 && !hasForegroundServiceLocationPermission) {
+            foregroundServiceLocationPermissionLauncher.launch(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
             notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-        if (hasLocationPermission && hasNotificationPermission) {
+        if (hasLocationPermission && hasBackgroundLocationPermission && hasForegroundServiceLocationPermission && hasNotificationPermission) {
             onPermissionGranted()
         }
     }
@@ -115,7 +157,7 @@ fun LocationPermissionHandler(
     LaunchedEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
-                if (hasLocationPermission && hasNotificationPermission) {
+                if (hasLocationPermission && hasBackgroundLocationPermission && hasForegroundServiceLocationPermission && hasNotificationPermission) {
                     LocationManager.startGeofenceService(context)
                 }
             }
