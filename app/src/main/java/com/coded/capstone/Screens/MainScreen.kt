@@ -365,10 +365,5 @@ fun CalendarScreen() {
 
 
 
-@Composable
-fun OffersScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Offers", style = MaterialTheme.typography.headlineMedium)
-    }
-}
+
 

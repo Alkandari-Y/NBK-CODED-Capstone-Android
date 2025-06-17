@@ -15,8 +15,8 @@ import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen
-import com.coded.capstone.screens.OffersScreen
 import com.coded.capstone.screens.kyc.KycScreen
+import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.viewModels.KycViewModel
 
 
@@ -99,7 +99,7 @@ fun AppHost(
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
-        composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { OffersScreen() }
+        composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
     }
 }
 
