@@ -20,7 +20,7 @@ fun LoadingDashboardScreen(
 //        viewModel.fetchCategories()
 //        viewModel.fetchAccounts()
 
-        navController.navigate(NavRoutes.NAV_ROUTE_DASHBOARD) {
+        navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
             popUpTo(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) { inclusive = true }
         }
     }
