@@ -10,9 +10,34 @@ object RetrofitInstance {
     private const val AUTH_SERVICE_PORT = 8000
     private const val BANK_SERVICE_PORT = 8001
     private const val RECOMMENDATION_SERVER_PORT=8002
+//
+//    // Device URL for testing on physical device
+//    private const val DEVICE_BASE_URL = "http://192.168.123.54:"
+//
+//    private fun createOkHttpClient(context: Context): OkHttpClient {
+//        return OkHttpClient.Builder()
+//            .addInterceptor(TokenInterceptor(context))
+//            .build()
+//    }
+//
+//    fun getAuthServiceProvider(context: Context): AuthServiceProvider {
+//        return Retrofit.Builder()
+//            .baseUrl(getBaseUrl(AUTH_SERVICE_PORT))
+//            .client(createOkHttpClient(context))
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//            .create(AuthServiceProvider::class.java)
+//    }
+//
+////     Emulator URL (commented out for device testing)
+////     private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
+//
+////    // Device URL for testing on physical device
+////    private fun getBaseUrl(port: Int): String = "http://192.168.123.54:$port/"
+//
+//    // Method to get device URL for physical device testing
+//    private fun getDeviceBaseUrl(port: Int): String = "$DEVICE_BASE_URL$port/"
 
-    // Device URL for testing on physical device
-    private const val DEVICE_BASE_URL = "http://192.168.123.54:"
 
     private fun createOkHttpClient(context: Context): OkHttpClient {
         return OkHttpClient.Builder()
@@ -29,12 +54,6 @@ object RetrofitInstance {
             .create(AuthServiceProvider::class.java)
     }
 
-//     Emulator URL (commented out for device testing)
-//     private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
-    
-//    // Device URL for testing on physical device
-//    private fun getBaseUrl(port: Int): String = "http://192.168.123.54:$port/"
-    
-    // Method to get device URL for physical device testing
-    private fun getDeviceBaseUrl(port: Int): String = "$DEVICE_BASE_URL$port/"
+
+    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
 }

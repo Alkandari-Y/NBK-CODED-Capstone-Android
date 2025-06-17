@@ -363,12 +363,7 @@ fun CalendarScreen() {
     MainScreen()
 }
 
-@Composable
-fun WalletScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Wallet", style = MaterialTheme.typography.headlineMedium)
-    }
-}
+
 
 @Composable
 fun OffersScreen() {

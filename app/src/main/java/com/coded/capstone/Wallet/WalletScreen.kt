@@ -58,12 +58,8 @@ fun WalletScreen(
     }
     
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
-    var totalBalance by remember { mutableStateOf(BigDecimal.ZERO) }
-    
-    // Calculate total balance
-    LaunchedEffect(sampleAccounts) {
-        totalBalance = sampleAccounts.sumOf { it.balance }
-    }
+
+
     
     Scaffold(
         topBar = {
@@ -86,33 +82,7 @@ fun WalletScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Total Balance Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Total Balance",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "${totalBalance} KWD",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
+
             
             // Card Stack
             CardStack(
