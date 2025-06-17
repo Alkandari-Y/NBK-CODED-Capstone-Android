@@ -29,11 +29,11 @@ object RetrofitInstance {
             .create(AuthServiceProvider::class.java)
     }
 
-    // Emulator URL (commented out for device testing)
+//     Emulator URL (commented out for device testing)
 //     private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
     
-    // Device URL for testing on physical device
-    private fun getBaseUrl(port: Int): String = "http://192.168.123.54:$port/"
+//    // Device URL for testing on physical device
+//    private fun getBaseUrl(port: Int): String = "http://192.168.123.54:$port/"
     
     // Method to get device URL for physical device testing
     private fun getDeviceBaseUrl(port: Int): String = "$DEVICE_BASE_URL$port/"
