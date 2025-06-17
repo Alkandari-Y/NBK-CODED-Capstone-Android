@@ -31,11 +31,15 @@ fun CalendarBarShort(
     onYearMonthChange: (Int, Int) -> Unit
 ) {
     val today = LocalDate.now()
+    // Generate the first day of the selected month
     val firstDayOfMonth = LocalDate.of(selectedYear, selectedMonth + 1, 1)
+    // Find the start of the week containing the first day of the month
     val startOfWeek = firstDayOfMonth.with(DayOfWeek.SUNDAY)
+    // Show 6 weeks for the month view
     val weekDates = (0 until 6 * 7).map { startOfWeek.plusDays(it.toLong()) }
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = weekDates.indexOf(selectedDate).coerceAtLeast(0))
 
+    // Scroll to selected date when it changes
     LaunchedEffect(selectedDate) {
         val index = weekDates.indexOf(selectedDate)
         if (index != -1) {
@@ -43,6 +47,7 @@ fun CalendarBarShort(
         }
     }
 
+    // Year and Month selectors
     var expanded by remember { mutableStateOf(false) }
     val years = (selectedYear - 3..selectedYear + 3).toList()
     val months = listOf(
@@ -52,6 +57,7 @@ fun CalendarBarShort(
     val currentMonth = today.monthValue - 1
     val monthsListState = rememberLazyListState()
 
+    // Scroll to selected month when it changes
     LaunchedEffect(selectedMonth) {
         monthsListState.animateScrollToItem(selectedMonth)
     }
@@ -60,9 +66,11 @@ fun CalendarBarShort(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 32.dp, end = 48.dp, start = 16.dp)
-            .height(110.dp)
+            .height(150.dp) // Updated height to match MainScreen
     ) {
+        // Year and Month selectors
         Row(verticalAlignment = Alignment.CenterVertically) {
+            // Year Dropdown
             Box {
                 Text(
                     text = selectedYear.toString(),
@@ -86,6 +94,7 @@ fun CalendarBarShort(
                 }
             }
             Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+            // Month Selector
             LazyRow(state = monthsListState) {
                 items(months) { month ->
                     val index = months.indexOf(month)
@@ -103,6 +112,7 @@ fun CalendarBarShort(
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
+        // Single LazyRow for day titles and dates, scrollable through the month
         LazyRow(state = listState) {
             items(weekDates) { date ->
                 val isSelected = date == selectedDate
@@ -110,7 +120,7 @@ fun CalendarBarShort(
                 Box(
                     modifier = Modifier
                         .width(48.dp)
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = 6.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(
                             when {
@@ -134,6 +144,7 @@ fun CalendarBarShort(
                             color = if (isSelected) Color.White else Color.Gray,
                             fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = date.dayOfMonth.toString(),
                             style = MaterialTheme.typography.labelLarge.copy(
