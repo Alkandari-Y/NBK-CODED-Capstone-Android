@@ -25,7 +25,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.LocalOffer
 import com.coded.capstone.screens.HomeScreen
 import com.coded.capstone.screens.CalendarScreen
-import com.coded.capstone.screens.WalletScreen
+import com.coded.capstone.Wallet.WalletScreen
 import com.coded.capstone.screens.OffersScreen
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
