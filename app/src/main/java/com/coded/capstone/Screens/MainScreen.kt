@@ -377,9 +377,3 @@ fun OffersScreen() {
     }
 }
 
-@Composable
-fun HomeScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Home", style = MaterialTheme.typography.headlineMedium)
-    }
-}

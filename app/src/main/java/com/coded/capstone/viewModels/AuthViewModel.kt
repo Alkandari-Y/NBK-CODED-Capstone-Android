@@ -115,5 +115,10 @@ class AuthViewModel(
         }
     }
 
-
+    fun logout() {
+        TokenManager.clearToken(context)
+        token.value = null
+        decodedToken.value = null
+        Log.d("Logout", "Token cleared")
+    }
 }

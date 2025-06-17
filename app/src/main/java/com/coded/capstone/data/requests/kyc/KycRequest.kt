@@ -11,4 +11,3 @@ data class KYCRequest(
    val mobileNumber: String,
    val civilId: String
 )
-
