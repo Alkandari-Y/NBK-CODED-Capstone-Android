@@ -111,7 +111,18 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
             CategoryOnBoarding(navController = navController)
         }
-        composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) { VendorsOnBoarding() }
+        composable("vendors_onboarding/{selectedCategories}") { backStackEntry ->
+            val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
+            val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
+                selectedCategoriesString.split(",").toSet()
+            } else {
+                emptySet()
+            }
+            VendorsOnBoarding(
+                navController = navController,
+                selectedCategories = selectedCategories
+            )
+        }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
