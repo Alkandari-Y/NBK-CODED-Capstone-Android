@@ -39,6 +39,7 @@ object NavRoutes {
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
     const val NAV_ROUTE_CATEGORY_ONBOARDING = "category_onboarding"
+    const val NAV_ROUTE_CARD_SUGGESTION = "card_suggested_onboarding"
     const val NAV_ROUTE_VENDORS_ONBOARDING = "vendors_onboarding"
     const val NAV_ROUTE_CREATE_ACCOUNT = "accounts/create"
     const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountNum}"
@@ -102,7 +103,7 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
             CategoryOnBoarding(navController = navController)
         }
-        composable("vendors_onboarding/{selectedCategories}") { backStackEntry ->
+        composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) { backStackEntry ->
             val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
             val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
                 selectedCategoriesString.split(",").toSet()
@@ -114,7 +115,7 @@ fun AppHost(
                 selectedCategories = selectedCategories
             )
         }
-        composable("card_suggested_onboarding/{selectedCategories}/{selectedVendors}") { backStackEntry ->
+        composable(NavRoutes.NAV_ROUTE_CARD_SUGGESTION) { backStackEntry ->
             val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
             val selectedVendorsString = backStackEntry.arguments?.getString("selectedVendors") ?: ""
 
@@ -135,6 +136,11 @@ fun AppHost(
                 selectedCategories = selectedCategories,
                 selectedVendors = selectedVendors
             )
+        }
+        composable(NavRoutes.NAV_ROUTE_HOME) {
+            val authViewModel = remember { AuthViewModel(context) }
+
+            MainScaffoldWithTabs(navController = navController,authViewModel)
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }

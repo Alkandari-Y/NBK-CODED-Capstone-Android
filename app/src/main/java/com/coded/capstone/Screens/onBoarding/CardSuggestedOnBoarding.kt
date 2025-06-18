@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.R
+import com.coded.capstone.navigation.NavRoutes
 
 data class NBKCard(
     val id: String,
@@ -189,6 +190,50 @@ fun CardSuggestedOnBoarding(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
+                    // Action Buttons
+                    Button(
+                        onClick = {
+                            userWillApply = true
+                            // Navigate to home with suggested card NAME (not ID)
+                            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                                popUpTo(0)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF212937)
+                        )
+                    ) {
+                        Text(
+                            text = "APPLY NOW",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    TextButton(
+                        onClick = {
+                            userWillApply = false
+                            // Navigate to home without suggested card (skip)
+                            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                                popUpTo(0)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = "continue banking",
+                            color = Color(0xFF6B7280),
+                            fontSize = 14.sp
+                        )
+                    }
+
+
                     // Why This Is Perfect For You Section
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -326,48 +371,7 @@ fun CardSuggestedOnBoarding(
                         }
                     }
 
-                    // Action Buttons
-                    Button(
-                        onClick = {
-                            userWillApply = true
-                            // Navigate to home with suggested card NAME (not ID)
-                            navController.navigate("home/${recommendedCard.name}") {
-                                popUpTo(0)
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF212937)
-                        )
-                    ) {
-                        Text(
-                            text = "APPLY NOW",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    TextButton(
-                        onClick = {
-                            userWillApply = false
-                            // Navigate to home without suggested card (skip)
-                            navController.navigate("home") {
-                                popUpTo(0)
-                            }
-                        }
-                    ) {
-                        Text(
-                            text = "continue banking",
-                            color = Color(0xFF6B7280),
-                            fontSize = 14.sp
-                        )
-                    }
                 }
             }
         }
