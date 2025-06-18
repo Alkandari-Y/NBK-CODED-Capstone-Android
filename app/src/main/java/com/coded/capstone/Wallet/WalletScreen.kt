@@ -27,6 +27,27 @@ import com.coded.capstone.SVG.CreditCardCloseIcon
 import androidx.compose.material.icons.filled.Info
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabPosition
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.ui.res.painterResource
+import com.coded.capstone.R
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.activity.compose.BackHandler
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +91,15 @@ fun WalletScreen(
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
     var showAccountNumber by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
+    var selectedTab by remember { mutableStateOf(0) } // 0 = Details, 1 = Transactions
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val context = LocalContext.current
+    var showStack by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        showStack = false
+        showStack = true
+    }
 
 //    Scaffold(
 //        topBar = {
@@ -92,18 +122,27 @@ fun WalletScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // Card Stack (bigger size)
-            CardStack(
-                accounts = sampleAccounts,
-                selectedCard = selectedCard,
-                onCardSelected = { selectedCard = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .padding(horizontal = 0.dp)
-            )
+            AnimatedVisibility(
+                visible = showStack,
+                enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(400))
+            ) {
+                CardStack(
+                    accounts = sampleAccounts,
+                    selectedCard = selectedCard,
+                    onCardSelected = { selectedCard = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(280.dp)
+                        .padding(horizontal = 0.dp),
+                    showAccountNumber = showAccountNumber
+                )
+            }
             
-            // Show services row above details card when a card is selected
-            if (selectedCard != null) {
+            // Show services row above details card when a card is selected, with animation
+            AnimatedVisibility(
+                visible = selectedCard != null,
+                enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(400))
+            ) {
                 ServicesRow(
                     onTransfer = { /* handle transfer */ },
                     onTransferToOthers = { /* handle transfer to others */ },
@@ -111,65 +150,152 @@ fun WalletScreen(
                 )
             }
             
-            // Selected Card Details
-            selectedCard?.let { card ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, start = 16.dp, end = 16.dp, bottom = 4.dp)
+            // Show bottom sheet when a card is selected
+            if (selectedCard != null) {
+                val card = selectedCard!!
+                var expanded by remember { mutableStateOf(false) }
+
+                BackHandler(enabled = true) {
+                    selectedCard = null
+                }
+
+                ModalBottomSheet(
+                    onDismissRequest = { selectedCard = null },
+                    sheetState = sheetState,
+                    containerColor = Color.Black,
+                    scrimColor = Color.Transparent,
+                    shape = RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(if (expanded) 0.99f else 0.50f)
+                            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
                     ) {
-                        Text(
-                            text = "Account Details",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        DetailRow("Account Name", card.name)
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Text(
-                                text = "Account Number",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            IconButton(onClick = {
-                                showAccountNumber = true
-                                coroutineScope.launch {
-                                    delay(3000)
-                                    showAccountNumber = false
-                                }
-                            }) {
-                                Icon(Icons.Default.Info, contentDescription = "Show Info")
+                            Box(
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .clickable { expanded = !expanded },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = if (expanded) R.drawable.baseline_keyboard_double_arrow_down_24 else R.drawable.baseline_keyboard_double_arrow_up_24),
+                                    contentDescription = if (expanded) "Collapse" else "Expand",
+                                    tint = Color(0xFF8AAEBD),
+                                    modifier = Modifier.size(25.dp)
+                                )
                             }
                         }
-                        Text(
-                            text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                        DetailRow("Balance", "${card.balance} KWD")
-                        DetailRow("Type", card.accountType.name)
-                        DetailRow("Status", if (card.active) "Active" else "Inactive")
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-
+                        TabRow(
+                            selectedTabIndex = selectedTab,
+                            containerColor = Color.Black,
+                            contentColor = Color.White,
+                            indicator = { tabPositions: List<TabPosition> ->
+                                TabRowDefaults.Indicator(
+                                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                                    color = Color(0xFF8AAEBD)
+                                )
+                            }
+                        ) {
+                            Tab(
+                                selected = selectedTab == 0,
+                                onClick = { selectedTab = 0 },
+                                text = { Text("Details", color = if (selectedTab == 0) Color.White else Color.Gray) }
+                            )
+                            Tab(
+                                selected = selectedTab == 1,
+                                onClick = { selectedTab = 1 },
+                                text = { Text("Transactions", color = if (selectedTab == 1) Color.White else Color.Gray) }
+                            )
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        if (selectedTab == 0) {
+                            // Account Details
+                            Text(
+                                text = "Account Details",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            DetailRow("Account Name", card.name, textColor = Color.White)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Account Number",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Show Info",
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clickable {
+                                            showAccountNumber = true
+                                            coroutineScope.launch {
+                                                delay(3000)
+                                                showAccountNumber = false
+                                            }
+                                        }
+                                )
+                                if (showAccountNumber) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_file_copy_24),
+                                        contentDescription = "Copy Account Number",
+                                        tint = Color(0xFF8AAEBD),
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .clickable {
+                                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                                val clip = ClipData.newPlainText("Account Number", card.accountNumber)
+                                                clipboard.setPrimaryClip(clip)
+                                                Toast.makeText(context, "Account number copied!", Toast.LENGTH_SHORT).show()
+                                            }
+                                    )
+                                }
+                            }
+                            Text(
+                                text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White
+                            )
+                            DetailRow("Balance", "${card.balance} KWD", textColor = Color.White)
+                            DetailRow("Type", card.accountType.name, textColor = Color.White)
+                            DetailRow("Status", if (card.active) "Active" else "Inactive", textColor = Color.White)
+                        } else {
+                            // Transactions placeholder
+                            Text(
+                                text = "Transaction History",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "No transactions yet.",
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
                     }
                 }
             }
         }
     }
 
-
 @Composable
-private fun DetailRow(label: String, value: String) {
+private fun DetailRow(label: String, value: String, textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,12 +305,13 @@ private fun DetailRow(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = textColor
         )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            color = textColor
         )
     }
 }

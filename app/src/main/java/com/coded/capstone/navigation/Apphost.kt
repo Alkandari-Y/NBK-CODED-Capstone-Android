@@ -25,9 +25,9 @@ import androidx.compose.runtime.setValue
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.composables.home.BottomNavBar
 import com.coded.capstone.Wallet.WalletScreen
-import com.coded.capstone.screens.kyc.KycScreen
+//import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
-import com.coded.capstone.viewModels.KycViewModel
+//import com.coded.capstone.viewModels.KycViewModel
 
 
 object NavRoutes {
@@ -97,12 +97,12 @@ fun AppHost(
             )
         }
 
-        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
-            val kycViewModel = remember { KycViewModel(context) }
-            KycScreen(
-                navController = navController,
-                viewModel= kycViewModel)
-        }
+//        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
+//            val kycViewModel = remember { KycViewModel(context) }
+//            KycScreen(
+//                navController = navController,
+//                viewModel= kycViewModel)
+//        }
         composable(NavRoutes.NAV_ROUTE_HOME) {
             val authViewModel = remember { AuthViewModel(context) }
             MainScaffoldWithTabs(navController , authViewModel)

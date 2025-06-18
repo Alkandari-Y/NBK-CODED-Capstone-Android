@@ -31,7 +31,7 @@ fun CreditCardCloseIcon(modifier: Modifier = Modifier) {
         paths.forEach { pathString ->
             addPath(
                 pathData = PathParser().parsePathString(pathString).toNodes(),
-                fill = SolidColor(Color(0xFF4E7EBB))
+                fill = SolidColor(Color(0xFF8AAEBD))
             )
         }
     }.build()

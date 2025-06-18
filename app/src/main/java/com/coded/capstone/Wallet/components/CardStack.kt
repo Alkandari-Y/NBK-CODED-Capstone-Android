@@ -33,47 +33,43 @@ fun CardStack(
     accounts: List<AccountResponse>,
     selectedCard: AccountResponse?,
     onCardSelected: (AccountResponse?) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showAccountNumber: Boolean = false
 ) {
     var cardOrder by remember { mutableStateOf(accounts) }
     var swipeDirection by remember { mutableStateOf(0f) }
     var totalDrag by remember { mutableStateOf(0f) }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        (2 downTo 0).forEach { stackIndex ->
-            if (cardOrder.size > stackIndex) {
-                val card = cardOrder[stackIndex]
-                val isTop = stackIndex == 0
+        cardOrder.forEachIndexed { index, card ->
+            val isTopCard = index == 0
 
-                val offsetY by animateFloatAsState(
-                    targetValue = when {
-                        isTop && swipeDirection == -1f -> -300f
-                        isTop && swipeDirection == 1f -> 300f
-                        else -> (stackIndex * 20).toFloat()
-                    }, animationSpec = tween(400)
-                )
-                val scale by animateFloatAsState(
-                    targetValue = if (isTop) 1f else 0.95f - (0.05f * stackIndex),
-                    animationSpec = tween(400)
-                )
+            val offsetY by animateFloatAsState(
+                targetValue = when {
+                    isTopCard && swipeDirection == -1f -> -300f
+                    isTopCard && swipeDirection == 1f -> 300f
+                    else -> (index * 16).toFloat()
+                }, animationSpec = tween(400)
+            )
 
-                val gradient = remember(card.id) {
-                    when (accounts.indexOf(card) % 5) {
-                        0 -> Brush.verticalGradient(listOf(Color(0xFF2E3542), Color.Black))
-                        1 -> Brush.verticalGradient(listOf(Color(0xFF101228), Color.DarkGray))
-                        2 -> Brush.verticalGradient(listOf(Color(0xFF424E5D), Color(0xFF555759)))
-                        3 -> Brush.verticalGradient(listOf(Color(0xFF313F49), Color(0xFF182936)))
-                        else -> Brush.verticalGradient(listOf(Color.DarkGray, Color.Black))
-                    }
+            val gradient = remember(card.id) {
+                when (accounts.indexOf(card) % 5) {
+                    0 -> Brush.verticalGradient(listOf(Color(0xFF182A36), Color.Black))
+                    1 -> Brush.verticalGradient(listOf(Color(0xFF2F3849), Color.DarkGray))
+                    2 -> Brush.verticalGradient(listOf(Color(0xFF273338), Color(0xFF3C6D7C)))
+                    3 -> Brush.verticalGradient(listOf(Color(0xFF1B2E3F), Color(0xFF191623)))
+                    else -> Brush.verticalGradient(listOf(Color.DarkGray, Color.Black))
                 }
+            }
 
-                Box(
-                    modifier = Modifier
-                        .offset { IntOffset(0, offsetY.roundToInt()) }
-                        .graphicsLayer { scaleX = scale; scaleY = scale }
-                        .size(320.dp, 200.dp)
-                        .shadow(16.dp, RoundedCornerShape(16.dp))
-                        .pointerInput(cardOrder) {
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(0, offsetY.roundToInt()) }
+                    .size(360.dp, 220.dp)
+                    .shadow(16.dp, RoundedCornerShape(16.dp))
+                    .zIndex((100 - index).toFloat())
+                    .then(
+                        if (isTopCard) Modifier.pointerInput(cardOrder) {
                             detectVerticalDragGestures(
                                 onDragEnd = {
                                     if (totalDrag < -100f && cardOrder.size > 1) {
@@ -93,14 +89,15 @@ fun CardStack(
                                     }
                                 }
                             )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    PaymentCardView(
-                        card = card,
-                        backgroundGradient = gradient
-                    )
-                }
+                        } else Modifier
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                PaymentCardView(
+                    card = card,
+                    backgroundGradient = gradient,
+                    showAccountNumber = showAccountNumber
+                )
             }
         }
     }
