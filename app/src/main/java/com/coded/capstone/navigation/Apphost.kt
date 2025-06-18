@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.composables.home.BottomNavBar
 
 
@@ -45,7 +46,7 @@ object NavRoutes {
     const val NAV_ROUTE_CALENDER ="calender"
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
-
+    const val NAV_ROUTE_ONBOARDING = "onboarding"
     const val NAV_ROUTE_CREATE_ACCOUNT = "accounts/create"
     const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountNum}"
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
@@ -122,6 +123,7 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_HOME) {
             MainScaffoldWithTabs()
         }
+        composable (NavRoutes.NAV_ROUTE_ONBOARDING){CategoryOnBoarding() }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { OffersScreen() }
