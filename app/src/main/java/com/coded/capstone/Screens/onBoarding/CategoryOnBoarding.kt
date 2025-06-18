@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 data class SpendingCategory(
     val id: String,
@@ -33,7 +34,7 @@ data class SpendingCategory(
 )
 
 @Composable
-fun CategoryOnBoarding() {
+fun CategoryOnBoarding(navController: NavController) {
     var selectedCategories by remember { mutableStateOf(setOf<String>()) }
 
     val categories = listOf(
@@ -231,7 +232,7 @@ fun CategoryOnBoarding() {
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-// Progress indicator
+                    // Progress indicator
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
@@ -248,7 +249,7 @@ fun CategoryOnBoarding() {
                                     )
                             )
                             if (index < 2) {
-                                Spacer(modifier = Modifier.width(8.dp))  // Space between dots
+                                Spacer(modifier = Modifier.width(8.dp))
                             }
                         }
                     }
@@ -260,7 +261,9 @@ fun CategoryOnBoarding() {
                     ) {
                         Button(
                             onClick = {
-                                // Navigate to next screen
+                                // Navigate to vendors onboarding with selected categories
+                                val categoriesString = selectedCategories.joinToString(",")
+                                navController.navigate("vendors_onboarding/$categoriesString")
                             },
                             enabled = selectedCategories.isNotEmpty(),
                             modifier = Modifier
