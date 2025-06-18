@@ -15,9 +15,9 @@ import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen
-import com.coded.capstone.screens.kyc.KycScreen
+//import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
-import com.coded.capstone.viewModels.KycViewModel
+//import com.coded.capstone.viewModels.KycViewModel
 
 
 object NavRoutes {
@@ -87,12 +87,12 @@ fun AppHost(
             )
         }
 
-        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
-            val kycViewModel = remember { KycViewModel(context) }
-            KycScreen(
-                navController = navController,
-                viewModel= kycViewModel)
-        }
+//        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
+//            val kycViewModel = remember { KycViewModel(context) }
+//            KycScreen(
+//                navController = navController,
+//                viewModel= kycViewModel)
+//        }
         composable(NavRoutes.NAV_ROUTE_HOME) {
             val authViewModel = remember { AuthViewModel(context) }
             MainScaffoldWithTabs(navController , authViewModel)
