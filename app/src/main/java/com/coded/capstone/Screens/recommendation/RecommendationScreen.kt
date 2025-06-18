@@ -275,7 +275,7 @@ fun RecommendationScreen(
                 ) {
                     // Page title
                     Text(
-                        text = "Perks & Local Offers",
+                        text = "Tailored to you",
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
