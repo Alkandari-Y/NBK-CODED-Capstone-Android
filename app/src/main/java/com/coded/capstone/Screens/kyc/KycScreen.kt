@@ -88,8 +88,9 @@ fun KycScreen(
         when (status) {
             is UiStatus.Success -> {
                 Toast.makeText(context, "KYC information updated successfully", Toast.LENGTH_SHORT).show()
-                navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
-                    popUpTo("kyc") { inclusive = true }
+                navController.navigate(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
+                    popUpTo(0)
+                    launchSingleTop = true
                 }
             }
             is UiStatus.Error -> {

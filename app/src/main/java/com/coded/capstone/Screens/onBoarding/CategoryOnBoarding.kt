@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.coded.capstone.navigation.NavRoutes
 
 data class SpendingCategory(
     val id: String,
@@ -263,7 +264,7 @@ fun CategoryOnBoarding(navController: NavController) {
                             onClick = {
                                 // Navigate to vendors onboarding with selected categories
                                 val categoriesString = selectedCategories.joinToString(",")
-                                navController.navigate("vendors_onboarding/$categoriesString")
+                                navController.navigate(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING)
                             },
                             enabled = selectedCategories.isNotEmpty(),
                             modifier = Modifier

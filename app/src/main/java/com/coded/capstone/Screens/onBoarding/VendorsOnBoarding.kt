@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.R
+import com.coded.capstone.navigation.NavRoutes
 
 data class MerchantPartner(
     val id: String,
@@ -465,7 +466,7 @@ fun VendorsOnBoarding(
                             onClick = {
                                 val categoriesString = selectedCategories.joinToString(",")
                                 val vendorsString = selectedVendors.joinToString(",")
-                                navController.navigate("card_suggested_onboarding/$categoriesString/$vendorsString")
+                                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
                             },
                             colors = ButtonDefaults.textButtonColors(
                                 contentColor = Color(0xFF6B7280)
@@ -478,7 +479,7 @@ fun VendorsOnBoarding(
                             onClick = {
                                 val categoriesString = selectedCategories.joinToString(",")
                                 val vendorsString = selectedVendors.joinToString(",")
-                                navController.navigate("card_suggested_onboarding/$categoriesString/$vendorsString")
+                                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
                             },
                             modifier = Modifier
                                 .height(56.dp)
