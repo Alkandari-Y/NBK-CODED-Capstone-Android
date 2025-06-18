@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.coded.capstone.screens.recommendation
 
-
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -148,226 +148,422 @@ fun RecommendationScreen(
         )
     }
 
-    Column(
+    val localShopOffers = remember {
+        listOf(
+            RecommendationItem(
+                id = "local_shop_1",
+                title = "Al-Mubarak Electronics",
+                description = "10% off on all electronics. Exclusive for NBK customers!",
+                icon = Icons.Default.Store,
+                badgeText = "10% Off",
+                type = RecommendationType.CASHBACK_OFFER,
+                rating = 4.3f,
+                recommendPercent = 87,
+                price = "KD 50",
+                priceSubtext = "min. spend",
+                colors = listOf(Color(0xFF34D399), Color(0xFF059669)),
+                detailStats = listOf(
+                    StatItem(Icons.Default.LocalOffer, "10%", "discount"),
+                    StatItem(Icons.Default.ShoppingCart, "All", "products")
+                )
+            ),
+            RecommendationItem(
+                id = "local_shop_2",
+                title = "Kuwait Bookstore",
+                description = "Buy 2 get 1 free on all books. Show your NBK card at checkout.",
+                icon = Icons.Default.MenuBook,
+                badgeText = "Buy 2 Get 1",
+                type = RecommendationType.GENERAL,
+                rating = 4.7f,
+                recommendPercent = 92,
+                price = "Varies",
+                priceSubtext = "per book",
+                colors = listOf(Color(0xFF60A5FA), Color(0xFF2563EB)),
+                detailStats = listOf(
+                    StatItem(Icons.Default.Book, "3 for 2", "deal"),
+                    StatItem(Icons.Default.Star, "Top", "titles")
+                )
+            ),
+            RecommendationItem(
+                id = "local_shop_3",
+                title = "Fresh Bites Cafe",
+                description = "Free dessert with every meal for NBK cardholders.",
+                icon = Icons.Default.Restaurant,
+                badgeText = "Free Dessert",
+                type = RecommendationType.CASHBACK_OFFER,
+                rating = 4.5f,
+                recommendPercent = 90,
+                price = "KD 8",
+                priceSubtext = "avg. meal",
+                colors = listOf(Color(0xFFF59E42), Color(0xFFEA580C)),
+                detailStats = listOf(
+                    StatItem(Icons.Default.Cake, "Free", "dessert"),
+                    StatItem(Icons.Default.Fastfood, "With", "meal")
+                )
+            )
+        )
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1A1A1A))
+            .background(Color.White)
     ) {
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                Column {
-                    Text(
-                        text = "Based on your Accounts",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
-
-                    LazyRow( 
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(recommendations) { recommendation ->
-                            Box(
-                                modifier = Modifier
-                                    .width(300.dp)  // Fixed width for both states
-                            ) {
-                                RecommendationCard(
-                                    item = recommendation,
-                                    isExpanded = expandedItemId == recommendation.id,
-                                    onClick = {
-                                        expandedItemId = if (expandedItemId == recommendation.id) null else recommendation.id
-                                        onItemClick(recommendation)
-                                    },
-                                    onBookClick = { onActivateClick(recommendation) }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-       }
-
-
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun RecommendationCard(
-    item: RecommendationItem,
-    isExpanded: Boolean,
-    onClick: () -> Unit,
-    onBookClick: () -> Unit
-) {
-    val animatedHeight by animateDpAsState(
-        targetValue = if (isExpanded) 400.dp else 200.dp,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "height_animation"
-    )
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(animatedHeight)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = item.colors.first()
-        )
-    ) {
-        Column(
+        // Draw vertical black block on the right covering the bottom half
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .align(Alignment.BottomEnd)
+                .width(60.dp)
+                .height(780.dp)
+                .background(Color.Black)
+        )
+
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Header Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // White section with horizontal recommendations
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFF5F5F5))
+                    .padding(16.dp)
             ) {
-                Column {
-                    Text(
-                        text = "Product",
-                        fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                    Text(
-                        text = item.title,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
+                Text(
+                    text = "Based on your Accounts",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF222222),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-                // Badge
-                Surface(
-                    modifier = Modifier.padding(start = 8.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color.White.copy(alpha = 0.2f)
-                ) {
-                    Text(
-                        text = item.badgeText.toString(),
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Description
-            Text(
-                text = item.description,
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                lineHeight = 20.sp
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Stats Section
-            if (isExpanded) {
-                Row(
+                LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    contentPadding = PaddingValues(horizontal = 0.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    item.detailStats.forEach { stat ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    items(recommendations) { recommendation ->
+                        Box(
+                            modifier = Modifier.width(300.dp)
                         ) {
-                            Text(
-                                text = stat.value,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Text(
-                                text = stat.unit,
-                                fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.8f)
+                            RecommendationCard(
+                                item = recommendation,
+                                isExpanded = expandedItemId == recommendation.id,
+                                onClick = {
+                                    expandedItemId = if (expandedItemId == recommendation.id) null else recommendation.id
+                                    onItemClick(recommendation)
+                                },
+                                onBookClick = { onActivateClick(recommendation) }
                             )
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Apply Now Button
-                Button(
-                    onClick = onBookClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = item.colors.first()
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "Apply Now",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else {
-                Spacer(modifier = Modifier.weight(1f))
             }
 
-            // Price Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Black section with vertical offers
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(RoundedCornerShape(topStart = 70.dp, topEnd = 60.dp))
+                    .background(Color.Black)
             ) {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 24.dp, bottom = 16.dp)
+                ) {
+                    // Page title
                     Text(
-                        text = "Value",
-                        fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.8f)
+                        text = "Perks & Local Offers",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Row(
-                        verticalAlignment = Alignment.Bottom
+
+                    Text(
+                        text = "Exclusive deals near you",
+                        color = Color.White.copy(alpha = 0.7f),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Offers list
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Text(
-                            text = item.price,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = item.priceSubtext,
-                            fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
-                        )
+                        items(localShopOffers) { offer ->
+                            RecommendationCard(
+                                item = offer,
+                                isExpanded = expandedItemId == offer.id,
+                                onClick = {
+                                    expandedItemId = if (expandedItemId == offer.id) null else offer.id
+                                    onItemClick(offer)
+                                },
+                                onBookClick = { onActivateClick(offer) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
-
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "Expand",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
             }
         }
     }
 }
 
+@Composable
+fun RecommendationCard(
+    item: RecommendationItem,
+    isExpanded: Boolean,
+    onClick: () -> Unit,
+    onBookClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Animate the card height with smoother animation
+    val cardHeight by animateDpAsState(
+        targetValue = if (isExpanded) 400.dp else 140.dp,
+        animationSpec = tween(durationMillis = 500, easing = androidx.compose.animation.core.EaseInOutCubic),
+        label = "cardHeight"
+    )
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        // Left border
+        Box(
+            modifier = Modifier
+                .width(5.dp)
+                .fillMaxHeight()
+                .background(Color.White)
+                .align(Alignment.CenterStart)
+        )
+
+        // Card content
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(cardHeight)
+                .clickable { onClick() },
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF1A1A1A)
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Header row with icon, title, category, and expand/collapse icon
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(
+                                    brush = Brush.linearGradient(item.colors),
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column {
+                            Text(
+                                text = item.title,
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            if (item.badgeText != null) {
+                                Text(
+                                    text = item.badgeText,
+                                    color = item.colors.first(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = item.price,
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = item.priceSubtext,
+                                color = Color(0xFFBDBDBD),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = if (isExpanded) "Collapse" else "Expand",
+                            tint = Color(0xFFBDBDBD),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Description - shows full text when expanded, truncated when collapsed
+                Text(
+                    text = item.description,
+                    color = Color(0xFFE0E0E0),
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 2,
+                    overflow = if (isExpanded) TextOverflow.Visible else TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Validity/Rating information
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (item.expiryDate != null) {
+                        Text(
+                            text = item.expiryDate,
+                            color = Color(0xFFBDBDBD),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    Text(
+                        text = "★ ${item.rating} (${item.recommendPercent}% recommend)",
+                        color = Color(0xFFBDBDBD),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                // Additional details shown when expanded
+                if (isExpanded) {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Detail stats section
+                    if (item.detailStats.isNotEmpty()) {
+                        Text(
+                            text = "Key Features:",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(item.detailStats) { stat ->
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = stat.icon,
+                                        contentDescription = null,
+                                        tint = item.colors.first(),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = stat.value,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = stat.unit,
+                                        fontSize = 10.sp,
+                                        color = Color(0xFFBDBDBD)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    // Benefits section
+                    Text(
+                        text = "Benefits & Terms:",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "• Premium service with dedicated support\n• Exclusive member benefits and rewards\n• Easy application process\n• Competitive rates and terms\n• 24/7 customer service available\n• Secure and reliable platform",
+                        color = Color(0xFFE0E0E0),
+                        style = MaterialTheme.typography.bodySmall,
+                        lineHeight = 18.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Action button
+                    Button(
+                        onClick = onBookClick,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = item.colors.first()
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = item.actionText,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Tap to collapse indicator
+                    Text(
+                        text = "Tap to collapse",
+                        color = Color(0xFF888888),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+            }
+        }
+    }
+}
