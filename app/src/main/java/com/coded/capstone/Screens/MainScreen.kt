@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -84,7 +86,7 @@ fun MainScreen() {
         }
 
         Column(Modifier.fillMaxSize()) {
-            val calendarTopPadding = 32.dp
+            val calendarTopPadding = 0.dp
             val cardPadding = 32.dp
 
             // Animate the calendar height
@@ -157,7 +159,7 @@ fun MainScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 24.dp)
-                        .padding(top = 24.dp, bottom = 32.dp)
+                        .padding(top = 5.dp, bottom = 5.dp)
                 ) {
                     // Draggable handle
                     Box(
@@ -181,17 +183,34 @@ fun MainScreen() {
                                 .background(if (isDragging) Color.DarkGray else Color.Gray)
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(0.dp))
 
                     // Page title
-                    Text(
-                        text = "Offers Calendar",
-                        color = Color.White,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Offers Calendar",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        
+                        IconButton(
+                            onClick = { showMap = true },
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Map,
+                                contentDescription = "Open Map",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Date text
                     Row(
@@ -291,7 +310,6 @@ fun MainScreen() {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Offers list with weight to take remaining space
                     Box(
@@ -334,20 +352,7 @@ fun MainScreen() {
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Map button
-                    Button(
-                        onClick = { showMap = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF1E88E5)
-                        )
-                    ) {
-                        Text("Open Map")
-                    }
+                    Spacer(modifier = Modifier.height(5.dp))
                 }
             }
         }
