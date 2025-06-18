@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -72,6 +73,10 @@ dependencies {
 
     implementation(libs.androidx.room.runtime.android)
 
+    // Firebase dependencies
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
