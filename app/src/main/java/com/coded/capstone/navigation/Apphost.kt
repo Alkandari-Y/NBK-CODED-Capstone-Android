@@ -15,7 +15,7 @@ import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen
-//import com.coded.capstone.screens.OffersScreen
+import com.coded.capstone.screens.recommendation.RecommendationScreen
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
@@ -128,3 +128,6 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
     }
 }
+
+
+

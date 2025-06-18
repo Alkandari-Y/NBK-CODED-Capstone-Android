@@ -2,6 +2,7 @@ package com.coded.capstone.Wallet.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,7 +20,8 @@ import com.coded.capstone.data.responses.account.AccountResponse
 fun PaymentCardView(
     card: AccountResponse,
     modifier: Modifier = Modifier,
-    backgroundGradient: Brush
+    backgroundGradient: Brush,
+    showAccountNumber: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -31,7 +33,7 @@ fun PaymentCardView(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Top section - Card type and chip
+            // Top section - Card type and status
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -43,14 +45,22 @@ fun PaymentCardView(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
-                
-                // Chip icon
-                Box(
-                    modifier = Modifier
-                        .size(40.dp, 30.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.White.copy(alpha = 0.3f))
-                )
+                // Status indicator
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(if (card.active) Color(0xFF4CAF50) else Color(0xFFE53935))
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (card.active) "Active" else "Inactive",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
             
             // Middle section - Account number
@@ -62,7 +72,7 @@ fun PaymentCardView(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = formatAccountNumber(card.accountNumber),
+                    text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

@@ -47,7 +47,7 @@ class KycViewModel(private val context: Context): ViewModel() {
     private fun initializeKycIfAvailable() {
         val tokenInfo = TokenManager.decodeAccessToken(context)
         Log.d("KYC_DEBUG", "Token info: $tokenInfo")
-        
+
         if (tokenInfo?.isActive == true) {
             viewModelScope.launch {
                 _status.value = UiStatus.Loading

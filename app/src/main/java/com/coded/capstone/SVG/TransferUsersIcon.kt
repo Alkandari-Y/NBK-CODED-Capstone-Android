@@ -25,7 +25,7 @@ fun TransferUsersIcon(modifier: Modifier = Modifier) {
     ).apply {
         addPath(
             pathData = pathData,
-            fill = SolidColor(Color(0xFF4E7EBB))
+            fill = SolidColor(Color(0xFF8AAEBD))
         )
     }.build()
 

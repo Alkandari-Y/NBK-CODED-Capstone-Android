@@ -33,15 +33,15 @@ fun CardTransferBoldIcon(modifier: Modifier = Modifier) {
     ).apply {
         addPath(
             pathData = path1,
-            fill = SolidColor(Color(0xFF4E7EBB))
+            fill = SolidColor(Color(0xFF8AAEBD))
         )
         addPath(
             pathData = path2,
-            fill = SolidColor(Color(0xFF4E7EBB))
+            fill = SolidColor(Color(0xFF8AAEBD))
         )
         addPath(
             pathData = path3,
-            fill = SolidColor(Color(0xFF4E7EBB))
+            fill = SolidColor(Color(0xFF8AAEBD))
         )
     }.build()
 

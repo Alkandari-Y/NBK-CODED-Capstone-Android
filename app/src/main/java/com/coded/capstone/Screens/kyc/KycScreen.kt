@@ -175,8 +175,8 @@ fun KycScreen(
                 // First Name
                 OutlinedTextField(
                     value = formState.firstName,
-                    onValueChange = { 
-                        viewModel.formState.value = formState.copy(firstName = it).validate() 
+                    onValueChange = {
+                        viewModel.formState.value = formState.copy(firstName = it).validate()
                     },
                     label = { Text("First Name", color = Color.Gray, fontSize = 14.sp) },
                     placeholder = { Text("Enter your first name", color = Color.Gray, fontSize = 14.sp) },
@@ -205,8 +205,8 @@ fun KycScreen(
                 // Last Name
                 OutlinedTextField(
                     value = formState.lastName,
-                    onValueChange = { 
-                        viewModel.formState.value = formState.copy(lastName = it).validate() 
+                    onValueChange = {
+                        viewModel.formState.value = formState.copy(lastName = it).validate()
                     },
                     label = { Text("Last Name", color = Color.Gray, fontSize = 14.sp) },
                     placeholder = { Text("Enter your last name", color = Color.Gray, fontSize = 14.sp) },
@@ -293,8 +293,8 @@ fun KycScreen(
                 // Salary
                 OutlinedTextField(
                     value = formState.salary,
-                    onValueChange = { 
-                        viewModel.formState.value = formState.copy(salary = it).validate() 
+                    onValueChange = {
+                        viewModel.formState.value = formState.copy(salary = it).validate()
                     },
                     label = { Text("Monthly Salary", color = Color.Gray, fontSize = 14.sp) },
                     placeholder = { Text("Enter your monthly salary", color = Color.Gray, fontSize = 14.sp) },
@@ -321,8 +321,8 @@ fun KycScreen(
                 // Nationality
                 OutlinedTextField(
                     value = formState.nationality,
-                    onValueChange = { 
-                        viewModel.formState.value = formState.copy(nationality = it).validate() 
+                    onValueChange = {
+                        viewModel.formState.value = formState.copy(nationality = it).validate()
                     },
                     label = { Text("Nationality", color = Color.Gray, fontSize = 14.sp) },
                     placeholder = { Text("Enter your nationality", color = Color.Gray, fontSize = 14.sp) },
@@ -351,8 +351,8 @@ fun KycScreen(
                 // Mobile Number
                 OutlinedTextField(
                     value = formState.mobileNumber,
-                    onValueChange = { 
-                        viewModel.formState.value = formState.copy(mobileNumber = it).validate() 
+                    onValueChange = {
+                        viewModel.formState.value = formState.copy(mobileNumber = it).validate()
                     },
                     label = { Text("Mobile Number", color = Color.Gray, fontSize = 14.sp) },
                     placeholder = { Text("Enter your mobile number", color = Color.Gray, fontSize = 14.sp) },
@@ -382,8 +382,8 @@ fun KycScreen(
                 // Civil ID
                 OutlinedTextField(
                     value = formState.civilId,
-                    onValueChange = { 
-                        viewModel.formState.value = formState.copy(civilId = it).validate() 
+                    onValueChange = {
+                        viewModel.formState.value = formState.copy(civilId = it).validate()
                     },
                     label = { Text("Civil ID", color = Color.Gray, fontSize = 14.sp) },
                     placeholder = { Text("Enter your civil ID", color = Color.Gray, fontSize = 14.sp) },
