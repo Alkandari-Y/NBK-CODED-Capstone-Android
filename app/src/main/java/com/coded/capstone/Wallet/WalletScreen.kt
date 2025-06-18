@@ -48,6 +48,11 @@ import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
+import com.coded.capstone.data.responses.transaction.TransactionResponse
+import com.coded.capstone.data.enums.TransactionType
+import java.time.LocalDateTime
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +93,90 @@ fun WalletScreen(
         )
     }
     
+    // Sample transaction data
+    val sampleTransactions = remember {
+        listOf(
+            TransactionResponse(
+                id = 1L,
+                amount = BigDecimal("150.00"),
+                type = TransactionType.PAYMENT,
+                description = "Coffee Shop Payment",
+                date = LocalDateTime.now().minusDays(1).minusHours(2),
+                accountId = 1L,
+                referenceNumber = "TXN001"
+            ),
+            TransactionResponse(
+                id = 2L,
+                amount = BigDecimal("500.00"),
+                type = TransactionType.TRANSFER,
+                description = "Transfer to John Doe",
+                date = LocalDateTime.now().minusDays(2),
+                accountId = 1L,
+                recipientName = "John Doe",
+                recipientAccountNumber = "****1234",
+                referenceNumber = "TXN002"
+            ),
+            TransactionResponse(
+                id = 3L,
+                amount = BigDecimal("75.50"),
+                type = TransactionType.PAYMENT,
+                description = "Grocery Store",
+                date = LocalDateTime.now().minusDays(3),
+                accountId = 1L,
+                referenceNumber = "TXN003"
+            ),
+            TransactionResponse(
+                id = 4L,
+                amount = BigDecimal("200.00"),
+                type = TransactionType.REFUND,
+                description = "Refund from Online Store",
+                date = LocalDateTime.now().minusDays(4),
+                accountId = 1L,
+                referenceNumber = "TXN004"
+            ),
+            TransactionResponse(
+                id = 5L,
+                amount = BigDecimal("1200.00"),
+                type = TransactionType.TRANSFER,
+                description = "Salary Deposit",
+                date = LocalDateTime.now().minusDays(7),
+                accountId = 1L,
+                recipientName = "Company Inc.",
+                recipientAccountNumber = "****5678",
+                referenceNumber = "TXN005"
+            ),
+            TransactionResponse(
+                id = 6L,
+                amount = BigDecimal("89.99"),
+                type = TransactionType.PAYMENT,
+                description = "Netflix Subscription",
+                date = LocalDateTime.now().minusDays(8),
+                accountId = 1L,
+                referenceNumber = "TXN006"
+            ),
+            TransactionResponse(
+                id = 7L,
+                amount = BigDecimal("250.00"),
+                type = TransactionType.TRANSFER,
+                description = "Transfer to Savings",
+                date = LocalDateTime.now().minusDays(10),
+                accountId = 1L,
+                recipientName = "Savings Account",
+                recipientAccountNumber = "****9876",
+                referenceNumber = "TXN007"
+            ),
+            TransactionResponse(
+                id = 8L,
+                amount = BigDecimal("45.00"),
+                type = TransactionType.PAYMENT,
+                description = "Gas Station",
+                date = LocalDateTime.now().minusDays(12),
+                accountId = 1L,
+                referenceNumber = "TXN008"
+            )
+        )
+    }
+    
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
     var showAccountNumber by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -95,6 +184,7 @@ fun WalletScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
     var showStack by remember { mutableStateOf(false) }
+    var hasInteractedWithCards by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         showStack = false
@@ -129,13 +219,36 @@ fun WalletScreen(
                 CardStack(
                     accounts = sampleAccounts,
                     selectedCard = selectedCard,
-                    onCardSelected = { selectedCard = it },
+                    onCardSelected = { 
+                        selectedCard = it
+                        hasInteractedWithCards = true
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(280.dp)
                         .padding(horizontal = 0.dp),
                     showAccountNumber = showAccountNumber
                 )
+            }
+            
+            // Guide text under cards
+            AnimatedVisibility(
+                visible = !hasInteractedWithCards && selectedCard == null,
+                enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(400))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "👆 Drag down to select • Swipe up to scroll",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.LightGray.copy(alpha = 0.7f),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
             }
             
             // Show services row above details card when a card is selected, with animation
@@ -170,7 +283,7 @@ fun WalletScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(if (expanded) 0.99f else 0.50f)
+                            .fillMaxHeight(if (expanded) 0.95f else 0.50f)
                             .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
                     ) {
                         Row(
@@ -275,7 +388,7 @@ fun WalletScreen(
                             DetailRow("Type", card.accountType.name, textColor = Color.White)
                             DetailRow("Status", if (card.active) "Active" else "Inactive", textColor = Color.White)
                         } else {
-                            // Transactions placeholder
+                            // Transactions
                             Text(
                                 text = "Transaction History",
                                 style = MaterialTheme.typography.titleLarge,
@@ -283,16 +396,32 @@ fun WalletScreen(
                                 color = Color.White
                             )
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "No transactions yet.",
-                                color = Color.White.copy(alpha = 0.7f)
-                            )
+                            
+                            // Filter transactions for the selected account
+                            val accountTransactions = sampleTransactions.filter { it.accountId == card.id }
+                            
+                            if (accountTransactions.isNotEmpty()) {
+                                LazyColumn(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    items(accountTransactions) { transaction ->
+                                        TransactionItem(transaction = transaction)
+                                    }
+                                }
+                            } else {
+                                Text(
+                                    text = "No transactions for this account.",
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+
 
 @Composable
 private fun DetailRow(label: String, value: String, textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
@@ -364,5 +493,112 @@ fun ServicesRow(
             icon = { CreditCardCloseIcon(modifier = Modifier.size(28.dp)) },
             onClick = onCloseAccount
         )
+    }
+}
+
+@Composable
+private fun TransactionItem(transaction: TransactionResponse) {
+    val isCredit = transaction.type == TransactionType.REFUND || 
+                   (transaction.type == TransactionType.TRANSFER && transaction.recipientName?.contains("Salary") == true)
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2A2E)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Transaction icon
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(
+                        when (transaction.type) {
+                            TransactionType.PAYMENT -> Color(0xFFFF6B6B)
+                            TransactionType.TRANSFER -> Color(0xFF4ECDC4)
+                            TransactionType.REFUND -> Color(0xFF51CF66)
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = when (transaction.type) {
+                        TransactionType.PAYMENT -> Icons.Default.ShoppingCart
+                        TransactionType.TRANSFER -> Icons.Default.SwapHoriz
+                        TransactionType.REFUND -> Icons.Default.Refresh
+                    },
+                    contentDescription = transaction.type.name,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            // Transaction details
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = transaction.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = formatTransactionDate(transaction.date),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+                if (transaction.recipientName != null) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "To: ${transaction.recipientName}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            
+            // Amount
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${if (isCredit) "+" else "-"}$${transaction.amount}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isCredit) Color(0xFF51CF66) else Color(0xFFFF6B6B)
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = transaction.type.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.6f)
+                )
+            }
+        }
+    }
+}
+
+private fun formatTransactionDate(date: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val daysDiff = java.time.Duration.between(date, now).toDays()
+    
+    return when {
+        daysDiff == 0L -> "Today"
+        daysDiff == 1L -> "Yesterday"
+        daysDiff < 7L -> "$daysDiff days ago"
+        else -> date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy"))
     }
 } 
