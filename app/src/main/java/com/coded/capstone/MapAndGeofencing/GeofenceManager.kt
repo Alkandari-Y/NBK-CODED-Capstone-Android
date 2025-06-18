@@ -28,6 +28,7 @@ enum class LocationType {
     MALL,
     SHOPPING_CENTER,
     BUSINESS_DISTRICT,
+    EDUCATION,
     ALL
 }
 
@@ -123,6 +124,15 @@ object GeofenceManager {
             type = LocationType.MALL,
             description = "Shopping mall in Al Rai area",
             tags = listOf("shopping", "community")
+        ),
+        MallLocation(
+            id = "coded_academy",
+            name = "CODED Academy",
+            location = LatLng(29.358292292366325, 47.907062076195444),
+            radius = 600f,
+            type = LocationType.EDUCATION,
+            description = "Coding academy",
+            tags = listOf("education", "coding", "academy", "technology")
         )
     )
 
@@ -223,8 +233,8 @@ object GeofenceManager {
                     Geofence.GEOFENCE_TRANSITION_ENTER or
                     Geofence.GEOFENCE_TRANSITION_EXIT
                 )
-                .setNotificationResponsiveness(1000) // Reduced to 1 second for faster response
-                .setLoiteringDelay(0) // No loitering delay
+                .setNotificationResponsiveness(5000) // Increased to 5 seconds for better reliability
+                .setLoiteringDelay(30000) // 30 seconds loitering delay
                 .build()
         }.also { 
             Log.d(TAG, "Created ${it.size} geofences")
@@ -275,7 +285,7 @@ object GeofenceManager {
                     enableLights(true)
                     enableVibration(true)
                     setShowBadge(true)
-                    vibrationPattern = longArrayOf(0, 500, 200, 500)
+                    vibrationPattern = longArrayOf(0, 200, 100, 200)
                     lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 }
                 val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -340,7 +350,7 @@ object GeofenceManager {
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .setVibrate(longArrayOf(0, 500, 200, 500))
+            .setVibrate(longArrayOf(0, 200, 100, 200))
             .setLights(0xFF0000FF.toInt(), 1000, 1000)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setFullScreenIntent(pendingIntent, true)
@@ -562,11 +572,111 @@ object GeofenceManager {
                         Geofence Radius: ${formatDistance(mall.radius)}
                         Should Trigger: ${distance <= mall.radius}
                     """.trimIndent())
+                    
+                    // Special logging for CODED Academy
+                    if (mall.id == "coded_academy") {
+                        Log.d(TAG, """
+                            🎯 CODED ACADEMY SPECIAL DEBUG:
+                            Your Location: ${location.latitude}, ${location.longitude}
+                            CODED Location: ${mall.location.latitude}, ${mall.location.longitude}
+                            Distance: ${formatDistance(distance)}
+                            Radius: ${formatDistance(mall.radius)}
+                            Inside Geofence: ${distance <= mall.radius}
+                            Geofencing Active: $isGeofencingActive
+                            Channel Created: $isChannelCreated
+                        """.trimIndent())
+                    }
                 }
             } ?: Log.w(TAG, "Last location is null - geofencing might not work properly")
             
         } catch (e: Exception) {
             Log.e(TAG, "Error verifying geofence registration: ${e.message}")
+        }
+    }
+
+    // Add function to manually test CODED Academy notification
+    fun testCodedAcademyNotification(context: Context) {
+        Log.d(TAG, "🧪 Testing CODED Academy notification manually...")
+        showNotification(context, "CODED Academy", true)
+    }
+
+    // Add function to force trigger geofencing for CODED Academy
+    suspend fun forceTriggerCodedAcademy(context: Context) {
+        Log.d(TAG, "🚀 Force triggering CODED Academy geofencing...")
+        
+        val codedAcademy = mallLocations.find { it.id == "coded_academy" }
+        if (codedAcademy == null) {
+            Log.e(TAG, "CODED Academy not found in locations")
+            return
+        }
+        
+        try {
+            // Create a single geofence for CODED Academy
+            val geofence = Geofence.Builder()
+                .setRequestId("coded_academy_force")
+                .setCircularRegion(
+                    codedAcademy.location.latitude,
+                    codedAcademy.location.longitude,
+                    codedAcademy.radius
+                )
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setNotificationResponsiveness(1000) // Fast response for testing
+                .setLoiteringDelay(0)
+                .build()
+            
+            val request = GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .addGeofence(geofence)
+                .build()
+            
+            geofencingClient?.addGeofences(request, getGeofencePendingIntent(context))?.await()
+            Log.d(TAG, "Force geofence added for CODED Academy")
+            
+            // Show notification immediately for testing
+            showNotification(context, "CODED Academy", true)
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Error force triggering CODED Academy: ${e.message}")
+        }
+    }
+
+    // Add function to check if you're inside CODED Academy geofence
+    suspend fun checkCodedAcademyStatus(context: Context): String {
+        val codedAcademy = mallLocations.find { it.id == "coded_academy" }
+        if (codedAcademy == null) {
+            return "CODED Academy not found in locations"
+        }
+        
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        return try {
+            val currentLocation = fusedLocationClient.lastLocation.await()
+            currentLocation?.let {
+                val distance = calculateDistance(
+                    it.latitude,
+                    it.longitude,
+                    codedAcademy.location.latitude,
+                    codedAcademy.location.longitude
+                )
+                val status = when {
+                    distance <= codedAcademy.radius -> "INSIDE geofence"
+                    distance <= codedAcademy.radius + 100 -> "NEAR geofence (within 100m)"
+                    else -> "OUTSIDE geofence"
+                }
+                
+                """
+                🎯 CODED Academy Status:
+                Your Location: ${it.latitude}, ${it.longitude}
+                CODED Location: ${codedAcademy.location.latitude}, ${codedAcademy.location.longitude}
+                Distance: ${formatDistance(distance)}
+                Radius: ${formatDistance(codedAcademy.radius)}
+                Status: $status
+                Geofencing Active: $isGeofencingActive
+                Channel Created: $isChannelCreated
+                """.trimIndent()
+            } ?: "Location not available"
+        } catch (e: Exception) {
+            "Error: ${e.message}"
         }
     }
 

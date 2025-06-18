@@ -125,7 +125,7 @@ fun SignUpScreen(
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Success) {
             Toast.makeText(context, "Account created", Toast.LENGTH_SHORT).show()
-            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+            navController.navigate(NavRoutes.NAV_ROUTE_EDIT_KYC) {
                 popUpTo(NavRoutes.NAV_ROUTE_SIGNUP) { inclusive = true }
             }
         }

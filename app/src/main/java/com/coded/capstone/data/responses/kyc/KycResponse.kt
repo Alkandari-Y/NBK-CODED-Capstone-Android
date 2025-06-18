@@ -1,5 +1,6 @@
 package com.coded.capstone.data.responses.kyc
 
+import android.R
 import java.math.BigDecimal
 
 data class KYCResponse(
@@ -9,5 +10,9 @@ data class KYCResponse(
     val lastName: String,
     var dateOfBirth: String? = null,
     val salary: BigDecimal,
-    val nationality: String
+    val nationality: String,
+    val civilId: String,
+    val mobileNumber: String,
 )
+
+

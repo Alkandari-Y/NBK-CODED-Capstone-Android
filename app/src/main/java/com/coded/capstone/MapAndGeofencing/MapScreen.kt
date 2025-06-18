@@ -546,6 +546,76 @@ fun MapScreen(
                             Text("Test Exit")
                         }
                     }
+                    
+                    // Special CODED Academy test button
+                    if (location.id == "coded_academy") {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    scope.launch {
+                                        GeofenceManager.testCodedAcademyNotification(context)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.School,
+                                    contentDescription = "Test CODED Notification",
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Test CODED")
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    scope.launch {
+                                        val status = GeofenceManager.checkCodedAcademyStatus(context)
+                                        android.util.Log.d("MapScreen", "CODED Status: $status")
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Check CODED Status",
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Check Status")
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = {
+                                scope.launch {
+                                    GeofenceManager.forceTriggerCodedAcademy(context)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Force Trigger CODED",
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Force Trigger CODED Geofence")
+                        }
+                    }
                 }
             }
         }
