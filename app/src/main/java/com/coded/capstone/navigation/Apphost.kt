@@ -14,8 +14,8 @@ import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
-import com.coded.capstone.screens.WalletScreen
-import com.coded.capstone.screens.OffersScreen
+import com.coded.capstone.Wallet.WalletScreen
+//import com.coded.capstone.screens.OffersScreen
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.layout.Box
@@ -24,8 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.composables.home.BottomNavBar
-import com.coded.capstone.Wallet.WalletScreen
 import com.coded.capstone.screens.kyc.KycScreen
+import com.coded.capstone.screens.onboarding.VendorsOnBoarding
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.viewModels.KycViewModel
 
@@ -39,7 +39,8 @@ object NavRoutes {
     const val NAV_ROUTE_CALENDER ="calender"
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
-    const val NAV_ROUTE_ONBOARDING = "onboarding"
+    const val NAV_ROUTE_CATEGORY_ONBOARDING = "category_onboarding"
+    const val NAV_ROUTE_VENDORS_ONBOARDING = "vendors_onboarding"
     const val NAV_ROUTE_CREATE_ACCOUNT = "accounts/create"
     const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountNum}"
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
@@ -107,12 +108,12 @@ fun AppHost(
             val authViewModel = remember { AuthViewModel(context) }
             MainScaffoldWithTabs(navController , authViewModel)
         }
-        composable (NavRoutes.NAV_ROUTE_ONBOARDING){CategoryOnBoarding() }
+        composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
+            CategoryOnBoarding(navController = navController)
+        }
+        composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) { VendorsOnBoarding() }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
     }
 }
-
-
-
