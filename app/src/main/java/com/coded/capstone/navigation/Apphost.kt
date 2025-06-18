@@ -23,10 +23,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
-import com.coded.capstone.composables.home.BottomNavBar
 import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
-import com.coded.capstone.screens.recommendation.RecommendationScreen
+import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
 import com.coded.capstone.viewModels.KycViewModel
 
 
@@ -44,15 +43,10 @@ object NavRoutes {
     const val NAV_ROUTE_CREATE_ACCOUNT = "accounts/create"
     const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountNum}"
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
-
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
 
-
     fun accountDetailRoute(accountNum: String) = "accounts/manage/$accountNum"
-
 }
-
-
 
 @Composable
 fun AppHost(
@@ -104,10 +98,7 @@ fun AppHost(
                 navController = navController,
                 viewModel= kycViewModel)
         }
-        composable(NavRoutes.NAV_ROUTE_HOME) {
-            val authViewModel = remember { AuthViewModel(context) }
-            MainScaffoldWithTabs(navController , authViewModel)
-        }
+
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
             CategoryOnBoarding(navController = navController)
         }
@@ -123,11 +114,30 @@ fun AppHost(
                 selectedCategories = selectedCategories
             )
         }
+        composable("card_suggested_onboarding/{selectedCategories}/{selectedVendors}") { backStackEntry ->
+            val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
+            val selectedVendorsString = backStackEntry.arguments?.getString("selectedVendors") ?: ""
+
+            val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
+                selectedCategoriesString.split(",").toSet()
+            } else {
+                emptySet()
+            }
+
+            val selectedVendors = if (selectedVendorsString.isNotEmpty()) {
+                selectedVendorsString.split(",").toSet()
+            } else {
+                emptySet()
+            }
+
+            CardSuggestedOnBoarding(
+                navController = navController,
+                selectedCategories = selectedCategories,
+                selectedVendors = selectedVendors
+            )
+        }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
     }
 }
-
-
-
