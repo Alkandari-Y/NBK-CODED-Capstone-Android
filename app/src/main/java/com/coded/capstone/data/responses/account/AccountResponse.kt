@@ -11,4 +11,4 @@ data class AccountResponse(
     val active: Boolean,
     val ownerId: Long,
     val accountType: AccountType
-) 
+)
