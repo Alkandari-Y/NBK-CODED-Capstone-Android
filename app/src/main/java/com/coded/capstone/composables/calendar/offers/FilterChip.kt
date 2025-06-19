@@ -1,4 +1,4 @@
-package com.coded.capstone.Calender.calendar.offers
+package com.coded.capstone.composables.calendar.offers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

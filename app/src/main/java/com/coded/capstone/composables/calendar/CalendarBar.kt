@@ -1,4 +1,4 @@
-package com.coded.capstone.Calender.calendar
+package com.coded.capstone.composables.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
