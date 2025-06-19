@@ -30,7 +30,11 @@ fun MainScaffoldWithTabs(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (selectedTab) {
-                0 -> HomeScreen(navController,authViewModel)
+                0 -> HomeScreen(navController,authViewModel, onAccountClick = { accountId ->
+                    navController.navigate(NavRoutes.accountDetailRoute(accountId))
+                }, onViewAllAccounts = {
+                    navController.navigate(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL)
+                },)
                 1 -> WalletScreen()
                 2 -> CalendarScreen()
                 3 -> RecommendationScreen()

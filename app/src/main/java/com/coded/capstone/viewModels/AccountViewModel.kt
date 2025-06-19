@@ -2,10 +2,13 @@ package com.coded.capstone.viewModels
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.responses.account.AccountResponse
-import com.coded.capstone.formstates.accounts.AccountCreateForm
+import com.coded.capstone.respositories.AccountRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class AccountViewModel(
     private val context: Context
@@ -17,8 +20,6 @@ class AccountViewModel(
         data class Error(val message: String) : AccountCreateUiState()
     }
 
-    private val _formState = MutableStateFlow(AccountCreateForm())
-    val formState: StateFlow<AccountCreateForm> = _formState
 
     private val _accountUiState = MutableStateFlow<AccountCreateUiState>(
        AccountCreateUiState.Idle)
@@ -31,5 +32,30 @@ class AccountViewModel(
         _shouldNavigate.value = false
     }
 
+    fun submitAccount() {
+
+        var isValid = true
+        _accountUiState.value = AccountCreateUiState.Loading
+
+        viewModelScope.launch {
+            try {
+                val request = AccountCreateRequest(
+                    accountProductId = 1,
+                )
+
+                val result = AccountRepository.createAccount(request, context)
+
+                result.onSuccess {
+                    _accountUiState.value = AccountCreateUiState.Success(it)
+                    _shouldNavigate.value = true
+                }.onFailure {
+                    _accountUiState.value = AccountCreateUiState.Error(it.message ?: "Unknown error")
+                }
+
+            } catch (e: Exception) {
+                _accountUiState.value = AccountCreateUiState.Error(e.message ?: "Something went wrong")
+            }
+        }
+    }
 }
 

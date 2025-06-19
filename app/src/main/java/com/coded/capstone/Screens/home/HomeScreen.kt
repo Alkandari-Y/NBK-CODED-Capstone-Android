@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,19 +15,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.composables.home.AccountCard
-import com.coded.capstone.data.enums.AccountType
-import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.viewModels.AuthViewModel
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
+import com.coded.capstone.viewModels.AccountsUiState
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalTime
@@ -35,43 +37,24 @@ import java.time.LocalTime
 @Composable
 fun HomeScreen(
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    onAccountClick: (String) -> Unit = {},
+    onViewAllAccounts: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val viewModel: HomeScreenViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return HomeScreenViewModel(context) as T
+            }
+        }
+    )
+    val accountsUiState by viewModel.accountsUiState.collectAsState()
+    val lazyListStateAccounts = rememberLazyListState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    // Sample data - replace with actual API calls
-    val sampleAccounts = remember {
-        listOf(
-            AccountResponse(
-                accountNumber = "1234567890123456",
-                id = 1L,
-                balance = BigDecimal("8247.50"),
-                name = "NBK Classic",
-                active = true,
-                ownerId = 1L,
-                accountType = AccountType.DEBIT
-            ),
-            AccountResponse(
-                accountNumber = "9876543210985678",
-                id = 2L,
-                balance = BigDecimal("4600.00"),
-                name = "Savings Account",
-                active = true,
-                ownerId = 1L,
-                accountType = AccountType.CREDIT
-            )
-        )
-    }
-
     var totalBalance by remember { mutableStateOf(BigDecimal.ZERO) }
     val userName = "Sarah" // This should come from user data
-
-    // Calculate total balance
-    LaunchedEffect(sampleAccounts) {
-        totalBalance = sampleAccounts.sumOf { it.balance }
-    }
-
     // Get time-based greeting
     val greeting = remember {
         when (LocalTime.now().hour) {
@@ -81,7 +64,13 @@ fun HomeScreen(
             else -> "Good night"
         }
     }
-
+    // Calculate total balance when accounts change
+    val accounts = (accountsUiState as? com.coded.capstone.viewModels.AccountsUiState.Success)?.accounts
+    LaunchedEffect(accounts) {
+        if (accounts != null) {
+            totalBalance = accounts.sumOf { it.balance }
+        }
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -89,17 +78,14 @@ fun HomeScreen(
                 userName = userName,
                 onProfileClick = {
                     scope.launch { drawerState.close() }
-                    // Navigate to profile
                     navController.navigate("profile")
                 },
                 onSettingsClick = {
                     scope.launch { drawerState.close() }
-                    // Navigate to settings
                     navController.navigate("settings")
                 },
                 onLogoutClick = {
                     scope.launch { drawerState.close() }
-                    // Handle logout
                     authViewModel.logout()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
@@ -122,9 +108,7 @@ fun HomeScreen(
             ) {
                 IconButton(
                     onClick = {
-                        scope.launch {
-                            drawerState.open()
-                        }
+                        scope.launch { drawerState.open() }
                     }
                 ) {
                     Icon(
@@ -134,7 +118,6 @@ fun HomeScreen(
                     )
                 }
             }
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -162,7 +145,6 @@ fun HomeScreen(
                         }
                     }
                 }
-
                 item {
                     // Reward Card Section
                     Card(
@@ -212,7 +194,6 @@ fun HomeScreen(
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
-
                                 Column(
                                     horizontalAlignment = Alignment.End
                                 ) {
@@ -229,9 +210,7 @@ fun HomeScreen(
                                     )
                                 }
                             }
-
                             Spacer(modifier = Modifier.height(20.dp))
-
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -253,7 +232,6 @@ fun HomeScreen(
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                 }
-
                                 Button(
                                     onClick = { /* Redeem */ },
                                     colors = ButtonDefaults.buttonColors(
@@ -267,7 +245,6 @@ fun HomeScreen(
                         }
                     }
                 }
-
                 item {
                     // My Accounts Section
                     Row(
@@ -296,13 +273,35 @@ fun HomeScreen(
                         }
                     }
                 }
-
-                items(sampleAccounts) { account ->
-                    AccountCard(account = account)
+                when (accountsUiState) {
+                    is com.coded.capstone.viewModels.AccountsUiState.Loading -> {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
+                    is AccountsUiState.Error -> {
+                        item {
+                            val message = (accountsUiState as AccountsUiState.Error).message
+                            Text(
+                                text = "Error loading accounts: $message",
+                                color = Color.Red,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
+                    is AccountsUiState.Success -> {
+                        val accounts = (accountsUiState as AccountsUiState.Success).accounts
+                        items(accounts) { account ->
+                            AccountCard(account = account)
+                        }
+                    }
                 }
-
                 item {
-                    // Bottom Navigation Space
                     Spacer(modifier = Modifier.height(80.dp))
                 }
             }

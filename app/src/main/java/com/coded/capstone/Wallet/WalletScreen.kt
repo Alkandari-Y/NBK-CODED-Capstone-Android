@@ -16,10 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.coded.capstone.Wallet.components.CardStack
 import com.coded.capstone.data.responses.account.AccountResponse
-import com.coded.capstone.data.enums.AccountType
 import java.math.BigDecimal
 import com.coded.capstone.SVG.CardTransferBoldIcon
 import com.coded.capstone.SVG.TransferUsersIcon
@@ -64,31 +62,31 @@ fun WalletScreen(
     val sampleAccounts = remember {
         listOf(
             AccountResponse(
-                accountNumber = "1234567890123456",
                 id = 1L,
+                accountNumber = "1234567890123456",
                 balance = BigDecimal("1250.50"),
-                name = "Main Account",
-                active = true,
                 ownerId = 1L,
-                accountType = AccountType.DEBIT
+                ownerType = "Main Account",
+                accountProductId = 1L,
+                accountType = "DEBIT"
             ),
             AccountResponse(
-                accountNumber = "9876543210987654",
                 id = 2L,
+                accountNumber = "9876543210987654",
                 balance = BigDecimal("500.25"),
-                name = "Savings Account",
-                active = true,
                 ownerId = 1L,
-                accountType = AccountType.CREDIT
+                ownerType = "Savings Account",
+                accountProductId = 2L,
+                accountType = "CREDIT"
             ),
             AccountResponse(
-                accountNumber = "5555666677778888",
                 id = 3L,
+                accountNumber = "5555666677778888",
                 balance = BigDecimal("2500.00"),
-                name = "Investment Account",
-                active = true,
                 ownerId = 1L,
-                accountType = AccountType.DEBIT
+                ownerType = "Investment Account",
+                accountProductId = 3L,
+                accountType = "DEBIT"
             )
         )
     }
@@ -336,7 +334,7 @@ fun WalletScreen(
                                 color = Color.White
                             )
                             Spacer(modifier = Modifier.height(16.dp))
-                            DetailRow("Account Name", card.name, textColor = Color.White)
+                            DetailRow("Account Name", card.accountNumber?.let { "Account #" + it.takeLast(4) } ?: "Unnamed Account", textColor = Color.White)
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
@@ -378,15 +376,14 @@ fun WalletScreen(
                                     )
                                 }
                             }
-                            Text(
-                                text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White
-                            )
+//                            Text(
+//                                text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontWeight = FontWeight.Medium,
+//                                color = Color.White
+//                            )
                             DetailRow("Balance", "${card.balance} KWD", textColor = Color.White)
-                            DetailRow("Type", card.accountType.name, textColor = Color.White)
-                            DetailRow("Status", if (card.active) "Active" else "Inactive", textColor = Color.White)
+                            DetailRow("Type", card.accountType ?: "Unknown", textColor = Color.White)
                         } else {
                             // Transactions
                             Text(

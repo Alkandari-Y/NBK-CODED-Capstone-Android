@@ -13,3 +13,6 @@ data class AccountRequest(
     val accountNumber: String = ""
 )
 
+data class AccountCreateRequest(
+    val accountProductId: Long
+)

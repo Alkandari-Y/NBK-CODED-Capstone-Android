@@ -16,16 +16,12 @@ import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
-import androidx.compose.material3.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
 import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
+import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 
 
@@ -42,7 +38,7 @@ object NavRoutes {
     const val NAV_ROUTE_CARD_SUGGESTION = "card_suggested_onboarding"
     const val NAV_ROUTE_VENDORS_ONBOARDING = "vendors_onboarding"
     const val NAV_ROUTE_CREATE_ACCOUNT = "accounts/create"
-    const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountNum}"
+    const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountId}"
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
 
@@ -55,6 +51,7 @@ fun AppHost(
     navController: NavHostController = rememberNavController(),
 ) {
     val context = LocalContext.current
+    val homeScreenViewModel = remember { HomeScreenViewModel(context) }
 
     LaunchedEffect(Unit) {
         if (
@@ -90,6 +87,7 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
             LoadingDashboardScreen(
                 navController = navController,
+                viewModel = homeScreenViewModel
             )
         }
 
@@ -139,9 +137,32 @@ fun AppHost(
         }
         composable(NavRoutes.NAV_ROUTE_HOME) {
             val authViewModel = remember { AuthViewModel(context) }
-
             MainScaffoldWithTabs(navController = navController,authViewModel)
         }
+//        composable(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL) {
+//            AllAccountsScreen(
+//                navController = navController,
+//                viewModel = homeScreenViewModel,
+//                onBackClick = {
+//                    navController.popBackStack()
+//                },
+//                onAccountClick = { accountNum: String ->
+//                    navController.navigate(NavRoutes.accountDetailRoute(accountNum))
+//                },
+//            )
+//        }
+
+//        composable(NavRoutes.NAV_ROUTE_ACCOUNT_DETAILS) { backStackEntry ->
+//            val accountId = backStackEntry.arguments?.getString("accountId")
+//            if (accountId != null) {
+//                AccountDetailsScreen(
+//                    onBackClick = { navController.popBackStack() },
+////                    onTransferClick = { navController.navigate(NavRoutes.NAV_ROUTE_TRANSFER) },
+//                    viewModel = homeScreenViewModel,
+//                    accountId = accountId
+//                )
+//            }
+//        }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }

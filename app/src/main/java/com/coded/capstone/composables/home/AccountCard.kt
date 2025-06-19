@@ -1,155 +1,302 @@
 package com.coded.capstone.composables.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.Savings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.coded.capstone.data.enums.AccountType
+import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
 
 @Composable
-fun AccountCard(account: AccountResponse) {
-    val gradient = if (account.accountType == AccountType.DEBIT) {
-        Brush.linearGradient(listOf(Color(0xFF1976D2), Color(0xFF64B5F6)))
-    } else {
-        Brush.linearGradient(listOf(Color(0xFF8E24AA), Color(0xFFCE93D8)))
+fun AccountCard(
+    account: AccountResponse,
+    onCardClick: (() -> Unit)? = null
+) {
+    // Professional color schemes for different account types
+    val cardColors = when (account.accountType?.lowercase()) {
+        "debit" -> CardColors(
+            primary = Color(0xFF1A1A2E),
+            secondary = Color(0xFF16213E),
+            accent = Color(0xFF0F3460),
+            text = Color.White
+        )
+        "credit" -> CardColors(
+            primary = Color(0xFF2C1810),
+            secondary = Color(0xFF3D2914),
+            accent = Color(0xFF8B4513),
+            text = Color.White
+        )
+        "savings" -> CardColors(
+            primary = Color(0xFF0D4F3C),
+            secondary = Color(0xFF165A4A),
+            accent = Color(0xFF2D8659),
+            text = Color.White
+        )
+        "business" -> CardColors(
+            primary = Color(0xFF1A1A1A),
+            secondary = Color(0xFF2D2D2D),
+            accent = Color(0xFF404040),
+            text = Color.White
+        )
+        else -> CardColors(
+            primary = Color(0xFF1A237E),
+            secondary = Color(0xFF283593),
+            accent = Color(0xFF3F51B5),
+            text = Color.White
+        )
     }
+
+    // Subtle gradient for depth
+    val backgroundGradient = Brush.linearGradient(
+        listOf(
+            cardColors.primary,
+            cardColors.secondary,
+            cardColors.accent.copy(alpha = 0.8f)
+        )
+    )
+
+    // Get account icon
+    val accountIcon = when (account.accountType?.lowercase()) {
+        "debit" -> Icons.Default.CreditCard
+        "credit" -> Icons.Default.AccountBalance
+        "savings" -> Icons.Default.Savings
+        "business" -> Icons.Default.Business
+        else -> Icons.Default.AccountBalanceWallet
+    }
+
+    // Get account display name
+    val accountName = when (account.accountType?.lowercase()) {
+        "debit" -> "Current Account"
+        "credit" -> "Credit Card"
+        "savings" -> "Savings Account"
+        "business" -> "Business Account"
+        else -> "Bank Account"
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
-            .shadow(8.dp, RoundedCornerShape(20.dp)),
-        shape = RoundedCornerShape(20.dp),
+            .height(200.dp)
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(16.dp),
+                ambientColor = Color.Black.copy(alpha = 0.08f),
+                spotColor = Color.Black.copy(alpha = 0.12f)
+            )
+            .clickable { onCardClick?.invoke() },
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier
-                .background(gradient)
                 .fillMaxSize()
-                .padding(18.dp)
+                .background(backgroundGradient)
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Subtle geometric pattern overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.03f),
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.05f)
+                            ),
+                            radius = 400f
+                        )
+                    )
+            )
+
+            // Content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
+                // Header section
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.18f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            if (account.accountType == AccountType.DEBIT)
-                                Icons.Default.CreditCard
-                            else
-                                Icons.Default.Savings,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(26.dp)
+                    Column {
+                        Text(
+                            text = "National Bank of Kuwait",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = cardColors.text.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.sp,
+                            letterSpacing = 0.5.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Text(
+                            text = accountName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = cardColors.text,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
                         )
                     }
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = account.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            if (account.active) {
-                                Surface(
-                                    color = Color(0xFF43A047),
-                                    shape = RoundedCornerShape(8.dp),
-                                    modifier = Modifier.height(22.dp)
-                                ) {
-                                    Text(
-                                        text = "Active",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
-                        Text(
-                            text = "****" + account.accountNumber.takeLast(4),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Surface(
-                            color = Color.White.copy(alpha = 0.18f),
-                            shape = RoundedCornerShape(6.dp)
+
+                    // Account type icon with minimal styling
+                    Surface(
+                        color = Color.White.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
                         ) {
-                            Text(
-                                text = account.accountType.name.lowercase().replaceFirstChar { it.uppercase() },
-                                color = Color.White,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            Icon(
+                                imageVector = accountIcon,
+                                contentDescription = null,
+                                tint = cardColors.text.copy(alpha = 0.9f),
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
                 }
-                Column(
-                    horizontalAlignment = Alignment.End
-                ) {
+
+                // Account number section
+                Column {
                     Text(
-                        text = "KD ${String.format("%.2f", account.balance)}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        text = "Account Number",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = cardColors.text.copy(alpha = 0.6f),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 11.sp,
+                        letterSpacing = 0.3.sp
                     )
-                    if (account.accountType == AccountType.CREDIT) {
-                        Text(
-                            text = "+2.5% APY",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFB2FF59)
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = if (!account.accountNumber.isNullOrBlank() && account.accountNumber.length >= 4) {
+                            "•••• •••• •••• ${account.accountNumber.takeLast(4)}"
+                        } else {
+                            "•••• •••• •••• ••••"
+                        },
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = cardColors.text,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        letterSpacing = 2.sp
+                    )
+                }
+
+                // Balance section
+                Column {
+                    Text(
+                        text = "Available Balance",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = cardColors.text.copy(alpha = 0.6f),
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 11.sp,
+                        letterSpacing = 0.3.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "KD ${String.format("%.3f", account.balance)}",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = cardColors.text,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        letterSpacing = (-0.5).sp
+                    )
+                }
+
+                // Footer section
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    // Account status
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(
+                                    Color(0xFF4CAF50),
+                                    shape = androidx.compose.foundation.shape.CircleShape
+                                )
                         )
-                    } else {
                         Text(
-                            text = "Available",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.White.copy(alpha = 0.8f)
+                            text = "ACTIVE",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = cardColors.text.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 10.sp,
+                            letterSpacing = 0.8.sp
+                        )
+                    }
+
+                    // Account type badge
+                    Surface(
+                        color = Color.White.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = (account.accountType?.uppercase() ?: "ACCOUNT"),
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = cardColors.text,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 10.sp,
+                            letterSpacing = 0.6.sp
                         )
                     }
                 }
             }
+
+            // Subtle border highlight
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.1f),
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.05f)
+                            )
+                        )
+                    )
+            )
         }
     }
 }
+
+// Data class for card colors
+private data class CardColors(
+    val primary: Color,
+    val secondary: Color,
+    val accent: Color,
+    val text: Color
+)
