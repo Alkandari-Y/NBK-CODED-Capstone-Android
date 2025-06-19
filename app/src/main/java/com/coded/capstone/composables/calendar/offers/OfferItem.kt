@@ -1,5 +1,6 @@
-package com.coded.capstone.Calender.calendar.offers
+package com.coded.capstone.composables.calendar.offers
 
+import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -39,7 +40,7 @@ fun OfferItem(
     // Animate the card height with smoother animation
     val cardHeight by animateDpAsState(
         targetValue = if (isCurrentlyExpanded) 420.dp else 140.dp,
-        animationSpec = tween(durationMillis = 500, easing = androidx.compose.animation.core.EaseInOutCubic),
+        animationSpec = tween(durationMillis = 500, easing = EaseInOutCubic),
         label = "cardHeight"
     )
 

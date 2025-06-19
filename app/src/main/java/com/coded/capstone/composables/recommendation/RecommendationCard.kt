@@ -1,4 +1,4 @@
-package com.coded.capstone.screens.recommendation
+package com.coded.capstone.composables.recommendation
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coded.capstone.screens.recommendation.RecommendationItem
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

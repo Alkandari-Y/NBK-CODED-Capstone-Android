@@ -4,15 +4,12 @@ import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -26,12 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.coded.capstone.Calender.calendar.CalendarBar
-import com.coded.capstone.Calender.calendar.CalendarBarShort
-import com.coded.capstone.Calender.calendar.common.RoundedRightPeek
-import com.coded.capstone.Calender.calendar.offers.FilterChip
-import com.coded.capstone.Calender.calendar.offers.OfferDetailsDialog
-import com.coded.capstone.Calender.calendar.offers.OfferItem
+import com.coded.capstone.composables.calendar.CalendarBar
+import com.coded.capstone.composables.calendar.CalendarBarShort
+import com.coded.capstone.composables.calendar.common.RoundedRightPeek
+import com.coded.capstone.composables.calendar.offers.OfferItem
 import com.coded.capstone.MapAndGeofencing.MapScreen
 import com.coded.capstone.data.Tmp.Offer
 import com.coded.capstone.data.Tmp.repository.OfferRepository
@@ -41,7 +36,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun CalendarScreen() {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isExpanded by remember { mutableStateOf(false) }
     var selectedYear by remember { mutableStateOf(selectedDate.year) }
@@ -362,13 +357,6 @@ fun MainScreen() {
         }
     }
 }
-
-@Composable
-fun CalendarScreen() {
-    MainScreen()
-}
-
-
 
 
 

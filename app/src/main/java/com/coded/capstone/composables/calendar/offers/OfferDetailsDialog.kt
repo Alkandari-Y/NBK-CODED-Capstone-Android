@@ -1,4 +1,4 @@
-package com.coded.capstone.Calender.calendar.offers
+package com.coded.capstone.composables.calendar.offers
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

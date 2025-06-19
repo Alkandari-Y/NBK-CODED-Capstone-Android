@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.coded.capstone.composables.onBoarding.CategoryCard
 import com.coded.capstone.navigation.NavRoutes
 
 data class SpendingCategory(
@@ -300,99 +301,3 @@ fun CategoryOnBoarding(navController: NavController) {
     }
 }
 
-@Composable
-fun CategoryCard(
-    category: SpendingCategory,
-    isSelected: Boolean,
-    isDisabled: Boolean,
-    onClick: () -> Unit
-) {
-    val scale by animateFloatAsState(
-        targetValue = if (isSelected) 1.05f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "card_scale"
-    )
-
-    Card(
-        onClick = (if (!isDisabled) onClick else { }) as () -> Unit,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-            .scale(scale),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(
-            2.dp,
-            if (isSelected) Color(0xFF4CAF50) else Color(0xFFE5E7EB)
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                Color(0xFF4CAF50).copy(alpha = 0.08f)
-            } else if (isDisabled) {
-                Color(0xFFF9FAFB)
-            } else {
-                Color.White
-            }
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 8.dp else 2.dp
-        )
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Selection indicator
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            Color(0xFF4CAF50),
-                            CircleShape
-                        )
-                        .align(Alignment.TopEnd)
-                        .offset((-8).dp, 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = category.icon,
-                    contentDescription = category.name,
-                    tint = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF03A9F4),
-                    modifier = Modifier
-                        .size(35.dp)
-                        .padding(bottom = 8.dp)
-                )
-                Text(
-                    text = category.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF1F2937),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                Text(
-                    text = category.description,
-                    fontSize = 12.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
-            }
-        }
-    }
-}
