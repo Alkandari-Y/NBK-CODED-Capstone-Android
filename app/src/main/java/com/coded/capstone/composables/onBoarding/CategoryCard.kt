@@ -32,11 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.screens.onboarding.SpendingCategory
 
 @Composable
 fun CategoryCard(
-    category: SpendingCategory,
+    category: CategoryDto,
     isSelected: Boolean,
     isDisabled: Boolean,
     onClick: () -> Unit
@@ -103,14 +104,14 @@ fun CategoryCard(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Icon(
-                    imageVector = category.icon,
-                    contentDescription = category.name,
-                    tint = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF03A9F4),
-                    modifier = Modifier
-                        .size(35.dp)
-                        .padding(bottom = 8.dp)
-                )
+//                Icon(
+//                    imageVector = category.icon,
+//                    contentDescription = category.name,
+//                    tint = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF03A9F4),
+//                    modifier = Modifier
+//                        .size(35.dp)
+//                        .padding(bottom = 8.dp)
+//                )
                 Text(
                     text = category.name,
                     fontSize = 18.sp,
@@ -119,13 +120,13 @@ fun CategoryCard(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
-                Text(
-                    text = category.description,
-                    fontSize = 12.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
+//                Text(
+//                    text = category.description,
+//                    fontSize = 12.sp,
+//                    color = Color(0xFF6B7280),
+//                    textAlign = TextAlign.Center,
+//                    modifier = Modifier.padding(bottom = 6.dp)
+//                )
             }
         }
     }

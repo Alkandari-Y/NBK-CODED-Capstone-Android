@@ -298,28 +298,7 @@ fun AccountCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    // Account status
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .background(
-                                    Color(0xFF4CAF50),
-                                    shape = androidx.compose.foundation.shape.CircleShape
-                                )
-                        )
-                        Text(
-                            text = "ACTIVE",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = cardColors.text.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 10.sp,
-                            letterSpacing = 0.8.sp
-                        )
-                    }
+
 
                     // Account type badge (only for non-cashback accounts)
                     if (account.accountType?.lowercase() != "cashback") {

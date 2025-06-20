@@ -102,7 +102,7 @@ fun AppHost(
         }
 
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
-            CategoryOnBoarding(navController = navController)
+            CategoryOnBoarding(navController = navController, viewModel = homeScreenViewModel)
         }
         composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) { backStackEntry ->
             val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""

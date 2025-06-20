@@ -4,6 +4,7 @@ import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.account.TransactionDetails
+import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -29,6 +30,10 @@ interface BankingServiceProvider {
         @Query("accountId") accountId: String,
     ): Response<AccountResponse>
 
+
+    // categories controller
+    @GET("/api/v1/categories")
+    suspend fun getAllCategories(): Response<List<CategoryDto>>
 
 
     // Transactions controller

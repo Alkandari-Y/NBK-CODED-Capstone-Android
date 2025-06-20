@@ -2,17 +2,21 @@ package com.coded.capstone.viewModels
 
 import android.R
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.account.TransactionDetails
+import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountRepository
+import com.coded.capstone.respositories.CategoryRepository
 import com.coded.capstone.respositories.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.text.orEmpty
 
 sealed class AccountsUiState {
     data object Loading : AccountsUiState()
@@ -30,6 +34,9 @@ class HomeScreenViewModel(
     val selectedAccount: StateFlow<AccountResponse?> = _selectedAccount
     private val _accountTransactions = MutableStateFlow<List<TransactionDetails>?>(null)
     val accountTransactions: StateFlow<List<TransactionDetails>?> = _accountTransactions
+    private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
+    val categories: StateFlow<List<CategoryDto>> = _categories
+
     init {
         viewModelScope.launch {
             if (UserRepository.userInfo == null) {
@@ -95,5 +102,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun fetchCategories() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context).getAllCategories()
+                if (response.isSuccessful) {
+                    val categories = response.body().orEmpty()
+                    _categories.value = categories
+                    CategoryRepository.categories = categories
+                } else {
+                    Log.e("DashboardViewModel", "Categories fetch failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error fetching categories: ${e.message}")
+            }
+        }
+    }
 
 }

@@ -56,39 +56,7 @@ fun AccountDetailsScreen(
 //    var account by remember { mutableStateOf<AccountResponse?>(null) }
     val accountState by viewModel.selectedAccount.collectAsState()
     // Sample transactions (replace with actual data from backend)
-    val sampleTransactions = remember {
-        listOf(
-            Transaction(
-                id = "1",
-                description = "Internet Bill",
-                amount = -60.00,
-                date = Date(),
-                type = TransactionType.EXPENSE,
-                category = "Utilities"
-            ),
-            Transaction(
-                id = "2",
-                description = "To your balance",
-                amount = 30.00,
-                date = Date(),
-                type = TransactionType.TRANSFER
-            ),
-            Transaction(
-                id = "3",
-                description = "Masum Parvej",
-                amount = 60.00,
-                date = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }.time,
-                type = TransactionType.INCOME
-            ),
-            Transaction(
-                id = "4",
-                description = "To your balance",
-                amount = 70.00,
-                date = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -1) }.time,
-                type = TransactionType.TRANSFER
-            )
-        )
-    }
+    val sampleTransactions = emptyList<Transaction>()
 
     // Fetch account details
     LaunchedEffect(accountId) {
@@ -266,7 +234,10 @@ fun AccountDetailsScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // Today Section
+                    }
+
+                    // Transaction History Section
+                    item {
                         Text(
                             text = "Transaction History",
                             style = MaterialTheme.typography.labelMedium,
@@ -275,52 +246,79 @@ fun AccountDetailsScreen(
                         )
                     }
 
-                    // Today's Transactions
-                    val todayTransactions = sampleTransactions.filter {
-                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.date) ==
-                                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                    }
-
-                    items(todayTransactions) { transaction ->
-                        TransactionItem(transaction = transaction)
-                        if (transaction != todayTransactions.last()) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-
-                    // Previous Date Section
-                    val previousTransactions = sampleTransactions.filter {
-                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.date) !=
-                                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                    }
-
-                    if (previousTransactions.isNotEmpty()) {
+// Check if there are any transactions
+                    if (sampleTransactions.isEmpty()) {
+                        // No transactions state
                         item {
-                            Spacer(modifier = Modifier.height(32.dp))
-                            Text(
-                                text = "11 DEC, 2024",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 48.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.Receipt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "No activity yet",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                    textAlign = TextAlign.Center
+                                )
+
+                            }
+                        }
+                    } else {
+                        // Today's Transactions
+                        val todayTransactions = sampleTransactions.filter {
+                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.date) ==
+                                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                         }
 
-                        items(previousTransactions) { transaction ->
-                            TransactionItem(transaction = transaction)
-                            if (transaction != previousTransactions.last()) {
-                                Spacer(modifier = Modifier.height(16.dp))
+                        if (todayTransactions.isNotEmpty()) {
+                            items(todayTransactions) { transaction ->
+                                TransactionItem(transaction = transaction)
+                                if (transaction != todayTransactions.last()) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
+                            }
+                        }
+
+                        // Previous Date Section
+                        val previousTransactions = sampleTransactions.filter {
+                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.date) !=
+                                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                        }
+
+                        if (previousTransactions.isNotEmpty()) {
+                            item {
+                                Spacer(modifier = Modifier.height(32.dp))
+                                Text(
+                                    text = "11 DEC, 2024",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                    modifier = Modifier.padding(bottom = 16.dp)
+                                )
+                            }
+
+                            items(previousTransactions) { transaction ->
+                                TransactionItem(transaction = transaction)
+                                if (transaction != previousTransactions.last()) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
                             }
                         }
                     }
-
-                    item {
-                       Spacer(modifier = Modifier.height(24.dp))
                   }
                 }
             }
         }
     }
-}
+
 
 @Composable
 fun AccountDetailRow(label: String, value: String) {
