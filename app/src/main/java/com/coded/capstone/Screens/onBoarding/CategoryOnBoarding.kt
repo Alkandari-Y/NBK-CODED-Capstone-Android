@@ -46,68 +46,14 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
     LaunchedEffect(Unit) {
         viewModel.fetchCategories()
     }
-//    val categories = listOf(
-//        SpendingCategory(
-//            id = "dining",
-//            name = "Dining",
-//            icon = Icons.Default.Restaurant,
-//            description = "Kuwait's largest dining network",
-//            topReward = "Up to 10% NBK KWT Points",
-//            bestCard = "NBK KWT Visa Infinite",
-//            color = Color(0xFFEF4444)
-//        ),
-//        SpendingCategory(
-//            id = "travel",
-//            name = "Travel",
-//            icon = Icons.Default.Flight,
-//            description = "Miles + lounge access",
-//            topReward = "5 NBK Miles Points per KD",
-//            bestCard = "NBK Miles World Mastercard",
-//            color = Color(0xFF3B82F6)
-//        ),
-//        SpendingCategory(
-//            id = "shopping",
-//            name = "Shopping",
-//            icon = Icons.Default.ShoppingBag,
-//            description = "Local & international brands",
-//            topReward = "Up to 8% Aura Points",
-//            bestCard = "NBK-Aura World Mastercard",
-//            color = Color(0xFFEC4899)
-//        ),
-//        SpendingCategory(
-//            id = "technology",
-//            name = "Technology",
-//            icon = Icons.Default.Smartphone,
-//            description = "Electronics & digital payments",
-//            topReward = "10% NBK KWT Points at X-cite",
-//            bestCard = "NBK KWT Visa Infinite",
-//            color = Color(0xFF8B5CF6)
-//        ),
-//        SpendingCategory(
-//            id = "lifestyle",
-//            name = "Lifestyle",
-//            icon = Icons.Default.Home,
-//            description = "Home, beauty & wellness",
-//            topReward = "NBK Rewards Points",
-//            bestCard = "NBK Rewards Program",
-//            color = Color(0xFF10B981)
-//        ),
-//        SpendingCategory(
-//            id = "entertainment",
-//            name = "Entertainment",
-//            icon = Icons.Default.Movie,
-//            description = "Streaming, cinema & events",
-//            topReward = "Up to 24% Cashback",
-//            bestCard = "NBK 247 Cashback",
-//            color = Color(0xFFF59E0B)
-//        )
-//    )
 
     fun toggleCategory(categoryId: String) {
-        if (selectedCategories.contains(categoryId)) {
-            selectedCategories = selectedCategories - categoryId
+        selectedCategories = if (selectedCategories.contains(categoryId)) {
+            selectedCategories - categoryId
         } else if (selectedCategories.size < 3) {
-            selectedCategories = selectedCategories + categoryId
+            selectedCategories + categoryId
+        } else {
+            selectedCategories
         }
     }
 
@@ -229,12 +175,15 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(categories) { category ->
+                        items(
+                            items = categories,
+                            key = { category -> category.id }
+                        ) { category ->
                             CategoryCard(
                                 category = category,
-                                isSelected = selectedCategories.contains(category.name),
-                                isDisabled = !selectedCategories.contains(category.name) && selectedCategories.size >= 3,
-                                onClick = { toggleCategory(category.name) }
+                                isSelected = selectedCategories.contains(category.id.toString()),
+                                isDisabled = !selectedCategories.contains(category.id.toString()) && selectedCategories.size >= 3,
+                                onClick = { toggleCategory(category.id.toString()) }
                             )
                         }
                     }
@@ -307,4 +256,3 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
         }
     }
 }
-

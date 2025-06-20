@@ -1,12 +1,10 @@
 package com.coded.capstone.viewModels
 
-import android.R
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.responses.account.AccountResponse
-import com.coded.capstone.data.responses.account.TransactionDetails
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountRepository
@@ -16,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.text.orEmpty
 
 sealed class AccountsUiState {
     data object Loading : AccountsUiState()
@@ -32,8 +29,7 @@ class HomeScreenViewModel(
 
     private val _selectedAccount = MutableStateFlow<AccountResponse?>(null)
     val selectedAccount: StateFlow<AccountResponse?> = _selectedAccount
-    private val _accountTransactions = MutableStateFlow<List<TransactionDetails>?>(null)
-    val accountTransactions: StateFlow<List<TransactionDetails>?> = _accountTransactions
+
     private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
     val categories: StateFlow<List<CategoryDto>> = _categories
 
@@ -44,7 +40,7 @@ class HomeScreenViewModel(
             }
 
             fetchAccounts()
-//            fetchCategories()
+            fetchCategories()
         }
     }
 
@@ -85,22 +81,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun fetchAccountTransactions(accountNumber: String) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.getBankingServiceProvide(context)
-                    .getAllTransactionsByAccountNumber(accountNumber)
-
-                if (response.isSuccessful) {
-                    _accountTransactions.value = response.body()
-                } else {
-                    _accountTransactions.value = emptyList()
-                }
-            } catch (e: Exception) {
-                _accountTransactions.value = emptyList()
-            }
-        }
-    }
 
     fun fetchCategories() {
         viewModelScope.launch {

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.screens.onboarding.SpendingCategory
+import androidx.compose.foundation.clickable
 
 @Composable
 fun CategoryCard(
@@ -49,11 +50,11 @@ fun CategoryCard(
     )
 
     Card(
-        onClick = (if (!isDisabled) onClick else { }) as () -> Unit,
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
-            .scale(scale),
+            .scale(scale)
+            .then(if (!isDisabled) Modifier.clickable { onClick() } else Modifier),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(
             2.dp,

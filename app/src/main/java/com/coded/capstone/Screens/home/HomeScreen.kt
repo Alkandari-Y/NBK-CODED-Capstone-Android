@@ -66,7 +66,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     var totalBalance by remember { mutableStateOf(BigDecimal.ZERO) }
     val kyc = UserRepository.kyc
-    val userName = "${kyc?.firstName} ${kyc?.lastName}"
+    val userName = if (kyc != null) "${kyc.firstName} ${kyc.lastName}" else null
 
     // Get time-based greeting
     val greeting = remember {
@@ -101,7 +101,7 @@ fun HomeScreen(
         drawerState = drawerState,
         drawerContent = {
             DrawerContent(
-                userName = userName,
+                userName = userName ?: "...",
                 onProfileClick = {
                     scope.launch { drawerState.close() }
                     navController.navigate(NavRoutes.NAV_ROUTE_PROFILE)
@@ -158,12 +158,16 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(
-                                text = "$greeting, $userName",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2C3E50)
-                            )
+                            if (userName == null) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                            } else {
+                                Text(
+                                    text = "$greeting, $userName",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF2C3E50)
+                                )
+                            }
                             Text(
                                 text = "Welcome back to KLUE",
                                 style = MaterialTheme.typography.bodyMedium,

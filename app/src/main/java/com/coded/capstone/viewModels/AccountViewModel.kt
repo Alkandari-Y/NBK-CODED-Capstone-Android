@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.account.TransactionDetails
+import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +29,9 @@ class AccountViewModel(
 
     private val _shouldNavigate = MutableStateFlow(false)
     val shouldNavigate: StateFlow<Boolean> = _shouldNavigate
+
+    private val _accountTransactions = MutableStateFlow<List<TransactionDetails>?>(null)
+    val accountTransactions: StateFlow<List<TransactionDetails>?> = _accountTransactions
 
     fun resetNavigationFlag() {
         _shouldNavigate.value = false
@@ -57,5 +62,23 @@ class AccountViewModel(
             }
         }
     }
+
+    fun fetchAccountTransactions(accountNumber: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context)
+                    .getAllTransactionsByAccountNumber(accountNumber)
+
+                if (response.isSuccessful) {
+                    _accountTransactions.value = response.body()
+                } else {
+                    _accountTransactions.value = emptyList()
+                }
+            } catch (e: Exception) {
+                _accountTransactions.value = emptyList()
+            }
+        }
+    }
+
 }
 

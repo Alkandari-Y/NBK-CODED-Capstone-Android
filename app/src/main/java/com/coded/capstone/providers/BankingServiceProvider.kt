@@ -2,6 +2,7 @@ package com.coded.capstone.providers
 
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
+import com.coded.capstone.data.responses.account.AccountProduct
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.account.TransactionDetails
 import com.coded.capstone.data.responses.category.CategoryDto
@@ -35,6 +36,10 @@ interface BankingServiceProvider {
     @GET("/api/v1/categories")
     suspend fun getAllCategories(): Response<List<CategoryDto>>
 
+
+    // Account Products
+    @GET("/api/v1/products")
+    suspend fun getAllAccountProducts(): Response<List<AccountProduct>>
 
     // Transactions controller
     @GET("/api/v1/transactions/account/{accountNumber}")
