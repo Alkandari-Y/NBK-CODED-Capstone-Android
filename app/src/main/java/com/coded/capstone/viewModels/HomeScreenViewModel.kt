@@ -4,9 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coded.capstone.data.responses.account.AccountProduct
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.providers.RetrofitInstance
+import com.coded.capstone.respositories.AccountProductRepository
 import com.coded.capstone.respositories.AccountRepository
 import com.coded.capstone.respositories.CategoryRepository
 import com.coded.capstone.respositories.UserRepository
@@ -33,14 +35,17 @@ class HomeScreenViewModel(
     private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
     val categories: StateFlow<List<CategoryDto>> = _categories
 
+    private val _accountProducts = MutableStateFlow<List<AccountProduct>>(emptyList())
+    val accountProducts: StateFlow<List<AccountProduct>> = _accountProducts
+
     init {
         viewModelScope.launch {
             if (UserRepository.userInfo == null) {
                 UserRepository.loadUserInfo(context)
             }
-
             fetchAccounts()
             fetchCategories()
+            fetchAccountProducts()
         }
     }
 
@@ -91,10 +96,28 @@ class HomeScreenViewModel(
                     _categories.value = categories
                     CategoryRepository.categories = categories
                 } else {
-                    Log.e("DashboardViewModel", "Categories fetch failed: ${response.code()}")
+                    Log.e("HomeScreenViewModel", "Categories fetch failed: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("DashboardViewModel", "Error fetching categories: ${e.message}")
+                Log.e("HomeScreenViewModel", "Error fetching categories: ${e.message}")
+            }
+        }
+    }
+
+
+    fun fetchAccountProducts() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context).getAllAccountProducts()
+                if (response.isSuccessful) {
+                    val accountProdutcs = response.body().orEmpty()
+                    _accountProducts.value = accountProdutcs
+                    AccountProductRepository.accountProducts = accountProdutcs
+                } else {
+                    Log.e("HomeScreenViewModel", "Account Products fetch failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error fetching account products: ${e.message}")
             }
         }
     }

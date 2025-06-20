@@ -140,7 +140,7 @@ fun AppHost(
         }
         composable(NavRoutes.NAV_ROUTE_HOME) {
             val authViewModel = remember { AuthViewModel(context) }
-            MainScaffoldWithTabs(navController = navController,authViewModel)
+            MainScaffoldWithTabs(navController = navController,authViewModel, homeScreenViewModel)
         }
 //        composable(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL) {
 //            AllAccountsScreen(
@@ -170,6 +170,6 @@ fun AppHost(
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
-        composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
+        composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
     }
 }

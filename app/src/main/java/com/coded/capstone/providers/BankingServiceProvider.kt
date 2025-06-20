@@ -41,6 +41,11 @@ interface BankingServiceProvider {
     @GET("/api/v1/products")
     suspend fun getAllAccountProducts(): Response<List<AccountProduct>>
 
+    @GET("/api/v1/products/{productId}")
+    suspend fun getAccountProductDetails(
+        @Path("productId") productId: String,
+    ): Response<AccountProduct>
+
     // Transactions controller
     @GET("/api/v1/transactions/account/{accountNumber}")
     suspend fun getAllTransactionsByAccountNumber(

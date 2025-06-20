@@ -33,8 +33,8 @@ fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
             onClick = { onTabSelected(2) }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.LocalOffer, contentDescription = "Offers") },
-            label = { Text("Offers") },
+            icon = { Icon(Icons.Filled.LocalOffer, contentDescription = "Recommend") },
+            label = { Text("Recommend") },
             selected = selectedTab == 3,
             onClick = { onTabSelected(3) }
         )

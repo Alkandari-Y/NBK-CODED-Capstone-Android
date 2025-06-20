@@ -16,11 +16,13 @@ import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.screens.home.HomeScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.viewModels.AuthViewModel
+import com.coded.capstone.viewModels.HomeScreenViewModel
 
 @Composable
 fun MainScaffoldWithTabs(
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     Scaffold(
@@ -37,7 +39,7 @@ fun MainScaffoldWithTabs(
                 },)
                 1 -> WalletScreen()
                 2 -> CalendarScreen()
-                3 -> RecommendationScreen()
+                3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }
     }

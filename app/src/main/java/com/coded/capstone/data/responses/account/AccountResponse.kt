@@ -1,7 +1,9 @@
 package com.coded.capstone.data.responses.account
 
+
 import java.math.BigDecimal
-import com.coded.capstone.data.enums.AccountType
+
+
 
 data class AccountProduct(
     val id: Long?,
@@ -12,8 +14,10 @@ data class AccountProduct(
     val creditLimit: Double?,
     val annualFee: Double?,
     val minSalary: Double?,
-    val image: String?
+    val image: String?,
 )
+
+
 
 data class AccountResponse(
     val id: Long,
