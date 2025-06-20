@@ -3,12 +3,14 @@ package com.coded.capstone.providers
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.account.TransactionDetails
 import com.coded.capstone.data.responses.kyc.KYCResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface BankingServiceProvider {
 
@@ -22,10 +24,19 @@ interface BankingServiceProvider {
         @Body accountCreateRequestDto: AccountCreateRequest,
     ): Response<AccountResponse>
 
-    @GET("/api/v1/accounts/details/{accountId}")
+    @GET("/api/v1/accounts/details")
     suspend fun getAccountDetails(
-        @Path("accountId") accountId: String,
+        @Query("accountId") accountId: String,
     ): Response<AccountResponse>
+
+
+
+    // Transactions controller
+    @GET("/api/v1/transactions/account/{accountNumber}")
+    suspend fun getAllTransactionsByAccountNumber(
+        @Path("accountNumber") accountNumber: String,
+    ): Response<List<TransactionDetails>>
+
 
     // KYC
     @POST("/api/v1/kyc")

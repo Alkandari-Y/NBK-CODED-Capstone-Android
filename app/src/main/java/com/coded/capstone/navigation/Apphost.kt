@@ -15,10 +15,12 @@ import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.Wallet.WalletScreen
+import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.screens.kyc.KycScreen
+import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
 import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
 import com.coded.capstone.viewModels.HomeScreenViewModel
@@ -41,8 +43,9 @@ object NavRoutes {
     const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountId}"
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
+    const val NAV_ROUTE_PROFILE = "/profile"
 
-    fun accountDetailRoute(accountNum: String) = "accounts/manage/$accountNum"
+    fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
 }
 
 @Composable
@@ -152,17 +155,19 @@ fun AppHost(
 //            )
 //        }
 
-//        composable(NavRoutes.NAV_ROUTE_ACCOUNT_DETAILS) { backStackEntry ->
-//            val accountId = backStackEntry.arguments?.getString("accountId")
-//            if (accountId != null) {
-//                AccountDetailsScreen(
-//                    onBackClick = { navController.popBackStack() },
-////                    onTransferClick = { navController.navigate(NavRoutes.NAV_ROUTE_TRANSFER) },
-//                    viewModel = homeScreenViewModel,
-//                    accountId = accountId
-//                )
-//            }
-//        }
+        composable(NavRoutes.NAV_ROUTE_ACCOUNT_DETAILS) { backStackEntry ->
+            val accountId = backStackEntry.arguments?.getString("accountId")
+            if (accountId != null) {
+                AccountDetailsScreen(
+                    accountId= accountId,
+                    viewModel = homeScreenViewModel,
+
+                    onBack= { navController.popBackStack()})
+            }
+        }
+        composable (NavRoutes.NAV_ROUTE_PROFILE){
+            ProfilePage()
+        }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }

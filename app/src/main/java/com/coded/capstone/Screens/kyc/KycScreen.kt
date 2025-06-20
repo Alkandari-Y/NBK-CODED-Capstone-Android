@@ -121,6 +121,26 @@ fun KycScreen(
                 )
         )
 
+        // Back button
+        IconButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+                .offset(y = 40.dp)
+                .background(
+                    Color.White.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp)
+                )
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
         // Logo in top section
         Box(
             modifier = Modifier

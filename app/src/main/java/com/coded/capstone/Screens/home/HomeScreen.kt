@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -29,9 +30,19 @@ import com.coded.capstone.viewModels.HomeScreenViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.ViewModelProvider
 import com.coded.capstone.viewModels.AccountsUiState
+import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.enums.AccountType
+import com.coded.capstone.respositories.UserRepository
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalTime
+import androidx.navigation.compose.rememberNavController
+import com.coded.capstone.composables.home.DrawerContent
+import com.coded.capstone.composables.home.EmptyAccountsCard
+import com.coded.capstone.composables.home.ErrorStateCard
+import com.coded.capstone.composables.home.RewardCard
+import com.coded.capstone.navigation.NavRoutes
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +65,9 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var totalBalance by remember { mutableStateOf(BigDecimal.ZERO) }
-    val userName = "Sarah" // This should come from user data
+    val kyc = UserRepository.kyc
+    val userName = "${kyc?.firstName} ${kyc?.lastName}"
+
     // Get time-based greeting
     val greeting = remember {
         when (LocalTime.now().hour) {
@@ -64,13 +77,26 @@ fun HomeScreen(
             else -> "Good night"
         }
     }
-    // Calculate total balance when accounts change
-    val accounts = (accountsUiState as? com.coded.capstone.viewModels.AccountsUiState.Success)?.accounts
-    LaunchedEffect(accounts) {
-        if (accounts != null) {
-            totalBalance = accounts.sumOf { it.balance }
-        }
+
+    // Separate accounts into reward cards and regular accounts
+    val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
+    val (rewardCards, regularAccounts) = remember(accounts) {
+        accounts?.partition { account ->
+            account.accountType == AccountType.CASHBACK.name
+        } ?: (emptyList<AccountResponse>() to emptyList<AccountResponse>())
     }
+
+    // Calculate total balance when accounts change
+//    LaunchedEffect(accounts) {
+//        if (accounts != null) {
+//            totalBalance = accounts.sumOf { it.balance }
+//        }
+//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchAccounts()
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -78,7 +104,7 @@ fun HomeScreen(
                 userName = userName,
                 onProfileClick = {
                     scope.launch { drawerState.close() }
-                    navController.navigate("profile")
+                    navController.navigate(NavRoutes.NAV_ROUTE_PROFILE)
                 },
                 onSettingsClick = {
                     scope.launch { drawerState.close() }
@@ -118,6 +144,7 @@ fun HomeScreen(
                     )
                 }
             }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -145,108 +172,62 @@ fun HomeScreen(
                         }
                     }
                 }
-                item {
-                    // Reward Card Section
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF2C3E50)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(32.dp)
-                                                .clip(CircleShape)
-                                                .background(Color(0xFFFFD700)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                "G",
-                                                color = Color(0xFF2C3E50),
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                        Text(
-                                            "Gold Tier",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        "Reward Balance",
-                                        color = Color(0xFFBDC3C7),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                                Column(
-                                    horizontalAlignment = Alignment.End
-                                ) {
-                                    Text(
-                                        "KD 127.80",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        "1,250 XP Points",
-                                        color = Color(0xFFBDC3C7),
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
+
+                // Reward Cards Section
+                if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
+                    item {
+                        Column {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = Color(0xFFFFD700),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Text(
-                                        "250 XP to Platinum",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
+                                Text(
+                                    text = "Reward Cards",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF2C3E50)
+                                )
+                                if (rewardCards.size > 1) {
+                                    TextButton(
+                                        onClick = { navController.navigate("reward_cards") }
+                                    ) {
+                                        Text(
+                                            "View All",
+                                            color = Color(0xFFFFD700)
+                                        )
+                                        Icon(
+                                            Icons.Default.ChevronRight,
+                                            contentDescription = null,
+                                            tint = Color(0xFFFFD700)
+                                        )
+                                    }
                                 }
-                                Button(
-                                    onClick = { /* Redeem */ },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF34495E)
-                                    ),
-                                    shape = RoundedCornerShape(20.dp)
-                                ) {
-                                    Text("Redeem", color = Color.White)
-                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                            items(rewardCards) { rewardCard ->
+                                RewardCard(
+                                    account = rewardCard,
+                                    onClick = {
+                                        onAccountClick(rewardCard.id.toString())
+                                        navController.navigate(NavRoutes.accountDetailRoute(rewardCard.id.toString()))
+                                    }
+                                )
                             }
                         }
                     }
                 }
+
                 item {
-                    // My Accounts Section
+                    // My Accounts Section Header
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -259,7 +240,10 @@ fun HomeScreen(
                             color = Color(0xFF2C3E50)
                         )
                         TextButton(
-                            onClick = { navController.navigate("accounts") }
+                            onClick = {
+                                onViewAllAccounts()
+                                navController.navigate("accounts")
+                            }
                         ) {
                             Text(
                                 "View All",
@@ -273,8 +257,10 @@ fun HomeScreen(
                         }
                     }
                 }
+
+                // Handle different UI states for regular accounts
                 when (accountsUiState) {
-                    is com.coded.capstone.viewModels.AccountsUiState.Loading -> {
+                    is AccountsUiState.Loading -> {
                         item {
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
@@ -287,20 +273,32 @@ fun HomeScreen(
                     is AccountsUiState.Error -> {
                         item {
                             val message = (accountsUiState as AccountsUiState.Error).message
-                            Text(
-                                text = "Error loading accounts: $message",
-                                color = Color.Red,
-                                modifier = Modifier.padding(16.dp)
+                            ErrorStateCard(
+                                message = message,
+                                onRetry = { viewModel.fetchAccounts() }
                             )
                         }
                     }
                     is AccountsUiState.Success -> {
-                        val accounts = (accountsUiState as AccountsUiState.Success).accounts
-                        items(accounts) { account ->
-                            AccountCard(account = account)
+                        // Show regular accounts (non-reward cards)
+                        items(regularAccounts) { account ->
+                            AccountCard(
+                                account = account,
+                                onCardClick = { onAccountClick(account.id.toString()) },
+                                modifier = Modifier.clickable {
+                                    navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                }
+                            )
+                        }
+                        // If no regular accounts exist, show empty state
+                        if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
+                            item {
+                                EmptyAccountsCard()
+                            }
                         }
                     }
                 }
+
                 item {
                     Spacer(modifier = Modifier.height(80.dp))
                 }
@@ -309,124 +307,10 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun DrawerContent(
-    userName: String,
-    onProfileClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onLogoutClick: () -> Unit
-) {
-    ModalDrawerSheet(
-        modifier = Modifier.width(280.dp),
-        drawerContainerColor = Color(0xFFFAFAFA)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            // Header with user info
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp)
-            ) {
-                // User avatar
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = userName.first().toString(),
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = userName,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50)
-                )
-                Text(
-                    text = "KLUE Banking",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF7F8C8D)
-                )
-            }
 
-            Divider(
-                color = Color(0xFFE0E0E0),
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
 
-            // Menu items
-            DrawerMenuItem(
-                icon = Icons.Default.Person,
-                title = "Profile",
-                onClick = onProfileClick
-            )
 
-            DrawerMenuItem(
-                icon = Icons.Default.Settings,
-                title = "Settings",
-                onClick = onSettingsClick
-            )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Logout at bottom
-            DrawerMenuItem(
-                icon = Icons.Default.ExitToApp,
-                title = "Logout",
-                onClick = onLogoutClick,
-                isDestructive = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-fun DrawerMenuItem(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit,
-    isDestructive: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = 12.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = title,
-            tint = if (isDestructive) Color(0xFFE74C3C) else Color(0xFF666666),
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = if (isDestructive) Color(0xFFE74C3C) else Color(0xFF2C3E50),
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
 

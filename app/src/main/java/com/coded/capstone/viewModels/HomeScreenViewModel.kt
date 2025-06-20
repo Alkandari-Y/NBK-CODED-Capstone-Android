@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.account.TransactionDetails
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountRepository
 import com.coded.capstone.respositories.UserRepository
@@ -27,7 +28,8 @@ class HomeScreenViewModel(
 
     private val _selectedAccount = MutableStateFlow<AccountResponse?>(null)
     val selectedAccount: StateFlow<AccountResponse?> = _selectedAccount
-
+    private val _accountTransactions = MutableStateFlow<List<TransactionDetails>?>(null)
+    val accountTransactions: StateFlow<List<TransactionDetails>?> = _accountTransactions
     init {
         viewModelScope.launch {
             if (UserRepository.userInfo == null) {
@@ -63,6 +65,7 @@ class HomeScreenViewModel(
             try {
                 val response = RetrofitInstance.getBankingServiceProvide(context)
                     .getAccountDetails(accountId)
+                println(response.body())
 
                 if (response.isSuccessful) {
                     _selectedAccount.value = response.body()
@@ -74,5 +77,23 @@ class HomeScreenViewModel(
             }
         }
     }
+
+    fun fetchAccountTransactions(accountNumber: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context)
+                    .getAllTransactionsByAccountNumber(accountNumber)
+
+                if (response.isSuccessful) {
+                    _accountTransactions.value = response.body()
+                } else {
+                    _accountTransactions.value = emptyList()
+                }
+            } catch (e: Exception) {
+                _accountTransactions.value = emptyList()
+            }
+        }
+    }
+
 
 }
