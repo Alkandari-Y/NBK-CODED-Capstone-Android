@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,63 +16,56 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.composables.home.AccountCard
-import com.coded.capstone.data.enums.AccountType
-import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.viewModels.AuthViewModel
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
+import com.coded.capstone.viewModels.AccountsUiState
+import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.enums.AccountType
+import com.coded.capstone.respositories.UserRepository
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalTime
+import androidx.navigation.compose.rememberNavController
+import com.coded.capstone.composables.home.DrawerContent
+import com.coded.capstone.composables.home.EmptyAccountsCard
+import com.coded.capstone.composables.home.ErrorStateCard
+import com.coded.capstone.composables.home.RewardCard
+import com.coded.capstone.navigation.NavRoutes
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    onNotificationClick: () -> Unit = {},
+    onAccountClick: (String) -> Unit = {},
+    onViewAllAccounts: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val viewModel: HomeScreenViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return HomeScreenViewModel(context) as T
+            }
+        }
+    )
+    val accountsUiState by viewModel.accountsUiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    // Sample data - replace with actual API calls
-    val sampleAccounts = remember {
-        listOf(
-            AccountResponse(
-                accountNumber = "1234567890123456",
-                id = 1L,
-                balance = BigDecimal("8247.50"),
-                name = "NBK Classic",
-                active = true,
-                ownerId = 1L,
-                accountType = AccountType.DEBIT
-            ),
-            AccountResponse(
-                accountNumber = "9876543210985678",
-                id = 2L,
-                balance = BigDecimal("4600.00"),
-                name = "Savings Account",
-                active = true,
-                ownerId = 1L,
-                accountType = AccountType.CREDIT
-            )
-        )
-    }
-
-    var totalBalance by remember { mutableStateOf(BigDecimal.ZERO) }
-    val userName = "Sarah" // This should come from user data
-
-    // Calculate total balance
-    LaunchedEffect(sampleAccounts) {
-        totalBalance = sampleAccounts.sumOf { it.balance }
-    }
+    val kyc = UserRepository.kyc
+    val userName = if (kyc != null) "${kyc.firstName} ${kyc.lastName}" else null
 
     // Get time-based greeting
     val greeting = remember {
@@ -82,24 +77,29 @@ fun HomeScreen(
         }
     }
 
+    // Separate accounts into reward cards and regular accounts
+    val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
+    val (rewardCards, regularAccounts) = remember(accounts) {
+        accounts?.partition { account ->
+            account.accountType == AccountType.CASHBACK.name
+        } ?: (emptyList<AccountResponse>() to emptyList<AccountResponse>())
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             DrawerContent(
-                userName = userName,
+                userName = userName ?: "...",
                 onProfileClick = {
                     scope.launch { drawerState.close() }
-                    // Navigate to profile
-                    navController.navigate("profile")
+                    navController.navigate(NavRoutes.NAV_ROUTE_PROFILE)
                 },
                 onSettingsClick = {
                     scope.launch { drawerState.close() }
-                    // Navigate to settings
                     navController.navigate("settings")
                 },
                 onLogoutClick = {
                     scope.launch { drawerState.close() }
-                    // Handle logout
                     authViewModel.logout()
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
@@ -108,326 +108,280 @@ fun HomeScreen(
             )
         }
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF8F9FA))
-        ) {
-            // Top bar with hamburger menu
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            drawerState.open()
-                        }
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Menu,
-                        contentDescription = "Menu",
-                        tint = Color(0xFF666666)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF0F172A), // Dark slate blue
+                            Color(0xFF1E293B), // Slightly lighter dark blue
+                            Color(0xFF334155)  // Even lighter blue-gray
+                        )
                     )
-                }
-            }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                )
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    // Greeting Section
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                // Top bar with hamburger menu
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(
+                        onClick = {
+                            scope.launch { drawerState.open() }
+                        },
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
+                                )
+                            )
                     ) {
-                        Column {
-                            Text(
-                                text = "$greeting, $userName",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2C3E50)
+                        Icon(
+                            Icons.Default.Menu,
+                            contentDescription = "Menu",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onNotificationClick,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
+                                )
                             )
-                            Text(
-                                text = "Welcome back to KLUE",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF7F8C8D)
-                            )
-                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
 
-                item {
-                    // Reward Card Section
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF2C3E50)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        // Greeting Section
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(32.dp)
-                                                .clip(CircleShape)
-                                                .background(Color(0xFFFFD700)),
-                                            contentAlignment = Alignment.Center
+                            Column {
+                                if (userName == null) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = Color(0xFF6366F1)
+                                    )
+                                } else {
+                                    Text(
+                                        text = "$greeting, $userName",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+                                Text(
+                                    text = "Welcome back to KLUE",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+                    }
+
+                    // Reward Cards Section
+                    if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
+                        item {
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Reward Cards",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                    if (rewardCards.size > 1) {
+                                        TextButton(
+                                            onClick = { navController.navigate("reward_cards") }
                                         ) {
                                             Text(
-                                                "G",
-                                                color = Color(0xFF2C3E50),
-                                                fontWeight = FontWeight.Bold
+                                                "View All",
+                                                color = Color(0xFF6366F1)
+                                            )
+                                            Icon(
+                                                Icons.Default.ChevronRight,
+                                                contentDescription = null,
+                                                tint = Color(0xFF6366F1)
                                             )
                                         }
-                                        Text(
-                                            "Gold Tier",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Medium
-                                        )
                                     }
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        "Reward Balance",
-                                        color = Color(0xFFBDC3C7),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
                                 }
-
-                                Column(
-                                    horizontalAlignment = Alignment.End
-                                ) {
-                                    Text(
-                                        "KD 127.80",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        "1,250 XP Points",
-                                        color = Color(0xFFBDC3C7),
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
+                        }
 
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                        item {
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                contentPadding = PaddingValues(horizontal = 4.dp)
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = Color(0xFFFFD700),
-                                        modifier = Modifier.size(16.dp)
+                                items(rewardCards) { rewardCard ->
+                                    RewardCard(
+                                        account = rewardCard,
+                                        onClick = {
+                                            onAccountClick(rewardCard.id.toString())
+                                            navController.navigate(NavRoutes.accountDetailRoute(rewardCard.id.toString()))
+                                        }
                                     )
-                                    Text(
-                                        "250 XP to Platinum",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-
-                                Button(
-                                    onClick = { /* Redeem */ },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF34495E)
-                                    ),
-                                    shape = RoundedCornerShape(20.dp)
-                                ) {
-                                    Text("Redeem", color = Color.White)
                                 }
                             }
                         }
                     }
-                }
 
-                item {
-                    // My Accounts Section
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "My Accounts",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C3E50)
-                        )
-                        TextButton(
-                            onClick = { navController.navigate("accounts") }
+                    item {
+                        // My Accounts Section Header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "View All",
-                                color = Color(0xFF1976D2)
+                                text = "My Accounts",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
-                            Icon(
-                                Icons.Default.ChevronRight,
-                                contentDescription = null,
-                                tint = Color(0xFF1976D2)
-                            )
+                            TextButton(
+                                onClick = {
+                                    onViewAllAccounts()
+                                    navController.navigate("accounts")
+                                }
+                            ) {
+                                Text(
+                                    "View All",
+                                    color = Color(0xFF6366F1)
+                                )
+                                Icon(
+                                    Icons.Default.ChevronRight,
+                                    contentDescription = null,
+                                    tint = Color(0xFF6366F1)
+                                )
+                            }
                         }
                     }
-                }
 
-                items(sampleAccounts) { account ->
-                    AccountCard(account = account)
-                }
+                    // Handle different UI states for regular accounts
+                    when (accountsUiState) {
+                        is AccountsUiState.Loading -> {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = Color(0xFF6366F1)
+                                    )
+                                }
+                            }
+                        }
+                        is AccountsUiState.Error -> {
+                            item {
+                                val message = (accountsUiState as AccountsUiState.Error).message
+                                ErrorStateCard(
+                                    message = message,
+                                    onRetry = { viewModel.fetchAccounts() }
+                                )
+                            }
+                        }
+                        is AccountsUiState.Success -> {
+                            // Show regular accounts (non-reward cards)
+                            items(regularAccounts) { account ->
+                                AccountCard(
+                                    account = account,
+                                    onCardClick = { onAccountClick(account.id.toString()) },
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                    }
+                                )
+                            }
+                            // If no regular accounts exist, show empty state
+                            if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
+                                item {
+                                    EmptyAccountsCard()
+                                }
+                            }
+                        }
+                    }
 
-                item {
-                    // Bottom Navigation Space
-                    Spacer(modifier = Modifier.height(80.dp))
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
                 }
             }
-        }
-    }
-}
 
-@Composable
-fun DrawerContent(
-    userName: String,
-    onProfileClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onLogoutClick: () -> Unit
-) {
-    ModalDrawerSheet(
-        modifier = Modifier.width(280.dp),
-        drawerContainerColor = Color(0xFFFAFAFA)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            // Header with user info
-            Column(
+            // Decorative Elements matching the recommendation screen
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp)
-            ) {
-                // User avatar
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
-                            )
+                    .align(Alignment.TopEnd)
+                    .size(200.dp)
+                    .offset(x = 100.dp, y = (-100).dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF6366F1).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 200f
                         ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = userName.first().toString(),
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        shape = RoundedCornerShape(100.dp)
                     )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = userName,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50)
-                )
-                Text(
-                    text = "KLUE Banking",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF7F8C8D)
-                )
-            }
-
-            Divider(
-                color = Color(0xFFE0E0E0),
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Menu items
-            DrawerMenuItem(
-                icon = Icons.Default.Person,
-                title = "Profile",
-                onClick = onProfileClick
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(150.dp)
+                    .offset(x = (-75).dp, y = 75.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF8B5CF6).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 150f
+                        ),
+                        shape = RoundedCornerShape(75.dp)
+                    )
             )
-
-            DrawerMenuItem(
-                icon = Icons.Default.Settings,
-                title = "Settings",
-                onClick = onSettingsClick
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Logout at bottom
-            DrawerMenuItem(
-                icon = Icons.Default.ExitToApp,
-                title = "Logout",
-                onClick = onLogoutClick,
-                isDestructive = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
-
-@Composable
-fun DrawerMenuItem(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit,
-    isDestructive: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = 12.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = title,
-            tint = if (isDestructive) Color(0xFFE74C3C) else Color(0xFF666666),
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = if (isDestructive) Color(0xFFE74C3C) else Color(0xFF2C3E50),
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-

@@ -89,7 +89,6 @@ fun KycScreen(
             is UiStatus.Success -> {
                 Toast.makeText(context, "KYC information updated successfully", Toast.LENGTH_SHORT).show()
                 navController.navigate(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
-                    popUpTo(0)
                     launchSingleTop = true
                 }
             }
@@ -120,6 +119,26 @@ fun KycScreen(
                     shape = RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp)
                 )
         )
+
+        // Back button
+        IconButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+                .offset(y = 40.dp)
+                .background(
+                    Color.White.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp)
+                )
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
 
         // Logo in top section
         Box(

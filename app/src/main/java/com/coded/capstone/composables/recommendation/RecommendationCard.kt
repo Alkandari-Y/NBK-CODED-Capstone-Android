@@ -4,8 +4,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,36 +16,44 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coded.capstone.screens.recommendation.RecommendationItem
+import coil.compose.AsyncImage
+import com.coded.capstone.data.responses.account.AccountProduct
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RecommendationCard(
-    item: RecommendationItem,
+    item: AccountProduct,
     isExpanded: Boolean,
     onClick: () -> Unit,
     onBookClick: () -> Unit
 ) {
     val animatedHeight by animateDpAsState(
-        targetValue = if (isExpanded) 400.dp else 200.dp,
+        targetValue = if (isExpanded) 420.dp else 280.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
@@ -55,151 +65,321 @@ fun RecommendationCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(animatedHeight)
+            .shadow(
+                elevation = 20.dp,
+                shape = RoundedCornerShape(24.dp),
+                ambientColor = Color(0xFF6366F1).copy(alpha = 0.3f),
+                spotColor = Color(0xFF8B5CF6).copy(alpha = 0.3f)
+            )
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = item.colors.first()
-        )
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Header Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Product",
-                        fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                    Text(
-                        text = item.title,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
+            // Background with stunning gradient
+            if (item.image != null) {
+                AsyncImage(
+                    model = item.image,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
 
-                // Badge
-                Surface(
-                    modifier = Modifier.padding(start = 8.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color.White.copy(alpha = 0.2f)
-                ) {
-                    Text(
-                        text = item.badgeText.toString(),
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
+                // Glassmorphism overlay
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF6366F1).copy(alpha = 0.4f),
+                                    Color(0xFF8B5CF6).copy(alpha = 0.6f),
+                                    Color(0xFF1E1B4B).copy(alpha = 0.8f)
+                                ),
+                                radius = 800f
+                            )
+                        )
+                )
+            } else {
+                // Premium gradient background
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF667EEA),
+                                    Color(0xFF764BA2),
+                                    Color(0xFF667EEA)
+                                ),
+                                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                                end = androidx.compose.ui.geometry.Offset(1000f, 1000f)
+                            )
+                        )
+                )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Description
-            Text(
-                text = item.description,
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                lineHeight = 20.sp
+            // Premium glassmorphism overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.1f),
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.3f)
+                            )
+                        )
+                    )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Stats Section
-            if (isExpanded) {
+            // Content Layer
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+            ) {
+                // Header Section with enhanced styling
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    item.detailStats.forEach { stat ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = item.accountType?.uppercase() ?: "PREMIUM ACCOUNT",
+                            fontSize = 11.sp,
+                            color = Color(0xFFE2E8F0),
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 1.2.sp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = item.name ?: "Premium Banking Product",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            lineHeight = 24.sp
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.3f),
+                                        Color.White.copy(alpha = 0.1f)
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Diamond,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Premium Info Cards
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Interest Rate Card
+                    if (item.interestRate != null) {
+                        InfoCard(
+                            value = "${item.interestRate}%",
+                            label = "Interest Rate",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    // Credit Limit Card
+                    if (item.creditLimit != null) {
+                        InfoCard(
+                            value = "KD ${item.creditLimit.toInt()}",
+                            label = "Credit Limit",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    // Annual Fee Card
+                    if (item.annualFee != null) {
+                        InfoCard(
+                            value = if (item.annualFee == 0.0) "Free" else "KD ${item.annualFee.toInt()}",
+                            label = "Annual Fee",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Additional Premium Info
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Min Balance
+                    if (item.minBalanceRequired != null) {
+                        InfoCard(
+                            value = "KD ${item.minBalanceRequired.toInt()}",
+                            label = "Min Balance",
+                            modifier = Modifier.weight(1f),
+                            isSecondary = true
+                        )
+                    }
+
+                    // Min Salary
+                    if (item.minSalary != null) {
+                        InfoCard(
+                            value = "KD ${item.minSalary.toInt()}",
+                            label = "Min Salary",
+                            modifier = Modifier.weight(1f),
+                            isSecondary = true
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Expanded Content
+                if (isExpanded) {
+                    // Premium Apply Button
+                    Button(
+                        onClick = onBookClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .shadow(
+                                elevation = 12.dp,
+                                shape = RoundedCornerShape(16.dp),
+                                ambientColor = Color.White.copy(alpha = 0.3f)
+                            ),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF1E1B4B)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = stat.value,
+                                text = "Apply Now",
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                fontWeight = FontWeight.Bold
                             )
-                            Text(
-                                text = stat.unit,
-                                fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.8f)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Apply Now Button
-                Button(
-                    onClick = onBookClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = item.colors.first()
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "Apply Now",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else {
-                Spacer(modifier = Modifier.weight(1f))
-            }
-
-            // Price Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Value",
-                        fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
+                } else {
+                    // Elegant Expand Indicator
                     Row(
-                        verticalAlignment = Alignment.Bottom
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = item.price,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Text(
-                            text = item.priceSubtext,
-                            fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.8f),
-                            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(Color.White.copy(alpha = 0.2f))
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Tap to expand",
+                                    fontSize = 12.sp,
+                                    color = Color.White.copy(alpha = 0.9f),
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Expand",
+                                    tint = Color.White.copy(alpha = 0.9f),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
                     }
                 }
-
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "Expand",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
             }
+        }
+    }
+}
+
+@Composable
+private fun InfoCard(
+    value: String,
+    label: String,
+    modifier: Modifier = Modifier,
+    isSecondary: Boolean = false
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                brush = if (isSecondary) {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.1f),
+                            Color.White.copy(alpha = 0.05f)
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.2f),
+                            Color.White.copy(alpha = 0.1f)
+                        )
+                    )
+                }
+            )
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = value,
+                fontSize = if (isSecondary) 14.sp else 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = label,
+                fontSize = 10.sp,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 0.5.sp
+            )
         }
     }
 }
