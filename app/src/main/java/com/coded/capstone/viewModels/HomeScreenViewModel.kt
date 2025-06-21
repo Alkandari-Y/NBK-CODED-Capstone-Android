@@ -37,8 +37,6 @@ sealed class FavCategoryUiState {
     data class Error(val message: String) : FavCategoryUiState()
 }
 
-
-
 class HomeScreenViewModel(
     private val context: Context
 ) : ViewModel() {
@@ -58,6 +56,9 @@ class HomeScreenViewModel(
     private val _accountProducts = MutableStateFlow<List<AccountProduct>>(emptyList())
     val accountProducts: StateFlow<List<AccountProduct>> = _accountProducts
 
+    // Flag to prevent duplicate API calls
+    private var accountsFetched = false
+
     init {
         viewModelScope.launch {
             if (UserRepository.userInfo == null) {
@@ -70,6 +71,11 @@ class HomeScreenViewModel(
     }
 
     fun fetchAccounts() {
+        // Prevent duplicate API calls
+        if (accountsFetched && _accountsUiState.value is AccountsUiState.Success) {
+            return
+        }
+        
         viewModelScope.launch {
             delay(500)
             _accountsUiState.value = AccountsUiState.Loading
@@ -79,6 +85,7 @@ class HomeScreenViewModel(
                     val accounts = response.body()?.toMutableList() ?: mutableListOf()
                     _accountsUiState.value = AccountsUiState.Success(accounts)
                     AccountRepository.myAccounts = accounts
+                    accountsFetched = true
                 } else {
                     _accountsUiState.value = AccountsUiState.Error("Error: ${response.code()}")
                 }

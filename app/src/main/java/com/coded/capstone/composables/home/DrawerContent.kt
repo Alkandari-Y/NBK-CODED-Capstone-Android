@@ -37,8 +37,18 @@ fun DrawerContent(
     onLogoutClick: () -> Unit
 ) {
     ModalDrawerSheet(
-        modifier = Modifier.width(280.dp),
-        drawerContainerColor = Color(0xFFFAFAFA)
+        modifier = Modifier
+            .width(280.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0F172A), // Dark slate blue
+                        Color(0xFF1E293B), // Slightly lighter dark blue
+                        Color(0xFF334155)  // Even lighter blue-gray
+                    )
+                )
+            ),
+        drawerContainerColor = Color.Transparent // Make container transparent to show gradient
     ) {
         Column(
             modifier = Modifier
@@ -58,7 +68,10 @@ fun DrawerContent(
                         .clip(CircleShape)
                         .background(
                             Brush.linearGradient(
-                                listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
+                                listOf(
+                                    Color(0xFF6366F1), // Indigo to match recommendation screen
+                                    Color(0xFF8B5CF6)  // Purple to match recommendation screen
+                                )
                             )
                         ),
                     contentAlignment = Alignment.Center
@@ -77,17 +90,17 @@ fun DrawerContent(
                     text = userName,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2C3E50)
+                    color = Color.White // White text for dark theme
                 )
                 Text(
                     text = "KLUE Banking",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF7F8C8D)
+                    color = Color.White.copy(alpha = 0.7f) // Matching the subtitle opacity
                 )
             }
 
             Divider(
-                color = Color(0xFFE0E0E0),
+                color = Color.White.copy(alpha = 0.2f), // Subtle white divider
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 16.dp)
             )

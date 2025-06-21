@@ -49,6 +49,7 @@ import kotlin.random.Random
 fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
+    onNotificationClick: () -> Unit = {},
     onAccountClick: (String) -> Unit = {},
     onViewAllAccounts: () -> Unit = {},
 ) {
@@ -61,10 +62,8 @@ fun HomeScreen(
         }
     )
     val accountsUiState by viewModel.accountsUiState.collectAsState()
-    val lazyListStateAccounts = rememberLazyListState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var totalBalance by remember { mutableStateOf(BigDecimal.ZERO) }
     val kyc = UserRepository.kyc
     val userName = if (kyc != null) "${kyc.firstName} ${kyc.lastName}" else null
 
@@ -84,17 +83,6 @@ fun HomeScreen(
         accounts?.partition { account ->
             account.accountType == AccountType.CASHBACK.name
         } ?: (emptyList<AccountResponse>() to emptyList<AccountResponse>())
-    }
-
-    // Calculate total balance when accounts change
-//    LaunchedEffect(accounts) {
-//        if (accounts != null) {
-//            totalBalance = accounts.sumOf { it.balance }
-//        }
-//    }
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchAccounts()
     }
 
     ModalNavigationDrawer(
@@ -120,201 +108,280 @@ fun HomeScreen(
             )
         }
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF8F9FA))
-        ) {
-            // Top bar with hamburger menu
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = {
-                        scope.launch { drawerState.open() }
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Menu,
-                        contentDescription = "Menu",
-                        tint = Color(0xFF666666)
-                    )
-                }
-            }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
-                    // Greeting Section
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            if (userName == null) {
-                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                            } else {
-                                Text(
-                                    text = "$greeting, $userName",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF2C3E50)
-                                )
-                            }
-                            Text(
-                                text = "Welcome back to KLUE",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF7F8C8D)
-                            )
-                        }
-                    }
-                }
-
-                // Reward Cards Section
-                if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
-                    item {
-                        Column {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = "Reward Cards",
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF2C3E50)
-                                )
-                                if (rewardCards.size > 1) {
-                                    TextButton(
-                                        onClick = { navController.navigate("reward_cards") }
-                                    ) {
-                                        Text(
-                                            "View All",
-                                            color = Color(0xFFFFD700)
-                                        )
-                                        Icon(
-                                            Icons.Default.ChevronRight,
-                                            contentDescription = null,
-                                            tint = Color(0xFFFFD700)
-                                        )
-                                    }
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
-
-                    item {
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp)
-                        ) {
-                            items(rewardCards) { rewardCard ->
-                                RewardCard(
-                                    account = rewardCard,
-                                    onClick = {
-                                        onAccountClick(rewardCard.id.toString())
-                                        navController.navigate(NavRoutes.accountDetailRoute(rewardCard.id.toString()))
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    // My Accounts Section Header
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "My Accounts",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2C3E50)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF0F172A), // Dark slate blue
+                            Color(0xFF1E293B), // Slightly lighter dark blue
+                            Color(0xFF334155)  // Even lighter blue-gray
                         )
-                        TextButton(
-                            onClick = {
-                                onViewAllAccounts()
-                                navController.navigate("accounts")
+                    )
+                )
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // Top bar with hamburger menu
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(
+                        onClick = {
+                            scope.launch { drawerState.open() }
+                        },
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
+                                )
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.Menu,
+                            contentDescription = "Menu",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onNotificationClick,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
+                                )
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        // Greeting Section
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                if (userName == null) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = Color(0xFF6366F1)
+                                    )
+                                } else {
+                                    Text(
+                                        text = "$greeting, $userName",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+                                Text(
+                                    text = "Welcome back to KLUE",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
                             }
+                        }
+                    }
+
+                    // Reward Cards Section
+                    if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
+                        item {
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Reward Cards",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                    if (rewardCards.size > 1) {
+                                        TextButton(
+                                            onClick = { navController.navigate("reward_cards") }
+                                        ) {
+                                            Text(
+                                                "View All",
+                                                color = Color(0xFF6366F1)
+                                            )
+                                            Icon(
+                                                Icons.Default.ChevronRight,
+                                                contentDescription = null,
+                                                tint = Color(0xFF6366F1)
+                                            )
+                                        }
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+
+                        item {
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                contentPadding = PaddingValues(horizontal = 4.dp)
+                            ) {
+                                items(rewardCards) { rewardCard ->
+                                    RewardCard(
+                                        account = rewardCard,
+                                        onClick = {
+                                            onAccountClick(rewardCard.id.toString())
+                                            navController.navigate(NavRoutes.accountDetailRoute(rewardCard.id.toString()))
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        // My Accounts Section Header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "View All",
-                                color = Color(0xFF1976D2)
+                                text = "My Accounts",
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
                             )
-                            Icon(
-                                Icons.Default.ChevronRight,
-                                contentDescription = null,
-                                tint = Color(0xFF1976D2)
-                            )
-                        }
-                    }
-                }
-
-                // Handle different UI states for regular accounts
-                when (accountsUiState) {
-                    is AccountsUiState.Loading -> {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
-                    }
-                    is AccountsUiState.Error -> {
-                        item {
-                            val message = (accountsUiState as AccountsUiState.Error).message
-                            ErrorStateCard(
-                                message = message,
-                                onRetry = { viewModel.fetchAccounts() }
-                            )
-                        }
-                    }
-                    is AccountsUiState.Success -> {
-                        // Show regular accounts (non-reward cards)
-                        items(regularAccounts) { account ->
-                            AccountCard(
-                                account = account,
-                                onCardClick = { onAccountClick(account.id.toString()) },
-                                modifier = Modifier.clickable {
-                                    navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                            TextButton(
+                                onClick = {
+                                    onViewAllAccounts()
+                                    navController.navigate("accounts")
                                 }
-                            )
-                        }
-                        // If no regular accounts exist, show empty state
-                        if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
-                            item {
-                                EmptyAccountsCard()
+                            ) {
+                                Text(
+                                    "View All",
+                                    color = Color(0xFF6366F1)
+                                )
+                                Icon(
+                                    Icons.Default.ChevronRight,
+                                    contentDescription = null,
+                                    tint = Color(0xFF6366F1)
+                                )
                             }
                         }
                     }
-                }
 
-                item {
-                    Spacer(modifier = Modifier.height(80.dp))
+                    // Handle different UI states for regular accounts
+                    when (accountsUiState) {
+                        is AccountsUiState.Loading -> {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = Color(0xFF6366F1)
+                                    )
+                                }
+                            }
+                        }
+                        is AccountsUiState.Error -> {
+                            item {
+                                val message = (accountsUiState as AccountsUiState.Error).message
+                                ErrorStateCard(
+                                    message = message,
+                                    onRetry = { viewModel.fetchAccounts() }
+                                )
+                            }
+                        }
+                        is AccountsUiState.Success -> {
+                            // Show regular accounts (non-reward cards)
+                            items(regularAccounts) { account ->
+                                AccountCard(
+                                    account = account,
+                                    onCardClick = { onAccountClick(account.id.toString()) },
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                    }
+                                )
+                            }
+                            // If no regular accounts exist, show empty state
+                            if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
+                                item {
+                                    EmptyAccountsCard()
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
                 }
             }
+
+            // Decorative Elements matching the recommendation screen
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(200.dp)
+                    .offset(x = 100.dp, y = (-100).dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF6366F1).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 200f
+                        ),
+                        shape = RoundedCornerShape(100.dp)
+                    )
+            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(150.dp)
+                    .offset(x = (-75).dp, y = 75.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF8B5CF6).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 150f
+                        ),
+                        shape = RoundedCornerShape(75.dp)
+                    )
+            )
         }
     }
 }
-
-
-
-
-
-
-
-

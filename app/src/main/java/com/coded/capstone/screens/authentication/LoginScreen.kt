@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.coded.capstone.R
 import com.coded.capstone.viewModels.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coded.capstone.navigation.NavRoutes
@@ -148,12 +151,11 @@ fun LoginScreen(
                 )
                 .padding(15.dp)
         ) {
-            // Replace with your actual logo
-            Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "Logo",
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Black
+            // Use actual KLUE logo from drawable
+            Image(
+                painter = painterResource(id = R.drawable.klue),
+                contentDescription = "KLUE Logo",
+                modifier = Modifier.fillMaxSize()
             )
         }
 

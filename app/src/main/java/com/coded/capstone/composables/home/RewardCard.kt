@@ -44,10 +44,15 @@ fun RewardCard(
     account: AccountResponse,
     onClick: () -> Unit
 ) {
-    // Generate random reward data based on account
-    val points = remember { Random.nextInt(500, 2500) }
-    val cashbackAmount = remember { (account.balance * BigDecimal("0.02")).setScale(2, java.math.RoundingMode.HALF_UP) }
-    val tier = remember {
+    // Generate stable reward data based on account ID to prevent constant changes
+    val points = remember(account.id) { 
+        // Use account ID as seed for consistent random generation
+        Random(account.id.toLong()).nextInt(500, 2500) 
+    }
+    val cashbackAmount = remember(account.balance) { 
+        (account.balance * BigDecimal("0.02")).setScale(2, java.math.RoundingMode.HALF_UP) 
+    }
+    val tier = remember(points) {
         when {
             points > 2000 -> "Platinum"
             points > 1500 -> "Gold"
@@ -55,7 +60,7 @@ fun RewardCard(
             else -> "Bronze"
         }
     }
-    val nextTierPoints = remember {
+    val nextTierPoints = remember(points, tier) {
         when (tier) {
             "Bronze" -> 1000 - points
             "Silver" -> 1500 - points
@@ -64,7 +69,7 @@ fun RewardCard(
         }
     }
 
-    val gradientColors = remember {
+    val gradientColors = remember(tier) {
         when (tier) {
             "Platinum" -> listOf(Color(0xFF8E44AD), Color(0xFF3498DB))
             "Gold" -> listOf(Color(0xFFFFD700), Color(0xFFFFA500))
