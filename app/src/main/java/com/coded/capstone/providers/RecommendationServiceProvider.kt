@@ -1,5 +1,6 @@
 package com.coded.capstone.providers
 
+
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.data.responses.account.AccountResponse
@@ -17,3 +18,4 @@ interface RecommendationServiceProvider{
         @Body setFavCategoriesRequest: SetFavCategoryRequest,
     ): Response<FavCategoryResponse>
 }
+
