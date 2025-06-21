@@ -21,10 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,15 +44,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.coded.capstone.data.responses.account.AccountProduct
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RecommendationCard(
-    item: AccountProduct,
+    item: AccountProductResponse,
     isExpanded: Boolean,
     onClick: () -> Unit,
-    onBookClick: () -> Unit
+    onBookClick: () -> Unit,
+    isLoading: Boolean = false
 ) {
     val animatedHeight by animateDpAsState(
         targetValue = if (isExpanded) 420.dp else 280.dp,
@@ -262,6 +265,7 @@ fun RecommendationCard(
                     // Premium Apply Button
                     Button(
                         onClick = onBookClick,
+                        enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
@@ -272,7 +276,9 @@ fun RecommendationCard(
                             ),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
-                            contentColor = Color(0xFF1E1B4B)
+                            contentColor = Color(0xFF1E1B4B),
+                            disabledContainerColor = Color.White.copy(alpha = 0.6f),
+                            disabledContentColor = Color(0xFF1E1B4B).copy(alpha = 0.6f)
                         ),
                         shape = RoundedCornerShape(16.dp)
                     ) {
@@ -280,17 +286,31 @@ fun RecommendationCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = "Apply Now",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
-                                imageVector = Icons.Default.ArrowForward,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color(0xFF1E1B4B),
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Creating Account...",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            } else {
+                                Text(
+                                    text = "Apply Now",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
                 } else {

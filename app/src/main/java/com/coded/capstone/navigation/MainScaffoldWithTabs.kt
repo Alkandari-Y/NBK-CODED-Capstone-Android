@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.coded.capstone.Wallet.WalletScreen
+import com.coded.capstone.screens.wallet.WalletScreen
 import com.coded.capstone.composables.home.BottomNavBar
 import com.coded.capstone.screens.CalendarScreen
 import com.coded.capstone.screens.home.HomeScreen

@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.coded.capstone.screens.recommendation
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,15 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.composables.recommendation.RecommendationCard
-import com.coded.capstone.data.enums.AccountType
-import com.coded.capstone.data.responses.account.AccountProduct
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,11 +32,42 @@ fun RecommendationScreen(
     onBackClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},
     viewModel: HomeScreenViewModel,
-    onItemClick: (AccountProduct) -> Unit = {},
-    onActivateClick: (AccountProduct) -> Unit = {}
+    onItemClick: (AccountProductResponse) -> Unit = {},
+    onActivateClick: (AccountProductResponse) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val accountViewModel = remember { AccountViewModel(context) }
+    val accountCreateState by accountViewModel.accountUiState.collectAsState()
+    val shouldNavigate by accountViewModel.shouldNavigate.collectAsState()
+    
     var expandedItemId by remember { mutableStateOf<String?>(null) }
     val recommendations by viewModel.accountProducts.collectAsState()
+
+    // Handle account creation success
+    LaunchedEffect(shouldNavigate) {
+        if (shouldNavigate) {
+            // Show success message and reset navigation flag
+            Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+            accountViewModel.resetNavigationFlag()
+        }
+    }
+
+    // Handle account creation state
+    LaunchedEffect(accountCreateState) {
+        when (accountCreateState) {
+            is AccountViewModel.AccountCreateUiState.Error -> {
+                Toast.makeText(context, (accountCreateState as AccountViewModel.AccountCreateUiState.Error).message, Toast.LENGTH_LONG).show()
+            }
+            else -> {}
+        }
+    }
+
+    // Function to handle Apply button click
+    fun handleApplyClick(accountProduct: AccountProductResponse) {
+        accountProduct.id?.let { productId ->
+            accountViewModel.createAccount(productId)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -168,7 +200,8 @@ fun RecommendationScreen(
                                         if (expandedItemId == recommendation.id.toString()) null else recommendation.id.toString()
                                     onItemClick(recommendation)
                                 },
-                                onBookClick = { onActivateClick(recommendation) }
+                                onBookClick = { handleApplyClick(recommendation) },
+                                isLoading = accountCreateState is AccountViewModel.AccountCreateUiState.Loading
                             )
                         }
                     }

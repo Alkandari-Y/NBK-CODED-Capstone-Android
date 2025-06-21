@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.requests.account.AccountCreateRequest
+import com.coded.capstone.data.responses.account.AccountCreateResponse
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.account.TransactionDetails
 import com.coded.capstone.providers.RetrofitInstance
@@ -18,7 +19,7 @@ class AccountViewModel(
     sealed class AccountCreateUiState {
         data object Idle : AccountCreateUiState()
         data object Loading : AccountCreateUiState()
-        data class Success(val account: AccountResponse) : AccountCreateUiState()
+        data class Success(val account: AccountCreateResponse) : AccountCreateUiState()
         data class Error(val message: String) : AccountCreateUiState()
     }
 
@@ -37,7 +38,7 @@ class AccountViewModel(
         _shouldNavigate.value = false
     }
 
-    fun submitAccount() {
+    fun createAccount(accountProductId:Long) {
 
         var isValid = true
         _accountUiState.value = AccountCreateUiState.Loading
@@ -45,7 +46,7 @@ class AccountViewModel(
         viewModelScope.launch {
             try {
                 val request = AccountCreateRequest(
-                    accountProductId = 1,
+                    accountProductId = accountProductId,
                 )
 
                 val result = AccountRepository.createAccount(request, context)
