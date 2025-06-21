@@ -14,7 +14,7 @@ import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
-import com.coded.capstone.Wallet.WalletScreen
+import com.coded.capstone.screens.wallet.WalletScreen
 import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 
