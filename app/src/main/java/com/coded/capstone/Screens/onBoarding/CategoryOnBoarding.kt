@@ -28,6 +28,8 @@ import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.respositories.CategoryRepository
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.data.responses.category.CategoryDto
+import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
+import com.coded.capstone.viewModels.FavCategoryUiState
 
 data class SpendingCategory(
     val id: String,
@@ -41,20 +43,37 @@ data class SpendingCategory(
 
 @Composable
 fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewModel) {
-    var selectedCategories by remember { mutableStateOf(setOf<String>()) }
+    var selectedCategories by remember { mutableStateOf(listOf<String>()) }
     val categories by viewModel.categories.collectAsState()
+    val favCategoryUiState by viewModel.favCategoryUiState.collectAsState()
+    
     LaunchedEffect(Unit) {
         viewModel.fetchCategories()
     }
 
+    // Handle navigation on success
+    LaunchedEffect(favCategoryUiState) {
+        when (favCategoryUiState) {
+            is FavCategoryUiState.Success -> {
+                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
+            }
+            else -> {}
+        }
+    }
+
     fun toggleCategory(categoryId: String) {
         selectedCategories = if (selectedCategories.contains(categoryId)) {
-            selectedCategories - categoryId
+            selectedCategories.filter { it != categoryId }
         } else if (selectedCategories.size < 3) {
             selectedCategories + categoryId
         } else {
             selectedCategories
         }
+    }
+
+    fun submitFavoriteCategories() {
+        if (selectedCategories.isEmpty()) return
+        viewModel.submitFavoriteCategories(selectedCategories)
     }
 
     Box(
@@ -212,18 +231,24 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                         }
                     }
 
+                    // Error message display
+                    if (favCategoryUiState is FavCategoryUiState.Error) {
+                        Text(
+                            text = (favCategoryUiState as FavCategoryUiState.Error).message,
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+
                     // Next Button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
-                            onClick = {
-                                // Navigate to vendors onboarding with selected categories
-                                val categoriesString = selectedCategories.joinToString(",")
-                                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
-                            },
-                            enabled = selectedCategories.isNotEmpty(),
+                            onClick = { submitFavoriteCategories() },
+                            enabled = selectedCategories.isNotEmpty() && favCategoryUiState !is FavCategoryUiState.Loading,
                             modifier = Modifier
                                 .height(56.dp)
                                 .widthIn(min = 120.dp),
@@ -237,17 +262,25 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(
-                                    text = "NEXT",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                                if (favCategoryUiState is FavCategoryUiState.Loading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Text(
+                                        text = "NEXT",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowForward,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                     }
