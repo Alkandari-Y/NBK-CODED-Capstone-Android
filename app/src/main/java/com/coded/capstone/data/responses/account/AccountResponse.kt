@@ -10,5 +10,10 @@ data class AccountResponse(
     val name: String,
     val active: Boolean,
     val ownerId: Long,
-    val accountType: AccountType
+    val accountType: AccountType,
+    val creditLimit: BigDecimal?,
+    val holderName: String,
+    val productId: Long,
+    val canTopUp: Boolean,
+    val canTransfer: Boolean
 ) 
