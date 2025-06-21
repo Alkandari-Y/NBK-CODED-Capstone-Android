@@ -9,6 +9,7 @@ import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.data.responses.account.AccountProduct
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.category.CategoryDto
+import com.coded.capstone.data.responses.kyc.KYCResponse
 import com.coded.capstone.data.responses.recommendation.FavCategoryDto
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
 import com.coded.capstone.navigation.NavRoutes
@@ -56,6 +57,10 @@ class HomeScreenViewModel(
     private val _accountProducts = MutableStateFlow<List<AccountProduct>>(emptyList())
     val accountProducts: StateFlow<List<AccountProduct>> = _accountProducts
 
+    // Add KYC StateFlow
+    private val _kyc = MutableStateFlow<KYCResponse?>(null)
+    val kyc: StateFlow<KYCResponse?> = _kyc
+
     // Flag to prevent duplicate API calls
     private var accountsFetched = false
 
@@ -67,6 +72,7 @@ class HomeScreenViewModel(
             fetchAccounts()
             fetchCategories()
             fetchAccountProducts()
+            fetchKyc()
         }
     }
 
@@ -152,6 +158,28 @@ class HomeScreenViewModel(
         }
     }
 
+    fun fetchKyc() {
+        viewModelScope.launch {
+            try {
+                Log.d("HomeScreenViewModel", "Fetching KYC data...")
+                val response = RetrofitInstance.getBankingServiceProvide(context).getUserKyc()
+                if (response.isSuccessful) {
+                    val kycData = response.body()
+                    if (kycData != null) {
+                        UserRepository.kyc = kycData
+                        _kyc.value = kycData
+                        Log.d("HomeScreenViewModel", "KYC loaded: ${kycData.firstName} ${kycData.lastName}")
+                    } else {
+                        Log.w("HomeScreenViewModel", "KYC response body is null")
+                    }
+                } else {
+                    Log.w("HomeScreenViewModel", "Failed to fetch KYC: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error fetching KYC: ${e.message}")
+            }
+        }
+    }
 
     fun submitFavoriteCategories(selectedCategories: List<String>) {
         if (selectedCategories.isEmpty()) return

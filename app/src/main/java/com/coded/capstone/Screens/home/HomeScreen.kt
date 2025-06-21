@@ -43,6 +43,8 @@ import com.coded.capstone.composables.home.ErrorStateCard
 import com.coded.capstone.composables.home.RewardCard
 import com.coded.capstone.navigation.NavRoutes
 import kotlin.random.Random
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,8 +66,14 @@ fun HomeScreen(
     val accountsUiState by viewModel.accountsUiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val kyc = UserRepository.kyc
-    val userName = if (kyc != null) "${kyc.firstName} ${kyc.lastName}" else null
+    val kyc by viewModel.kyc.collectAsState()
+    val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
+
+    // Observe KYC changes to trigger recomposition when KYC is loaded
+    LaunchedEffect(Unit) {
+        // This will trigger recomposition when KYC data changes
+        // The userName will update automatically when KYC is loaded
+    }
 
     // Get time-based greeting
     val greeting = remember {
