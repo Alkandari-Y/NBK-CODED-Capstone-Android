@@ -102,8 +102,9 @@ class AuthViewModel(
                         token.value = jwtResponse
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
-//                        UserRepository.loadUserInfo(context)
-
+                        
+                        // Load user info after successful login
+                        UserRepository.loadUserInfo(context)
 
                         val fcmToken = Firebase.messaging.token.await()
                         Log.d("FCM", "FCM token = $fcmToken")
@@ -114,14 +115,26 @@ class AuthViewModel(
                             Log.w("FCM", "Failed to send token. Code: ${result.code()}")
                         }
 
-                        // Fetch KYC after login
+                        // Fetch KYC after login with proper error handling
                         UserRepository.kyc = null
                         try {
+                            Log.d("AuthViewModel", "Fetching KYC data after login...")
                             val kycResponse = RetrofitInstance.getBankingServiceProvide(context).getUserKyc()
                             if (kycResponse.isSuccessful) {
-                                UserRepository.kyc = kycResponse.body()
+                                val kycData = kycResponse.body()
+                                if (kycData != null) {
+                                    UserRepository.kyc = kycData
+                                    Log.d("AuthViewModel", "KYC data loaded successfully: ${kycData.firstName} ${kycData.lastName}")
+                                } else {
+                                    Log.w("AuthViewModel", "KYC response body is null")
+                                }
+                            } else {
+                                Log.w("AuthViewModel", "Failed to fetch KYC: ${kycResponse.code()} - ${kycResponse.message()}")
                             }
-                        } catch (_: Exception) {}
+                        } catch (e: Exception) {
+                            Log.e("AuthViewModel", "Error fetching KYC: ${e.message}")
+                        }
+                        
                         uiState.value = AuthUiState.Success(jwtResponse)
                     }
                 } else {
