@@ -2,11 +2,13 @@ package com.coded.capstone.providers
 
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
-import com.coded.capstone.data.responses.account.AccountProduct
+import com.coded.capstone.data.responses.account.AccountCreateResponse
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.account.TransactionDetails
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
+import com.coded.capstone.data.responses.perk.PerkDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,7 +26,7 @@ interface BankingServiceProvider {
     @POST("/api/v1/accounts")
     suspend fun createAccount(
         @Body accountCreateRequestDto: AccountCreateRequest,
-    ): Response<AccountResponse>
+    ): Response<AccountCreateResponse>
 
     @GET("/api/v1/accounts/details")
     suspend fun getAccountDetails(
@@ -39,12 +41,19 @@ interface BankingServiceProvider {
 
     // Account Products
     @GET("/api/v1/products")
-    suspend fun getAllAccountProducts(): Response<List<AccountProduct>>
+    suspend fun getAllAccountProducts(): Response<List<AccountProductResponse>>
 
     @GET("/api/v1/products/{productId}")
     suspend fun getAccountProductDetails(
         @Path("productId") productId: String,
-    ): Response<AccountProduct>
+    ): Response<AccountProductResponse>
+
+    @GET("/api/v1/products/{productId}/perks")
+    suspend fun getPerksOfAccountProduct(
+        @Path("productId") productId: String,
+    ): Response<List<PerkDto>>
+
+
 
     // Transactions controller
     @GET("/api/v1/transactions/account/{accountNumber}")

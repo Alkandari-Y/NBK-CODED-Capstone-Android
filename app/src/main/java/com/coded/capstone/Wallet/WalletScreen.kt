@@ -16,41 +16,44 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.coded.capstone.Wallet.components.CardStack
+import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
-import java.math.BigDecimal
+import com.coded.capstone.data.responses.perk.PerkDto
+import com.coded.capstone.composables.home.AccountCard
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.AccountsUiState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.compose.ui.platform.LocalContext
 import com.coded.capstone.SVG.CardTransferBoldIcon
 import com.coded.capstone.SVG.TransferUsersIcon
 import com.coded.capstone.SVG.CreditCardCloseIcon
-import androidx.compose.material.icons.filled.Info
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabPosition
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.ui.res.painterResource
 import com.coded.capstone.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.activity.compose.BackHandler
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
-import com.coded.capstone.data.responses.transaction.TransactionResponse
-import com.coded.capstone.data.enums.TransactionType
-import java.time.LocalDateTime
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.zIndex
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,411 +61,366 @@ fun WalletScreen(
     modifier: Modifier = Modifier,
     onNavigateToMap: () -> Unit = {}
 ) {
-    // Sample data - replace with actual API calls
-    val sampleAccounts = remember {
-        listOf(
-            AccountResponse(
-                id = 1L,
-                accountNumber = "1234567890123456",
-                balance = BigDecimal("1250.50"),
-                ownerId = 1L,
-                ownerType = "Main Account",
-                accountProductId = 1L,
-                accountType = "DEBIT"
-            ),
-            AccountResponse(
-                id = 2L,
-                accountNumber = "9876543210987654",
-                balance = BigDecimal("500.25"),
-                ownerId = 1L,
-                ownerType = "Savings Account",
-                accountProductId = 2L,
-                accountType = "CREDIT"
-            ),
-            AccountResponse(
-                id = 3L,
-                accountNumber = "5555666677778888",
-                balance = BigDecimal("2500.00"),
-                ownerId = 1L,
-                ownerType = "Investment Account",
-                accountProductId = 3L,
-                accountType = "DEBIT"
-            )
-        )
-    }
-    
-    // Sample transaction data
-    val sampleTransactions = remember {
-        listOf(
-            TransactionResponse(
-                id = 1L,
-                amount = BigDecimal("150.00"),
-                type = TransactionType.PAYMENT,
-                description = "Coffee Shop Payment",
-                date = LocalDateTime.now().minusDays(1).minusHours(2),
-                accountId = 1L,
-                referenceNumber = "TXN001"
-            ),
-            TransactionResponse(
-                id = 2L,
-                amount = BigDecimal("500.00"),
-                type = TransactionType.TRANSFER,
-                description = "Transfer to John Doe",
-                date = LocalDateTime.now().minusDays(2),
-                accountId = 1L,
-                recipientName = "John Doe",
-                recipientAccountNumber = "****1234",
-                referenceNumber = "TXN002"
-            ),
-            TransactionResponse(
-                id = 3L,
-                amount = BigDecimal("75.50"),
-                type = TransactionType.PAYMENT,
-                description = "Grocery Store",
-                date = LocalDateTime.now().minusDays(3),
-                accountId = 1L,
-                referenceNumber = "TXN003"
-            ),
-            TransactionResponse(
-                id = 4L,
-                amount = BigDecimal("200.00"),
-                type = TransactionType.REFUND,
-                description = "Refund from Online Store",
-                date = LocalDateTime.now().minusDays(4),
-                accountId = 1L,
-                referenceNumber = "TXN004"
-            ),
-            TransactionResponse(
-                id = 5L,
-                amount = BigDecimal("1200.00"),
-                type = TransactionType.TRANSFER,
-                description = "Salary Deposit",
-                date = LocalDateTime.now().minusDays(7),
-                accountId = 1L,
-                recipientName = "Company Inc.",
-                recipientAccountNumber = "****5678",
-                referenceNumber = "TXN005"
-            ),
-            TransactionResponse(
-                id = 6L,
-                amount = BigDecimal("89.99"),
-                type = TransactionType.PAYMENT,
-                description = "Netflix Subscription",
-                date = LocalDateTime.now().minusDays(8),
-                accountId = 1L,
-                referenceNumber = "TXN006"
-            ),
-            TransactionResponse(
-                id = 7L,
-                amount = BigDecimal("250.00"),
-                type = TransactionType.TRANSFER,
-                description = "Transfer to Savings",
-                date = LocalDateTime.now().minusDays(10),
-                accountId = 1L,
-                recipientName = "Savings Account",
-                recipientAccountNumber = "****9876",
-                referenceNumber = "TXN007"
-            ),
-            TransactionResponse(
-                id = 8L,
-                amount = BigDecimal("45.00"),
-                type = TransactionType.PAYMENT,
-                description = "Gas Station",
-                date = LocalDateTime.now().minusDays(12),
-                accountId = 1L,
-                referenceNumber = "TXN008"
-            )
-        )
-    }
-    
-    var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
-    var showAccountNumber by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    var selectedTab by remember { mutableStateOf(0) } // 0 = Details, 1 = Transactions
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
-    var showStack by remember { mutableStateOf(false) }
-    var hasInteractedWithCards by remember { mutableStateOf(false) }
+    val viewModel: HomeScreenViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return HomeScreenViewModel(context) as T
+            }
+        }
+    )
+    val accountsUiState by viewModel.accountsUiState.collectAsState()
+    val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
+    val perksOfAccountProduct by viewModel.perksOfAccountProduct.collectAsState()
 
-    LaunchedEffect(Unit) {
-        showStack = false
-        showStack = true
+    var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // Fetch perks when a card is selected
+    LaunchedEffect(selectedCard) {
+        selectedCard?.let { card ->
+            card.accountProductId?.let { productId ->
+                viewModel.fetchPerksOfAccountProduct(productId.toString())
+            }
+        }
     }
 
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("My Wallet") },
-//                actions = {
-//                    IconButton(onClick = onNavigateToMap) {
-//                        Icon(Icons.Default.Map, contentDescription = "Map")
-//                    }
-//                    IconButton(onClick = { /* Add new account */ }) {
-//                        Icon(Icons.Default.Add, contentDescription = "Add Account")
-//                    }
-//                }
-//            )
-//        }
-//    ) { padding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Card Stack (bigger size)
-            AnimatedVisibility(
-                visible = showStack,
-                enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(400))
-            ) {
-                CardStack(
-                    accounts = sampleAccounts,
-                    selectedCard = selectedCard,
-                    onCardSelected = { 
-                        selectedCard = it
-                        hasInteractedWithCards = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp)
-                        .padding(horizontal = 0.dp),
-                    showAccountNumber = showAccountNumber
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0A0A0B),
+                        Color(0xFF1A1A1D),
+                        Color(0xFF2A2A2E)
+                    )
                 )
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+        ) {
+            // Header with gradient text effect
+            Text(
+                text = "My Wallet",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.ExtraBold
+                ),
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 32.dp, top = 16.dp)
+            )
+
+            // Handle different UI states
+            when (accountsUiState) {
+                is AccountsUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color(0xFF8B5CF6),
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
+                is AccountsUiState.Error -> {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF1F1F23)
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Error loading accounts",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            Text(
+                                text = "Please try again",
+                                color = Color.White.copy(alpha = 0.7f),
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                            Button(
+                                onClick = { viewModel.fetchAccounts() },
+                                modifier = Modifier.padding(top = 16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF8B5CF6)
+                                )
+                            ) {
+                                Text("Retry", color = Color.White)
+                            }
+                        }
+                    }
+                }
+                is AccountsUiState.Success -> {
+                    if (accounts!!.isEmpty()) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF1F1F23)
+                            ),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(40.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.AccountBalanceWallet,
+                                    contentDescription = null,
+                                    tint = Color.White.copy(alpha = 0.3f),
+                                    modifier = Modifier.size(80.dp)
+                                )
+                                Text(
+                                    text = "No accounts found",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(top = 20.dp)
+                                )
+                                Text(
+                                    text = "Add your first account to get started",
+                                    color = Color.White.copy(alpha = 0.6f),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                        }
+                    } else {
+                        // Stacked Cards Animation
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy((-20).dp)
+                        ) {
+                            items(accounts.reversed()) { account ->
+                                val index = accounts.reversed().indexOf(account)
+                                val offsetY = (index * 20).dp
+                                val scale = 1f - (index * 0.05f)
+                                val alpha = 1f - (index * 0.15f)
+
+                                AnimatedVisibility(
+                                    visible = true,
+                                    enter = fadeIn(animationSpec = tween(600, delayMillis = index * 100)) +
+                                            scaleIn(animationSpec = tween(600, delayMillis = index * 100))
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .offset(y = offsetY)
+                                            .graphicsLayer {
+                                                scaleX = scale
+                                                scaleY = scale
+                                                this.alpha = alpha.coerceAtLeast(0.3f)
+                                            }
+                                            .zIndex((accounts.size - index).toFloat())
+                                            .shadow(
+                                                elevation = (8 + index * 4).dp,
+                                                shape = RoundedCornerShape(20.dp),
+                                                ambientColor = Color.Black.copy(alpha = 0.3f),
+                                                spotColor = Color.Black.copy(alpha = 0.3f)
+                                            )
+                                    ) {
+                                        AccountCard(
+                                            account = account,
+                                            onCardClick = { selectedCard = account },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable { selectedCard = account }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height((accounts.size * 20 + 100).dp))
+
+                        // Enhanced Services Row
+                        AnimatedVisibility(
+                            visible = selectedCard != null,
+                            enter = slideInHorizontally(
+                                initialOffsetX = { -it },
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ) + fadeIn(animationSpec = tween(600))
+                        ) {
+                            ServicesRow(
+                                onTransfer = { /* handle transfer */ },
+                                onTransferToOthers = { /* handle transfer to others */ },
+                                onCloseAccount = { /* handle close account */ }
+                            )
+                        }
+                    }
+                }
             }
-            
-            // Guide text under cards
-            AnimatedVisibility(
-                visible = !hasInteractedWithCards && selectedCard == null,
-                enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(400))
+        }
+
+        // Enhanced Bottom Sheet for Perks Only
+        if (selectedCard != null) {
+            val card = selectedCard!!
+            var expanded by remember { mutableStateOf(false) }
+
+            BackHandler(enabled = true) {
+                selectedCard = null
+            }
+
+            ModalBottomSheet(
+                onDismissRequest = { selectedCard = null },
+                sheetState = sheetState,
+                containerColor = Color(0xFF0F0F10),
+                scrimColor = Color.Black.copy(alpha = 0.6f),
+                shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxHeight(if (expanded) 0.9f else 0.6f)
+                        .padding(24.dp)
                 ) {
-                    Text(
-                        text = "👆 Drag down to select • Swipe up to scroll",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.LightGray.copy(alpha = 0.7f),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                }
-            }
-            
-            // Show services row above details card when a card is selected, with animation
-            AnimatedVisibility(
-                visible = selectedCard != null,
-                enter = slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(400))
-            ) {
-                ServicesRow(
-                    onTransfer = { /* handle transfer */ },
-                    onTransferToOthers = { /* handle transfer to others */ },
-                    onCloseAccount = { /* handle close account */ }
-                )
-            }
-            
-            // Show bottom sheet when a card is selected
-            if (selectedCard != null) {
-                val card = selectedCard!!
-                var expanded by remember { mutableStateOf(false) }
+                    // Header with expand button
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Account Perks",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
+                            ),
+                            color = Color.White
+                        )
 
-                BackHandler(enabled = true) {
-                    selectedCard = null
-                }
+                        IconButton(
+                            onClick = { expanded = !expanded },
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    Color(0xFF8B5CF6).copy(alpha = 0.2f),
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (expanded) R.drawable.baseline_keyboard_double_arrow_down_24
+                                    else R.drawable.baseline_keyboard_double_arrow_up_24
+                                ),
+                                contentDescription = if (expanded) "Collapse" else "Expand",
+                                tint = Color(0xFF8B5CF6),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
 
-                ModalBottomSheet(
-                    onDismissRequest = { selectedCard = null },
-                    sheetState = sheetState,
-                    containerColor = Color.Black,
-                    scrimColor = Color.Transparent,
-                    shape = RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(if (expanded) 0.95f else 0.50f)
-                            .padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Account info header
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF1A1A1D)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(25.dp)
-                                    .clickable { expanded = !expanded },
+                                    .size(12.dp)
+                                    .background(Color(0xFF10B981), CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = card.ownerType ?: "Account #${card.accountNumber?.takeLast(4) ?: "****"}",
+                                color = Color.White,
+                                fontWeight = FontWeight.Medium
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = "${card.balance} KWD",
+                                color = Color(0xFF10B981),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Perks List
+                    if (perksOfAccountProduct.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxHeight(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            itemsIndexed(perksOfAccountProduct) { index, perk ->
+                                AnimatedVisibility(
+                                    visible = true,
+                                    enter = fadeIn(
+                                        animationSpec = tween(400, delayMillis = index * 100)
+                                    ) + slideInHorizontally(
+                                        initialOffsetX = { it },
+                                        animationSpec = tween(400, delayMillis = index * 100)
+                                    )
+                                ) {
+                                    EnhancedPerkItem(perk = perk)
+                                }
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .background(
+                                        Color(0xFF8B5CF6).copy(alpha = 0.1f),
+                                        CircleShape
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    painter = painterResource(id = if (expanded) R.drawable.baseline_keyboard_double_arrow_down_24 else R.drawable.baseline_keyboard_double_arrow_up_24),
-                                    contentDescription = if (expanded) "Collapse" else "Expand",
-                                    tint = Color(0xFF8AAEBD),
-                                    modifier = Modifier.size(25.dp)
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = Color(0xFF8B5CF6),
+                                    modifier = Modifier.size(32.dp)
                                 )
                             }
-                        }
-                        TabRow(
-                            selectedTabIndex = selectedTab,
-                            containerColor = Color.Black,
-                            contentColor = Color.White,
-                            indicator = { tabPositions: List<TabPosition> ->
-                                TabRowDefaults.Indicator(
-                                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                                    color = Color(0xFF8AAEBD)
-                                )
-                            }
-                        ) {
-                            Tab(
-                                selected = selectedTab == 0,
-                                onClick = { selectedTab = 0 },
-                                text = { Text("Details", color = if (selectedTab == 0) Color.White else Color.Gray) }
-                            )
-                            Tab(
-                                selected = selectedTab == 1,
-                                onClick = { selectedTab = 1 },
-                                text = { Text("Transactions", color = if (selectedTab == 1) Color.White else Color.Gray) }
-                            )
-                        }
-                        Spacer(Modifier.height(16.dp))
-                        if (selectedTab == 0) {
-                            // Account Details
-                            Text(
-                                text = "Account Details",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
                             Spacer(modifier = Modifier.height(16.dp))
-                            DetailRow("Account Name", card.accountNumber?.let { "Account #" + it.takeLast(4) } ?: "Unnamed Account", textColor = Color.White)
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "Account Number",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = "Show Info",
-                                    tint = Color.White,
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .clickable {
-                                            showAccountNumber = true
-                                            coroutineScope.launch {
-                                                delay(3000)
-                                                showAccountNumber = false
-                                            }
-                                        }
-                                )
-                                if (showAccountNumber) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.baseline_file_copy_24),
-                                        contentDescription = "Copy Account Number",
-                                        tint = Color(0xFF8AAEBD),
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .clickable {
-                                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                                val clip = ClipData.newPlainText("Account Number", card.accountNumber)
-                                                clipboard.setPrimaryClip(clip)
-                                                Toast.makeText(context, "Account number copied!", Toast.LENGTH_SHORT).show()
-                                            }
-                                    )
-                                }
-                            }
-//                            Text(
-//                                text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
-//                                style = MaterialTheme.typography.bodyMedium,
-//                                fontWeight = FontWeight.Medium,
-//                                color = Color.White
-//                            )
-                            DetailRow("Balance", "${card.balance} KWD", textColor = Color.White)
-                            DetailRow("Type", card.accountType ?: "Unknown", textColor = Color.White)
-                        } else {
-                            // Transactions
                             Text(
-                                text = "Transaction History",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                text = "No perks available",
+                                color = Color.White,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 18.sp
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            // Filter transactions for the selected account
-                            val accountTransactions = sampleTransactions.filter { it.accountId == card.id }
-                            
-                            if (accountTransactions.isNotEmpty()) {
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxHeight(),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    items(accountTransactions) { transaction ->
-                                        TransactionItem(transaction = transaction)
-                                    }
-                                }
-                            } else {
-                                Text(
-                                    text = "No transactions for this account.",
-                                    color = Color.White.copy(alpha = 0.7f)
-                                )
-                            }
+                            Text(
+                                text = "This account doesn't have any special perks yet.",
+                                color = Color.White.copy(alpha = 0.6f),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
                         }
                     }
                 }
             }
         }
     }
-
-
-@Composable
-private fun DetailRow(label: String, value: String, textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = textColor
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = textColor
-        )
-    }
-}
-
-@Composable
-private fun ServiceRoundButton(
-    icon: @Composable () -> Unit,
-    onClick: () -> Unit
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(56.dp)
-            .clip(CircleShape)
-            .background(Color(0xFF1A1A1D))
-            .clickable { onClick() }
-            .padding(8.dp)
-    ) {
-        icon()
-    }
-}
-
-private fun formatAccountNumber(accountNumber: String): String {
-    // Mask all but last 4 digits
-    return accountNumber.replaceRange(0, accountNumber.length - 4, "*".repeat(accountNumber.length - 4))
 }
 
 @Composable
@@ -471,131 +429,267 @@ fun ServicesRow(
     onTransferToOthers: () -> Unit,
     onCloseAccount: () -> Unit
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
-    ) {
-        ServiceRoundButton(
-            icon = { CardTransferBoldIcon(modifier = Modifier.size(28.dp)) },
-            onClick = onTransfer
-        )
-        ServiceRoundButton(
-            icon = { TransferUsersIcon(modifier = Modifier.size(28.dp)) },
-            onClick = onTransferToOthers
-        )
-        ServiceRoundButton(
-            icon = { CreditCardCloseIcon(modifier = Modifier.size(28.dp)) },
-            onClick = onCloseAccount
-        )
-    }
-}
-
-@Composable
-private fun TransactionItem(transaction: TransactionResponse) {
-    val isCredit = transaction.type == TransactionType.REFUND || 
-                   (transaction.type == TransactionType.TRANSFER && transaction.recipientName?.contains("Salary") == true)
-    
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A2A2E)
+            containerColor = Color(0xFF1A1A1D).copy(alpha = 0.8f)
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(20.dp)
     ) {
         Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(20.dp)
         ) {
-            // Transaction icon
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(
-                        when (transaction.type) {
-                            TransactionType.PAYMENT -> Color(0xFFFF6B6B)
-                            TransactionType.TRANSFER -> Color(0xFF4ECDC4)
-                            TransactionType.REFUND -> Color(0xFF51CF66)
-                        }
+            EnhancedServiceButton(
+                icon = { CardTransferBoldIcon(modifier = Modifier.size(24.dp)) },
+                label = "Transfer",
+                color = Color(0xFF8B5CF6),
+                onClick = onTransfer
+            )
+            EnhancedServiceButton(
+                icon = { TransferUsersIcon(modifier = Modifier.size(24.dp)) },
+                label = "Send",
+                color = Color(0xFF10B981),
+                onClick = onTransferToOthers
+            )
+            EnhancedServiceButton(
+                icon = { CreditCardCloseIcon(modifier = Modifier.size(24.dp)) },
+                label = "Close",
+                color = Color(0xFFEF4444),
+                onClick = onCloseAccount
+            )
+        }
+    }
+}
+
+@Composable
+private fun EnhancedServiceButton(
+    icon: @Composable () -> Unit,
+    label: String,
+    color: Color,
+    onClick: () -> Unit
+) {
+    val scale by animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+    )
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clickable { onClick() }
+            .scale(scale)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(64.dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            color.copy(alpha = 0.3f),
+                            color.copy(alpha = 0.1f)
+                        )
                     ),
-                contentAlignment = Alignment.Center
+                    CircleShape
+                )
+                .padding(16.dp)
+        ) {
+            icon()
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = label,
+            color = Color.White.copy(alpha = 0.8f),
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+private fun EnhancedPerkItem(perk: PerkDto) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1A1A1D)
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = when (transaction.type) {
-                        TransactionType.PAYMENT -> Icons.Default.ShoppingCart
-                        TransactionType.TRANSFER -> Icons.Default.SwapHoriz
-                        TransactionType.REFUND -> Icons.Default.Refresh
-                    },
-                    contentDescription = transaction.type.name,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.width(12.dp))
-            
-            // Transaction details
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = transaction.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = formatTransactionDate(transaction.date),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
-                if (transaction.recipientName != null) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "To: ${transaction.recipientName}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.6f)
+                // Enhanced Perk icon
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    getPerkColor(perk.type).copy(alpha = 0.3f),
+                                    getPerkColor(perk.type).copy(alpha = 0.1f)
+                                )
+                            ),
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = getPerkIcon(perk.type),
+                        contentDescription = perk.type,
+                        tint = getPerkColor(perk.type),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Perk details
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = perk.type?.replaceFirstChar { it.uppercase() } ?: "Unknown Perk",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    perk.perkAmount?.let { amount ->
+                        Text(
+                            text = if (perk.type?.contains("cashback", ignoreCase = true) == true) {
+                                "${amount}% Cashback"
+                            } else if (perk.type?.contains("discount", ignoreCase = true) == true) {
+                                "${amount}% Discount"
+                            } else {
+                                "Amount: $amount"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = getPerkColor(perk.type),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    perk.minPayment?.let { minPayment ->
+                        Text(
+                            text = "Min. Payment: $minPayment KWD",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.6f)
+                        )
+                    }
+                }
+
+                // Rewards XP Badge
+                perk.rewardsXp?.let { xp ->
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                Color(0xFFFFD700).copy(alpha = 0.2f),
+                                RoundedCornerShape(12.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = "+$xp XP",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFFD700)
+                        )
+                    }
+                }
             }
-            
-            // Amount
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
+
+            // Enhanced categories display
+            if (!perk.categories.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "${if (isCredit) "+" else "-"}$${transaction.amount}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isCredit) Color(0xFF51CF66) else Color(0xFFFF6B6B)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = transaction.type.name,
+                    text = "Applicable Categories:",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.6f)
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White.copy(alpha = 0.7f)
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    perk.categories.take(3).forEach { category ->
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    Color(0xFF8B5CF6).copy(alpha = 0.2f),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = category.name ?: "Unknown",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF8B5CF6),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    if (perk.categories.size > 3) {
+                        Text(
+                            text = "+${perk.categories.size - 3} more",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.5f),
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                }
+            }
+
+            // Tier indicator
+            if (perk.isTierBased == true) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .background(
+                            Color(0xFF10B981).copy(alpha = 0.2f),
+                            RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "🏆 Tier Based Rewards",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF10B981),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
     }
 }
 
-private fun formatTransactionDate(date: LocalDateTime): String {
-    val now = LocalDateTime.now()
-    val daysDiff = java.time.Duration.between(date, now).toDays()
-    
-    return when {
-        daysDiff == 0L -> "Today"
-        daysDiff == 1L -> "Yesterday"
-        daysDiff < 7L -> "$daysDiff days ago"
-        else -> date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy"))
+private fun getPerkColor(type: String?): Color {
+    return when (type?.lowercase()) {
+        "cashback" -> Color(0xFF10B981)
+        "discount" -> Color(0xFF8B5CF6)
+        "points" -> Color(0xFFFFD700)
+        "rewards" -> Color(0xFFEF4444)
+        else -> Color(0xFF06B6D4)
     }
-} 
+}
+
+private fun getPerkIcon(type: String?): androidx.compose.ui.graphics.vector.ImageVector {
+    return when (type?.lowercase()) {
+        "cashback" -> Icons.Default.AttachMoney
+        "discount" -> Icons.Default.LocalOffer
+        "points", "rewards" -> Icons.Default.Star
+        else -> Icons.Default.CardGiftcard
+    }
+}

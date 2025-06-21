@@ -4,21 +4,18 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
-import com.coded.capstone.data.responses.account.AccountProduct
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
-import com.coded.capstone.data.responses.recommendation.FavCategoryDto
+import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
-import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountProductRepository
 import com.coded.capstone.respositories.AccountRepository
 import com.coded.capstone.respositories.CategoryRepository
 import com.coded.capstone.respositories.UserRepository
-import com.coded.capstone.viewModels.AccountViewModel.AccountCreateUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,15 +44,19 @@ class HomeScreenViewModel(
     private val _selectedAccount = MutableStateFlow<AccountResponse?>(null)
     val selectedAccount: StateFlow<AccountResponse?> = _selectedAccount
 
+
     private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
     val categories: StateFlow<List<CategoryDto>> = _categories
+
+    private val _perksOfAccountProduct = MutableStateFlow<List<PerkDto>>(emptyList())
+    val perksOfAccountProduct:  StateFlow<List<PerkDto>> = _perksOfAccountProduct
 
     private val _favCategoryUiState = MutableStateFlow<FavCategoryUiState>(
         FavCategoryUiState.Idle)
     val favCategoryUiState: StateFlow<FavCategoryUiState> = _favCategoryUiState
 
-    private val _accountProducts = MutableStateFlow<List<AccountProduct>>(emptyList())
-    val accountProducts: StateFlow<List<AccountProduct>> = _accountProducts
+    private val _accountProducts = MutableStateFlow<List<AccountProductResponse>>(emptyList())
+    val accountProducts: StateFlow<List<AccountProductResponse>> = _accountProducts
 
     // Add KYC StateFlow
     private val _kyc = MutableStateFlow<KYCResponse?>(null)
@@ -157,6 +158,24 @@ class HomeScreenViewModel(
             }
         }
     }
+
+    fun fetchPerksOfAccountProduct(productId:String){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context).getPerksOfAccountProduct(productId)
+                println(response.body())
+                if (response.isSuccessful) {
+                    val perks = response.body().orEmpty()
+                    _perksOfAccountProduct.value = perks
+                } else {
+                    Log.e("HomeScreenViewModel", "perks fetch failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error fetching perks: ${e.message}")
+            }
+        }
+    }
+
 
     fun fetchKyc() {
         viewModelScope.launch {
