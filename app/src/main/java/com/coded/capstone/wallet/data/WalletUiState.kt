@@ -18,12 +18,7 @@ data class WalletUiState(
     val selectedSourceAccount: WalletAccountDisplayModel? = null,
     val selectedDestinationAccount: WalletAccountDisplayModel? = null,
     val topUpAmount: BigDecimal = BigDecimal.ZERO,
-    val transferAmount: BigDecimal = BigDecimal.ZERO,
-
-    // Real-time card updates
-    val showNewCardNotification: String? = null,
-    val newCardAnimation: Boolean = false,
-    val lastAccountCount: Int = 0
+    val transferAmount: BigDecimal = BigDecimal.ZERO
 ) {
     val selectedAccount: WalletAccountDisplayModel?
         get() = accounts.find { it.id == selectedAccountId }
