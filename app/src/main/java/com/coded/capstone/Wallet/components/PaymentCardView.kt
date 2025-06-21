@@ -40,7 +40,7 @@ fun PaymentCardView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = card.accountType.name,
+                    text = card.accountType ?: "Unknown",
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
@@ -51,11 +51,11 @@ fun PaymentCardView(
                         modifier = Modifier
                             .size(10.dp)
                             .clip(CircleShape)
-                            .background(if (card.active) Color(0xFF4CAF50) else Color(0xFFE53935))
+                            .background(Color(0xFF4CAF50))
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (card.active) "Active" else "Inactive",
+                        text = "Active",
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium
@@ -71,18 +71,18 @@ fun PaymentCardView(
                     fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+//                Text(
+//                    text = if (showAccountNumber) card.accountNumber else formatAccountNumber(card.accountNumber),
+//                    color = Color.White,
+//                    fontSize = 18.sp,
+//                    fontWeight = FontWeight.Bold
+//                )
             }
             
             // Bottom section - Account name and balance
             Column {
                 Text(
-                    text = card.name,
+                    text = card.accountNumber?.let { "Account #" + it.takeLast(4) } ?: "Unnamed Account",
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium

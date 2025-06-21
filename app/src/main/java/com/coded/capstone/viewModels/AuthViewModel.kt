@@ -114,6 +114,14 @@ class AuthViewModel(
                             Log.w("FCM", "Failed to send token. Code: ${result.code()}")
                         }
 
+                        // Fetch KYC after login
+                        UserRepository.kyc = null
+                        try {
+                            val kycResponse = RetrofitInstance.getBankingServiceProvide(context).getUserKyc()
+                            if (kycResponse.isSuccessful) {
+                                UserRepository.kyc = kycResponse.body()
+                            }
+                        } catch (_: Exception) {}
                         uiState.value = AuthUiState.Success(jwtResponse)
                     }
                 } else {
@@ -135,6 +143,9 @@ class AuthViewModel(
         TokenManager.clearToken(context)
         token.value = null
         decodedToken.value = null
-        Log.d("Logout", "Token cleared")
+        uiState.value = AuthUiState.Loading
+        // Clear KYC on logout
+        UserRepository.kyc = null
     }
+
 }

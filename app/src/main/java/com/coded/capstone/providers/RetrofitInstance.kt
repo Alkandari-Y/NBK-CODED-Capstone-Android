@@ -59,6 +59,7 @@ object RetrofitInstance {
             .create(BankingServiceProvider::class.java)
     }
 
+
     fun getNotificationServiceProvide(context: Context): NotificationServiceProvider {
         return Retrofit.Builder()
             .baseUrl(getBaseUrl(NOTIFICATION_SERVER_PORT))
@@ -68,5 +69,17 @@ object RetrofitInstance {
             .create(NotificationServiceProvider::class.java)
     }
 
-    private fun getBaseUrl(port: Int): String = "http://192.168.13.44:$port/"
+
+    fun getRecommendationServiceProvide(context: Context): RecommendationServiceProvider {
+        return Retrofit.Builder()
+            .baseUrl(getBaseUrl(RECOMMENDATION_SERVER_PORT))
+            .client(createOkHttpClient(context))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RecommendationServiceProvider::class.java)
+    }
+
+
+    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
+
 }
