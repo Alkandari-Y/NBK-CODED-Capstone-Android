@@ -10,6 +10,7 @@ object RetrofitInstance {
     private const val AUTH_SERVICE_PORT = 8000
     private const val BANK_SERVICE_PORT = 8001
     private const val RECOMMENDATION_SERVER_PORT=8002
+    private const val NOTIFICATION_SERVER_PORT=8003
 
 //    private const val DEVICE_BASE_URL = "http://192.168.123.54:"
 //
@@ -58,5 +59,14 @@ object RetrofitInstance {
             .create(BankingServiceProvider::class.java)
     }
 
-    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
+    fun getNotificationServiceProvide(context: Context): NotificationServiceProvider {
+        return Retrofit.Builder()
+            .baseUrl(getBaseUrl(NOTIFICATION_SERVER_PORT))
+            .client(createOkHttpClient(context))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(NotificationServiceProvider::class.java)
+    }
+
+    private fun getBaseUrl(port: Int): String = "http://192.168.13.44:$port/"
 }

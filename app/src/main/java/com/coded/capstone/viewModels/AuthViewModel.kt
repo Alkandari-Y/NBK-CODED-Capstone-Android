@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coded.capstone.Services.FirebaseToken
 import com.coded.capstone.data.requests.authentication.LoginRequest
 import com.coded.capstone.data.requests.authentication.RegisterCreateRequest
 import com.coded.capstone.data.responses.authentication.JwtContents
@@ -14,8 +15,11 @@ import com.coded.capstone.data.responses.errors.ValidationError
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.UserRepository
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 sealed class AuthUiState {
@@ -37,6 +41,7 @@ class AuthViewModel(
     val uiState = mutableStateOf<AuthUiState>(AuthUiState.Loading)
     val registerFieldErrors = mutableStateOf<List<ValidationError>>(emptyList())
     private val authApiService = RetrofitInstance.getAuthServiceProvider(context)
+    private val notificationApiService = RetrofitInstance.getNotificationServiceProvide(context)
     var token = mutableStateOf<JwtResponse?>(null)
     var decodedToken = mutableStateOf<JwtContents?>(null)
 
@@ -98,6 +103,17 @@ class AuthViewModel(
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
 //                        UserRepository.loadUserInfo(context)
+
+
+                        val fcmToken = Firebase.messaging.token.await()
+                        Log.d("FCM", "FCM token = $fcmToken")
+                        val result = notificationApiService.testToken(FirebaseToken(token = fcmToken))
+                        if (result.isSuccessful) {
+                            Log.d("FCM", "Token sent successfully.")
+                        } else {
+                            Log.w("FCM", "Failed to send token. Code: ${result.code()}")
+                        }
+
                         uiState.value = AuthUiState.Success(jwtResponse)
                     }
                 } else {
