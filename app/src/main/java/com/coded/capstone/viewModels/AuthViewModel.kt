@@ -112,7 +112,7 @@ class AuthViewModel(
 
                         val fcmToken = Firebase.messaging.token.await()
                         Log.d("FCM", "FCM token = $fcmToken")
-                        val result = notificationApiService.testToken(FirebaseToken(token = fcmToken))
+                        val result = notificationApiService.testToken(TestFirebaseTokenRequest(token = fcmToken))
                         if (result.isSuccessful) {
                             Log.d("FCM", "Token sent successfully.")
                         } else {
