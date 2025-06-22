@@ -1,64 +1,68 @@
-package com.coded.capstone.screens.wallet
+package com.coded.capstone.Screens.Wallet
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coded.capstone.data.responses.account.AccountResponse
-import com.coded.capstone.composables.home.AccountCard
-import com.coded.capstone.viewModels.HomeScreenViewModel
-import com.coded.capstone.viewModels.AccountsUiState
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.zIndex
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.composables.wallet.WalletCard
 import com.coded.capstone.composables.perks.EnhancedPerkItem
 import com.coded.capstone.composables.ui.ActionButton
+import com.coded.capstone.composables.wallet.PerksBottomSheet
+import com.coded.capstone.composables.wallet.TransferDialog
+import com.coded.capstone.composables.wallet.TopUpDialog
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.TransactionViewModel
+import com.coded.capstone.viewModels.AccountsUiState
+import com.coded.capstone.data.states.TransferUiState
+import com.coded.capstone.data.states.TopUpUiState
+import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.sign
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletScreen(
     modifier: Modifier = Modifier,
     onNavigateToMap: () -> Unit = {},
     onPayAction: (AccountResponse) -> Unit = {},
-    onTransferAction: (AccountResponse) -> Unit = {},
     onDetailsAction: (AccountResponse) -> Unit = {}
 ) {
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
 
-    val viewModel: HomeScreenViewModel = viewModel(
+    // ViewModels
+    val homeViewModel: HomeScreenViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                 return HomeScreenViewModel(context) as T
@@ -66,28 +70,62 @@ fun WalletScreen(
         }
     )
 
-    val accountsUiState by viewModel.accountsUiState.collectAsState()
-    val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
-    val perksOfAccountProduct by viewModel.perksOfAccountProduct.collectAsState()
+    val transactionViewModel: TransactionViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return TransactionViewModel(context) as T
+            }
+        }
+    )
 
+    // States
+    val accountsUiState by homeViewModel.accountsUiState.collectAsState()
+    val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts ?: emptyList()
+    val perksOfAccountProduct by homeViewModel.perksOfAccountProduct.collectAsState()
+    val transferUiState by transactionViewModel.transferUiState.collectAsState()
+    val topUpUiState by transactionViewModel.topUpUiState.collectAsState()
+
+    // Local States
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
     var currentCardIndex by remember { mutableStateOf(0) }
+    var scrollVelocity by remember { mutableStateOf(0f) }
+    var showTransferDialog by remember { mutableStateOf(false) }
+    var showTopUpDialog by remember { mutableStateOf(false) }
+    var expandedPerks by remember { mutableStateOf(false) }
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val pagerState = rememberPagerState(pageCount = { accounts.size })
 
-    // Pager state for card navigation
-    val pagerState = rememberPagerState(pageCount = { accounts?.size ?: 0 })
-
-    LaunchedEffect(selectedCard) {
-        selectedCard?.let { card ->
-            card.accountProductId?.let { productId ->
-                viewModel.fetchPerksOfAccountProduct(productId.toString())
-            }
+    // Handle transfer success
+    LaunchedEffect(transferUiState) {
+        if (transferUiState is TransferUiState.Success) {
+            showTransferDialog = false
+            homeViewModel.fetchAccounts() // Refresh accounts
+            transactionViewModel.resetTransferState()
         }
     }
 
-    // Update current card index when pager changes
+    // Handle top-up success
+    LaunchedEffect(topUpUiState) {
+        if (topUpUiState is TopUpUiState.Success) {
+            showTopUpDialog = false
+            homeViewModel.fetchAccounts() // Refresh accounts
+            transactionViewModel.resetTopUpState()
+        }
+    }
+
+    // Update current card index
     LaunchedEffect(pagerState.currentPage) {
         currentCardIndex = pagerState.currentPage
+    }
+
+    // Fetch perks when card is selected
+    LaunchedEffect(selectedCard) {
+        selectedCard?.let { card ->
+            card.accountProductId?.let { productId ->
+                homeViewModel.fetchPerksOfAccountProduct(productId.toString())
+            }
+        }
     }
 
     Box(
@@ -125,7 +163,7 @@ fun WalletScreen(
                         ),
                         color = Color.White
                     )
-                    if (accounts?.isNotEmpty() == true) {
+                    if (accounts.isNotEmpty()) {
                         Text(
                             text = "${currentCardIndex + 1} of ${accounts.size} accounts",
                             color = Color.White.copy(alpha = 0.6f),
@@ -172,213 +210,56 @@ fun WalletScreen(
                     }
                 }
                 is AccountsUiState.Error -> {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF1F1F23)
-                        ),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "Error loading accounts",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            Text(
-                                text = "Please try again",
-                                color = Color.White.copy(alpha = 0.7f),
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
-                            Button(
-                                onClick = { viewModel.fetchAccounts() },
-                                modifier = Modifier.padding(top = 16.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF8B5CF6)
-                                )
-                            ) {
-                                Text("Retry", color = Color.White)
-                            }
-                        }
-                    }
+                    ErrorCard(
+                        onRetry = { homeViewModel.fetchAccounts() }
+                    )
                 }
                 is AccountsUiState.Success -> {
-                    if (accounts!!.isEmpty()) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF1F1F23)
-                            ),
-                            shape = RoundedCornerShape(20.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(40.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    Icons.Default.AccountBalanceWallet,
-                                    contentDescription = null,
-                                    tint = Color.White.copy(alpha = 0.3f),
-                                    modifier = Modifier.size(80.dp)
-                                )
-                                Text(
-                                    text = "No accounts found",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(top = 20.dp)
-                                )
-                                Text(
-                                    text = "Add your first account to get started",
-                                    color = Color.White.copy(alpha = 0.6f),
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
-                            }
-                        }
+                    if (accounts.isEmpty()) {
+                        EmptyAccountsCard()
                     } else {
-                        // Enhanced Stacked Cards with Swipe Navigation
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(240.dp)
+                        // Apple Pay Inspired Card Stack
+                        ApplePayCardStack(
+                            accounts = accounts,
+                            selectedCard = selectedCard,
+                            pagerState = pagerState,
+                            scrollVelocity = scrollVelocity,
+                            onCardSelected = { account ->
+                                selectedCard = if (selectedCard?.id == account.id) null else account
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            },
+                            onScrollVelocityChange = { velocity ->
+                                scrollVelocity = velocity
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        // Action Buttons (shown when card is selected)
+                        AnimatedVisibility(
+                            visible = selectedCard != null,
+                            enter = slideInVertically(
+                                initialOffsetY = { it },
+                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                            ) + fadeIn(),
+                            exit = slideOutVertically(
+                                targetOffsetY = { it },
+                                animationSpec = tween(300)
+                            ) + fadeOut()
                         ) {
-                            HorizontalPager(
-                                state = pagerState,
-                                modifier = Modifier.fillMaxSize()
-                            ) { page ->
-                                val account = accounts[page]
-
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(horizontal = 8.dp)
-                                ) {
-                                    // Stack effect for non-active cards
-                                    accounts.take(page + 1).forEachIndexed { index, stackAccount ->
-                                        val isActive = index == page
-                                        val offsetY = if (isActive) 0.dp else ((page - index) * 8).dp
-                                        val scale = if (isActive) 1f else (1f - ((page - index) * 0.03f))
-                                        val alpha = if (isActive) 1f else (1f - ((page - index) * 0.2f)).coerceAtLeast(0.3f)
-
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .offset(y = offsetY)
-                                                .graphicsLayer {
-                                                    scaleX = scale
-                                                    scaleY = scale
-                                                    this.alpha = alpha
-                                                }
-                                                .zIndex(index.toFloat())
-                                                .shadow(
-                                                    elevation = if (isActive) 12.dp else 8.dp,
-                                                    shape = RoundedCornerShape(20.dp),
-                                                    ambientColor = Color.Black.copy(alpha = 0.4f),
-                                                    spotColor = Color.Black.copy(alpha = 0.4f)
-                                                )
-                                        ) {
-                                            if (isActive) {
-                                                AccountCard(
-                                                    account = account,
-                                                    onCardClick = {
-                                                        selectedCard = account
-                                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                    },
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .clickable {
-                                                            selectedCard = account
-                                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                        }
-                                                )
-                                            }
+                            selectedCard?.let { card ->
+                                ActionButtonsRow(
+                                    account = card,
+                                    onPayAction = onPayAction,
+                                    onTopUpAction = {
+                                        if (transactionViewModel.canTopUp(card)) {
+                                            showTopUpDialog = true
                                         }
-                                    }
-                                }
-                            }
-
-                            // Swipe indicator
-                            Row(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(bottom = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                repeat(accounts.size) { index ->
-                                    val isActive = index == pagerState.currentPage
-                                    Box(
-                                        modifier = Modifier
-                                            .size(if (isActive) 24.dp else 8.dp, 4.dp)
-                                            .background(
-                                                if (isActive) Color(0xFF8B5CF6) else Color.White.copy(alpha = 0.3f),
-                                                RoundedCornerShape(2.dp)
-                                            )
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(40.dp))
-
-                        // Swipe Hint
-                        if (accounts.size > 1) {
-                            Text(
-                                text = "← Swipe to see other cards →",
-                                color = Color.White.copy(alpha = 0.5f),
-                                fontSize = 12.sp,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                        }
-
-                        // Enhanced Action Buttons Row
-                        if (currentCardIndex < accounts.size) {
-                            val currentAccount = accounts[currentCardIndex]
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                // Pay Button
-                                ActionButton(
-                                    icon = Icons.Default.Payment,
-                                    label = "Pay",
-                                    color = Color(0xFF10B981),
-                                    onClick = {
-                                        onPayAction(currentAccount)
-                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     },
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                // Transfer Button
-                                ActionButton(
-                                    icon = Icons.Default.SwapHoriz,
-                                    label = "Transfer",
-                                    color = Color(0xFF8B5CF6),
-                                    onClick = {
-                                        onTransferAction(currentAccount)
-                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                // Details Button
-                                ActionButton(
-                                    icon = Icons.Default.Info,
-                                    label = "Details",
-                                    color = Color(0xFF3B82F6),
-                                    onClick = {
-                                        onDetailsAction(currentAccount)
-                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    },
-                                    modifier = Modifier.weight(1f)
+                                    onTransferAction = { showTransferDialog = true },
+                                    onDetailsAction = onDetailsAction,
+                                    canTopUp = transactionViewModel.canTopUp(card),
+                                    hapticFeedback = hapticFeedback
                                 )
                             }
                         }
@@ -388,14 +269,7 @@ fun WalletScreen(
         }
 
         // Enhanced Bottom Sheet for Perks
-        if (selectedCard != null) {
-            val card = selectedCard!!
-            var expanded by remember { mutableStateOf(false) }
-
-            BackHandler(enabled = true) {
-                selectedCard = null
-            }
-
+        selectedCard?.let { card ->
             ModalBottomSheet(
                 onDismissRequest = { selectedCard = null },
                 sheetState = sheetState,
@@ -404,219 +278,158 @@ fun WalletScreen(
                 shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(
+                PerksBottomSheet(
+                    account = card,
+                    perks = perksOfAccountProduct,
+                    expanded = expandedPerks,
+                    onExpandedChange = { expandedPerks = it },
+                    onDismiss = { selectedCard = null },
+                    onPayAction = { onPayAction(card); selectedCard = null },
+                    onTopUpAction = {
+                        if (transactionViewModel.canTopUp(card)) {
+                            showTopUpDialog = true
+                            selectedCard = null
+                        }
+                    },
+                    onTransferAction = { showTransferDialog = true; selectedCard = null },
+                    onDetailsAction = { onDetailsAction(card); selectedCard = null },
+                    canTopUp = transactionViewModel.canTopUp(card)
+                )
+            }
+        }
+
+        // Transaction Dialogs
+        if (showTransferDialog) {
+            TransferDialog(
+                sourceAccounts = transactionViewModel.getEligibleSourceAccounts(accounts),
+                onTransfer = { source, destination, amount ->
+                    transactionViewModel.transfer(source, destination, amount)
+                },
+                onDismiss = {
+                    showTransferDialog = false
+                    transactionViewModel.resetTransferState()
+                },
+                transferUiState = transferUiState,
+                getEligibleDestinations = { source ->
+                    transactionViewModel.getEligibleDestinationAccounts(accounts, source)
+                },
+                validateAmount = { amount, sourceAccount ->
+                    transactionViewModel.validateTransferAmount(amount, sourceAccount)
+                }
+            )
+        }
+
+        if (showTopUpDialog) {
+            selectedCard?.let { account ->
+                TopUpDialog(
+                    targetAccount = account,
+                    onTopUp = { amount ->
+                        transactionViewModel.topUp(amount)
+                    },
+                    onDismiss = {
+                        showTopUpDialog = false
+                        transactionViewModel.resetTopUpState()
+                    },
+                    topUpUiState = topUpUiState,
+                    validateAmount = { amount ->
+                        transactionViewModel.validateTopUpAmount(amount)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ApplePayCardStack(
+    accounts: List<AccountResponse>,
+    selectedCard: AccountResponse?,
+    pagerState: PagerState,
+    scrollVelocity: Float,
+    onCardSelected: (AccountResponse) -> Unit,
+    onScrollVelocityChange: (Float) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+    ) {
+        if (selectedCard == null) {
+            // Stacked cards view
+            accounts.forEachIndexed { index, account ->
+                val offsetY = (index * 16).dp
+                val rotation = (scrollVelocity * 0.1f).coerceIn(-15f, 15f) + (index * 2f)
+                val scale = 1f - (index * 0.02f)
+                val alpha = 1f - (index * 0.1f)
+
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(if (expanded) 0.9f else 0.6f)
-                        .padding(24.dp)
-                ) {
-                    // Header with close and expand buttons
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Account Details & Perks",
-                            style = MaterialTheme.typography.headlineSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 22.sp
-                            ),
-                            color = Color.White
-                        )
-
-                        Row {
-                            IconButton(
-                                onClick = { expanded = !expanded },
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(
-                                        Color(0xFF8B5CF6).copy(alpha = 0.2f),
-                                        CircleShape
-                                    )
-                            ) {
-                                Icon(
-                                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                    contentDescription = if (expanded) "Collapse" else "Expand",
-                                    tint = Color(0xFF8B5CF6),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            IconButton(
-                                onClick = { selectedCard = null },
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(
-                                        Color.White.copy(alpha = 0.1f),
-                                        CircleShape
-                                    )
-                            ) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Close",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
+                        .fillMaxSize()
+                        .offset(y = offsetY)
+                        .graphicsLayer {
+                            rotationZ = rotation
+                            scaleX = scale
+                            scaleY = scale
+                            this.alpha = alpha.coerceAtLeast(0.3f)
                         }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Enhanced Account info header
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF1A1A1D)
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(12.dp)
-                                        .background(Color(0xFF10B981), CircleShape)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = card.ownerType ?: "Account #${card.accountNumber?.takeLast(4) ?: "****"}",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                Text(
-                                    text = "${card.balance} KWD",
-                                    color = Color(0xFF10B981),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Text(
-                                text = "Account Number: ****${card.accountNumber?.takeLast(4) ?: "****"}",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 14.sp
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Action Buttons in Bottom Sheet
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        ActionButton(
-                            icon = Icons.Default.Payment,
-                            label = "Pay",
-                            color = Color(0xFF10B981),
-                            onClick = {
-                                onPayAction(card)
-                                selectedCard = null
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        ActionButton(
-                            icon = Icons.Default.SwapHoriz,
-                            label = "Transfer",
-                            color = Color(0xFF8B5CF6),
-                            onClick = {
-                                onTransferAction(card)
-                                selectedCard = null
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        ActionButton(
-                            icon = Icons.Default.Info,
-                            label = "Details",
-                            color = Color(0xFF3B82F6),
-                            onClick = {
-                                onDetailsAction(card)
-                                selectedCard = null
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Perks List
-                    if (perksOfAccountProduct.isNotEmpty()) {
-                        Text(
-                            text = "Account Perks",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-
-                        LazyColumn(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            itemsIndexed(perksOfAccountProduct) { index, perk ->
-                                AnimatedVisibility(
-                                    visible = true,
-                                    enter = fadeIn(
-                                        animationSpec = tween(400, delayMillis = index * 100)
-                                    ) + slideInHorizontally(
-                                        initialOffsetX = { it },
-                                        animationSpec = tween(400, delayMillis = index * 100)
-                                    )
-                                ) {
-                                    EnhancedPerkItem(perk = perk)
+                        .zIndex((accounts.size - index).toFloat())
+                        .pointerInput(account.id) {
+                            detectDragGestures(
+                                onDragEnd = {
+                                    onScrollVelocityChange(0f)
                                 }
+                            ) { _, dragAmount ->
+                                onScrollVelocityChange(dragAmount.y * 0.1f)
                             }
                         }
-                    } else {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .background(
-                                        Color(0xFF8B5CF6).copy(alpha = 0.1f),
-                                        CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = null,
-                                    tint = Color(0xFF8B5CF6),
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "No perks available",
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 18.sp
+                ) {
+                    WalletCard(
+                        account = account,
+                        onCardClick = { onCardSelected(account) },
+                        tiltAngle = rotation,
+                        scale = scale,
+                        alpha = alpha.coerceAtLeast(0.3f),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shadow(
+                                elevation = (12 - index * 2).dp.coerceAtLeast(4.dp),
+                                shape = RoundedCornerShape(16.dp)
                             )
-                            Text(
-                                text = "This account doesn't have any special perks yet.",
-                                color = Color.White.copy(alpha = 0.6f),
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
-                        }
+                    )
+                }
+            }
+        } else {
+            // Selected card view (enlarged and centered)
+            val selectedIndex = accounts.indexOf(selectedCard)
+
+            AnimatedVisibility(
+                visible = true,
+                enter = scaleIn(
+                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                ) + fadeIn(),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                WalletCard(
+                    account = selectedCard,
+                    onCardClick = { onCardSelected(selectedCard) },
+                    scale = 1.05f,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .shadow(16.dp, RoundedCornerShape(16.dp))
+                )
+            }
+
+            // Fade out other cards
+            accounts.forEachIndexed { index, account ->
+                if (account.id != selectedCard.id) {
+                    AnimatedVisibility(
+                        visible = false,
+                        exit = slideOutHorizontally(
+                            targetOffsetX = { if (index < selectedIndex) -it else it },
+                            animationSpec = tween(400)
+                        ) + fadeOut(animationSpec = tween(400))
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize())
                     }
                 }
             }
@@ -624,6 +437,132 @@ fun WalletScreen(
     }
 }
 
+@Composable
+private fun ActionButtonsRow(
+    account: AccountResponse,
+    onPayAction: (AccountResponse) -> Unit,
+    onTopUpAction: () -> Unit,
+    onTransferAction: () -> Unit,
+    onDetailsAction: (AccountResponse) -> Unit,
+    canTopUp: Boolean,
+    hapticFeedback: androidx.compose.ui.hapticfeedback.HapticFeedback
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ActionButton(
+            icon = Icons.Default.Payment,
+            label = "Pay",
+            color = Color(0xFF10B981),
+            onClick = {
+                onPayAction(account)
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            },
+            modifier = Modifier.weight(1f)
+        )
 
+        ActionButton(
+            icon = Icons.Default.Add,
+            label = "Top Up",
+            color = if (canTopUp) Color(0xFFFFD700) else Color.White.copy(alpha = 0.3f),
+            onClick = {
+                if (canTopUp) {
+                    onTopUpAction()
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                }
+            },
+            modifier = Modifier.weight(1f)
+        )
 
+        ActionButton(
+            icon = Icons.Default.SwapHoriz,
+            label = "Transfer",
+            color = Color(0xFF8B5CF6),
+            onClick = {
+                onTransferAction()
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            },
+            modifier = Modifier.weight(1f)
+        )
 
+        ActionButton(
+            icon = Icons.Default.Info,
+            label = "Details",
+            color = Color(0xFF3B82F6),
+            onClick = {
+                onDetailsAction(account)
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            },
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun ErrorCard(onRetry: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1F1F23)),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Error loading accounts",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Text(
+                text = "Please try again",
+                color = Color.White.copy(alpha = 0.7f),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Button(
+                onClick = onRetry,
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5CF6))
+            ) {
+                Text("Retry", color = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyAccountsCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1F1F23)),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                Icons.Default.AccountBalanceWallet,
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.3f),
+                modifier = Modifier.size(80.dp)
+            )
+            Text(
+                text = "No accounts found",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier.padding(top = 20.dp)
+            )
+            Text(
+                text = "Add your first account to get started",
+                color = Color.White.copy(alpha = 0.6f),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}

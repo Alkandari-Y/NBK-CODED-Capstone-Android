@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.responses.account.AccountCreateResponse
 import com.coded.capstone.data.responses.account.AccountResponse
-import com.coded.capstone.data.responses.account.TransactionDetails
+import com.coded.capstone.data.responses.transaction.TransactionDetails
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountRepository
 import kotlinx.coroutines.flow.MutableStateFlow

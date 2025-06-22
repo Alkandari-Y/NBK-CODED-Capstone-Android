@@ -1,4 +1,4 @@
-package com.coded.capstone.data.responses.account
+package com.coded.capstone.data.responses.transaction
 
 import java.math.BigDecimal
 
