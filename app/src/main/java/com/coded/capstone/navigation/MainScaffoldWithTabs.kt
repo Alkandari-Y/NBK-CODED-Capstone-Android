@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.composables.home.BottomNavBar
-import com.coded.capstone.screens.CalendarScreen
+import com.coded.capstone.screens.calender.CalendarScreen
 import com.coded.capstone.screens.home.HomeScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.viewModels.AuthViewModel

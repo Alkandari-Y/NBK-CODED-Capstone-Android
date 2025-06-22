@@ -52,9 +52,9 @@ interface BankingServiceProvider {
     ): Response<List<PerkDto>>
 
     // Transactions controller
-    @GET("/api/v1/transactions/account/{accountNumber}")
+    @GET("/api/v1/transactions/account")
     suspend fun getAllTransactionsByAccountNumber(
-        @Path("accountNumber") accountNumber: String,
+        @Query("accountId") accountId: String,
     ): Response<List<TransactionDetails>>
 
     // Transfer endpoint

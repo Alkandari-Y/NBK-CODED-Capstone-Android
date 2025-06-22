@@ -23,10 +23,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.transaction.TransactionDetails
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.math.BigDecimal
 
 // Dark theme colors
 private val DarkBackground = Color(0xFF0A0A0A)
@@ -37,16 +39,6 @@ private val DarkOnSurfaceVariant = Color(0xFFB8B8B8)
 private val AccentBlue = Color(0xFF3B82F6)
 private val AccentGreen = Color(0xFF10B981)
 private val AccentRed = Color(0xFFEF4444)
-
-// Sample transaction data class
-data class Transaction(
-    val id: String,
-    val description: String,
-    val amount: Double,
-    val date: Date,
-    val type: TransactionType,
-    val category: String = ""
-)
 
 enum class TransactionType {
     INCOME, EXPENSE, TRANSFER
@@ -67,16 +59,17 @@ fun AccountDetailsScreen(
     var error by remember { mutableStateOf<String?>(null) }
     var isAccountNumberVisible by remember { mutableStateOf(false) }
     val accountState by viewModel.selectedAccount.collectAsState()
+    val transactions by viewModel.transactions.collectAsState()
+    val categories by viewModel.categories.collectAsState()
 
-    // Sample transactions (replace with actual data from backend)
-    val sampleTransactions = emptyList<Transaction>()
-
-    // Fetch account details
+    // Fetch account details and transactions
     LaunchedEffect(accountId) {
         isLoading = true
         error = null
         try {
             viewModel.fetchAccountDetails(accountId)
+            viewModel.fetchTransactionHistory(accountId)
+
             kotlinx.coroutines.delay(1000)
             isLoading = false
         } catch (e: Exception) {
@@ -84,6 +77,8 @@ fun AccountDetailsScreen(
             isLoading = false
         }
     }
+
+
 
     // Get account colors based on type
     val accountColors = when (accountState?.accountType?.lowercase()) {
@@ -342,64 +337,64 @@ fun AccountDetailsScreen(
                                 }
                             }
 
+//                            Spacer(modifier = Modifier.height(32.dp))
+//
+//                            // Action Buttons
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+//                            ) {
+//                                ActionButton(
+//                                    text = "Top Up",
+//                                    icon = Icons.Default.Add,
+//                                    onClick = { /* Handle add */ },
+//                                    isPrimary = true,
+//                                    modifier = Modifier.weight(1f)
+//                                )
+//                                ActionButton(
+//                                    text = "Pay",
+//                                    icon = Icons.Default.Send,
+//                                    onClick = { /* Handle pay */ },
+//                                    modifier = Modifier.weight(1f)
+//                                )
+//                                ActionButton(
+//                                    text = "Perks",
+//                                    icon = Icons.Default.SwapHoriz,
+//                                    onClick = { /* Handle transfer */ },
+//                                    modifier = Modifier.weight(1f)
+//                                )
+//                            }
+
                             Spacer(modifier = Modifier.height(32.dp))
 
-                            // Action Buttons
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                ActionButton(
-                                    text = "Top Up",
-                                    icon = Icons.Default.Add,
-                                    onClick = { /* Handle add */ },
-                                    isPrimary = true,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                ActionButton(
-                                    text = "Pay",
-                                    icon = Icons.Default.Send,
-                                    onClick = { /* Handle pay */ },
-                                    modifier = Modifier.weight(1f)
-                                )
-                                ActionButton(
-                                    text = "Perks",
-                                    icon = Icons.Default.SwapHoriz,
-                                    onClick = { /* Handle transfer */ },
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(32.dp))
-
-                            // Search Bar
-                            OutlinedTextField(
-                                value = "",
-                                onValueChange = { },
-                                placeholder = {
-                                    Text(
-                                        "Search transactions...",
-                                        color = DarkOnSurfaceVariant
-                                    )
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = null,
-                                        tint = DarkOnSurfaceVariant
-                                    )
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = accountColors.secondary,
-                                    unfocusedBorderColor = DarkSurfaceVariant,
-                                    focusedContainerColor = DarkSurface,
-                                    unfocusedContainerColor = DarkSurface,
-                                    focusedTextColor = DarkOnSurface,
-                                    unfocusedTextColor = DarkOnSurface
-                                )
-                            )
+//                            // Search Bar
+//                            OutlinedTextField(
+//                                value = "",
+//                                onValueChange = { },
+//                                placeholder = {
+//                                    Text(
+//                                        "Search transactions...",
+//                                        color = DarkOnSurfaceVariant
+//                                    )
+//                                },
+//                                leadingIcon = {
+//                                    Icon(
+//                                        Icons.Default.Search,
+//                                        contentDescription = null,
+//                                        tint = DarkOnSurfaceVariant
+//                                    )
+//                                },
+//                                modifier = Modifier.fillMaxWidth(),
+//                                shape = RoundedCornerShape(16.dp),
+//                                colors = OutlinedTextFieldDefaults.colors(
+//                                    focusedBorderColor = accountColors.secondary,
+//                                    unfocusedBorderColor = DarkSurfaceVariant,
+//                                    focusedContainerColor = DarkSurface,
+//                                    unfocusedContainerColor = DarkSurface,
+//                                    focusedTextColor = DarkOnSurface,
+//                                    unfocusedTextColor = DarkOnSurface
+//                                )
+//                            )
 
                             Spacer(modifier = Modifier.height(32.dp))
                         }
@@ -434,7 +429,7 @@ fun AccountDetailsScreen(
                         }
 
                         // Check if there are any transactions
-                        if (sampleTransactions.isEmpty()) {
+                        if (transactions.isEmpty()) {
                             // No transactions state
                             item {
                                 Card(
@@ -490,7 +485,7 @@ fun AccountDetailsScreen(
                             }
                         } else {
                             // Transaction items would go here
-                            items(sampleTransactions) { transaction ->
+                            items(transactions) { transaction ->
                                 TransactionItem(transaction = transaction)
                                 Spacer(modifier = Modifier.height(12.dp))
                             }
@@ -549,7 +544,7 @@ private fun ActionButton(
 }
 
 @Composable
-private fun TransactionItem(transaction: Transaction) {
+private fun TransactionItem(transaction: TransactionDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -562,7 +557,7 @@ private fun TransactionItem(transaction: Transaction) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Transaction Icon
-            val (icon, iconColor) = when (transaction.type) {
+            val (icon, iconColor) = when (getTransactionType(transaction)) {
                 TransactionType.EXPENSE -> Icons.Default.ArrowUpward to AccentRed
                 TransactionType.INCOME -> Icons.Default.ArrowDownward to AccentGreen
                 TransactionType.TRANSFER -> Icons.Default.SwapHoriz to AccentBlue
@@ -587,17 +582,13 @@ private fun TransactionItem(transaction: Transaction) {
             // Transaction Details
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = transaction.description,
+                    text = transaction.category.ifEmpty { "Transaction" },
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
                     color = DarkOnSurface
                 )
                 Text(
-                    text = when (transaction.type) {
-                        TransactionType.EXPENSE -> "Payment"
-                        TransactionType.INCOME -> "Received"
-                        TransactionType.TRANSFER -> "Transfer"
-                    },
+                    text = formatTransactionDate(transaction.createdAt),
                     style = MaterialTheme.typography.bodySmall,
                     color = DarkOnSurfaceVariant
                 )
@@ -605,12 +596,31 @@ private fun TransactionItem(transaction: Transaction) {
 
             // Amount
             Text(
-                text = "${if (transaction.amount >= 0) "+" else ""}${String.format("%.3f", transaction.amount)} KWD",
+                text = "${String.format("%.3f", transaction.amount)} KWD",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = if (transaction.amount >= 0) AccentGreen else DarkOnSurface
+                color = if (transaction.amount >= BigDecimal.ZERO) AccentGreen else DarkOnSurface
             )
         }
+    }
+}
+
+private fun getTransactionType(transaction: TransactionDetails): TransactionType {
+    return when {
+        transaction.amount < BigDecimal.ZERO -> TransactionType.EXPENSE
+        transaction.amount > BigDecimal.ZERO -> TransactionType.INCOME
+        else -> TransactionType.TRANSFER
+    }
+}
+
+private fun formatTransactionDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val date = inputFormat.parse(dateString)
+        outputFormat.format(date ?: Date())
+    } catch (e: Exception) {
+        "Unknown date"
     }
 }
 

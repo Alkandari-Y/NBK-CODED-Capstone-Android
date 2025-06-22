@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.respositories.AccountProductRepository
 
 @Composable
 fun WalletCard(
@@ -28,42 +29,72 @@ fun WalletCard(
     scale: Float = 1f,
     alpha: Float = 1f
 ) {
-    // Metallic gradients based on card type
+    // Get account product details
+    val accountProduct = AccountProductRepository.accountProducts.find {
+        it.id == account.accountProductId
+    }
+
+    val bankName = accountProduct?.name ?: "Bank"
+    val cardType = account.accountType?.uppercase() ?: "ACCOUNT"
+
+    // Modern premium card gradients based on account type
     val cardGradient = when (account.accountType?.lowercase()) {
         "debit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF2D3748), // Dark gray
-                Color(0xFF4A5568), // Medium gray
-                Color(0xFF718096)  // Light gray
-            )
+                Color(0xFF1e293b), // Slate 800
+                Color(0xFF334155), // Slate 700
+                Color(0xFF475569), // Slate 600
+                Color(0xFF64748b)  // Slate 500
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         "credit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF1A202C), // Very dark
-                Color(0xFF2D3748), // Dark
-                Color(0xFF4A5568)  // Medium
-            )
+                Color(0xFF7c2d12), // Red 800
+                Color(0xFF991b1b), // Red 800
+                Color(0xFFdc2626), // Red 600
+                Color(0xFFef4444)  // Red 500
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        "cashback" -> Brush.linearGradient(
+        "savings" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF2B6CB0), // Blue
-                Color(0xFF3182CE), // Medium blue
-                Color(0xFF4299E1)  // Light blue
-            )
+                Color(0xFF14532d), // Green 900
+                Color(0xFF166534), // Green 800
+                Color(0xFF16a34a), // Green 600
+                Color(0xFF22c55e)  // Green 500
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        "business" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF1e1b4b), // Indigo 900
+                Color(0xFF3730a3), // Indigo 800
+                Color(0xFF4f46e5), // Indigo 600
+                Color(0xFF6366f1)  // Indigo 500
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         else -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF4A5568),
-                Color(0xFF718096),
-                Color(0xFFA0AEC0)
-            )
+                Color(0xFF374151), // Gray 700
+                Color(0xFF4b5563), // Gray 600
+                Color(0xFF6b7280), // Gray 500
+                Color(0xFF9ca3af)  // Gray 400
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
     }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(220.dp)
             .graphicsLayer {
                 rotationZ = tiltAngle
                 scaleX = scale
@@ -71,13 +102,13 @@ fun WalletCard(
                 this.alpha = alpha
             }
             .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = Color.Black.copy(alpha = 0.3f),
-                spotColor = Color.Black.copy(alpha = 0.3f)
+                elevation = 20.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = Color.Black.copy(alpha = 0.4f),
+                spotColor = Color.Black.copy(alpha = 0.4f)
             )
             .clickable { onCardClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -85,53 +116,94 @@ fun WalletCard(
                 .fillMaxSize()
                 .background(cardGradient)
         ) {
+            // Subtle geometric pattern overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.03f),
+                                Color.Transparent,
+                                Color.White.copy(alpha = 0.02f)
+                            ),
+                            radius = 400f
+                        )
+                    )
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
+                    .padding(28.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top row: EMV Chip (left) and Contactless symbol (right)
+                // Top section: Bank name and contactless
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    // EMV Chip
+                    // Bank/Product name
+                    Text(
+                        text = bankName.uppercase(),
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp
+                    )
+
+                    // Contactless payment icon
+                    Icon(
+                        imageVector = Icons.Default.Contactless,
+                        contentDescription = "Contactless Payment",
+                        tint = Color.White.copy(alpha = 0.9f),
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                // Middle section: EMV Chip
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    // Realistic EMV Chip
                     Box(
                         modifier = Modifier
-                            .width(42.dp)
-                            .height(32.dp)
+                            .width(50.dp)
+                            .height(40.dp)
                             .background(
                                 Brush.linearGradient(
                                     colors = listOf(
-                                        Color(0xFFD4AF37), // Gold
-                                        Color(0xFFB8860B), // Dark gold
-                                        Color(0xFFD4AF37)  // Gold
+                                        Color(0xFFFFD700), // Gold
+                                        Color(0xFFDAA520), // Goldenrod
+                                        Color(0xFFB8860B), // Dark goldenrod
+                                        Color(0xFFFFD700)  // Gold
                                     )
                                 ),
-                                RoundedCornerShape(4.dp)
+                                RoundedCornerShape(6.dp)
                             )
+                            .shadow(2.dp, RoundedCornerShape(6.dp))
                     ) {
-                        // Chip grid pattern
+                        // Chip contact pattern
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(6.dp),
+                                .padding(8.dp),
                             verticalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            repeat(4) {
+                            repeat(3) { row ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
-                                    repeat(6) {
+                                    repeat(4) { col ->
                                         Box(
                                             modifier = Modifier
-                                                .size(2.dp)
+                                                .size(3.dp)
                                                 .background(
-                                                    Color.Black.copy(alpha = 0.4f),
-                                                    RoundedCornerShape(0.5.dp)
+                                                    Color(0xFF8B4513).copy(alpha = 0.8f),
+                                                    RoundedCornerShape(1.dp)
                                                 )
                                         )
                                     }
@@ -139,67 +211,68 @@ fun WalletCard(
                             }
                         }
                     }
-
-                    // Contactless symbol
-                    Icon(
-                        imageVector = Icons.Default.Wifi,
-                        contentDescription = "Contactless",
-                        tint = Color.White.copy(alpha = 0.8f),
-                        modifier = Modifier
-                            .size(24.dp)
-                            .graphicsLayer { rotationZ = 90f }
-                    )
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Bottom section: Card number and name (left) and Amount (right)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    // Card name and number (bottom left)
-                    Column {
-                        Text(
-                            text = when (account.accountType?.lowercase()) {
-                                "debit" -> "NBK INFINITE"
-                                "credit" -> "NBK VISA"
-                                "cashback" -> "NBK CASHBACK"
-                                else -> "NBK ACCOUNT"
-                            },
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Text(
-                            text = if (!account.accountNumber.isNullOrBlank() && account.accountNumber.length >= 4) {
-                                "••••••••••${account.accountNumber.takeLast(4)}"
-                            } else {
-                                "••••••••••5758"
-                            },
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            letterSpacing = 1.sp
-                        )
-                    }
-
-                    // Amount (bottom right)
+                // Bottom section: Card details
+                Column {
+                    // Account number
                     Text(
-                        text = "amount :${String.format("%.0f", account.balance?.toDouble() ?: 0.0)} KD",
+                        text = formatAccountNumber(account.accountNumber),
                         color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 2.sp
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Bottom row: Card type and balance
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        // Account type
+                        Column {
+                            Text(
+                                text = "ACCOUNT TYPE",
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                letterSpacing = 1.sp
+                            )
+                            Text(
+                                text = cardType,
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            )
+                        }
+
+                        // Balance
+                        Column(
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = "BALANCE",
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                letterSpacing = 1.sp
+                            )
+                            Text(
+                                text = "${String.format("%.2f", account.balance.toDouble())} KD",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
 
-            // Subtle metallic shine effect
+            // Premium shine effect
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -207,16 +280,28 @@ fun WalletCard(
                         Brush.linearGradient(
                             colors = listOf(
                                 Color.Transparent,
+                                Color.White.copy(alpha = 0.12f),
+                                Color.Transparent,
                                 Color.White.copy(alpha = 0.08f),
                                 Color.Transparent,
-                                Color.White.copy(alpha = 0.05f),
+                                Color.White.copy(alpha = 0.15f),
                                 Color.Transparent
                             ),
                             start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                            end = androidx.compose.ui.geometry.Offset(400f, 400f)
+                            end = androidx.compose.ui.geometry.Offset(500f, 300f)
                         )
                     )
             )
         }
+    }
+}
+
+private fun formatAccountNumber(accountNumber: String?): String {
+    return if (!accountNumber.isNullOrBlank() && accountNumber.length >= 4) {
+        val maskedPart = "•••• •••• •••• "
+        val lastFour = accountNumber.takeLast(4)
+        maskedPart + lastFour
+    } else {
+        "•••• •••• •••• ••••"
     }
 }
