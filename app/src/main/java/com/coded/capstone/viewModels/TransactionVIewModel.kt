@@ -94,13 +94,7 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
     ): List<AccountResponse> {
         return accounts.filter { account ->
             // Cannot transfer to same account
-            account.id != sourceAccount.id &&
-                    // Cannot transfer to cashback accounts
-                    account.accountType?.lowercase() != "cashback" &&
-                    // Cannot transfer from credit to debit
-                    !(sourceAccount.accountType?.lowercase() == "credit" && account.accountType?.lowercase() == "debit") &&
-                    // Cannot transfer between credit cards
-                    !(sourceAccount.accountType?.lowercase() == "credit" && account.accountType?.lowercase() == "credit")
+            account.id != sourceAccount.id
         }
     }
 
