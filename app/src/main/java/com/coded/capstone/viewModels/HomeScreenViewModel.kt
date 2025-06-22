@@ -11,6 +11,7 @@ import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
 import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
+import com.coded.capstone.data.responses.transaction.TransactionDetails
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountProductRepository
 import com.coded.capstone.respositories.AccountRepository
@@ -47,6 +48,9 @@ class HomeScreenViewModel(
 
     private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
     val categories: StateFlow<List<CategoryDto>> = _categories
+
+    private val _transactions = MutableStateFlow<List<TransactionDetails>>(emptyList())
+    val transactions: StateFlow<List<TransactionDetails>> = _transactions
 
     private val _perksOfAccountProduct = MutableStateFlow<List<PerkDto>>(emptyList())
     val perksOfAccountProduct:  StateFlow<List<PerkDto>> = _perksOfAccountProduct
@@ -176,6 +180,22 @@ class HomeScreenViewModel(
         }
     }
 
+    fun fetchTransactionHistory(accountId:String){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context).getAllTransactionsByAccountNumber(accountId)
+                println(response.body())
+                if (response.isSuccessful) {
+                    val transactions = response.body().orEmpty()
+                    _transactions.value = transactions
+                } else {
+                    Log.e("HomeScreenViewModel", "transaction fetch failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error fetching transaction: ${e.message}")
+            }
+        }
+    }
 
     fun fetchKyc() {
         viewModelScope.launch {
