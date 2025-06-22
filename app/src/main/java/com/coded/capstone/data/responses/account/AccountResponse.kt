@@ -1,14 +1,27 @@
 package com.coded.capstone.data.responses.account
 
+
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import java.math.BigDecimal
-import com.coded.capstone.data.enums.AccountType
+
 
 data class AccountResponse(
-    val accountNumber: String,
     val id: Long,
+    val accountNumber: String?,
     val balance: BigDecimal,
-    val name: String,
-    val active: Boolean,
     val ownerId: Long,
-    val accountType: AccountType
-) 
+    val ownerType: String?,
+    val accountProductId: Long?,
+    val accountType: String?
+)
+
+
+data class AccountCreateResponse(
+    val id: Long,
+    val accountNumber: String?,
+    val balance: BigDecimal,
+    val ownerId: Long,
+    val ownerType: String?,
+    val accountProduct: AccountProductResponse,
+    val accountType: String?
+)

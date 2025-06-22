@@ -14,20 +14,18 @@ import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.CalendarScreen
-import com.coded.capstone.Wallet.WalletScreen
+import com.coded.capstone.Screens.Wallet.WalletScreen
+import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
-import androidx.compose.material3.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
-import com.coded.capstone.composables.home.BottomNavBar
-//import com.coded.capstone.screens.kyc.KycScreen
+
+import com.coded.capstone.screens.kyc.KycScreen
+import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
-import com.coded.capstone.screens.recommendation.RecommendationScreen
-//import com.coded.capstone.viewModels.KycViewModel
+import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.KycViewModel
 
 
 object NavRoutes {
@@ -40,19 +38,16 @@ object NavRoutes {
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
     const val NAV_ROUTE_CATEGORY_ONBOARDING = "category_onboarding"
+    const val NAV_ROUTE_CARD_SUGGESTION = "card_suggested_onboarding"
     const val NAV_ROUTE_VENDORS_ONBOARDING = "vendors_onboarding"
     const val NAV_ROUTE_CREATE_ACCOUNT = "accounts/create"
-    const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountNum}"
+    const val NAV_ROUTE_ACCOUNT_DETAILS = "accounts/manage/{accountId}"
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
-
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
+    const val NAV_ROUTE_PROFILE = "/profile"
 
-
-    fun accountDetailRoute(accountNum: String) = "accounts/manage/$accountNum"
-
+    fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
 }
-
-
 
 @Composable
 fun AppHost(
@@ -60,6 +55,7 @@ fun AppHost(
     navController: NavHostController = rememberNavController(),
 ) {
     val context = LocalContext.current
+    val homeScreenViewModel = remember { HomeScreenViewModel(context) }
 
     LaunchedEffect(Unit) {
         if (
@@ -95,23 +91,20 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
             LoadingDashboardScreen(
                 navController = navController,
+                viewModel = homeScreenViewModel
             )
         }
 
-//        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
-//            val kycViewModel = remember { KycViewModel(context) }
-//            KycScreen(
-//                navController = navController,
-//                viewModel= kycViewModel)
-//        }
-        composable(NavRoutes.NAV_ROUTE_HOME) {
-            val authViewModel = remember { AuthViewModel(context) }
-            MainScaffoldWithTabs(navController , authViewModel)
+        composable(NavRoutes.NAV_ROUTE_EDIT_KYC) {
+            val kycViewModel = remember { KycViewModel(context) }
+            KycScreen(
+                navController = navController,
+                viewModel= kycViewModel)
         }
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
-            CategoryOnBoarding(navController = navController)
+            CategoryOnBoarding(navController = navController, viewModel = homeScreenViewModel)
         }
-        composable("vendors_onboarding/{selectedCategories}") { backStackEntry ->
+        composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) { backStackEntry ->
             val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
             val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
                 selectedCategoriesString.split(",").toSet()
@@ -123,11 +116,60 @@ fun AppHost(
                 selectedCategories = selectedCategories
             )
         }
+        composable(NavRoutes.NAV_ROUTE_CARD_SUGGESTION) { backStackEntry ->
+            val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
+            val selectedVendorsString = backStackEntry.arguments?.getString("selectedVendors") ?: ""
+
+            val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
+                selectedCategoriesString.split(",").toSet()
+            } else {
+                emptySet()
+            }
+
+            val selectedVendors = if (selectedVendorsString.isNotEmpty()) {
+                selectedVendorsString.split(",").toSet()
+            } else {
+                emptySet()
+            }
+
+            CardSuggestedOnBoarding(
+                navController = navController,
+                selectedCategories = selectedCategories,
+                selectedVendors = selectedVendors
+            )
+        }
+        composable(NavRoutes.NAV_ROUTE_HOME) {
+            val authViewModel = remember { AuthViewModel(context) }
+            MainScaffoldWithTabs(navController = navController,authViewModel, homeScreenViewModel)
+        }
+//        composable(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL) {
+//            AllAccountsScreen(
+//                navController = navController,
+//                viewModel = homeScreenViewModel,
+//                onBackClick = {
+//                    navController.popBackStack()
+//                },
+//                onAccountClick = { accountNum: String ->
+//                    navController.navigate(NavRoutes.accountDetailRoute(accountNum))
+//                },
+//            )
+//        }
+
+        composable(NavRoutes.NAV_ROUTE_ACCOUNT_DETAILS) { backStackEntry ->
+            val accountId = backStackEntry.arguments?.getString("accountId")
+            if (accountId != null) {
+                AccountDetailsScreen(
+                    accountId= accountId,
+                    viewModel = homeScreenViewModel,
+
+                    onBack= { navController.popBackStack()})
+            }
+        }
+        composable (NavRoutes.NAV_ROUTE_PROFILE){
+            ProfilePage()
+        }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
-        composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen() }
+        composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
     }
 }
-
-
-

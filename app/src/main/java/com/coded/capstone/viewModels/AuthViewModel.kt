@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.coded.capstone.Services.FirebaseToken
 import com.coded.capstone.data.requests.authentication.LoginRequest
 import com.coded.capstone.data.requests.authentication.RegisterCreateRequest
 import com.coded.capstone.data.requests.notifications.TestFirebaseTokenRequest
@@ -104,11 +105,40 @@ class AuthViewModel(
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
                         TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
-
-//                        UserRepository.loadUserInfo(context)
-
                         sendFcmTokenToServer()
+                        
+                        // Load user info after successful login
+                        UserRepository.loadUserInfo(context)
 
+                        val fcmToken = Firebase.messaging.token.await()
+                        Log.d("FCM", "FCM token = $fcmToken")
+                        val result = notificationApiService.testToken(FirebaseToken(token = fcmToken))
+                        if (result.isSuccessful) {
+                            Log.d("FCM", "Token sent successfully.")
+                        } else {
+                            Log.w("FCM", "Failed to send token. Code: ${result.code()}")
+                        }
+
+                        // Fetch KYC after login with proper error handling
+                        UserRepository.kyc = null
+                        try {
+                            Log.d("AuthViewModel", "Fetching KYC data after login...")
+                            val kycResponse = RetrofitInstance.getBankingServiceProvide(context).getUserKyc()
+                            if (kycResponse.isSuccessful) {
+                                val kycData = kycResponse.body()
+                                if (kycData != null) {
+                                    UserRepository.kyc = kycData
+                                    Log.d("AuthViewModel", "KYC data loaded successfully: ${kycData.firstName} ${kycData.lastName}")
+                                } else {
+                                    Log.w("AuthViewModel", "KYC response body is null")
+                                }
+                            } else {
+                                Log.w("AuthViewModel", "Failed to fetch KYC: ${kycResponse.code()} - ${kycResponse.message()}")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("AuthViewModel", "Error fetching KYC: ${e.message}")
+                        }
+                        
                         uiState.value = AuthUiState.Success(jwtResponse)
                     }
                 } else {
@@ -147,6 +177,9 @@ class AuthViewModel(
         TokenManager.clearToken(context)
         token.value = null
         decodedToken.value = null
-        Log.d("Logout", "Token cleared")
+        uiState.value = AuthUiState.Loading
+        // Clear KYC on logout
+        UserRepository.kyc = null
     }
+
 }

@@ -21,7 +21,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.coded.capstone.composables.onBoarding.CategoryCard
+import com.coded.capstone.navigation.NavRoutes
+import com.coded.capstone.respositories.CategoryRepository
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.data.responses.category.CategoryDto
+import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
+import com.coded.capstone.viewModels.FavCategoryUiState
 
 data class SpendingCategory(
     val id: String,
@@ -34,72 +42,38 @@ data class SpendingCategory(
 )
 
 @Composable
-fun CategoryOnBoarding(navController: NavController) {
-    var selectedCategories by remember { mutableStateOf(setOf<String>()) }
+fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewModel) {
+    var selectedCategories by remember { mutableStateOf(listOf<String>()) }
+    val categories by viewModel.categories.collectAsState()
+    val favCategoryUiState by viewModel.favCategoryUiState.collectAsState()
+    
+    LaunchedEffect(Unit) {
+        viewModel.fetchCategories()
+    }
 
-    val categories = listOf(
-        SpendingCategory(
-            id = "dining",
-            name = "Dining",
-            icon = Icons.Default.Restaurant,
-            description = "Kuwait's largest dining network",
-            topReward = "Up to 10% NBK KWT Points",
-            bestCard = "NBK KWT Visa Infinite",
-            color = Color(0xFFEF4444)
-        ),
-        SpendingCategory(
-            id = "travel",
-            name = "Travel",
-            icon = Icons.Default.Flight,
-            description = "Miles + lounge access",
-            topReward = "5 NBK Miles Points per KD",
-            bestCard = "NBK Miles World Mastercard",
-            color = Color(0xFF3B82F6)
-        ),
-        SpendingCategory(
-            id = "shopping",
-            name = "Shopping",
-            icon = Icons.Default.ShoppingBag,
-            description = "Local & international brands",
-            topReward = "Up to 8% Aura Points",
-            bestCard = "NBK-Aura World Mastercard",
-            color = Color(0xFFEC4899)
-        ),
-        SpendingCategory(
-            id = "technology",
-            name = "Technology",
-            icon = Icons.Default.Smartphone,
-            description = "Electronics & digital payments",
-            topReward = "10% NBK KWT Points at X-cite",
-            bestCard = "NBK KWT Visa Infinite",
-            color = Color(0xFF8B5CF6)
-        ),
-        SpendingCategory(
-            id = "lifestyle",
-            name = "Lifestyle",
-            icon = Icons.Default.Home,
-            description = "Home, beauty & wellness",
-            topReward = "NBK Rewards Points",
-            bestCard = "NBK Rewards Program",
-            color = Color(0xFF10B981)
-        ),
-        SpendingCategory(
-            id = "entertainment",
-            name = "Entertainment",
-            icon = Icons.Default.Movie,
-            description = "Streaming, cinema & events",
-            topReward = "Up to 24% Cashback",
-            bestCard = "NBK 247 Cashback",
-            color = Color(0xFFF59E0B)
-        )
-    )
+    // Handle navigation on success
+    LaunchedEffect(favCategoryUiState) {
+        when (favCategoryUiState) {
+            is FavCategoryUiState.Success -> {
+                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
+            }
+            else -> {}
+        }
+    }
 
     fun toggleCategory(categoryId: String) {
-        if (selectedCategories.contains(categoryId)) {
-            selectedCategories = selectedCategories - categoryId
+        selectedCategories = if (selectedCategories.contains(categoryId)) {
+            selectedCategories.filter { it != categoryId }
         } else if (selectedCategories.size < 3) {
-            selectedCategories = selectedCategories + categoryId
+            selectedCategories + categoryId
+        } else {
+            selectedCategories
         }
+    }
+
+    fun submitFavoriteCategories() {
+        if (selectedCategories.isEmpty()) return
+        viewModel.submitFavoriteCategories(selectedCategories)
     }
 
     Box(
@@ -220,12 +194,15 @@ fun CategoryOnBoarding(navController: NavController) {
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(categories) { category ->
+                        items(
+                            items = categories,
+                            key = { category -> category.id }
+                        ) { category ->
                             CategoryCard(
                                 category = category,
-                                isSelected = selectedCategories.contains(category.id),
-                                isDisabled = !selectedCategories.contains(category.id) && selectedCategories.size >= 3,
-                                onClick = { toggleCategory(category.id) }
+                                isSelected = selectedCategories.contains(category.id.toString()),
+                                isDisabled = !selectedCategories.contains(category.id.toString()) && selectedCategories.size >= 3,
+                                onClick = { toggleCategory(category.id.toString()) }
                             )
                         }
                     }
@@ -254,18 +231,24 @@ fun CategoryOnBoarding(navController: NavController) {
                         }
                     }
 
+                    // Error message display
+                    if (favCategoryUiState is FavCategoryUiState.Error) {
+                        Text(
+                            text = (favCategoryUiState as FavCategoryUiState.Error).message,
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+
                     // Next Button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
                         Button(
-                            onClick = {
-                                // Navigate to vendors onboarding with selected categories
-                                val categoriesString = selectedCategories.joinToString(",")
-                                navController.navigate("vendors_onboarding/$categoriesString")
-                            },
-                            enabled = selectedCategories.isNotEmpty(),
+                            onClick = { submitFavoriteCategories() },
+                            enabled = selectedCategories.isNotEmpty() && favCategoryUiState !is FavCategoryUiState.Loading,
                             modifier = Modifier
                                 .height(56.dp)
                                 .widthIn(min = 120.dp),
@@ -279,118 +262,29 @@ fun CategoryOnBoarding(navController: NavController) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(
-                                    text = "NEXT",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                                if (favCategoryUiState is FavCategoryUiState.Loading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Text(
+                                        text = "NEXT",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowForward,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun CategoryCard(
-    category: SpendingCategory,
-    isSelected: Boolean,
-    isDisabled: Boolean,
-    onClick: () -> Unit
-) {
-    val scale by animateFloatAsState(
-        targetValue = if (isSelected) 1.05f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "card_scale"
-    )
-
-    Card(
-        onClick = (if (!isDisabled) onClick else { }) as () -> Unit,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp)
-            .scale(scale),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(
-            2.dp,
-            if (isSelected) Color(0xFF4CAF50) else Color(0xFFE5E7EB)
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) {
-                Color(0xFF4CAF50).copy(alpha = 0.08f)
-            } else if (isDisabled) {
-                Color(0xFFF9FAFB)
-            } else {
-                Color.White
-            }
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 8.dp else 2.dp
-        )
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Selection indicator
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            Color(0xFF4CAF50),
-                            CircleShape
-                        )
-                        .align(Alignment.TopEnd)
-                        .offset((-8).dp, 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = category.icon,
-                    contentDescription = category.name,
-                    tint = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF03A9F4),
-                    modifier = Modifier
-                        .size(35.dp)
-                        .padding(bottom = 8.dp)
-                )
-                Text(
-                    text = category.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF1F2937),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                Text(
-                    text = category.description,
-                    fontSize = 12.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
             }
         }
     }
