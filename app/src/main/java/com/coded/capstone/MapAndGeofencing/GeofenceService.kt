@@ -56,11 +56,21 @@ class GeofenceService : Service() {
                 } else {
                     Log.d(TAG, "Geofencing already active")
                 }
-                
-                while (true) {
-                    verifyGeofenceRegistration()
-                    delay(5 * 60 * 1000L) // Check every 5 minutes
-                }
+
+                /*
+                 * --------------------------------------------------------------------------
+                 * --- COMMENTED OUT: Periodic Debugging Logic ---
+                 *
+                 * The following loop was used to periodically check and log the status
+                 * of geofence registrations for debugging purposes. This is not essential
+                 * for the core functionality and can be disabled in production to
+                 * conserve system resources.
+                 * --------------------------------------------------------------------------
+                 */
+                // while (true) {
+                //     verifyGeofenceRegistration()
+                //     delay(5 * 60 * 1000L) // Check every 5 minutes
+                // }
             } catch (e: Exception) {
                 Log.e(TAG, "Error in geofence service: ${e.message}")
                 restartService()
