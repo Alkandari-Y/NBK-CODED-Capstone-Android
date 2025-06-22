@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import java.math.BigDecimal
+import android.util.Log
 
 // Dark theme colors
 private val DarkBackground = Color(0xFF0A0A0A)
@@ -64,21 +65,36 @@ fun AccountDetailsScreen(
 
     // Fetch account details and transactions
     LaunchedEffect(accountId) {
+        Log.d("AccountDetailsScreen", "Fetching account details for ID: $accountId")
         isLoading = true
         error = null
         try {
             viewModel.fetchAccountDetails(accountId)
-            viewModel.fetchTransactionHistory(accountId)
-
             kotlinx.coroutines.delay(1000)
             isLoading = false
         } catch (e: Exception) {
             error = "Failed to load account details."
             isLoading = false
+            Log.e("AccountDetailsScreen", "Error fetching account details: ${e.message}")
         }
     }
 
+    // Fetch transactions when account details are loaded
+    LaunchedEffect(accountState) {
+        Log.d("AccountDetailsScreen", "Account state changed: ${accountState?.accountNumber}")
+        accountState?.accountNumber?.let { accountNumber ->
+            Log.d("AccountDetailsScreen", "Fetching transactions for account: $accountNumber")
+            viewModel.fetchTransactionHistory(accountNumber)
+        }
+    }
 
+    // Debug logging for transactions
+    LaunchedEffect(transactions) {
+        Log.d("AccountDetailsScreen", "Transactions updated: ${transactions.size} transactions")
+        transactions.forEach { transaction ->
+            Log.d("AccountDetailsScreen", "Transaction: ${transaction.transactionId} - ${transaction.amount} - ${transaction.category}")
+        }
+    }
 
     // Get account colors based on type
     val accountColors = when (accountState?.accountType?.lowercase()) {
@@ -406,13 +422,21 @@ fun AccountDetailsScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = "Transaction History",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = DarkOnSurface,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp
-                                )
+                                Column {
+                                    Text(
+                                        text = "Transaction History",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = DarkOnSurface,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 18.sp
+                                    )
+                                    Text(
+                                        text = "Debug: ${transactions.size} transactions loaded",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = DarkOnSurfaceVariant,
+                                        fontSize = 12.sp
+                                    )
+                                }
 
                                 TextButton(
                                     onClick = { /* View all */ }
