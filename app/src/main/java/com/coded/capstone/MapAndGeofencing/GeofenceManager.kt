@@ -39,7 +39,8 @@ data class MallLocation(
     val radius: Float = 300f,
     val type: LocationType = LocationType.MALL,
     val description: String = "",
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
+//    var geofenceId: String?
 )
 
 object GeofenceManager {
@@ -308,62 +309,82 @@ object GeofenceManager {
         )
     }
 
-    fun showNotification(context: Context, mallName: String, isEntering: Boolean) {
-        Log.d(TAG, """
-            Attempting to show notification:
-            Mall: $mallName
-            Type: ${if (isEntering) "ENTER" else "EXIT"}
-            Time: ${System.currentTimeMillis()}
-            Geofencing Active: $isGeofencingActive
-            Channel Created: $isChannelCreated
-        """.trimIndent())
-        
-        // Ensure channel is created before showing notification
-        createNotificationChannel(context)
+    /*
+     * ----------------------------------------------------------------------------------
+     * --- COMMENTED OUT: Local Notification Logic (Now Handled by Backend) ---
+     *
+     * The following functions were used to create and display notifications directly
+     * from the user's device. Since the new architecture relies on the backend to
+     * send push notifications via Firebase, this client-side notification logic
+     * is no longer needed.
+     *
+     * It is kept here for reference and for potential local testing in the future.
+     * ----------------------------------------------------------------------------------
+     */
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        
-        // Create an intent to open the app
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("open_map", true)
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            mallName.hashCode(), // Use mall name as request code to create unique pending intents
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+    // fun createNotificationChannel(context: Context) { ... }
+    // fun showNotification(context: Context, mallName: String, isEntering: Boolean) { ... }
 
-        val message = if (isEntering) {
-            "🎉 Special offers available at $mallName! Tap to view exclusive deals."
-        } else {
-            "💫 More offers await! Check out other malls nearby."
-        }
-
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Shopping Deals Nearby!")
-            .setContentText(message)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .setVibrate(longArrayOf(0, 200, 100, 200))
-            .setLights(0xFF0000FF.toInt(), 1000, 1000)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setFullScreenIntent(pendingIntent, true)
-            .build()
-
-        try {
-            notificationManager.notify(mallName.hashCode(), notification)
-            Log.d(TAG, "Notification sent successfully for $mallName")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error showing notification: ${e.message}")
-            e.printStackTrace()
-        }
-    }
+    /**
+     * Shows a notification on the device.
+     * COMMENTED OUT: This is now handled by the backend via push notifications.
+     */
+//    fun showNotification(context: Context, mallName: String, isEntering: Boolean) {
+//        Log.d(TAG, """
+//            Attempting to show notification:
+//            Mall: $mallName
+//            Type: ${if (isEntering) "ENTER" else "EXIT"}
+//            Time: ${System.currentTimeMillis()}
+//            Geofencing Active: $isGeofencingActive
+//            Channel Created: $isChannelCreated
+//        """.trimIndent())
+//
+//        // Ensure channel is created before showing notification
+//        createNotificationChannel(context)
+//
+//        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//
+//        // Create an intent to open the app
+//        val intent = Intent(context, MainActivity::class.java).apply {
+//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            putExtra("open_map", true)
+//        }
+//        val pendingIntent = PendingIntent.getActivity(
+//            context,
+//            mallName.hashCode(), // Use mall name as request code to create unique pending intents
+//            intent,
+//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//        )
+//
+//        val message = if (isEntering) {
+//            "🎉 Special offers available at $mallName! Tap to view exclusive deals."
+//        } else {
+//            "💫 More offers await! Check out other malls nearby."
+//        }
+//
+//        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+//            .setSmallIcon(android.R.drawable.ic_dialog_info)
+//            .setContentTitle("Shopping Deals Nearby!")
+//            .setContentText(message)
+//            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+//            .setPriority(NotificationCompat.PRIORITY_HIGH)
+//            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+//            .setAutoCancel(true)
+//            .setContentIntent(pendingIntent)
+//            .setVibrate(longArrayOf(0, 200, 100, 200))
+//            .setLights(0xFF0000FF.toInt(), 1000, 1000)
+//            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//            .setFullScreenIntent(pendingIntent, true)
+//            .build()
+//
+//        try {
+//            notificationManager.notify(mallName.hashCode(), notification)
+//            Log.d(TAG, "Notification sent successfully for $mallName")
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error showing notification: ${e.message}")
+//            e.printStackTrace()
+//        }
+//    }
 
     // Add this function to calculate distance between two points
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
@@ -380,7 +401,11 @@ object GeofenceManager {
         }
     }
 
-    // Update the status function to include distances
+    /**
+     * Prints the status of all geofences.
+     * NOTE: This is a DEBUGGING function. It is useful for development to check
+     * the user's distance from geofences but is not required for production logic.
+     */
     suspend fun printGeofenceStatus(context: Context) {
         try {
             val geofencingClient = LocationServices.getGeofencingClient(context)
@@ -594,54 +619,63 @@ object GeofenceManager {
         }
     }
 
-    // Add function to manually test CODED Academy notification
-    fun testCodedAcademyNotification(context: Context) {
-        Log.d(TAG, "🧪 Testing CODED Academy notification manually...")
-        showNotification(context, "CODED Academy", true)
-    }
+    /**
+     * Manually triggers a test notification for CODED Academy.
+     * COMMENTED OUT: Local notifications are disabled.
+     */
+//    fun testCodedAcademyNotification(context: Context) {
+//        Log.d(TAG, "🧪 Testing CODED Academy notification manually...")
+//        showNotification(context, "CODED Academy", true)
+//    }
 
-    // Add function to force trigger geofencing for CODED Academy
-    suspend fun forceTriggerCodedAcademy(context: Context) {
-        Log.d(TAG, "🚀 Force triggering CODED Academy geofencing...")
-        
-        val codedAcademy = mallLocations.find { it.id == "coded_academy" }
-        if (codedAcademy == null) {
-            Log.e(TAG, "CODED Academy not found in locations")
-            return
-        }
-        
-        try {
-            // Create a single geofence for CODED Academy
-            val geofence = Geofence.Builder()
-                .setRequestId("coded_academy_force")
-                .setCircularRegion(
-                    codedAcademy.location.latitude,
-                    codedAcademy.location.longitude,
-                    codedAcademy.radius
-                )
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .setNotificationResponsiveness(1000) // Fast response for testing
-                .setLoiteringDelay(0)
-                .build()
-            
-            val request = GeofencingRequest.Builder()
-                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-                .addGeofence(geofence)
-                .build()
-            
-            geofencingClient?.addGeofences(request, getGeofencePendingIntent(context))?.await()
-            Log.d(TAG, "Force geofence added for CODED Academy")
-            
-            // Show notification immediately for testing
-            showNotification(context, "CODED Academy", true)
-            
-        } catch (e: Exception) {
-            Log.e(TAG, "Error force triggering CODED Academy: ${e.message}")
-        }
-    }
+    /**
+     * Manually triggers a geofence event for CODED Academy for testing.
+     * COMMENTED OUT: The call to show a local notification is disabled.
+     */
+//    suspend fun forceTriggerCodedAcademy(context: Context) {
+//        Log.d(TAG, "🚀 Force triggering CODED Academy geofencing...")
+//
+//        val codedAcademy = mallLocations.find { it.id == "coded_academy" }
+//        if (codedAcademy == null) {
+//            Log.e(TAG, "CODED Academy not found in locations")
+//            return
+//        }
+//
+//        try {
+//            // Create a single geofence for CODED Academy
+//            val geofence = Geofence.Builder()
+//                .setRequestId("coded_academy_force")
+//                .setCircularRegion(
+//                    codedAcademy.location.latitude,
+//                    codedAcademy.location.longitude,
+//                    codedAcademy.radius
+//                )
+//                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+//                .setNotificationResponsiveness(1000) // Fast response for testing
+//                .setLoiteringDelay(0)
+//                .build()
+//
+//            val request = GeofencingRequest.Builder()
+//                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+//                .addGeofence(geofence)
+//                .build()
+//
+//            geofencingClient?.addGeofences(request, getGeofencePendingIntent(context))?.await()
+//            Log.d(TAG, "Force geofence added for CODED Academy")
+//
+//            // Show notification immediately for testing
+//            // showNotification(context, "CODED Academy", true)
+//
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error force triggering CODED Academy: ${e.message}")
+//        }
+//    }
 
-    // Add function to check if you're inside CODED Academy geofence
+    /**
+     * Checks the user's status relative to the CODED Academy geofence.
+     * NOTE: This is a DEBUGGING function.
+     */
     suspend fun checkCodedAcademyStatus(context: Context): String {
         val codedAcademy = mallLocations.find { it.id == "coded_academy" }
         if (codedAcademy == null) {
@@ -680,6 +714,12 @@ object GeofenceManager {
         }
     }
 
+    /**
+     * Starts periodic location updates for debugging purposes.
+     * NOTE: This is a DEBUGGING function to log location changes and distances in real-time.
+     * It is not essential for the core geofencing logic to work but is very helpful
+     * for development and testing.
+     */
     private fun startLocationUpdates(context: Context) {
         try {
             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)

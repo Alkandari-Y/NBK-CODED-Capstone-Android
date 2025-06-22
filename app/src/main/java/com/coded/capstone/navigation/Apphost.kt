@@ -19,6 +19,7 @@ import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
+
 import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
@@ -100,7 +101,6 @@ fun AppHost(
                 navController = navController,
                 viewModel= kycViewModel)
         }
-
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
             CategoryOnBoarding(navController = navController, viewModel = homeScreenViewModel)
         }

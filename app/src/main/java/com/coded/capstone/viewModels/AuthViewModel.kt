@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.coded.capstone.Services.FirebaseToken
 import com.coded.capstone.data.requests.authentication.LoginRequest
 import com.coded.capstone.data.requests.authentication.RegisterCreateRequest
+import com.coded.capstone.data.requests.notifications.TestFirebaseTokenRequest
 import com.coded.capstone.data.responses.authentication.JwtContents
 import com.coded.capstone.data.responses.authentication.JwtResponse
 import com.coded.capstone.data.responses.errors.ApiErrorResponse
@@ -15,8 +16,8 @@ import com.coded.capstone.data.responses.errors.ValidationError
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.UserRepository
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.messaging
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -71,6 +72,7 @@ class AuthViewModel(
                         token.value = jwtResponse
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
+                        TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
                         UserRepository.loadUserInfo(context)
                         uiState.value = AuthUiState.Success(jwtResponse)
                     }
@@ -102,6 +104,8 @@ class AuthViewModel(
                         token.value = jwtResponse
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
+                        TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
+                        sendFcmTokenToServer()
                         
                         // Load user info after successful login
                         UserRepository.loadUserInfo(context)
@@ -148,6 +152,23 @@ class AuthViewModel(
                 }
             } catch (e: Exception) {
                 uiState.value = AuthUiState.Error("Network error: ${e.message}")
+            }
+        }
+    }
+
+    private fun sendFcmTokenToServer() {
+        viewModelScope.launch {
+            try {
+                val fcmToken = Firebase.messaging.token.await()
+                Log.d("FCM", "FCM token = $fcmToken")
+                val result = notificationApiService.testToken(TestFirebaseTokenRequest(token = fcmToken))
+                if (result.isSuccessful) {
+                    Log.d("FCM", "Token sent successfully. Response: ${result.body()?.string()}")
+                } else {
+                    Log.w("FCM", "Failed to send token. Code: ${result.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("FCM", "Error sending FCM token", e)
             }
         }
     }

@@ -10,6 +10,10 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import android.Manifest
+import com.coded.capstone.managers.TokenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     private val TAG = "GeofenceReceiver"
@@ -44,12 +48,12 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         // Handle test intents
         intent.getStringExtra("test_enter")?.let { mallId ->
             Log.d(TAG, "Received test enter notification for mall: $mallId")
-            GeofenceManager.showNotification(context, GeofenceManager.getMallName(mallId), true)
+            // GeofenceManager.showNotification(context, GeofenceManager.getMallName(mallId), true)
             return
         }
         intent.getStringExtra("test_exit")?.let { mallId ->
             Log.d(TAG, "Received test exit notification for mall: $mallId")
-            GeofenceManager.showNotification(context, GeofenceManager.getMallName(mallId), false)
+            // GeofenceManager.showNotification(context, GeofenceManager.getMallName(mallId), false)
             return
         }
 
@@ -106,22 +110,20 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         }
 
         when (geofenceTransition) {
-            Geofence.GEOFENCE_TRANSITION_ENTER -> {
+            Geofence.GEOFENCE_TRANSITION_ENTER, Geofence.GEOFENCE_TRANSITION_EXIT -> {
+                val transitionType = if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) "ENTER" else "EXIT"
                 triggeringGeofences.forEach { geofence ->
-                    val mallName = GeofenceManager.getMallName(geofence.requestId)
-                    Log.d(TAG, "Entering geofence: $mallName")
-                    // Ensure notification channel exists
-                    GeofenceManager.createNotificationChannel(context)
-                    GeofenceManager.showNotification(context, mallName, true)
-                }
-            }
-            Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                triggeringGeofences.forEach { geofence ->
-                    val mallName = GeofenceManager.getMallName(geofence.requestId)
-                    Log.d(TAG, "Exiting geofence: $mallName")
-                    // Ensure notification channel exists
-                    GeofenceManager.createNotificationChannel(context)
-                    GeofenceManager.showNotification(context, mallName, false)
+                    Log.d(TAG, "Geofence event: ${geofence.requestId} - $transitionType")
+                    // Launch a coroutine to call the backend API
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val userId = TokenManager.getUserIdFromSharedPref(context)
+                        GeofenceApiManager.notifyBackendOfGeofenceEvent(
+                            context = context,
+                            geofenceId = geofence.requestId,
+                            transitionType = transitionType,
+                            userId = userId
+                        )
+                    }
                 }
             }
         }

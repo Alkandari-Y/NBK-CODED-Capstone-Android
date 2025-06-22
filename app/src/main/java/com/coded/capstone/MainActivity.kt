@@ -8,19 +8,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.coded.capstone.MapAndGeofencing.LocationPermissionHandler
-import com.coded.capstone.ui.theme.CapstoneTheme
+import com.coded.capstone.MapAndGeofencing.GeofenceManager
 import com.coded.capstone.navigation.AppHost
+import com.coded.capstone.ui.theme.CapstoneTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestFirebaseNotificationPermission()
@@ -37,7 +42,10 @@ class MainActivity : ComponentActivity() {
                         ) {
                             LocationPermissionHandler(
                                 onPermissionGranted = {
-                                    // Permissions granted, geofence service will be started by LocationPermissionHandler
+                                    // Permissions granted, so we start the geofence service directly.
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        GeofenceManager.startGeofencing(applicationContext)
+                                    }
                                 }
                             )
                             AppHost()

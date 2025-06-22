@@ -471,81 +471,53 @@ fun MapScreen(
                         }
                     }
 
-                    // Test Buttons for Notifications
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Geofencing: $geofencingStatus",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = when {
-                                geofencingStatus == "Active" -> MaterialTheme.colorScheme.primary
-                                geofencingStatus.startsWith("Error") -> MaterialTheme.colorScheme.error
-                                else -> MaterialTheme.colorScheme.onSurfaceVariant
-                            }
-                        )
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    try {
-                                        GeofenceManager.restartGeofencing(context)
-                                        geofencingStatus = "Active"
-                                    } catch (e: Exception) {
-                                        geofencingStatus = "Error: ${e.message}"
-                                    }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        ) {
-                            Text("Restart Geofencing")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = {
-                                scope.launch {
-                                    GeofenceManager.showNotification(context, location.name, true)
-                                }
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Test Enter Notification",
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Test Enter")
-                        }
-                        OutlinedButton(
-                            onClick = {
-                                scope.launch {
-                                    GeofenceManager.showNotification(context, location.name, false)
-                                }
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ExitToApp,
-                                contentDescription = "Test Exit Notification",
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Test Exit")
-                        }
-                    }
+                    /*
+                     * ----------------------------------------------------------------------------------
+                     * --- COMMENTED OUT: Local Notification Test Buttons ---
+                     *
+                     * The following buttons were used to test local notifications directly
+                     * from the device. Since this logic is now disabled in GeofenceManager
+                     * and handled by the backend, these test buttons are no longer needed.
+                     * ----------------------------------------------------------------------------------
+                     */
+                    // Spacer(modifier = Modifier.height(16.dp))
+                    // Row(
+                    //     modifier = Modifier.fillMaxWidth(),
+                    //     horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    // ) {
+                    //     OutlinedButton(
+                    //         onClick = {
+                    //             scope.launch {
+                    //                 // GeofenceManager.showNotification(context, location.name, true)
+                    //             }
+                    //         },
+                    //         modifier = Modifier.weight(1f)
+                    //     ) {
+                    //         Icon(
+                    //             imageVector = Icons.Default.Notifications,
+                    //             contentDescription = "Test Enter Notification",
+                    //             modifier = Modifier.size(18.dp)
+                    //         )
+                    //         Spacer(modifier = Modifier.width(4.dp))
+                    //         Text("Test Enter")
+                    //     }
+                    //     OutlinedButton(
+                    //         onClick = {
+                    //             scope.launch {
+                    //                 // GeofenceManager.showNotification(context, location.name, false)
+                    //             }
+                    //         },
+                    //         modifier = Modifier.weight(1f)
+                    //     ) {
+                    //         Icon(
+                    //             imageVector = Icons.Default.ExitToApp,
+                    //             contentDescription = "Test Exit Notification",
+                    //             modifier = Modifier.size(18.dp)
+                    //         )
+                    //         Spacer(modifier = Modifier.width(4.dp))
+                    //         Text("Test Exit")
+                    //     }
+                    // }
                     
                     // Special CODED Academy test button
                     if (location.id == "coded_academy") {
@@ -554,25 +526,25 @@ fun MapScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            OutlinedButton(
-                                onClick = {
-                                    scope.launch {
-                                        GeofenceManager.testCodedAcademyNotification(context)
-                                    }
-                                },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.School,
-                                    contentDescription = "Test CODED Notification",
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Test CODED")
-                            }
+                            // OutlinedButton(
+                            //     onClick = {
+                            //         scope.launch {
+                            //             // GeofenceManager.testCodedAcademyNotification(context)
+                            //         }
+                            //     },
+                            //     modifier = Modifier.weight(1f),
+                            //     colors = ButtonDefaults.outlinedButtonColors(
+                            //         containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                            //     )
+                            // ) {
+                            //     Icon(
+                            //         imageVector = Icons.Default.School,
+                            //         contentDescription = "Test CODED Notification",
+                            //         modifier = Modifier.size(18.dp)
+                            //     )
+                            //     Spacer(modifier = Modifier.width(4.dp))
+                            //     Text("Test CODED")
+                            // }
                             OutlinedButton(
                                 onClick = {
                                     scope.launch {
@@ -596,25 +568,25 @@ fun MapScreen(
                         }
                         
                         Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedButton(
-                            onClick = {
-                                scope.launch {
-                                    GeofenceManager.forceTriggerCodedAcademy(context)
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Force Trigger CODED",
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Force Trigger CODED Geofence")
-                        }
+                        // OutlinedButton(
+                        //     onClick = {
+                        //         scope.launch {
+                        //             // GeofenceManager.forceTriggerCodedAcademy(context)
+                        //         }
+                        //     },
+                        //     modifier = Modifier.fillMaxWidth(),
+                        //     colors = ButtonDefaults.outlinedButtonColors(
+                        //         containerColor = MaterialTheme.colorScheme.errorContainer
+                        //     )
+                        // ) {
+                        //     Icon(
+                        //         imageVector = Icons.Default.PlayArrow,
+                        //         contentDescription = "Force Trigger CODED",
+                        //         modifier = Modifier.size(18.dp)
+                        //     )
+                        //     Spacer(modifier = Modifier.width(4.dp))
+                        //     Text("Force Trigger CODED Geofence")
+                        // }
                     }
                 }
             }
