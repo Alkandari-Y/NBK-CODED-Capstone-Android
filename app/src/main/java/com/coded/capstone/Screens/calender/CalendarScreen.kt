@@ -1,6 +1,7 @@
-package com.coded.capstone.screens
+package com.coded.capstone.screens.calender
 
 import android.util.Log
+import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -32,6 +33,8 @@ import com.coded.capstone.data.Tmp.Offer
 import com.coded.capstone.data.Tmp.repository.OfferRepository
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +51,7 @@ fun CalendarScreen() {
 
     // Get offers for the selected date
     val offers = remember(selectedDate, selectedCategory) {
-        val date = Date.from(selectedDate.atStartOfDay().toInstant(java.time.ZoneOffset.UTC))
+        val date = Date.from(selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC))
         Log.d("MainScreen", "Selected date: ${selectedDate}, converted to Date: ${SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(date)}")
         OfferRepository.getOffersForDate(context, date, selectedCategory)
     }
@@ -87,7 +90,7 @@ fun CalendarScreen() {
             // Animate the calendar height
             val calendarHeight by animateDpAsState(
                 targetValue = if (isExpanded) 302.5.dp else 150.dp,
-                animationSpec = tween(durationMillis = 500, easing = androidx.compose.animation.core.EaseInOutCubic),
+                animationSpec = tween(durationMillis = 500, easing = EaseInOutCubic),
                 label = "calendarHeight"
             )
 
@@ -218,7 +221,7 @@ fun CalendarScreen() {
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
-                            text = selectedDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy")),
+                            text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
                             color = Color.White,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
