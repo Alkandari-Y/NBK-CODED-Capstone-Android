@@ -1,5 +1,7 @@
 package com.coded.capstone.providers
 
+
+import com.coded.capstone.data.responses.recommendation.BusinessPartnerResponse
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
 import com.coded.capstone.data.requests.transaction.TransferCreateRequest
@@ -69,4 +71,6 @@ interface BankingServiceProvider {
 
     @GET("/api/v1/kyc")
     suspend fun getUserKyc(): Response<KYCResponse>
+
+
 }

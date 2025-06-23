@@ -17,6 +17,7 @@ import com.coded.capstone.screens.calender.CalendarScreen
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
+import com.coded.capstone.screens.offers.OfferDetailScreen
 
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 
@@ -45,8 +46,11 @@ object NavRoutes {
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
     const val NAV_ROUTE_PROFILE = "/profile"
+    const val NAV_ROUTE_OFFER_DETAIL = "offers/{offerId}"
+
 
     fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
+    fun offerDetailRoute(offerId: Long) = "offers/$offerId"
 }
 
 @Composable
@@ -171,5 +175,14 @@ fun AppHost(
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
+        composable(NavRoutes.NAV_ROUTE_OFFER_DETAIL) { backStackEntry ->
+            val offerId = backStackEntry.arguments?.getString("offerId")?.toLongOrNull()
+            if (offerId != null) {
+                OfferDetailScreen(
+                    offerId = offerId,
+                    navController = navController
+                )
+            }
+        }
     }
 }
