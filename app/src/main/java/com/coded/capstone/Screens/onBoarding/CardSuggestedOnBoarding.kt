@@ -440,7 +440,7 @@ fun getAllNBKCards(): List<NBKCard> {
                 "Premium Visa Infinite benefits and luxury hotel collection access"
             ),
             cashbackDetails = "Up to 10% in NBK KWT Points on dining and telecom",
-            cardImageResId = R.drawable.ic_hm,
+            cardImageResId = R.drawable.klue,
             backgroundColor = Color(0xFF1a1a2e)
         ),
         NBKCard(
@@ -455,7 +455,7 @@ fun getAllNBKCards(): List<NBKCard> {
                 "World Mastercard premium benefits and global acceptance"
             ),
             cashbackDetails = "Up to 8% back in Aura Points at participating outlets",
-            cardImageResId = R.drawable.klue_logo,
+            cardImageResId = R.drawable.klue,
             backgroundColor = Color(0xFFec4899)
         ),
         NBKCard(
@@ -470,7 +470,7 @@ fun getAllNBKCards(): List<NBKCard> {
                 "Travel insurance and premium travel concierge services"
             ),
             cashbackDetails = "5 Miles Points per KD internationally, 3 points locally",
-            cardImageResId = R.drawable.ic_xcite,
+            cardImageResId = R.drawable.klue,
             backgroundColor = Color(0xFF3b82f6)
         ),
         NBKCard(
@@ -485,7 +485,7 @@ fun getAllNBKCards(): List<NBKCard> {
                 "NBK Rewards Program with enhanced earning rates"
             ),
             cashbackDetails = "Premium NBK Rewards Points with enhanced benefits",
-            cardImageResId = R.drawable.ic_360_mall,
+            cardImageResId = R.drawable.klue,
             backgroundColor = Color(0xFF1a1a2e)
         ),
         NBKCard(
@@ -500,7 +500,7 @@ fun getAllNBKCards(): List<NBKCard> {
                 "NBK Rewards Program access to 900+ partner outlets"
             ),
             cashbackDetails = "NBK Rewards Points at 900+ outlets",
-            cardImageResId = R.drawable.ic_kidzania,
+            cardImageResId = R.drawable.klue,
             backgroundColor = Color(0xFF6b7280)
         ),
         NBKCard(
@@ -515,7 +515,7 @@ fun getAllNBKCards(): List<NBKCard> {
                 "Unlimited lounge access and priority services"
             ),
             cashbackDetails = "4 Oasis Club Miles per KD + 10% ticket discount",
-            cardImageResId = R.drawable.ic_xcite,
+            cardImageResId = R.drawable.klue,
             backgroundColor = Color(0xFF2563eb)
         )
     )
