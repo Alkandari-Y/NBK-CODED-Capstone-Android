@@ -70,7 +70,7 @@ fun VendorsOnBoarding(
             name = "Pret A Manger",
             category = "dining",
             offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.ic_pret_a_manger,
+            logoResId = R.drawable.klue_logo,
             eligibleCards = "All NBK Cards",
             isPopular = true
         ),
@@ -97,7 +97,7 @@ fun VendorsOnBoarding(
             name = "illy Caffè",
             category = "dining",
             offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.ic_illy_caffe,
+            logoResId = R.drawable.ic_hm,
             eligibleCards = "All NBK Cards"
         ),
         MerchantPartner(
@@ -105,7 +105,7 @@ fun VendorsOnBoarding(
             name = "ROKA Kuwait",
             category = "dining",
             offer = "20% Off",
-            logoResId = R.drawable.ic_roka_kuwait,
+            logoResId = R.drawable.klue_logo,
             eligibleCards = "NBK World Elite"
         ),
 
@@ -129,38 +129,7 @@ fun VendorsOnBoarding(
             logoResId = R.drawable.ic_hm,
             eligibleCards = "NBK-Aura Card"
         ),
-        MerchantPartner(
-            id = "bathandbody",
-            name = "Bath & Body Works",
-            category = "shopping",
-            offer = "Up to 8% Aura Points",
-            logoResId = R.drawable.ic_bath_body_works,
-            eligibleCards = "NBK-Aura Card"
-        ),
-        MerchantPartner(
-            id = "harveynichols",
-            name = "Harvey Nichols",
-            category = "shopping",
-            offer = "Up to 8% Aura Points",
-            logoResId = R.drawable.ic_harvey_nichols,
-            eligibleCards = "NBK-Aura Card"
-        ),
-        MerchantPartner(
-            id = "footlocker",
-            name = "Footlocker",
-            category = "shopping",
-            offer = "Up to 8% Aura Points",
-            logoResId = R.drawable.ic_footlocker,
-            eligibleCards = "NBK-Aura Card"
-        ),
-        MerchantPartner(
-            id = "farfetch",
-            name = "FARFETCH",
-            category = "shopping",
-            offer = "10% NBK KWT Points",
-            logoResId = R.drawable.ic_farfetch,
-            eligibleCards = "NBK KWT Visa"
-        ),
+
         MerchantPartner(
             id = "theavenues",
             name = "The Avenues",
@@ -181,41 +150,9 @@ fun VendorsOnBoarding(
             eligibleCards = "NBK Visa Signature",
             isPopular = true
         ),
-        MerchantPartner(
-            id = "anghami",
-            name = "Anghami Plus",
-            category = "entertainment",
-            offer = "4 months free",
-            logoResId = R.drawable.ic_anghami,
-            eligibleCards = "NBK Visa Platinum"
-        ),
-        MerchantPartner(
-            id = "cinescape",
-            name = "Cinescape",
-            category = "entertainment",
-            offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.ic_cinescape,
-            eligibleCards = "NBK KWT Cards"
-        ),
 
-        // LIFESTYLE PARTNERS
-        MerchantPartner(
-            id = "ikea",
-            name = "IKEA Kuwait",
-            category = "lifestyle",
-            offer = "Free delivery + 10% dining",
-            logoResId = R.drawable.ic_ikea,
-            eligibleCards = "All NBK Cards",
-            isPopular = true
-        ),
-        MerchantPartner(
-            id = "charlottetilbury",
-            name = "Charlotte Tilbury",
-            category = "lifestyle",
-            offer = "Up to 8% Aura Points",
-            logoResId = R.drawable.ic_charlotte_tilbury,
-            eligibleCards = "NBK-Aura Card"
-        ),
+
+
 
         // TRAVEL PARTNERS
         MerchantPartner(
@@ -235,14 +172,7 @@ fun VendorsOnBoarding(
             logoResId = R.drawable.ic_jumeirah_hotels,
             eligibleCards = "NBK Miles Card"
         ),
-        MerchantPartner(
-            id = "booking",
-            name = "Booking.com",
-            category = "travel",
-            offer = "Up to 8% instant discount",
-            logoResId = R.drawable.ic_booking_com,
-            eligibleCards = "NBK Visa Credit"
-        )
+
     )
 
     val filteredVendors = if (searchQuery.isBlank()) {
