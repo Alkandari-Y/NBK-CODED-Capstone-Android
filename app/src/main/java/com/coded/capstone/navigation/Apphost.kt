@@ -17,15 +17,15 @@ import com.coded.capstone.screens.calender.CalendarScreen
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
-
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
-
 import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
 import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
+import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
+import com.coded.capstone.viewModels.RecommendationViewModel
 
 
 object NavRoutes {
@@ -56,7 +56,8 @@ fun AppHost(
 ) {
     val context = LocalContext.current
     val homeScreenViewModel = remember { HomeScreenViewModel(context) }
-
+    val recommendationViewModel = remember { RecommendationViewModel(context) }
+val accountViewModel = remember { AccountViewModel(context) }
     LaunchedEffect(Unit) {
         if (
             TokenManager.getToken(context) != null &&
@@ -116,26 +117,13 @@ fun AppHost(
                 selectedCategories = selectedCategories
             )
         }
-        composable(NavRoutes.NAV_ROUTE_CARD_SUGGESTION) { backStackEntry ->
-            val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
-            val selectedVendorsString = backStackEntry.arguments?.getString("selectedVendors") ?: ""
+        composable(NavRoutes.NAV_ROUTE_CARD_SUGGESTION) {
 
-            val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
-                selectedCategoriesString.split(",").toSet()
-            } else {
-                emptySet()
-            }
-
-            val selectedVendors = if (selectedVendorsString.isNotEmpty()) {
-                selectedVendorsString.split(",").toSet()
-            } else {
-                emptySet()
-            }
 
             CardSuggestedOnBoarding(
                 navController = navController,
-                selectedCategories = selectedCategories,
-                selectedVendors = selectedVendors
+                recommendationViewModel,
+                accountViewModel
             )
         }
         composable(NavRoutes.NAV_ROUTE_HOME) {

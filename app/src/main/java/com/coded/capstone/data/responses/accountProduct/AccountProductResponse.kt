@@ -6,6 +6,7 @@ data class AccountProductResponse(
     val id: Long?,
     val name: String?,
     val accountType: String?,
+    val description: String?,
     val interestRate: Double?,
     val minBalanceRequired: Double?,
     val creditLimit: Double?,
@@ -14,5 +15,6 @@ data class AccountProductResponse(
     val image: String?,
     val perks: List<PerkDto>?,
     val categoryIds: List<Long>?,
-    val categoryNames: List<String>?
+    val categoryNames: List<String>?,
+    val recommended: Boolean
 )

@@ -25,6 +25,7 @@ import com.coded.capstone.composables.recommendation.RecommendationCard
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.AccountViewModel
+import com.coded.capstone.viewModels.AccountCreateUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,8 +56,8 @@ fun RecommendationScreen(
     // Handle account creation state
     LaunchedEffect(accountCreateState) {
         when (accountCreateState) {
-            is AccountViewModel.AccountCreateUiState.Error -> {
-                Toast.makeText(context, (accountCreateState as AccountViewModel.AccountCreateUiState.Error).message, Toast.LENGTH_LONG).show()
+            is AccountCreateUiState.Error -> {
+                Toast.makeText(context, (accountCreateState as AccountCreateUiState.Error).message, Toast.LENGTH_LONG).show()
             }
             else -> {}
         }
@@ -201,7 +202,7 @@ fun RecommendationScreen(
                                     onItemClick(recommendation)
                                 },
                                 onBookClick = { handleApplyClick(recommendation) },
-                                isLoading = accountCreateState is AccountViewModel.AccountCreateUiState.Loading
+                                isLoading = accountCreateState is AccountCreateUiState.Loading
                             )
                         }
                     }
