@@ -2,6 +2,8 @@ package com.coded.capstone.providers
 
 
 import com.coded.capstone.data.requests.account.AccountCreateRequest
+import com.coded.capstone.data.requests.partner.FavBusinessResponse
+import com.coded.capstone.data.requests.partner.SetFavBusinessRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
@@ -20,6 +22,11 @@ interface RecommendationServiceProvider{
         @Body setFavCategoriesRequest: SetFavCategoryRequest,
     ): Response<FavCategoryResponse>
 
+    // Business
+    @POST("api/v1/fav/businesses")
+    suspend fun setFavBusinesses(
+        @Body setFavBusinessRequest: SetFavBusinessRequest,
+    ): Response<FavBusinessResponse>
 
     // Recommendation
     @GET("/api/v1/recommendations/onBoarding")

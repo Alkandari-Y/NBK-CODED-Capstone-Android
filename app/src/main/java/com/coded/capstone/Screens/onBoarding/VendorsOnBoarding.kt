@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import coil3.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,16 +33,10 @@ import androidx.navigation.NavController
 import com.coded.capstone.R
 import com.coded.capstone.composables.onBoarding.NBKVendorCard
 import com.coded.capstone.navigation.NavRoutes
-
-data class MerchantPartner(
-    val id: String,
-    val name: String,
-    val category: String,
-    val offer: String,
-    val logoResId: Int?, // null for category icon fallback
-    val eligibleCards: String,
-    val isPopular: Boolean = false
-)
+import com.coded.capstone.viewModels.RecommendationViewModel
+import com.coded.capstone.data.requests.partner.PartnerDto
+import com.coded.capstone.respositories.CategoryRepository
+import com.coded.capstone.viewModels.FavBusinessUiState
 
 // Category icon mapping
 fun getCategoryIcon(category: String): ImageVector = when (category) {
@@ -57,145 +52,45 @@ fun getCategoryIcon(category: String): ImageVector = when (category) {
 @Composable
 fun VendorsOnBoarding(
     navController: NavController,
-    selectedCategories: Set<String>
+    viewModel: RecommendationViewModel
 ) {
-    var selectedVendors by remember { mutableStateOf(setOf<String>()) }
+    var selectedVendors by remember { mutableStateOf(setOf<Long>()) }
     var searchQuery by remember { mutableStateOf("") }
-
-    // Real NBK merchant partners matching categories
-    val vendors = listOf(
-        // DINING PARTNERS
-        MerchantPartner(
-            id = "pret",
-            name = "Pret A Manger",
-            category = "dining",
-            offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.klue,
-            eligibleCards = "All NBK Cards",
-            isPopular = true
-        ),
-        MerchantPartner(
-            id = "shakeshack",
-            name = "Shake Shack",
-            category = "dining",
-            offer = "NBK Rewards Points",
-            logoResId = R.drawable.ic_shake_shack,
-            eligibleCards = "NBK Credit Cards",
-            isPopular = true
-        ),
-        MerchantPartner(
-            id = "caribou",
-            name = "Caribou Coffee",
-            category = "dining",
-            offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.ic_caribou_coffee,
-            eligibleCards = "All NBK Cards",
-            isPopular = true
-        ),
-        MerchantPartner(
-            id = "illy",
-            name = "illy Caffè",
-            category = "dining",
-            offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.klue,
-            eligibleCards = "All NBK Cards"
-        ),
-        MerchantPartner(
-            id = "roka",
-            name = "ROKA Kuwait",
-            category = "dining",
-            offer = "20% Off",
-            logoResId = R.drawable.klue,
-            eligibleCards = "NBK World Elite"
-        ),
-
-        // TECHNOLOGY PARTNERS
-        MerchantPartner(
-            id = "xcite",
-            name = "X-cite",
-            category = "technology",
-            offer = "2% Instant + 10% Points",
-            logoResId = R.drawable.ic_xcite,
-            eligibleCards = "NBK KWT Visa",
-            isPopular = true
-        ),
-
-        // SHOPPING PARTNERS
-        MerchantPartner(
-            id = "hm",
-            name = "H&M",
-            category = "shopping",
-            offer = "Up to 8% Aura Points",
-            logoResId = R.drawable.ic_hm,
-            eligibleCards = "NBK-Aura Card"
-        ),
-
-        MerchantPartner(
-            id = "theavenues",
-            name = "The Avenues",
-            category = "shopping",
-            offer = "4% NBK KWT Points",
-            logoResId = R.drawable.ic_the_avenues,
-            eligibleCards = "NBK KWT Cards",
-            isPopular = true
-        ),
-
-        // ENTERTAINMENT PARTNERS
-        MerchantPartner(
-            id = "vox",
-            name = "VOX Cinemas",
-            category = "entertainment",
-            offer = "50% Off Online",
-            logoResId = R.drawable.ic_vox_cinemas,
-            eligibleCards = "NBK Visa Signature",
-            isPopular = true
-        ),
-
-
-
-
-        // TRAVEL PARTNERS
-        MerchantPartner(
-            id = "kuwaitairways",
-            name = "Kuwait Airways",
-            category = "travel",
-            offer = "10% discount + 4 Miles/KD",
-            logoResId = R.drawable.ic_kuwait_airways,
-            eligibleCards = "NBK-Kuwait Airways",
-            isPopular = true
-        ),
-        MerchantPartner(
-            id = "jumeirah",
-            name = "Jumeirah Hotels",
-            category = "travel",
-            offer = "Up to 25% Off",
-            logoResId = R.drawable.ic_jumeirah_hotels,
-            eligibleCards = "NBK Miles Card"
-        ),
-
-    )
-
-    val filteredVendors = if (searchQuery.isBlank()) {
-        vendors.sortedWith(compareBy<MerchantPartner> { vendor ->
-            when {
-                selectedCategories.contains(vendor.category) && vendor.isPopular -> 0
-                selectedCategories.contains(vendor.category) && !vendor.isPopular -> 1
-                !selectedCategories.contains(vendor.category) && vendor.isPopular -> 2
-                else -> 3
+    val partners by viewModel.partners.collectAsState()
+    val favBusinessUiState by viewModel.favBusinessUiState.collectAsState()
+    
+    // Fetch business partners when screen is first displayed
+    LaunchedEffect(Unit) {
+        viewModel.fetchBusinessPartners()
+    }
+    
+    // Handle navigation after successful submission
+    LaunchedEffect(favBusinessUiState) {
+        when (favBusinessUiState) {
+            is FavBusinessUiState.Success -> {
+                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
             }
-        }.thenBy { it.name })
-    } else {
-        vendors.filter {
-            it.name.contains(searchQuery, ignoreCase = true) ||
-                    it.category.contains(searchQuery, ignoreCase = true)
-        }.sortedByDescending { it.isPopular }
+            is FavBusinessUiState.Error -> {
+                // Handle error if needed
+            }
+            else -> {}
+        }
     }
 
-    fun toggleVendor(vendorId: String) {
-        if (selectedVendors.contains(vendorId)) {
-            selectedVendors = selectedVendors - vendorId
+    val filteredPartners = if (searchQuery.isBlank()) {
+        partners
+    } else {
+        partners.filter {
+            it.name.contains(searchQuery, ignoreCase = true) ||
+            it.category.name.contains(searchQuery, ignoreCase = true)
+        }
+    }
+
+    fun toggleVendor(partnerId: Long) {
+        if (selectedVendors.contains(partnerId)) {
+            selectedVendors = selectedVendors - partnerId
         } else {
-            selectedVendors = selectedVendors + vendorId
+            selectedVendors = selectedVendors + partnerId
         }
     }
 
@@ -303,19 +198,11 @@ fun VendorsOnBoarding(
                         )
 
                         Text(
-                            text = "Based on your interests: ${selectedCategories.joinToString(", ")}",
+                            text = "Based on your interests: ${CategoryRepository.favCategories.map { it.categoryId }.joinToString(", ")}",
                             fontSize = 14.sp,
                             color = Color(0xFF6B7280),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(top = 4.dp)
-                        )
-
-                        Text(
-                            text = "${selectedVendors.size} vendors selected",
-                            fontSize = 14.sp,
-                            color = Color(0xFF212937),
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 8.dp)
                         )
 
                         Text(
@@ -356,11 +243,11 @@ fun VendorsOnBoarding(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(filteredVendors) { vendor ->
+                        items(filteredPartners) { partner ->
                             NBKVendorCard(
-                                vendor = vendor,
-                                isSelected = selectedVendors.contains(vendor.id),
-                                onClick = { toggleVendor(vendor.id) }
+                                vendor = partner,
+                                isSelected = partner.id?.let { selectedVendors.contains(it) } ?: false,
+                                onClick = { partner.id?.let { toggleVendor(it) } }
                             )
                         }
                     }
@@ -395,8 +282,6 @@ fun VendorsOnBoarding(
                     ) {
                         TextButton(
                             onClick = {
-                                val categoriesString = selectedCategories.joinToString(",")
-                                val vendorsString = selectedVendors.joinToString(",")
                                 navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
                             },
                             colors = ButtonDefaults.textButtonColors(
@@ -408,9 +293,8 @@ fun VendorsOnBoarding(
 
                         Button(
                             onClick = {
-                                val categoriesString = selectedCategories.joinToString(",")
-                                val vendorsString = selectedVendors.joinToString(",")
-                                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
+                                val selectedBusinessIds = selectedVendors.map { it.toString() }
+                                viewModel.submitFavoriteBusinesses(selectedBusinessIds)
                             },
                             modifier = Modifier
                                 .height(56.dp)
@@ -420,22 +304,12 @@ fun VendorsOnBoarding(
                                 containerColor = Color(0xFF212937)
                             )
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = "NEXT",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
+                            Text(
+                                text = "Continue",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
                         }
                     }
                 }

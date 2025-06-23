@@ -105,16 +105,10 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
             CategoryOnBoarding(navController = navController, viewModel = homeScreenViewModel)
         }
-        composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) { backStackEntry ->
-            val selectedCategoriesString = backStackEntry.arguments?.getString("selectedCategories") ?: ""
-            val selectedCategories = if (selectedCategoriesString.isNotEmpty()) {
-                selectedCategoriesString.split(",").toSet()
-            } else {
-                emptySet()
-            }
+        composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) {
             VendorsOnBoarding(
                 navController = navController,
-                selectedCategories = selectedCategories
+                recommendationViewModel
             )
         }
         composable(NavRoutes.NAV_ROUTE_CARD_SUGGESTION) {
