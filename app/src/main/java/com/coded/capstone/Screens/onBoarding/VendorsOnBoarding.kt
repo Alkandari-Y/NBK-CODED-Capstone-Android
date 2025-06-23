@@ -70,7 +70,7 @@ fun VendorsOnBoarding(
             name = "Pret A Manger",
             category = "dining",
             offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.klue_logo,
+            logoResId = R.drawable.klue,
             eligibleCards = "All NBK Cards",
             isPopular = true
         ),
@@ -97,7 +97,7 @@ fun VendorsOnBoarding(
             name = "illy Caffè",
             category = "dining",
             offer = "Buy 1 Get 1 Free",
-            logoResId = R.drawable.ic_hm,
+            logoResId = R.drawable.klue,
             eligibleCards = "All NBK Cards"
         ),
         MerchantPartner(
@@ -105,7 +105,7 @@ fun VendorsOnBoarding(
             name = "ROKA Kuwait",
             category = "dining",
             offer = "20% Off",
-            logoResId = R.drawable.klue_logo,
+            logoResId = R.drawable.klue,
             eligibleCards = "NBK World Elite"
         ),
 
