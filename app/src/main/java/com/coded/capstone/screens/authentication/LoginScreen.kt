@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -153,7 +152,7 @@ fun LoginScreen(
         ) {
             // Use actual KLUE logo from drawable
             Image(
-                painter = painterResource(id = R.drawable.klue),
+                painter = painterResource(id = R.drawable.klue_logo),
                 contentDescription = "KLUE Logo",
                 modifier = Modifier.fillMaxSize()
             )
