@@ -5,6 +5,7 @@ import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -27,42 +28,49 @@ import androidx.compose.ui.unit.dp
 import com.coded.capstone.composables.calendar.CalendarBar
 import com.coded.capstone.composables.calendar.CalendarBarShort
 import com.coded.capstone.composables.calendar.common.RoundedRightPeek
-import com.coded.capstone.composables.calendar.offers.OfferItem
 import com.coded.capstone.MapAndGeofencing.MapScreen
-import com.coded.capstone.data.Tmp.Offer
-import com.coded.capstone.data.Tmp.repository.OfferRepository
-import java.text.SimpleDateFormat
+import com.coded.capstone.viewModels.RecommendationViewModel
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
+import com.coded.capstone.data.responses.category.CategoryDto
+import com.coded.capstone.data.responses.promotion.PromotionResponse
+import com.coded.capstone.respositories.CategoryRepository
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(LocalContext.current)) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isExpanded by remember { mutableStateOf(false) }
     var selectedYear by remember { mutableStateOf(selectedDate.year) }
     var selectedMonth by remember { mutableStateOf(selectedDate.monthValue - 1) }
     var showMap by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf<String?>(null) }
-    var expandedOfferId by remember { mutableStateOf<String?>(null) }
+    var selectedCategory by remember { mutableStateOf<Long?>(null) }
+    var expandedPromotionId by remember { mutableStateOf<Long?>(null) }
     val context = LocalContext.current
 
-    // Get offers for the selected date
-    val offers = remember(selectedDate, selectedCategory) {
-        val date = Date.from(selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC))
-        Log.d("MainScreen", "Selected date: ${selectedDate}, converted to Date: ${SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(date)}")
-        OfferRepository.getOffersForDate(context, date, selectedCategory)
+    // Collect promotions and categories
+    val promotions by viewModel.promotions.collectAsState()
+    val categories = CategoryRepository.categories
+
+    // Fetch promotions and categories when screen is first displayed
+    LaunchedEffect(Unit) {
+        viewModel.fetchPromotions()
     }
 
-    val categories = remember {
-        OfferRepository.getAvailableCategories(OfferRepository.loadOffers(context))
-    }
+    // Filter promotions for selected date and category
+    val filteredPromotions = remember(selectedDate, selectedCategory, promotions) {
+        promotions.filter { promotion ->
+            val dateMatches = (selectedDate.isEqual(promotion.startDate) || selectedDate.isEqual(promotion.endDate) ||
+                    (selectedDate.isAfter(promotion.startDate) && selectedDate.isBefore(promotion.endDate)))
+            
+            val categoryMatches = selectedCategory == null || 
+                    categories.find { it.id == selectedCategory }?.let { selectedCat ->
+                        viewModel.partners.value.find { it.id == promotion.businessPartnerId }?.category?.id == selectedCat.id
+                    } ?: false
 
-    // Log when offers change
-    LaunchedEffect(offers) {
-        Log.d("MainScreen", "Offers updated: ${offers.size} offers available")
+            dateMatches && categoryMatches
+        }
     }
 
     Box(
@@ -209,7 +217,6 @@ fun CalendarScreen() {
                         }
                     }
 
-
                     // Date text
                     Row(
                         verticalAlignment = Alignment.Bottom,
@@ -248,7 +255,7 @@ fun CalendarScreen() {
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Text(
-                                    text = selectedCategory ?: "All Categories",
+                                    text = categories.find { it.id == selectedCategory }?.name ?: "All Categories",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -288,16 +295,16 @@ fun CalendarScreen() {
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                category,
+                                                category.name,
                                                 color = Color.White
                                             )
                                         },
                                         onClick = {
-                                            selectedCategory = category
+                                            selectedCategory = category.id
                                             expanded = false
                                         },
                                         modifier = Modifier.background(
-                                            if (selectedCategory == category) Color(0xFF666666) else Color.Transparent
+                                            if (selectedCategory == category.id) Color(0xFF666666) else Color.Transparent
                                         ),
                                         colors = MenuDefaults.itemColors(
                                             textColor = Color.White
@@ -308,14 +315,12 @@ fun CalendarScreen() {
                         }
                     }
 
-
-                    // Offers list with weight to take remaining space
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
                     ) {
-                        if (offers.isEmpty()) {
+                        if (filteredPromotions.isEmpty()) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
@@ -331,20 +336,15 @@ fun CalendarScreen() {
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(vertical = 8.dp)
                             ) {
-                                items(offers) { offer ->
-                                    val offerId = when (offer) {
-                                        is Offer.SingleDate -> "${offer.name}_${offer.date}"
-                                        is Offer.DateRange -> "${offer.name}_${offer.startDate}_${offer.endDate}"
-                                    }
-
-                                    OfferItem(
-                                        offer = offer,
-                                        onClick = { },
-                                        isExpanded = expandedOfferId == offerId,
+                                items(filteredPromotions) { promotion ->
+                                    PromotionItem(
+                                        promotion = promotion,
+                                        isExpanded = expandedPromotionId == promotion.id,
                                         onToggleExpansion = {
-                                            expandedOfferId = if (expandedOfferId == offerId) null else offerId
+                                            expandedPromotionId = if (expandedPromotionId == promotion.id) null else promotion.id
                                         }
                                     )
+                                    Spacer(modifier = Modifier.height(8.dp))
                                 }
                             }
                         }
@@ -357,6 +357,87 @@ fun CalendarScreen() {
 
         if (showMap) {
             MapScreen(onClose = { showMap = false })
+        }
+    }
+}
+
+@Composable
+fun PromotionItem(
+    promotion: PromotionResponse,
+    isExpanded: Boolean,
+    onToggleExpansion: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onToggleExpansion),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2A2A)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = promotion.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            Text(
+                text = promotion.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.7f)
+            )
+
+            if (isExpanded) {
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "Start Date",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
+                        Text(
+                            text = promotion.startDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White
+                        )
+                    }
+                    
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "End Date",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
+                        Text(
+                            text = promotion.endDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    text = "Type: ${promotion.type}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
         }
     }
 }
