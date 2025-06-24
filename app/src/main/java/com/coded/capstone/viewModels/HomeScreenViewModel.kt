@@ -12,11 +12,15 @@ import com.coded.capstone.data.responses.kyc.KYCResponse
 import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
 import com.coded.capstone.data.responses.transaction.TransactionDetails
+import com.coded.capstone.data.responses.xp.UserXpInfoResponse
+import com.coded.capstone.data.responses.xp.XpHistoryDto
+import com.coded.capstone.data.responses.xp.XpTierResponse
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.AccountProductRepository
 import com.coded.capstone.respositories.AccountRepository
 import com.coded.capstone.respositories.CategoryRepository
 import com.coded.capstone.respositories.UserRepository
+import com.coded.capstone.respositories.XpRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,30 +43,48 @@ sealed class FavCategoryUiState {
 class HomeScreenViewModel(
     private val context: Context
 ) : ViewModel() {
+
+    // Accounts
     private val _accountsUiState = MutableStateFlow<AccountsUiState>(AccountsUiState.Loading)
     val accountsUiState: StateFlow<AccountsUiState> = _accountsUiState
 
     private val _selectedAccount = MutableStateFlow<AccountResponse?>(null)
     val selectedAccount: StateFlow<AccountResponse?> = _selectedAccount
 
-
+    // Categories
     private val _categories = MutableStateFlow<List<CategoryDto>>(emptyList())
     val categories: StateFlow<List<CategoryDto>> = _categories
-
-    private val _transactions = MutableStateFlow<List<TransactionDetails>>(emptyList())
-    val transactions: StateFlow<List<TransactionDetails>> = _transactions
-
-    private val _perksOfAccountProduct = MutableStateFlow<List<PerkDto>>(emptyList())
-    val perksOfAccountProduct:  StateFlow<List<PerkDto>> = _perksOfAccountProduct
 
     private val _favCategoryUiState = MutableStateFlow<FavCategoryUiState>(
         FavCategoryUiState.Idle)
     val favCategoryUiState: StateFlow<FavCategoryUiState> = _favCategoryUiState
 
+    // xp tier
+    private val _xpTiers = MutableStateFlow<List<XpTierResponse>>(emptyList())
+    val xpTiers: StateFlow<List<XpTierResponse>> = _xpTiers
+
+    private val _selectedTier = MutableStateFlow<XpTierResponse?>(null)
+    val selectedTier: StateFlow<XpTierResponse?> = _selectedTier
+
+    private val _userXp = MutableStateFlow<UserXpInfoResponse?>(null)
+    val userXp: StateFlow<UserXpInfoResponse?> = _userXp
+
+    private val _userXpHistory = MutableStateFlow<List<XpHistoryDto>>(emptyList())
+    val userXpHistory: StateFlow<List<XpHistoryDto>> = _userXpHistory
+
+    // transactions
+    private val _transactions = MutableStateFlow<List<TransactionDetails>>(emptyList())
+    val transactions: StateFlow<List<TransactionDetails>> = _transactions
+
+    // Account products
+    private val _perksOfAccountProduct = MutableStateFlow<List<PerkDto>>(emptyList())
+    val perksOfAccountProduct:  StateFlow<List<PerkDto>> = _perksOfAccountProduct
+
+
     private val _accountProducts = MutableStateFlow<List<AccountProductResponse>>(emptyList())
     val accountProducts: StateFlow<List<AccountProductResponse>> = _accountProducts
 
-    // Add KYC StateFlow
+    //  KYC StateFlow
     private val _kyc = MutableStateFlow<KYCResponse?>(null)
     val kyc: StateFlow<KYCResponse?> = _kyc
 
@@ -78,6 +100,7 @@ class HomeScreenViewModel(
             fetchCategories()
             fetchAccountProducts()
             fetchKyc()
+            fetchXpTiers()
         }
     }
 
@@ -205,14 +228,12 @@ class HomeScreenViewModel(
     fun fetchKyc() {
         viewModelScope.launch {
             try {
-                Log.d("HomeScreenViewModel", "Fetching KYC data...")
                 val response = RetrofitInstance.getBankingServiceProvide(context).getUserKyc()
                 if (response.isSuccessful) {
                     val kycData = response.body()
                     if (kycData != null) {
                         UserRepository.kyc = kycData
                         _kyc.value = kycData
-                        Log.d("HomeScreenViewModel", "KYC loaded: ${kycData.firstName} ${kycData.lastName}")
                     } else {
                         Log.w("HomeScreenViewModel", "KYC response body is null")
                     }
@@ -249,6 +270,76 @@ class HomeScreenViewModel(
                 _favCategoryUiState.value = FavCategoryUiState.Error(e.message ?: "Something went wrong")
                 Log.e("HomeScreenViewModel", "Exception in submitFavoriteCategories: ${e.message}")
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun fetchXpTiers(){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context).getAllXpTiers()
+                if (response.isSuccessful) {
+                    val xpTiers = response.body().orEmpty()
+                    _xpTiers.value = xpTiers
+                    XpRepository.xpTiers = xpTiers
+                } else {
+                    Log.e("HomeScreenViewModel", "xp tiers fetch failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error fetching xp tiers: ${e.message}")
+            }
+        }
+    }
+
+    fun getXpTierById(tierId:String){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context)
+                    .getXpTierById(tierId)
+                println(response.body())
+
+                if (response.isSuccessful) {
+                    _selectedTier.value = response.body()
+                } else {
+                    _selectedTier.value = null
+                }
+            } catch (e: Exception) {
+                _selectedTier.value = null
+            }
+        }
+    }
+
+    fun getUserXpInfo(){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context)
+                    .getUserXpInfo()
+                println(response.body())
+
+                if (response.isSuccessful) {
+                    _userXp.value = response.body()
+                } else {
+                    _userXp.value = null
+                }
+            } catch (e: Exception) {
+                _userXp.value = null
+            }
+        }
+    }
+
+    fun getUserXpHistory(){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getBankingServiceProvide(context).getUserXpHistory()
+                if (response.isSuccessful) {
+                    val userXpHistory = response.body().orEmpty()
+                    _userXpHistory.value = userXpHistory
+                    XpRepository.xpHistory = userXpHistory
+                } else {
+                    Log.e("HomeScreenViewModel", "xp history fetch failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error fetching xp history: ${e.message}")
             }
         }
     }
