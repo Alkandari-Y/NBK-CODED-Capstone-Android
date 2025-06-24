@@ -82,13 +82,7 @@ class HomeScreenViewModel(
     }
 
     fun fetchAccounts() {
-        // Prevent duplicate API calls
-        if (accountsFetched && _accountsUiState.value is AccountsUiState.Success) {
-            return
-        }
-        
         viewModelScope.launch {
-            delay(500)
             _accountsUiState.value = AccountsUiState.Loading
             try {
                 val response = RetrofitInstance.getBankingServiceProvide(context).getAllAccounts()
