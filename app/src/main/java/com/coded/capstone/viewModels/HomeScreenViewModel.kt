@@ -94,6 +94,10 @@ class HomeScreenViewModel(
                 val response = RetrofitInstance.getBankingServiceProvide(context).getAllAccounts()
                 if (response.isSuccessful) {
                     val accounts = response.body()?.toMutableList() ?: mutableListOf()
+                    // Debug log: print account numbers and balances
+                    accounts.forEach { acc ->
+                        Log.d("AccountFetchDebug", "Account: ${acc.accountNumber}, Balance: ${acc.balance}")
+                    }
                     _accountsUiState.value = AccountsUiState.Success(accounts)
                     AccountRepository.myAccounts = accounts
                     accountsFetched = true
