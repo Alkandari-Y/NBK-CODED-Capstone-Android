@@ -1,5 +1,6 @@
 package com.coded.capstone.composables.wallet
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,18 +19,20 @@ import androidx.compose.ui.window.Dialog
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.states.TransferUiState
 import java.math.BigDecimal
+import com.coded.capstone.respositories.AccountProductRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransferDialog(
     sourceAccounts: List<AccountResponse>,
+    defaultSource: AccountResponse? = null,
     onTransfer: (source: AccountResponse, destination: AccountResponse, amount: BigDecimal) -> Unit,
     onDismiss: () -> Unit,
     transferUiState: TransferUiState,
     getEligibleDestinations: (AccountResponse) -> List<AccountResponse>,
     validateAmount: (BigDecimal, AccountResponse) -> String?
 ) {
-    var selectedSource by remember { mutableStateOf<AccountResponse?>(null) }
+    var selectedSource by remember { mutableStateOf(defaultSource) }
     var selectedDestination by remember { mutableStateOf<AccountResponse?>(null) }
     var amount by remember { mutableStateOf("") }
     var sourceExpanded by remember { mutableStateOf(false) }
@@ -89,7 +92,11 @@ fun TransferDialog(
                     onExpandedChange = { sourceExpanded = !sourceExpanded }
                 ) {
                     OutlinedTextField(
-                        value = selectedSource?.accountType?.replaceFirstChar { it.uppercase() } ?: "Select account",
+                        value = selectedSource?.let { src ->
+                            val last4 = src.accountNumber?.takeLast(4) ?: ""
+                            val type = src.accountType?.replaceFirstChar { it.uppercase() } ?: "Account"
+                            "$type ••••$last4"
+                        } ?: "Select account",
                         onValueChange = { },
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = sourceExpanded) },
@@ -105,28 +112,53 @@ fun TransferDialog(
                     )
                     ExposedDropdownMenu(
                         expanded = sourceExpanded,
-                        onDismissRequest = { sourceExpanded = false }
+                        onDismissRequest = { sourceExpanded = false },
+                        modifier = Modifier.background(Color(0xFF2A2A2D)) // Dark background for dropdown
                     ) {
                         sourceAccounts.forEach { account ->
+                            val isSelected = selectedSource?.id == account.id
                             DropdownMenuItem(
                                 text = {
-                                    Column {
-                                        Text(
-                                            text = "${account.accountType?.replaceFirstChar { it.uppercase() }} Account",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Medium
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        val icon = when (account.accountType?.lowercase()) {
+                                            "credit" -> Icons.Default.CreditCard
+                                            "savings" -> Icons.Default.Savings
+                                            "debit" -> Icons.Default.Money
+                                            else -> Icons.Default.AccountBalance
+                                        }
+                                        Icon(
+                                            icon,
+                                            contentDescription = null,
+                                            tint = if (isSelected) Color(0xFF8B5CF6) else Color.White.copy(alpha = 0.8f)
                                         )
-                                        Text(
-                                            text = "Balance: ${account.balance} KWD",
-                                            color = Color.White.copy(alpha = 0.7f),
-                                            fontSize = 12.sp
-                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Column {
+                                            val product = AccountProductRepository.accountProducts.find { it.id == account.accountProductId }
+                                            Text(
+                                                text = "${account.accountType?.replaceFirstChar { it.uppercase() }} ••••${account.accountNumber?.takeLast(4) ?: ""}",
+                                                color = if (isSelected) Color(0xFF8B5CF6) else Color.White,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                                            )
+                                            Text(
+                                                text = "${product?.name ?: "Account"} | Balance: ${account.balance} KWD",
+                                                color = Color.White.copy(alpha = 0.7f),
+                                                fontSize = 12.sp
+                                            )
+                                        }
                                     }
                                 },
                                 onClick = {
                                     selectedSource = account
                                     sourceExpanded = false
-                                }
+                                },
+                                modifier = Modifier.background(
+                                    if (isSelected) Color(0xFF8B5CF6).copy(alpha = 0.1f) else Color.Transparent
+                                ),
+                                colors = MenuDefaults.itemColors(
+                                    textColor = Color.White,
+                                    leadingIconColor = Color.White.copy(alpha = 0.8f),
+                                    trailingIconColor = Color.White.copy(alpha = 0.8f)
+                                )
                             )
                         }
                     }
@@ -150,7 +182,11 @@ fun TransferDialog(
                     }
                 ) {
                     OutlinedTextField(
-                        value = selectedDestination?.accountType?.replaceFirstChar { it.uppercase() } ?: "Select destination",
+                        value = selectedDestination?.let { dst ->
+                            val last4 = dst.accountNumber?.takeLast(4) ?: ""
+                            val type = dst.accountType?.replaceFirstChar { it.uppercase() } ?: "Account"
+                            "$type ••••$last4"
+                        } ?: "Select destination",
                         onValueChange = { },
                         readOnly = true,
                         enabled = selectedSource != null && destinationAccounts.isNotEmpty(),
@@ -169,21 +205,53 @@ fun TransferDialog(
                     )
                     ExposedDropdownMenu(
                         expanded = destinationExpanded,
-                        onDismissRequest = { destinationExpanded = false }
+                        onDismissRequest = { destinationExpanded = false },
+                        modifier = Modifier.background(Color(0xFF2A2A2D)) // Dark background for dropdown
                     ) {
                         destinationAccounts.forEach { account ->
+                            val isSelected = selectedDestination?.id == account.id
                             DropdownMenuItem(
                                 text = {
-                                    Text(
-                                        text = "${account.accountType?.replaceFirstChar { it.uppercase() }} Account",
-                                        color = Color.White,
-                                        fontWeight = FontWeight.Medium
-                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        val icon = when (account.accountType?.lowercase()) {
+                                            "credit" -> Icons.Default.CreditCard
+                                            "savings" -> Icons.Default.Savings
+                                            "debit" -> Icons.Default.Money
+                                            else -> Icons.Default.AccountBalance
+                                        }
+                                        Icon(
+                                            icon,
+                                            contentDescription = null,
+                                            tint = if (isSelected) Color(0xFF8B5CF6) else Color.White.copy(alpha = 0.8f)
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Column {
+                                            val product = AccountProductRepository.accountProducts.find { it.id == account.accountProductId }
+                                            Text(
+                                                text = "${account.accountType?.replaceFirstChar { it.uppercase() }} ••••${account.accountNumber?.takeLast(4) ?: ""}",
+                                                color = if (isSelected) Color(0xFF8B5CF6) else Color.White,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                                            )
+                                            Text(
+                                                text = "${product?.name ?: "Account"} | Balance: ${account.balance} KWD",
+                                                color = Color.White.copy(alpha = 0.7f),
+                                                fontSize = 12.sp
+                                            )
+                                        }
+                                    }
                                 },
                                 onClick = {
                                     selectedDestination = account
                                     destinationExpanded = false
-                                }
+                                },
+                                modifier = Modifier.background(
+                                    if (isSelected) Color(0xFF8B5CF6).copy(alpha = 0.1f) else Color.Transparent
+                                ),
+                                colors = MenuDefaults.itemColors(
+                                    textColor = Color.White,
+                                    leadingIconColor = Color.White.copy(alpha = 0.8f),
+                                    trailingIconColor = Color.White.copy(alpha = 0.8f)
+                                )
                             )
                         }
                     }

@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -107,8 +108,8 @@ fun PerksBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     WalletActionButton(
-                        icon = Icons.Default.Payment,
-                        text = "Pay",
+                        icon = Icons.Default.Paid,
+                        text = "Transfer",
                         onClick = onPayAction,
                         backgroundColor = Color(0xFF4CAF50)
                     )

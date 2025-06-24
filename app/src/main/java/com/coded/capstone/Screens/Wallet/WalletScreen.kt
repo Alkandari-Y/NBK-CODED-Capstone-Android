@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,8 +21,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.composables.wallet.ApplePayCardStack
 import com.coded.capstone.composables.wallet.EmptyAccountsCard
@@ -36,6 +40,51 @@ import com.coded.capstone.data.states.TransferUiState
 import com.coded.capstone.data.states.TopUpUiState
 import com.coded.capstone.ui.AppBackground
 
+@Composable
+fun SuccessToast(
+    message: String,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF22C55E) // Green success color
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Success",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = message,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +130,11 @@ fun WalletScreen(
     var showTopUpDialog by remember { mutableStateOf(false) }
     var expandedPerks by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
+    var transferSourceAccount by remember { mutableStateOf<AccountResponse?>(null) }
+
+    // Toast states
+    var showSuccessToast by remember { mutableStateOf(false) }
+    var successMessage by remember { mutableStateOf("") }
 
     val pagerState = rememberPagerState(pageCount = { accounts.size })
 
@@ -89,6 +143,16 @@ fun WalletScreen(
         if (transferUiState is TransferUiState.Success) {
             showTransferDialog = false
             homeViewModel.fetchAccounts() // Refresh accounts
+
+            // Show success toast
+            successMessage = "Transfer completed successfully!"
+            showSuccessToast = true
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
+            // Auto-hide toast after 3 seconds
+            delay(3000)
+            showSuccessToast = false
+
             transactionViewModel.resetTransferState()
         }
     }
@@ -98,6 +162,16 @@ fun WalletScreen(
         if (topUpUiState is TopUpUiState.Success) {
             showTopUpDialog = false
             homeViewModel.fetchAccounts() // Refresh accounts
+
+            // Show success toast
+            successMessage = "Top-up completed successfully!"
+            showSuccessToast = true
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
+            // Auto-hide toast after 3 seconds
+            delay(3000)
+            showSuccessToast = false
+
             transactionViewModel.resetTopUpState()
         }
     }
@@ -253,9 +327,11 @@ fun WalletScreen(
                                     PerksBottomSheet(
                                         account = card,
                                         perks = perksOfAccountProduct,
-                                        onPayAction={},
-
-
+                                        onPayAction = {
+                                            transferSourceAccount = card
+                                            showTransferDialog = true
+                                        },
+                                        onUpgradeAccount = { /* ... */ }
                                     )
                                 }
                             }
@@ -265,12 +341,21 @@ fun WalletScreen(
                 }
             }
 
-
+            // Success Toast - positioned at the top with high z-index
+            SuccessToast(
+                message = successMessage,
+                isVisible = showSuccessToast,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 100.dp) // Position below the header
+                    .zIndex(1000f) // Ensure it appears above other elements
+            )
 
             // Transaction Dialogs
             if (showTransferDialog) {
                 TransferDialog(
-                    sourceAccounts = transactionViewModel.getEligibleSourceAccounts(accounts),
+                    sourceAccounts = accounts,
+                    defaultSource = transferSourceAccount,
                     onTransfer = { source, destination, amount ->
                         transactionViewModel.transfer(source, destination, amount)
                     },
@@ -279,34 +364,31 @@ fun WalletScreen(
                         transactionViewModel.resetTransferState()
                     },
                     transferUiState = transferUiState,
-                    getEligibleDestinations = { source ->
-                        transactionViewModel.getEligibleDestinationAccounts(accounts, source)
-                    },
-                    validateAmount = { amount, sourceAccount ->
-                        transactionViewModel.validateTransferAmount(amount, sourceAccount)
+                    getEligibleDestinations = { src -> accounts.filter { it.id != src.id } },
+                    validateAmount = { amount, src ->
+                        if (amount > src.balance) "Insufficient balance" else null
                     }
                 )
             }
 
-            if (showTopUpDialog) {
-                selectedCard?.let { account ->
-                    TopUpDialog(
-                        targetAccount = account,
-                        onTopUp = { amount ->
-                            transactionViewModel.topUp(amount)
-                        },
-                        onDismiss = {
-                            showTopUpDialog = false
-                            transactionViewModel.resetTopUpState()
-                        },
-                        topUpUiState = topUpUiState,
-                        validateAmount = { amount ->
-                            transactionViewModel.validateTopUpAmount(amount)
-                        }
-                    )
-                }
-            }
+//            if (showTopUpDialog) {
+//                selectedCard?.let { account ->
+//                    TopUpDialog(
+//                        targetAccount = account,
+//                        onTopUp = { amount ->
+//                            transactionViewModel.topUp(amount)
+//                        },
+//                        onDismiss = {
+//                            showTopUpDialog = false
+//                            transactionViewModel.resetTopUpState()
+//                        },
+//                        topUpUiState = topUpUiState,
+//                        validateAmount = { amount ->
+//                            transactionViewModel.validateTopUpAmount(amount)
+//                        }
+//                    )
+//                }
+//            }
         }
     }
 }
-

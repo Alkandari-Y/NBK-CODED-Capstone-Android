@@ -59,7 +59,7 @@ interface BankingServiceProvider {
     ): Response<List<TransactionDetails>>
 
     // Transfer endpoint
-    @POST("/api/v1/transactions/transfer")
+    @POST("/api/v1/accounts/transfer")
     suspend fun transfer(
         @Body transferRequest: TransferCreateRequest
     ): Response<TransactionDetails>

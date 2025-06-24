@@ -80,42 +80,6 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
         }
     }
 
-    // Account eligibility functions
-    fun getEligibleSourceAccounts(accounts: List<AccountResponse>): List<AccountResponse> {
-        return accounts.filter { account ->
-            // All active accounts can be sources
-            account.balance > BigDecimal.ZERO
-        }
-    }
 
-    fun getEligibleDestinationAccounts(
-        accounts: List<AccountResponse>,
-        sourceAccount: AccountResponse
-    ): List<AccountResponse> {
-        return accounts.filter { account ->
-            // Cannot transfer to same account
-            account.id != sourceAccount.id
-        }
-    }
 
-    fun canTopUp(account: AccountResponse): Boolean {
-        // Cashback accounts cannot be topped up
-        return account.accountType?.lowercase() != "cashback"
-    }
-
-    fun validateTransferAmount(amount: BigDecimal, sourceAccount: AccountResponse): String? {
-        return when {
-            amount <= BigDecimal.ZERO -> "Amount must be greater than 0"
-            amount > sourceAccount.balance -> "Insufficient funds"
-            else -> null
-        }
-    }
-
-    fun validateTopUpAmount(amount: BigDecimal): String? {
-        return when {
-            amount <= BigDecimal.ZERO -> "Amount must be greater than 0"
-            amount > BigDecimal(10000) -> "Maximum top-up amount is 10,000 KWD"
-            else -> null
-        }
-    }
 }
