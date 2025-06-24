@@ -77,11 +77,12 @@ fun RewardCard(
         }
     }
 
-    val glassShape: Shape = RectangleShape // No rounded edges
+    val glassShape: Shape = RoundedCornerShape(24.dp) // Rounded edges
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .wrapContentHeight()
             .clickable { onClick() },
         shape = glassShape,
@@ -91,7 +92,7 @@ fun RewardCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Blurred glass background with bleeding effect
+            // Glass background (already present)
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -99,13 +100,29 @@ fun RewardCard(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.18f), // Center: more opaque
-                                Color.White.copy(alpha = 0.01f)  // Edge: almost transparent
+                                Color.White.copy(alpha = 0.30f),
+                                Color.White.copy(alpha = 0.02f)
                             ),
-                            center = Offset(250f, 90f), // Center of the card, adjust as needed
+                            center = Offset(250f, 90f),
                             radius = 500f
                         ),
                         shape = glassShape
+                    )
+            )
+            // White inner shadow overlay
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(glassShape)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.18f),
+                                Color.Transparent
+                            ),
+                            center = Offset(0.5f, 0.5f),
+                            radius = 600f
+                        )
                     )
             )
             // Card content (not blurred)

@@ -18,7 +18,7 @@ fun AppBackground(content: @Composable () -> Unit) {
                 Brush.radialGradient(
                     colors = listOf(
                         Color(0xFF555D6B), // Center (light gray)
-                        Color(0xFF141818)  // Edge (dark gray)
+                        Color(0xFF262C2C)  // Edge (dark gray)
                     ),
                     center = Offset(200f, 200f),
                     radius = 1600f
