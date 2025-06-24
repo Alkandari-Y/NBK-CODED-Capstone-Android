@@ -178,19 +178,26 @@ class HomeScreenViewModel(
         }
     }
 
-    fun fetchTransactionHistory(accountId:String){
+    fun fetchTransactionHistory(accountNumber: String) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.getBankingServiceProvide(context).getAllTransactionsByAccountNumber(accountId)
-                println(response.body())
+                Log.d("TransactionFetch", "Fetching transactions for account: $accountNumber")
+                val response = RetrofitInstance.getBankingServiceProvide(context).getAllTransactionsByAccountNumber(accountNumber)
+                Log.d("TransactionFetch", "Response code: ${response.code()}")
+                Log.d("TransactionFetch", "Response body: ${response.body()}")
+                
                 if (response.isSuccessful) {
                     val transactions = response.body().orEmpty()
+                    Log.d("TransactionFetch", "Fetched ${transactions.size} transactions")
                     _transactions.value = transactions
                 } else {
-                    Log.e("HomeScreenViewModel", "transaction fetch failed: ${response.code()}")
+                    Log.e("TransactionFetch", "Transaction fetch failed: ${response.code()}")
+                    Log.e("TransactionFetch", "Error body: ${response.errorBody()?.string()}")
+                    _transactions.value = emptyList()
                 }
             } catch (e: Exception) {
-                Log.e("HomeScreenViewModel", "Error fetching transaction: ${e.message}")
+                Log.e("TransactionFetch", "Error fetching transactions", e)
+                _transactions.value = emptyList()
             }
         }
     }
