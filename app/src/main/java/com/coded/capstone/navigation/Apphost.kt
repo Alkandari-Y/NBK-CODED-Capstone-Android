@@ -9,12 +9,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.calender.CalendarScreen
-import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.screens.accounts.AccountDetailsScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
@@ -148,7 +148,9 @@ val accountViewModel = remember { AccountViewModel(context) }
             }
         }
         composable (NavRoutes.NAV_ROUTE_PROFILE){
-            ProfilePage()
+            ProfilePage(
+                onBackClick = { navController.popBackStack() }
+            )
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
