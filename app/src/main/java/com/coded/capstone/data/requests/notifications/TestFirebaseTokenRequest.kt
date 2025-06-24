@@ -7,6 +7,6 @@ import com.google.gson.annotations.SerializedName
  * This corresponds to the FirebaseToken data class in the backend's HelloController.
  */
 data class TestFirebaseTokenRequest(
-    @SerializedName("token")
-    val token: String
+    @SerializedName("firebaseToken")
+    val firebaseToken: String
 ) 
