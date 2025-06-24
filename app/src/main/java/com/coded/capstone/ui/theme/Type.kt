@@ -8,83 +8,83 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.R
 
-val SairaCondensed = FontFamily(
-    Font(R.font.sairacondensed_medium, weight = FontWeight.Medium)
+val Roboto = FontFamily(
+    Font(R.font.roboto_variablefont_wdthwght, weight = FontWeight.Normal)
 )
 
 val AppTypography = Typography(
     displayLarge = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 57.sp
     ),
     displayMedium = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 45.sp
     ),
     displaySmall = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 36.sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 32.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 28.sp
     ),
     headlineSmall = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 24.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = SairaCondensed,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
         fontSize = 22.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = SairaCondensed,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp
     ),
     titleSmall = TextStyle(
-        fontFamily = SairaCondensed,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 14.sp
     ),
     bodySmall = TextStyle(
-        fontFamily = SairaCondensed,
-        fontWeight = FontWeight.Medium,
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
         fontSize = 12.sp
     ),
     labelLarge = TextStyle(
-        fontFamily = SairaCondensed,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = SairaCondensed,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = SairaCondensed,
+        fontFamily = Roboto,
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp
     )
