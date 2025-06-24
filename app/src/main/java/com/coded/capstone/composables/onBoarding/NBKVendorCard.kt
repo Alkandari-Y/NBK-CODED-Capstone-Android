@@ -34,16 +34,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import coil3.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coded.capstone.screens.onboarding.MerchantPartner
+import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.screens.onboarding.getCategoryIcon
 
 @Composable
 fun NBKVendorCard(
-    vendor: MerchantPartner,
+    vendor: PartnerDto,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -53,16 +54,6 @@ fun NBKVendorCard(
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
         label = "vendor_scale"
     )
-
-    // Check if resource exists
-    val logoExists = vendor.logoResId?.let { resId ->
-        try {
-            context.resources.getDrawable(resId, null)
-            true
-        } catch (e: Exception) {
-            false
-        }
-    } ?: false
 
     Card(
         onClick = onClick,
@@ -89,26 +80,6 @@ fun NBKVendorCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Popular badge
-            if (vendor.isPopular) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            Color(0xFFF59E0B),
-                            RoundedCornerShape(bottomEnd = 8.dp)
-                        )
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                        .align(Alignment.TopStart)
-                ) {
-                    Text(
-                        text = "Popular",
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-
             // Selection indicator
             if (isSelected) {
                 Box(
@@ -138,10 +109,10 @@ fun NBKVendorCard(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // Logo - use image if available and exists, fallback to category icon
-                if (logoExists && vendor.logoResId != null) {
-                    Image(
-                        painter = painterResource(id = vendor.logoResId),
+                // Logo - use AsyncImage for network image
+                if (vendor.logoUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = vendor.logoUrl,
                         contentDescription = "${vendor.name} logo",
                         modifier = Modifier
                             .size(35.dp)
@@ -151,8 +122,8 @@ fun NBKVendorCard(
                 } else {
                     // Fallback to category icon
                     Icon(
-                        imageVector = getCategoryIcon(vendor.category),
-                        contentDescription = "${vendor.category} category",
+                        imageVector = getCategoryIcon(vendor.category.name),
+                        contentDescription = "${vendor.category.name} category",
                         tint = Color(0xFF03A9F4),
                         modifier = Modifier
                             .size(35.dp)
@@ -171,17 +142,11 @@ fun NBKVendorCard(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = vendor.offer,
+                    text = vendor.category.name,
                     fontSize = 12.sp,
                     color = Color(0xFF6B7280),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 2.dp)
-                )
-                Text(
-                    text = vendor.eligibleCards,
-                    fontSize = 10.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center
                 )
             }
         }

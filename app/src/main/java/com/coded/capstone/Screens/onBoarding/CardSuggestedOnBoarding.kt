@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import coil3.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,29 +25,33 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.R
 import com.coded.capstone.navigation.NavRoutes
-
-data class NBKCard(
-    val id: String,
-    val name: String,
-    val type: String,
-    val description: String,
-    val keyBenefits: List<String>,
-    val cashbackDetails: String,
-    val cardImageResId: Int,
-    val backgroundColor: Color,
-    val textColor: Color = Color.White
-)
+import com.coded.capstone.viewModels.AccountViewModel
+import com.coded.capstone.viewModels.RecommendationViewModel
 
 @Composable
 fun CardSuggestedOnBoarding(
     navController: NavController,
-    selectedCategories: Set<String>,
-    selectedVendors: Set<String>
+   recommendationViewModel: RecommendationViewModel,
+    accountViewModel: AccountViewModel
 ) {
     var userWillApply by remember { mutableStateOf(false) }
-
-    // Smart card recommendation algorithm
-    val recommendedCard = getRecommendedCard(selectedCategories, selectedVendors)
+    val recommendedCard by recommendationViewModel.recommendedCard.collectAsState()
+    
+    // Fetch recommended card when screen is first displayed
+    LaunchedEffect(Unit) {
+        recommendationViewModel.fetchRecommendedCard()
+    }
+    
+    // Early return with loading state if no card is available
+    if (recommendedCard == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     Box(
         modifier = Modifier
@@ -142,15 +148,15 @@ fun CardSuggestedOnBoarding(
                                     .fillMaxWidth()
                                     .height(100.dp)
                                     .background(
-                                        recommendedCard.backgroundColor,
+                                        Color(0xFF1a1a2e),
                                         RoundedCornerShape(12.dp)
                                     )
                                     .padding(12.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Image(
-                                    painter = painterResource(id = recommendedCard.cardImageResId),
-                                    contentDescription = "${recommendedCard.name} card",
+                                AsyncImage(
+                                    model = recommendedCard?.image ?: "",
+                                    contentDescription = "${recommendedCard?.name} card",
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .clip(RoundedCornerShape(8.dp)),
@@ -162,7 +168,7 @@ fun CardSuggestedOnBoarding(
 
                             // Card Details Below
                             Text(
-                                text = recommendedCard.name,
+                                text = recommendedCard?.name ?: "Recommended Card",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF1F2937),
@@ -170,7 +176,7 @@ fun CardSuggestedOnBoarding(
                             )
 
                             Text(
-                                text = recommendedCard.type,
+                                text = recommendedCard?.accountType ?: "Credit Card",
                                 fontSize = 14.sp,
                                 color = Color(0xFF6B7280),
                                 textAlign = TextAlign.Center,
@@ -183,7 +189,7 @@ fun CardSuggestedOnBoarding(
 
                     // Card Details
                     Text(
-                        text = recommendedCard.description,
+                        text = recommendedCard?.description ?: "A personalized card recommendation based on your preferences.",
                         fontSize = 16.sp,
                         color = Color(0xFF6B7280),
                         textAlign = TextAlign.Center,
@@ -194,7 +200,10 @@ fun CardSuggestedOnBoarding(
                     Button(
                         onClick = {
                             userWillApply = true
-                            // Navigate to home with suggested card NAME (not ID)
+                            // Create account with the recommended card
+                            recommendedCard?.id?.let { cardId ->
+                                accountViewModel.createAccount(cardId)
+                            }
                             navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
                                 popUpTo(0)
                             }
@@ -253,7 +262,7 @@ fun CardSuggestedOnBoarding(
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
 
-                            recommendedCard.keyBenefits.forEach { benefit ->
+                            recommendedCard?.perks?.forEach { perk ->
                                 Row(
                                     modifier = Modifier.padding(bottom = 8.dp),
                                     verticalAlignment = Alignment.Top
@@ -268,7 +277,7 @@ fun CardSuggestedOnBoarding(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = benefit,
+                                        text = perk.type ?: "Benefit",
                                         fontSize = 14.sp,
                                         color = Color(0xFF374151),
                                         modifier = Modifier.weight(1f)
@@ -276,7 +285,7 @@ fun CardSuggestedOnBoarding(
                                 }
                             }
 
-                            if (recommendedCard.cashbackDetails.isNotEmpty()) {
+                            if (recommendedCard?.perks?.isNotEmpty() == true) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Row(
                                     modifier = Modifier
@@ -295,7 +304,7 @@ fun CardSuggestedOnBoarding(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = recommendedCard.cashbackDetails,
+                                        text = "Special benefits and rewards included",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Medium,
                                         color = Color(0xFF059669)
@@ -308,7 +317,7 @@ fun CardSuggestedOnBoarding(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Single Smart Match Info (without score)
-                    if (selectedCategories.isNotEmpty() || selectedVendors.isNotEmpty()) {
+                    if (recommendedCard?.categoryNames?.isNotEmpty() == true) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
@@ -328,14 +337,7 @@ fun CardSuggestedOnBoarding(
                                 )
 
                                 val matchText = buildString {
-                                    if (selectedCategories.isNotEmpty()) {
-                                        append("Selected \"${selectedCategories.joinToString("\", \"")}\" categories")
-                                    }
-                                    if (selectedVendors.isNotEmpty()) {
-                                        if (selectedCategories.isNotEmpty()) append(" + ")
-                                        append("vendors \"${selectedVendors.joinToString("\", \"")}\"")
-                                    }
-                                    append(" → ${recommendedCard.name}")
+                                    append("Based on your preferences → ${recommendedCard?.name}")
                                 }
 
                                 Text(
@@ -376,147 +378,4 @@ fun CardSuggestedOnBoarding(
             }
         }
     }
-}
-
-// Smart card recommendation algorithm
-fun getRecommendedCard(selectedCategories: Set<String>, selectedVendors: Set<String>): NBKCard {
-    val allCards = getAllNBKCards()
-
-    // Score each card based on user preferences
-    return allCards.maxByOrNull { card ->
-        calculateCardScore(card, selectedCategories, selectedVendors)
-    } ?: allCards.first() // Default fallback
-}
-
-fun calculateCardScore(card: NBKCard, categories: Set<String>, vendors: Set<String>): Int {
-    var score = 0
-
-    when (card.id) {
-        "nbk_kwt_infinite" -> {
-            if (categories.contains("dining")) score += 50 // Perfect for dining with 10% points
-            if (categories.contains("technology")) score += 40 // Great for X-cite
-            if (vendors.contains("xcite")) score += 30
-            if (vendors.contains("pret") || vendors.contains("shakeshack")) score += 25
-        }
-        "nbk_aura_world" -> {
-            if (categories.contains("shopping")) score += 50 // Perfect for shopping with 8% Aura points
-            if (vendors.contains("hm") || vendors.contains("theavenues")) score += 30
-            if (vendors.contains("bathandbody") || vendors.contains("harveynichols")) score += 25
-        }
-        "nbk_miles_world" -> {
-            if (categories.contains("travel")) score += 50 // Perfect for travel with 5 miles/KD
-            if (vendors.contains("kuwaitairways")) score += 30
-            if (vendors.contains("jumeirah") || vendors.contains("booking")) score += 25
-        }
-        "nbk_kuwait_airways_infinite" -> {
-            if (categories.contains("travel")) score += 45 // Great for travel
-            if (vendors.contains("kuwaitairways")) score += 35 // Perfect for Kuwait Airways users
-        }
-        "nbk_visa_infinite" -> {
-            if (categories.contains("lifestyle")) score += 40 // Ultra-premium lifestyle
-            score += categories.size * 20 // Bonus for multiple categories
-        }
-        "nbk_visa_platinum" -> {
-            // General purpose card - moderate scores for all categories
-            score += categories.size * 15
-            if (vendors.contains("vox")) score += 20 // VOX 50% off
-        }
-    }
-
-    return score
-}
-
-fun getAllNBKCards(): List<NBKCard> {
-    return listOf(
-        NBKCard(
-            id = "nbk_kwt_infinite",
-            name = "NBK KWT Visa Infinite",
-            type = "Premium Credit Card",
-            description = "Kuwait's premier card designed for nationals who value local benefits and premium lifestyle.",
-            keyBenefits = listOf(
-                "Perfect match for your dining preferences with up to 10% NBK KWT Points",
-                "Exclusive benefits at X-cite Electronics with 2% instant discount + 10% points",
-                "Access to Kuwait's largest loyalty program with 900+ outlets",
-                "Premium Visa Infinite benefits and luxury hotel collection access"
-            ),
-            cashbackDetails = "Up to 10% in NBK KWT Points on dining and telecom",
-            cardImageResId = R.drawable.klue,
-            backgroundColor = Color(0xFF1a1a2e)
-        ),
-        NBKCard(
-            id = "nbk_aura_world",
-            name = "NBK-Aura World Mastercard",
-            type = "Shopping Rewards Card",
-            description = "The ultimate shopping companion for fashion and lifestyle enthusiasts across Kuwait's top retail destinations.",
-            keyBenefits = listOf(
-                "Perfect for your shopping interests with up to 8% back in Aura points",
-                "Exclusive access to 50+ Alshaya brands including H&M and Bath & Body Works",
-                "4% back in points on all purchases at The Avenues",
-                "World Mastercard premium benefits and global acceptance"
-            ),
-            cashbackDetails = "Up to 8% back in Aura Points at participating outlets",
-            cardImageResId = R.drawable.klue,
-            backgroundColor = Color(0xFFec4899)
-        ),
-        NBKCard(
-            id = "nbk_miles_world",
-            name = "NBK Miles World Mastercard",
-            type = "Travel Rewards Card",
-            description = "Designed for travelers who want to turn every purchase into their next adventure with premium travel benefits.",
-            keyBenefits = listOf(
-                "Ideal for your travel interests with 5 NBK Miles Points per KD internationally",
-                "12 complimentary airport lounge visits annually at 1,200+ global lounges",
-                "Exclusive Kuwait Airways partnership with 10% discount + 4 Miles/KD",
-                "Travel insurance and premium travel concierge services"
-            ),
-            cashbackDetails = "5 Miles Points per KD internationally, 3 points locally",
-            cardImageResId = R.drawable.klue,
-            backgroundColor = Color(0xFF3b82f6)
-        ),
-        NBKCard(
-            id = "nbk_visa_infinite",
-            name = "NBK Visa Infinite",
-            type = "Ultra-Premium Credit Card",
-            description = "The ultimate banking experience for discerning customers who demand the finest in premium benefits.",
-            keyBenefits = listOf(
-                "Ultra-premium Visa Infinite benefits and global recognition",
-                "Exclusive concierge services and luxury lifestyle benefits",
-                "Premium travel insurance and global lounge access",
-                "NBK Rewards Program with enhanced earning rates"
-            ),
-            cashbackDetails = "Premium NBK Rewards Points with enhanced benefits",
-            cardImageResId = R.drawable.klue,
-            backgroundColor = Color(0xFF1a1a2e)
-        ),
-        NBKCard(
-            id = "nbk_visa_platinum",
-            name = "NBK Visa Platinum",
-            type = "Premium Credit Card",
-            description = "A versatile premium card offering excellent benefits across all lifestyle categories with global acceptance.",
-            keyBenefits = listOf(
-                "Balanced benefits across all your selected interests",
-                "50% off VOX Cinemas tickets when purchased online",
-                "6 complimentary airport lounge visits annually",
-                "NBK Rewards Program access to 900+ partner outlets"
-            ),
-            cashbackDetails = "NBK Rewards Points at 900+ outlets",
-            cardImageResId = R.drawable.klue,
-            backgroundColor = Color(0xFF6b7280)
-        ),
-        NBKCard(
-            id = "nbk_kuwait_airways_infinite",
-            name = "NBK-Kuwait Airways Infinite",
-            type = "Co-branded Travel Card",
-            description = "The ultimate travel companion with exclusive Kuwait Airways benefits and premium travel rewards.",
-            keyBenefits = listOf(
-                "Perfect for frequent Kuwait Airways travelers",
-                "Earn 4 Oasis Club Miles per KD internationally",
-                "10% discount on all Kuwait Airways tickets",
-                "Unlimited lounge access and priority services"
-            ),
-            cashbackDetails = "4 Oasis Club Miles per KD + 10% ticket discount",
-            cardImageResId = R.drawable.klue,
-            backgroundColor = Color(0xFF2563eb)
-        )
-    )
 }

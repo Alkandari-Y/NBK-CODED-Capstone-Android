@@ -55,7 +55,7 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
     LaunchedEffect(favCategoryUiState) {
         when (favCategoryUiState) {
             is FavCategoryUiState.Success -> {
-                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
+                navController.navigate(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING)
             }
             else -> {}
         }

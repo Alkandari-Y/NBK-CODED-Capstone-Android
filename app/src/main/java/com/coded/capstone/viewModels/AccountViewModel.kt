@@ -13,15 +13,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+sealed class AccountCreateUiState {
+    data object Idle : AccountCreateUiState()
+    data object Loading : AccountCreateUiState()
+    data class Success(val account: AccountCreateResponse) : AccountCreateUiState()
+    data class Error(val message: String) : AccountCreateUiState()
+}
+
 class AccountViewModel(
     private val context: Context
 ) : ViewModel() {
-    sealed class AccountCreateUiState {
-        data object Idle : AccountCreateUiState()
-        data object Loading : AccountCreateUiState()
-        data class Success(val account: AccountCreateResponse) : AccountCreateUiState()
-        data class Error(val message: String) : AccountCreateUiState()
-    }
 
 
     private val _accountUiState = MutableStateFlow<AccountCreateUiState>(

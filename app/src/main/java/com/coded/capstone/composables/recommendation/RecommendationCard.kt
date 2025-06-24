@@ -49,7 +49,7 @@ import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RecommendationCard(
-    item: AccountProductResponse,
+    item: AccountProductResponse?,
     isExpanded: Boolean,
     onClick: () -> Unit,
     onBookClick: () -> Unit,
@@ -83,7 +83,7 @@ fun RecommendationCard(
             modifier = Modifier.fillMaxSize()
         ) {
             // Background with stunning gradient
-            if (item.image != null) {
+            if (item?.image != null) {
                 AsyncImage(
                     model = item.image,
                     contentDescription = null,
@@ -154,7 +154,7 @@ fun RecommendationCard(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = item.accountType?.uppercase() ?: "PREMIUM ACCOUNT",
+                            text = item?.accountType?.uppercase() ?: "PREMIUM ACCOUNT",
                             fontSize = 11.sp,
                             color = Color(0xFFE2E8F0),
                             fontWeight = FontWeight.SemiBold,
@@ -162,7 +162,7 @@ fun RecommendationCard(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = item.name ?: "Premium Banking Product",
+                            text = item?.name ?: "Premium Banking Product",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
@@ -203,7 +203,7 @@ fun RecommendationCard(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Interest Rate Card
-                    if (item.interestRate != null) {
+                    if (item?.interestRate != null) {
                         InfoCard(
                             value = "${item.interestRate}%",
                             label = "Interest Rate",
@@ -212,7 +212,7 @@ fun RecommendationCard(
                     }
 
                     // Credit Limit Card
-                    if (item.creditLimit != null) {
+                    if (item?.creditLimit != null) {
                         InfoCard(
                             value = "KD ${item.creditLimit.toInt()}",
                             label = "Credit Limit",
@@ -221,7 +221,7 @@ fun RecommendationCard(
                     }
 
                     // Annual Fee Card
-                    if (item.annualFee != null) {
+                    if (item?.annualFee != null) {
                         InfoCard(
                             value = if (item.annualFee == 0.0) "Free" else "KD ${item.annualFee.toInt()}",
                             label = "Annual Fee",
@@ -238,7 +238,7 @@ fun RecommendationCard(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // Min Balance
-                    if (item.minBalanceRequired != null) {
+                    if (item?.minBalanceRequired != null) {
                         InfoCard(
                             value = "KD ${item.minBalanceRequired.toInt()}",
                             label = "Min Balance",
@@ -248,7 +248,7 @@ fun RecommendationCard(
                     }
 
                     // Min Salary
-                    if (item.minSalary != null) {
+                    if (item?.minSalary != null) {
                         InfoCard(
                             value = "KD ${item.minSalary.toInt()}",
                             label = "Min Salary",
