@@ -74,6 +74,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.coded.capstone.formstates.authentication.RegisterFormState
 import kotlinx.coroutines.delay
+import com.coded.capstone.ui.AppBackground
 
 
 @Composable
@@ -131,369 +132,378 @@ fun SignUpScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        // Top curved background section
+    AppBackground {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black,
-                            Color(0xFF1A1A1A)
-                        )
-                    ),
-                    shape = RoundedCornerShape(bottomStart = 0.dp, bottomEnd = 0.dp)
-                )
-        )
-
-        // Logo in top section
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .offset(y = 80.dp)
-                .align(Alignment.TopCenter)
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(15.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Replace with your actual logo
-            Icon(
-                imageVector = Icons.Default.PersonAdd,
-                contentDescription = "Logo",
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Black
-            )
-        }
+            // Logo in top section
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .offset(y = 80.dp)
+                    .align(Alignment.TopCenter)
+                    .background(
+                        Color.White,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(15.dp)
+            ) {
+                // Replace with your actual logo
+                Icon(
+                    imageVector = Icons.Default.PersonAdd,
+                    contentDescription = "Logo",
+                    modifier = Modifier.fillMaxSize(),
+                    tint = Color.Black
+                )
+            }
 
-        // Animated Sign Up Card - Full Width
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxSize()
-                .offset(y = cardOffsetY)
-                .alpha(cardAlpha),
-            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-            shape = RoundedCornerShape(
-                topStart = 50.dp,
-                topEnd = 0.dp,
-                bottomStart = 0.dp,
-                bottomEnd = 0.dp
-            ),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Column(
+            // Animated Sign Up Card - Full Width
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 32.dp, vertical = 40.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .offset(y = cardOffsetY)
+                    .alpha(cardAlpha),
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                shape = RoundedCornerShape(
+                    topStart = 50.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                ),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
-                Text(
-                    text = "Register",
-                    style = androidx.compose.ui.text.TextStyle(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    ),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-
-
-                // Username Field
-                OutlinedTextField(
-                    value = formState.username,
-                    onValueChange = { formState = formState.copy(username = it) },
-                    label = {
-                        Text(
-                            "Username",
-                            color = Color.Gray,
-                            fontSize = 14.sp
-                        )
-                    },
-                    placeholder = {
-                        Text(
-                            "Enter your username",
-                            color = Color.Gray,
-                            fontSize = 14.sp
-                        )
-                    },
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .animateContentSize(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
-                        focusedBorderColor = Color.Black,
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    isError = formState.usernameError != null,
-                    supportingText = {
-                        formState.usernameError?.let {
-                            Text(text = it, color = Color.Red, fontSize = 12.sp)
-                        }
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Username",
-                            tint = Color.Gray
-                        )
-                    }
-                )
-
-                // Email Field
-                OutlinedTextField(
-                    value = formState.email,
-                    onValueChange = { formState = formState.copy(email = it).validate() },
-                    label = {
-                        Text(
-                            "Email",
-                            color = Color.Gray,
-                            fontSize = 14.sp
-                        )
-                    },
-                    placeholder = {
-                        Text(
-                            "your.email@example.com",
-                            color = Color.Gray,
-                            fontSize = 14.sp
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .animateContentSize(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
-                        focusedBorderColor = Color.Black,
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    isError = formState.emailError != null,
-                    supportingText = {
-                        formState.emailError?.let {
-                            Text(text = it, color = Color.Red, fontSize = 12.sp)
-                        }
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = "Email",
-                            tint = Color.Gray
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-                )
-
-                // Password Field
-                OutlinedTextField(
-                    value = formState.password,
-                    onValueChange = { formState = formState.copy(password = it).validate() },
-                    label = {
-                        Text(
-                            "Password",
-                            color = Color.Gray,
-                            fontSize = 14.sp
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .animateContentSize(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
-                        focusedBorderColor = Color.Black,
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    isError = formState.passwordError != null,
-                    supportingText = {
-                        formState.passwordError?.let {
-                            Text(text = it, color = Color.Red, fontSize = 12.sp)
-                        }
-                    },
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = "Password",
-                            tint = Color.Gray
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(onClick = { showPassword = !showPassword }) {
-                            Icon(
-                                imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = "Toggle password visibility",
-                                tint = Color.Gray
+                        .fillMaxSize()
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF151521).copy(alpha = 0.85f), // Center: dark
+                                    Color(0xFFE8E9EF).copy(alpha = 0.05f)  // Edge: light, almost transparent
+                                ),
+                                center = androidx.compose.ui.geometry.Offset(0f, 0f), // Top-left for a bleed effect
+                                radius = 700f
                             )
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-
-                // Confirm Password Field
-                OutlinedTextField(
-                    value = formState.confirmPassword,
-                    onValueChange = { formState = formState.copy(confirmPassword = it).validate() },
-                    label = {
-                        Text(
-                            "Confirm Password",
-                            color = Color.Gray,
-                            fontSize = 14.sp
                         )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp)
-                        .animateContentSize(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = Color(0xFFE0E0E0),
-                        focusedBorderColor = Color.Black,
-                        unfocusedContainerColor = Color(0xFFF8F8F8),
-                        focusedContainerColor = Color(0xFFF8F8F8)
-                    ),
-                    isError = formState.confirmPasswordError != null,
-                    supportingText = {
-                        formState.confirmPasswordError?.let {
-                            Text(text = it, color = Color.Red, fontSize = 12.sp)
-                        }
-                    },
-                    visualTransformation = if (showConfirmedPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.LockOpen,
-                            contentDescription = "Confirm Password",
-                            tint = Color.Gray
-                        )
-                    },
-                    trailingIcon = {
-                        IconButton(onClick = { showConfirmedPassword = !showConfirmedPassword }) {
-                            Icon(
-                                imageVector = if (showConfirmedPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = "Toggle confirm password visibility",
-                                tint = Color.Gray
-                            )
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                )
-
-                // Error message with animation
-                AnimatedVisibility(
-                    visible = uiState is AuthUiState.Error,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
                 ) {
-                    if (uiState is AuthUiState.Error) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 20.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.Red.copy(alpha = 0.1f)
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                text = uiState.message,
-                                color = Color.Red,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
-                    }
-                }
-
-                // Sign Up Button with press animation
-                var buttonPressed by remember { mutableStateOf(false) }
-                val buttonScale by animateFloatAsState(
-                    targetValue = if (buttonPressed) 0.95f else 1f,
-                    animationSpec = tween(100),
-                    label = "button_press"
-                )
-
-                Button(
-                    onClick = {
-                        formState = formState.validate()
-                        if (formState.formIsValid) {
-                            viewModel.register(
-                                username = formState.username,
-                                email = formState.email,
-                                password = formState.password
-                            )
-                        } else {
-                            Toast.makeText(context, "Fix errors before submitting", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp)
-                        .scale(buttonScale)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onPress = {
-                                    buttonPressed = true
-                                    tryAwaitRelease()
-                                    buttonPressed = false
-                                }
-                            )
-                        },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black,
-                        contentColor = Color.White
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 4.dp,
-                        pressedElevation = 8.dp
-                    )
-                ) {
-
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 32.dp, vertical = 40.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
                             text = "Register",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            ),
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
 
-                }
+                        // Username Field
+                        OutlinedTextField(
+                            value = formState.username,
+                            onValueChange = { formState = formState.copy(username = it) },
+                            label = {
+                                Text(
+                                    "Username",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            placeholder = {
+                                Text(
+                                    "Enter your username",
+                                    color = Color.White.copy(alpha = 0.5f),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .animateContentSize(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
+                            ),
+                            isError = formState.usernameError != null,
+                            supportingText = {
+                                formState.usernameError?.let {
+                                    Text(text = it, color = Color.Red, fontSize = 12.sp)
+                                }
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Username",
+                                    tint = Color.White.copy(alpha = 0.7f)
+                                )
+                            }
+                        )
 
-                // Login link
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color(0xFF757575))) {
-                            append("Already have an account? ")
+                        // Email Field
+                        OutlinedTextField(
+                            value = formState.email,
+                            onValueChange = { formState = formState.copy(email = it).validate() },
+                            label = {
+                                Text(
+                                    "Email",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            placeholder = {
+                                Text(
+                                    "your.email@example.com",
+                                    color = Color.White.copy(alpha = 0.5f),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .animateContentSize(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
+                            ),
+                            isError = formState.emailError != null,
+                            supportingText = {
+                                formState.emailError?.let {
+                                    Text(text = it, color = Color.Red, fontSize = 12.sp)
+                                }
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Email,
+                                    contentDescription = "Email",
+                                    tint = Color.White.copy(alpha = 0.7f)
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                        )
+
+                        // Password Field
+                        OutlinedTextField(
+                            value = formState.password,
+                            onValueChange = { formState = formState.copy(password = it).validate() },
+                            label = {
+                                Text(
+                                    "Password",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                                .animateContentSize(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
+                            ),
+                            isError = formState.passwordError != null,
+                            supportingText = {
+                                formState.passwordError?.let {
+                                    Text(text = it, color = Color.Red, fontSize = 12.sp)
+                                }
+                            },
+                            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = "Password",
+                                    tint = Color.White.copy(alpha = 0.7f)
+                                )
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = { showPassword = !showPassword }) {
+                                    Icon(
+                                        imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                        contentDescription = "Toggle password visibility",
+                                        tint = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        )
+
+                        // Confirm Password Field
+                        OutlinedTextField(
+                            value = formState.confirmPassword,
+                            onValueChange = { formState = formState.copy(confirmPassword = it).validate() },
+                            label = {
+                                Text(
+                                    "Confirm Password",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 24.dp)
+                                .animateContentSize(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
+                            ),
+                            isError = formState.confirmPasswordError != null,
+                            supportingText = {
+                                formState.confirmPasswordError?.let {
+                                    Text(text = it, color = Color.Red, fontSize = 12.sp)
+                                }
+                            },
+                            visualTransformation = if (showConfirmedPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.LockOpen,
+                                    contentDescription = "Confirm Password",
+                                    tint = Color.White.copy(alpha = 0.7f)
+                                )
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = { showConfirmedPassword = !showConfirmedPassword }) {
+                                    Icon(
+                                        imageVector = if (showConfirmedPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                        contentDescription = "Toggle confirm password visibility",
+                                        tint = Color.White.copy(alpha = 0.7f)
+                                    )
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        )
+
+                        // Error message with animation
+                        AnimatedVisibility(
+                            visible = uiState is AuthUiState.Error,
+                            enter = fadeIn() + slideInVertically(),
+                            exit = fadeOut() + slideOutVertically()
+                        ) {
+                            if (uiState is AuthUiState.Error) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 20.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.Red.copy(alpha = 0.1f)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = uiState.message,
+                                        color = Color.Red,
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
+                            }
                         }
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold
+
+                        // Sign Up Button with press animation
+                        var buttonPressed by remember { mutableStateOf(false) }
+                        val buttonScale by animateFloatAsState(
+                            targetValue = if (buttonPressed) 0.95f else 1f,
+                            animationSpec = tween(100),
+                            label = "button_press"
+                        )
+
+                        Button(
+                            onClick = {
+                                formState = formState.validate()
+                                if (formState.formIsValid) {
+                                    viewModel.register(
+                                        username = formState.username,
+                                        email = formState.email,
+                                        password = formState.password
+                                    )
+                                } else {
+                                    Toast.makeText(context, "Fix errors before submitting", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 24.dp)
+                                .scale(buttonScale)
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onPress = {
+                                            buttonPressed = true
+                                            tryAwaitRelease()
+                                            buttonPressed = false
+                                        }
+                                    )
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF8EC5FF),
+                                contentColor = Color.White
+                            ),
+                            elevation = ButtonDefaults.buttonElevation(
+                                defaultElevation = 4.dp,
+                                pressedElevation = 8.dp
                             )
                         ) {
-                            append("Log In")
+
+                                Text(
+                                    text = "Register",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+
                         }
-                    },
-                    fontSize = 14.sp,
-                    modifier = Modifier
-                        .clickable {
-                            navController.popBackStack(NavRoutes.NAV_ROUTE_LOGIN, false)
-                        }
-                        .padding(8.dp)
-                )
+
+                        // Login link
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.White.copy(alpha = 0.6f))) {
+                                    append("Already have an account? ")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color(0xFF8EC5FF),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                ) {
+                                    append("Log In")
+                                }
+                            },
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .clickable {
+                                    navController.popBackStack(NavRoutes.NAV_ROUTE_LOGIN, false)
+                                }
+                                .padding(8.dp)
+                        )
+                    }
+                }
             }
         }
     }

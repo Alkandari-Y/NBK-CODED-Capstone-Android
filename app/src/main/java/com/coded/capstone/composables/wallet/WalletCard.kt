@@ -41,18 +41,18 @@ fun WalletCard(
     val cardGradient = when (account.accountType?.lowercase()) {
         "debit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF1e293b), // Slate 800
-                Color(0xFF334155), // Slate 700
-                Color(0xFF475569), // Slate 600
-                Color(0xFF64748b)  // Slate 500
+                Color(0xFF141C2C), // Slate 800
+                Color(0xFF070C11), // Slate 700
+                Color(0xFF20222A), // Slate 600
+                Color(0xFF546D7A)  // Slate 500
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         "credit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF7c2d12), // Red 800
-                Color(0xFF991b1b), // Red 800
+                Color(0xFFC62828), // Red 800
+                Color(0xFFF44336), // Red 800
                 Color(0xFFdc2626), // Red 600
                 Color(0xFFef4444)  // Red 500
             ),

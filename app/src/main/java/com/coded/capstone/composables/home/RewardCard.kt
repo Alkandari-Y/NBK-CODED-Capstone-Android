@@ -1,6 +1,7 @@
 package com.coded.capstone.composables.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,15 +31,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
 import java.math.BigDecimal
 import kotlin.random.Random
+import com.coded.capstone.ui.theme.AppTypography
 
 @Composable
 fun RewardCard(
@@ -69,150 +77,118 @@ fun RewardCard(
         }
     }
 
-    val gradientColors = remember(tier) {
-        when (tier) {
-            "Platinum" -> listOf(Color(0xFF8E44AD), Color(0xFF3498DB))
-            "Gold" -> listOf(Color(0xFFFFD700), Color(0xFFFFA500))
-            "Silver" -> listOf(Color(0xFFC0C0C0), Color(0xFF708090))
-            else -> listOf(Color(0xFFCD7F32), Color(0xFF8B4513))
-        }
-    }
+    val glassShape: Shape = RectangleShape // No rounded edges
 
     Card(
         modifier = Modifier
-            .width(320.dp)
-            .height(200.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
             .clickable { onClick() },
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        shape = glassShape,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.linearGradient(
-                        colors = gradientColors,
-                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                        end = androidx.compose.ui.geometry.Offset(1000f, 1000f)
-                    )
-                )
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Background pattern
+            // Blurred glass background with bleeding effect
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .matchParentSize()
+                    .blur(50.dp)
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.1f),
-                                Color.Transparent
+                                Color.White.copy(alpha = 0.18f), // Center: more opaque
+                                Color.White.copy(alpha = 0.01f)  // Edge: almost transparent
                             ),
-                            radius = 400f,
-                            center = androidx.compose.ui.geometry.Offset(400f, -100f)
-                        )
+                            center = Offset(250f, 90f), // Center of the card, adjust as needed
+                            radius = 500f
+                        ),
+                        shape = glassShape
                     )
             )
-
+            // Card content (not blurred)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .padding(15.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Header with tier and account name
+                // Top Row: Tier and Balance
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.9f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    tier.first().toString(),
-                                    color = gradientColors.first(),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                            }
-                            Text(
-                                "$tier Tier",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            account.accountType?:"",
-                            color = Color.White.copy(alpha = 0.9f),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
-                    // Account type indicator
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White.copy(alpha = 0.2f)
+                    // Tier info
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(45.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.9f)),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(16.dp)
-                            )
                             Text(
-                                "Cashback",
-                                color = Color.White,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
+                                tier.first().toString(),
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 28.sp
                             )
                         }
-                    }
-                }
-
-                // Points and cashback info
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Column {
                         Text(
-                            "Cashback Balance",
-                            color = Color.White.copy(alpha = 0.8f),
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        Text(
-                            "KD $cashbackAmount",
+                            "$tier Tier",
                             color = Color.White,
-                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    // Balance info
+                    Column(horizontalAlignment = Alignment.End) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = Color(0xFF8EC5FF),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "Cashback",
+                                fontSize = 20.sp,
+                                style = AppTypography.bodySmall,
+                                color = Color.White.copy(alpha = 0.7f),
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                        Text(
+                            text = "KD $cashbackAmount",
+                            color = Color.White,
+                            fontSize = 35.sp,
+                            style = AppTypography.headlineMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            "$points Points",
-                            color = Color.White.copy(alpha = 0.9f),
-                            style = MaterialTheme.typography.bodySmall
-                        )
                     }
-
-                    Column(
-                        horizontalAlignment = Alignment.End
+                }
+                // Points and Redeem Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Points info
+                    Text(
+                        "$points Points",
+                        color = Color.White.copy(alpha = 0.9f),
+                        style = AppTypography.bodySmall
+                    )
+                    // Redeem button (underlined, no background)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         if (nextTierPoints > 0) {
                             Row(
@@ -228,37 +204,20 @@ fun RewardCard(
                                 Text(
                                     "$nextTierPoints to next tier",
                                     color = Color.White.copy(alpha = 0.8f),
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = AppTypography.bodySmall
                                 )
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color.White.copy(alpha = 0.2f),
-                            modifier = Modifier.clickable { onClick() }
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Text(
-                                    "Redeem",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp
-                                )
-                                Icon(
-                                    Icons.Default.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
+                        Text(
+                            text = "Redeem",
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .clickable { onClick() }
+                                .padding(start = 8.dp),
+                            style = AppTypography.bodyMedium.copy(textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
+                        )
                     }
                 }
             }
