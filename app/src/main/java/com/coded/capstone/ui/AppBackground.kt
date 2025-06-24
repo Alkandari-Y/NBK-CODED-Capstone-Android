@@ -17,11 +17,11 @@ fun AppBackground(content: @Composable () -> Unit) {
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF65666C), // Center (light gray)
-                        Color(0xFF23232A)  // Edge (dark gray)
+                        Color(0xFF555D6B), // Center (light gray)
+                        Color(0xFF141818)  // Edge (dark gray)
                     ),
-                    center = Offset(500f, 500f),
-                    radius = 1000f
+                    center = Offset(200f, 200f),
+                    radius = 1600f
                 )
             )
     ) {

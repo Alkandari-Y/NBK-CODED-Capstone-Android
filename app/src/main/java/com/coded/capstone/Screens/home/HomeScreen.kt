@@ -50,33 +50,16 @@ import androidx.compose.ui.geometry.Offset
 import com.coded.capstone.ui.AppBackground
 import com.coded.capstone.ui.theme.AppTypography
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.graphics.graphicsLayer
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun GlassMorphismBackground(content: @Composable BoxScope.() -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFFFFFFFF), // Center (light gray)
-                        Color(0xFF0B0B18)  // Edge (dark gray)
-                    ),
-                    center = Offset(700f, 700f), // Approximate center, adjust as needed
-                    radius = 1000f // Large enough to cover most screens
-                )
-            )
-    ) {
-        content()
-    }
-}
+import com.coded.capstone.SVG.BankFillIcon
+import androidx.compose.foundation.layout.Spacer as Spacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,20 +92,24 @@ fun HomeScreen(
         } ?: (emptyList<AccountResponse>() to emptyList<AccountResponse>())
     }
 
+    // State to control the expanded state of the accounts list
+    var isAccountsExpanded by remember { mutableStateOf(false) }
+
+    // Display only 3 accounts by default
+    val displayedAccounts = if (isAccountsExpanded) {
+        regularAccounts
+    } else {
+        regularAccounts.take(3)
+    }
+
+
     // Animation states
     var greetingVisible by remember { mutableStateOf(false) }
     var rewardCardVisible by remember { mutableStateOf(false) }
-    val accountListVisibility = remember { mutableStateListOf<Boolean>() }
 
     LaunchedEffect(Unit) {
         greetingVisible = true
         rewardCardVisible = true
-        // Staggered fade-in for account rows
-        regularAccounts.forEachIndexed { index, _ ->
-            accountListVisibility.add(false)
-            kotlinx.coroutines.delay(80L)
-            accountListVisibility[index] = true
-        }
     }
 
     // Get time-based greeting
@@ -251,18 +238,20 @@ fun HomeScreen(
                                             Text(
                                                 text = "$greeting, $userName",
                                                 style = AppTypography.headlineMedium,
-                                                fontWeight = FontWeight.Bold, fontSize = 30.sp,
+                                                fontWeight = FontWeight.Bold, fontSize = 23.sp,
                                                 color = Color.White
                                             )
                                         }
                                         Text(
                                             text = "Welcome back to KLUE",
-                                            style = AppTypography.bodySmall, fontSize = 23.sp,
+                                            style = AppTypography.bodySmall, fontSize = 18.sp,
                                             color = Color.White.copy(alpha = 0.7f)
                                         )
                                     }
                                 }
                             }
+                            Spacer(modifier = Modifier.height(45.dp))
+
                         }
 
                         // Reward Cards Section
@@ -287,6 +276,8 @@ fun HomeScreen(
                         }
 
                         item {
+                            Spacer(modifier = Modifier.height(50.dp))
+
                             // My Accounts Section Header
                             Row(
                                 modifier = Modifier
@@ -295,26 +286,31 @@ fun HomeScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = "My Accounts",
-                                    style = AppTypography.headlineSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                TextButton(
-                                    onClick = {
-                                        onViewAllAccounts()
-                                        navController.navigate("accounts")
-                                    }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text(
-                                        "View All",
-                                        color = Color(0xFF8EC5FF)
+                                    BankFillIcon(
+                                        modifier = Modifier.size(23.dp),
+                                        color = Color.White
                                     )
+                                    Text(
+                                        text = "My Accounts",
+                                        fontSize = 23.sp,
+                                        style = AppTypography.headlineSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { isAccountsExpanded = !isAccountsExpanded },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
                                     Icon(
-                                        Icons.Default.ChevronRight,
-                                        contentDescription = null,
-                                        tint = Color(0xFF8EC5FF)
+                                        imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                        contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
+                                        tint = Color(0xFF8EC5FF),
+                                        modifier = Modifier.size(32.dp)
                                     )
                                 }
                             }
@@ -352,58 +348,63 @@ fun HomeScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(vertical = 8.dp)
-                                            .clip(RoundedCornerShape(topStart = 70.dp))
-                                            .background(
-                                                Brush.radialGradient(
-                                                    colors = listOf(
-                                                        Color(0xFF151521).copy(alpha = 0.85f), // Center: dark
-                                                        Color(0xFFE8E9EF).copy(alpha = 0.05f)  // Edge: light, almost transparent
-                                                    ),
-                                                    center = Offset(0f, 0f), // Top-left for a bleed effect
-                                                    radius = 700f
-                                                )
-                                            )
                                     ) {
                                         Column {
-                                            regularAccounts.forEachIndexed { index, account ->
-                                                val rowAlpha by animateFloatAsState(
-                                                    targetValue = if (accountListVisibility.getOrNull(index) == true) 1f else 0f,
-                                                    animationSpec = tween(durationMillis = 400, delayMillis = index * 80)
-                                                )
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
-                                                        .graphicsLayer { alpha = rowAlpha },
-                                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                                    verticalAlignment = Alignment.CenterVertically
+                                            displayedAccounts.forEachIndexed { index, account ->
+
+                                                val isInitiallyVisible = index < 3
+
+                                                var visible by remember { mutableStateOf(false) }
+                                                LaunchedEffect(Unit) {
+                                                    visible = true
+                                                }
+
+                                                AnimatedVisibility(
+                                                    visible = visible,
+                                                    enter = if (isInitiallyVisible) EnterTransition.None else fadeIn(animationSpec = tween(durationMillis = 400, delayMillis = (index - 3).coerceAtLeast(0) * 80)),
+                                                    exit = fadeOut(animationSpec = tween(200))
                                                 ) {
-                                                    Column {
+                                                    Row(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
+                                                            .clickable {
+                                                                onAccountClick(account.id.toString())
+                                                                navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                                            },
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Column {
+                                                            Text(
+                                                                text = account.accountType?.replaceFirstChar { it.uppercase() }
+                                                                    ?: "Account",
+                                                                style = AppTypography.titleMedium,
+                                                                color = Color.White,
+                                                                fontSize = 18.sp
+                                                            )
+                                                            Text(
+                                                                text = "•••• ${account.accountNumber?.takeLast(4)}",
+                                                                style = AppTypography.bodySmall,
+                                                                color = Color(0xFF8EC5FF)
+                                                            )
+                                                        }
                                                         Text(
-                                                            text = account.accountType?.replaceFirstChar { it.uppercase() } ?: "Account",
+                                                            text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
                                                             style = AppTypography.titleMedium,
                                                             color = Color.White,
+                                                            fontWeight = FontWeight.Bold,
                                                             fontSize = 18.sp
                                                         )
-                                                        Text(
-                                                            text = "•••• ${account.accountNumber?.takeLast(4)}",
-                                                            style = AppTypography.bodySmall,
-                                                            color = Color(0xFF8EC5FF)
-                                                        )
                                                     }
-                                                    Text(
-                                                        text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
-                                                        style = AppTypography.titleMedium,
-                                                        color = Color.White,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontSize = 18.sp
+                                                }
+                                                if (index < displayedAccounts.size - 1) {
+                                                    Divider(
+                                                        color = Color.White.copy(alpha = 0.1f),
+                                                        thickness = 1.dp,
+                                                        modifier = Modifier.padding(horizontal = 16.dp)
                                                     )
                                                 }
-                                                Divider(
-                                                    color = Color.White.copy(alpha = 0.1f),
-                                                    thickness = 1.dp,
-                                                    modifier = Modifier.padding(horizontal = 16.dp)
-                                                )
                                             }
                                         }
                                     }
@@ -419,12 +420,13 @@ fun HomeScreen(
                             }
                         }
 
-                        item {
-                            Spacer(modifier = Modifier.height(80.dp))
-                        }
+//                        item {
+//                            Spacer(modifier = Modifier.height(80.dp))
+//                        }
                     }
                 }
             }
         }
     }
+
 }
