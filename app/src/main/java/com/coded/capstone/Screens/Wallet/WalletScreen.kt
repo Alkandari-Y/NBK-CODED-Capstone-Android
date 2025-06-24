@@ -34,6 +34,7 @@ import com.coded.capstone.viewModels.TransactionViewModel
 import com.coded.capstone.viewModels.AccountsUiState
 import com.coded.capstone.data.states.TransferUiState
 import com.coded.capstone.data.states.TopUpUiState
+import com.coded.capstone.ui.AppBackground
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,195 +123,188 @@ fun WalletScreen(
         }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0A0A0B),
-                        Color(0xFF1A1A1D),
-                        Color(0xFF2A2A2E)
-                    )
-                )
-            )
-    ) {
-        Column(
-            modifier = Modifier
+    AppBackground {
+        Box(
+            modifier = modifier
                 .fillMaxSize()
-                .padding(20.dp)
         ) {
-            // Enhanced Header
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp, top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(20.dp)
             ) {
-                Column {
-                    Text(
-                        text = "My Wallet",
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        color = Color.White
-                    )
-                    if (accounts.isNotEmpty() && selectedCard == null) {
-                        Text(
-                            text = "${currentCardIndex + 1} of ${accounts.size} accounts",
-                            color = Color.White.copy(alpha = 0.6f),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
-                }
-
-                // Back button when card is selected
-                AnimatedVisibility(
-                    visible = selectedCard != null,
-                    enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
-                    exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                // Enhanced Header
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp, top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = {
-                            selectedCard = null
-                            showBottomSheet = false
-                        },
-                        modifier = Modifier
-                            .size(48.dp)
-                            .background(
-                                Color.White.copy(alpha = 0.1f),
-                                CircleShape
+                    Column {
+                        Text(
+                            text = "My Wallet",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 32.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            ),
+                            color = Color.White
+                        )
+                        if (accounts.isNotEmpty() && selectedCard == null) {
+                            Text(
+                                text = "${currentCardIndex + 1} of ${accounts.size} accounts",
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(top = 4.dp)
                             )
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to all cards",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        }
                     }
-                }
-            }
 
-            // Handle different UI states
-            when (accountsUiState) {
-                is AccountsUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                    // Back button when card is selected
+                    AnimatedVisibility(
+                        visible = selectedCard != null,
+                        enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+                        exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
                     ) {
-                        CircularProgressIndicator(
-                            color = Color(0xFF8B5CF6),
-                            strokeWidth = 3.dp,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                }
-                is AccountsUiState.Error -> {
-                    ErrorCard(
-                        onRetry = { homeViewModel.fetchAccounts() }
-                    )
-                }
-                is AccountsUiState.Success -> {
-                    if (accounts.isEmpty()) {
-                        EmptyAccountsCard()
-                    } else {
-                        // Card Display Area
-                        Box(
+                        IconButton(
+                            onClick = {
+                                selectedCard = null
+                                showBottomSheet = false
+                            },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(if (selectedCard != null) 240.dp else 450.dp),
-                            contentAlignment = Alignment.TopCenter
+                                .size(48.dp)
+                                .background(
+                                    Color.White.copy(alpha = 0.1f),
+                                    CircleShape
+                                )
                         ) {
-                            if (selectedCard != null) {
-                                // Single selected card at top
-                                SingleSelectedCard(
-                                    account = selectedCard!!,
-                                    onCardClick = { showBottomSheet = true }
-                                )
-                            } else {
-                                // Apple Pay Card Stack
-                                ApplePayCardStack(
-                                    accounts = accounts,
-                                    selectedCard = selectedCard,
-                                    pagerState = pagerState,
-                                    scrollVelocity = scrollVelocity,
-                                    onCardSelected = { account ->
-                                        selectedCard = account
-                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    },
-                                    onScrollVelocityChange = { velocity ->
-                                        scrollVelocity = velocity
-                                    }
-                                )
-                            }
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back to all cards",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
+                    }
+                }
 
-                        // Action Buttons (only visible when card is selected)
-                        AnimatedVisibility(
-                            visible = selectedCard != null,
-                            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                // Handle different UI states
+                when (accountsUiState) {
+                    is AccountsUiState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            selectedCard?.let { card ->
-
-                                PerksBottomSheet(
-                                    account = card,
-                                    perks = perksOfAccountProduct,
-                                    onPayAction={},
-
-
-                                )
-                            }
+                            CircularProgressIndicator(
+                                color = Color(0xFF8B5CF6),
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(40.dp)
+                            )
                         }
+                    }
+                    is AccountsUiState.Error -> {
+                        ErrorCard(
+                            onRetry = { homeViewModel.fetchAccounts() }
+                        )
+                    }
+                    is AccountsUiState.Success -> {
+                        if (accounts.isEmpty()) {
+                            EmptyAccountsCard()
+                        } else {
+                            // Card Display Area
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(if (selectedCard != null) 240.dp else 450.dp),
+                                contentAlignment = Alignment.TopCenter
+                            ) {
+                                if (selectedCard != null) {
+                                    // Single selected card at top
+                                    SingleSelectedCard(
+                                        account = selectedCard!!,
+                                        onCardClick = { showBottomSheet = true }
+                                    )
+                                } else {
+                                    // Apple Pay Card Stack
+                                    ApplePayCardStack(
+                                        accounts = accounts,
+                                        selectedCard = selectedCard,
+                                        pagerState = pagerState,
+                                        scrollVelocity = scrollVelocity,
+                                        onCardSelected = { account ->
+                                            selectedCard = account
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        },
+                                        onScrollVelocityChange = { velocity ->
+                                            scrollVelocity = velocity
+                                        }
+                                    )
+                                }
+                            }
 
+                            // Action Buttons (only visible when card is selected)
+                            AnimatedVisibility(
+                                visible = selectedCard != null,
+                                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                            ) {
+                                selectedCard?.let { card ->
+
+                                    PerksBottomSheet(
+                                        account = card,
+                                        perks = perksOfAccountProduct,
+                                        onPayAction={},
+
+
+                                    )
+                                }
+                            }
+
+                        }
                     }
                 }
             }
-        }
 
 
 
-        // Transaction Dialogs
-        if (showTransferDialog) {
-            TransferDialog(
-                sourceAccounts = transactionViewModel.getEligibleSourceAccounts(accounts),
-                onTransfer = { source, destination, amount ->
-                    transactionViewModel.transfer(source, destination, amount)
-                },
-                onDismiss = {
-                    showTransferDialog = false
-                    transactionViewModel.resetTransferState()
-                },
-                transferUiState = transferUiState,
-                getEligibleDestinations = { source ->
-                    transactionViewModel.getEligibleDestinationAccounts(accounts, source)
-                },
-                validateAmount = { amount, sourceAccount ->
-                    transactionViewModel.validateTransferAmount(amount, sourceAccount)
-                }
-            )
-        }
-
-        if (showTopUpDialog) {
-            selectedCard?.let { account ->
-                TopUpDialog(
-                    targetAccount = account,
-                    onTopUp = { amount ->
-                        transactionViewModel.topUp(amount)
+            // Transaction Dialogs
+            if (showTransferDialog) {
+                TransferDialog(
+                    sourceAccounts = transactionViewModel.getEligibleSourceAccounts(accounts),
+                    onTransfer = { source, destination, amount ->
+                        transactionViewModel.transfer(source, destination, amount)
                     },
                     onDismiss = {
-                        showTopUpDialog = false
-                        transactionViewModel.resetTopUpState()
+                        showTransferDialog = false
+                        transactionViewModel.resetTransferState()
                     },
-                    topUpUiState = topUpUiState,
-                    validateAmount = { amount ->
-                        transactionViewModel.validateTopUpAmount(amount)
+                    transferUiState = transferUiState,
+                    getEligibleDestinations = { source ->
+                        transactionViewModel.getEligibleDestinationAccounts(accounts, source)
+                    },
+                    validateAmount = { amount, sourceAccount ->
+                        transactionViewModel.validateTransferAmount(amount, sourceAccount)
                     }
                 )
+            }
+
+            if (showTopUpDialog) {
+                selectedCard?.let { account ->
+                    TopUpDialog(
+                        targetAccount = account,
+                        onTopUp = { amount ->
+                            transactionViewModel.topUp(amount)
+                        },
+                        onDismiss = {
+                            showTopUpDialog = false
+                            transactionViewModel.resetTopUpState()
+                        },
+                        topUpUiState = topUpUiState,
+                        validateAmount = { amount ->
+                            transactionViewModel.validateTopUpAmount(amount)
+                        }
+                    )
+                }
             }
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.ui.theme.AppTypography
 
 @Composable
 fun AccountCard(
@@ -29,24 +30,24 @@ fun AccountCard(
     // Clean, modern color schemes
     val cardColors = when (account.accountType?.lowercase()) {
         "debit" -> CardColors(
-            primary = Color(0xFF1E3A8A),
-            secondary = Color(0xFF3B82F6),
+            primary = Color(0xFF192234),
+            secondary = Color(0xFF030505),
             text = Color.White
         )
         "credit" -> CardColors(
-            primary = Color(0xFF581C87),
-            secondary = Color(0xFF8B5CF6),
+            primary = Color(0xFF1D2A31),
+            secondary = Color(0xFF12121E),
 
             text = Color.White
         )
         "cashback" -> CardColors(
-            primary = Color(0xFF065F46),
-            secondary = Color(0xFF10B981),
+            primary = Color(0xFF636B69),
+            secondary = Color(0xFF1C1B1B),
             text = Color.White
         )
         else -> CardColors(
-            primary = Color(0xFF991B1B),
-            secondary = Color(0xFFDC2626),
+            primary = Color(0xFF050303),
+            secondary = Color(0xFF102D49),
             text = Color.White
         )
     }
@@ -82,10 +83,10 @@ fun AccountCard(
             .height(200.dp)
             .shadow(
                 elevation = 8.dp,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(14.dp)
             )
             .clickable { onCardClick() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -107,7 +108,7 @@ fun AccountCard(
                 ) {
                     Text(
                         text = accountName,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = AppTypography.headlineSmall,
                         color = cardColors.text,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
@@ -125,7 +126,7 @@ fun AccountCard(
                 Column {
                     Text(
                         text = "Account Number",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = AppTypography.bodyMedium,
                         color = cardColors.text.copy(alpha = 0.8f),
                         fontWeight = FontWeight.Medium,
                         fontSize = 13.sp
@@ -139,7 +140,7 @@ fun AccountCard(
                         } else {
                             "•••• •••• •••• ••••"
                         },
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = AppTypography.headlineSmall,
                         color = cardColors.text,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
@@ -151,7 +152,7 @@ fun AccountCard(
                 Column {
                     Text(
                         text = "Available Balance",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = AppTypography.bodyMedium,
                         color = cardColors.text.copy(alpha = 0.8f),
                         fontWeight = FontWeight.Medium,
                         fontSize = 13.sp
@@ -161,7 +162,7 @@ fun AccountCard(
 
                     Text(
                         text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
-                        style = MaterialTheme.typography.displaySmall,
+                        style = AppTypography.displaySmall,
                         color = cardColors.text,
                         fontWeight = FontWeight.Bold,
                         fontSize = 36.sp
