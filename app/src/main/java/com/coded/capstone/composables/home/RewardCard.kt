@@ -1,15 +1,12 @@
 package com.coded.capstone.composables.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 import com.coded.capstone.ui.theme.AppTypography
-import java.math.BigDecimal
 
 @Composable
 fun RewardCard(
@@ -35,39 +31,11 @@ fun RewardCard(
     userXp: UserXpInfoResponse?,
     onClick: () -> Unit
 ) {
-
-    // Generate stable reward data based on account ID to prevent constant changes
-    val points = remember(account.id) { 
-        // Use account ID as seed for consistent random generation
-        Random(account.id.toLong()).nextInt(500, 2500) 
-    }
-    val cashbackAmount = remember(account.balance) { 
-        (account.balance * BigDecimal("0.02")).setScale(2, java.math.RoundingMode.HALF_UP) 
-    }
-    val tier = remember(points) {
-        when {
-            points > 2000 -> "Platinum"
-            points > 1500 -> "Gold"
-            points > 1000 -> "Silver"
-            else -> "Bronze"
-        }
-    }
-    val nextTierPoints = remember(points, tier) {
-        when (tier) {
-            "Bronze" -> 1000 - points
-            "Silver" -> 1500 - points
-            "Gold" -> 2000 - points
-            else -> 0
-        }
-    }
-
-    val glassShape: Shape = RoundedCornerShape(24.dp) 
-
+    val glassShape: Shape = RectangleShape
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .wrapContentHeight()
             .clickable { onClick() },
         shape = glassShape,
@@ -77,7 +45,7 @@ fun RewardCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Glass background (already present)
+            // Blurred glass background with bleeding effect
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -85,31 +53,13 @@ fun RewardCard(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-
-                                Color.White.copy(alpha = 0.30f),
-                                Color.White.copy(alpha = 0.02f)
-
+                                Color.White.copy(alpha = 0.18f),
+                                Color.White.copy(alpha = 0.01f)
                             ),
                             center = Offset(250f, 90f),
                             radius = 500f
                         ),
                         shape = glassShape
-                    )
-            )
-            // White inner shadow overlay
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clip(glassShape)
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.18f),
-                                Color.Transparent
-                            ),
-                            center = Offset(0.5f, 0.5f),
-                            radius = 600f
-                        )
                     )
             )
             // Card content (not blurred)
