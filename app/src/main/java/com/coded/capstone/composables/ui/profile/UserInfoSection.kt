@@ -30,10 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.kyc.KYCResponse
+import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 
 @Composable
- fun UserInfoSection(
+fun UserInfoSection(
     userProfile: KYCResponse?,
+    userXp: UserXpInfoResponse?,
     onEditClick: () -> Unit
 ) {
     Card(
@@ -118,13 +120,13 @@ import com.coded.capstone.data.responses.kyc.KYCResponse
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Star, // 🔥 REPLACE: Use crown icon for Gold tier
+                            imageVector = Icons.Default.Star,
                             contentDescription = "Tier",
                             tint = Color(0xFFFFD700),
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "Gold Tier", // 🔥 REPLACE: Get tier from your XP system
+                            text = "${userXp?.xpTier?.name ?: "Loading"} Tier",
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium
@@ -135,12 +137,12 @@ import com.coded.capstone.data.responses.kyc.KYCResponse
                 // Member Since
                 Column {
                     Text(
-                        text = "Member since",
+                        text = "Current XP",
                         fontSize = 12.sp,
                         color = Color.Gray
                     )
                     Text(
-                        text = "2023", // 🔥 REPLACE: Calculate from user registration date
+                        text = "${userXp?.userXpAmount ?: 0}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Black

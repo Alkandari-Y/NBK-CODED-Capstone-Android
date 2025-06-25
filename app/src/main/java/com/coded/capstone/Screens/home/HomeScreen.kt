@@ -83,6 +83,12 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val kyc by viewModel.kyc.collectAsState()
     val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
+    val userXp by viewModel.userXp.collectAsState()
+
+    // Fetch user XP info when screen loads
+    LaunchedEffect(Unit) {
+        viewModel.getUserXpInfo()
+    }
 
     // Separate accounts into reward cards and regular accounts
     val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
@@ -266,9 +272,9 @@ fun HomeScreen(
                                 ) {
                                     RewardCard(
                                         account = rewardCards.first(),
+                                        userXp = userXp,
                                         onClick = {
                                             onAccountClick(rewardCards.first().id.toString())
-                                            navController.navigate(NavRoutes.accountDetailRoute(rewardCards.first().id.toString()))
                                         }
                                     )
                                 }
@@ -370,7 +376,6 @@ fun HomeScreen(
                                                             .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
                                                             .clickable {
                                                                 onAccountClick(account.id.toString())
-                                                                navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
                                                             },
                                                         horizontalArrangement = Arrangement.SpaceBetween,
                                                         verticalAlignment = Alignment.CenterVertically
