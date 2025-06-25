@@ -30,6 +30,7 @@ import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.viewModels.FavCategoryUiState
+import com.coded.capstone.ui.AppBackground
 
 data class SpendingCategory(
     val id: String,
@@ -76,210 +77,195 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
         viewModel.submitFavoriteCategories(selectedCategories)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFE0E0E0),
-                        Color(0xFF212937).copy(alpha = 0.05f),
-                        Color(0xFF212937).copy(alpha = 0.1f)
-                    )
-                )
-            )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    AppBackground {
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Logo
-            Box(
+            Column(
                 modifier = Modifier
-                    .size(64.dp)
-                    .background(
-                        Color(0xFF081538),
-                        RoundedCornerShape(16.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(
-                    text = "KLUE",
-                    color = Color.White,
+                    text = "Personalize Your Banking",
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    color = Color.White,
+                    textAlign = TextAlign.Center
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Never Be KLUEless Again",
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(top = 8.dp),
+                    textAlign = TextAlign.Center
+                )
 
-            Text(
-                text = "Personalize Your Banking",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1F2937)
-            )
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "Never Be KLUEless Again",
-                fontSize = 16.sp,
-                color = Color(0xFF212937),
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Content Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(
+                // Main Content Container - Takes almost full screen
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp)
+                        .fillMaxWidth()
+                        .weight(1f),
+                    shape = RoundedCornerShape(
+                        topStart = 50.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                 ) {
-                    // Header
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(bottom = 32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFF20436C),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .padding(bottom = 16.dp)
-                        )
-
-                        Text(
-                            text = "Select your favorite categories",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1F2937),
-                            textAlign = TextAlign.Center
-                        )
-
-                        Text(
-                            text = "Select at least one - up to 3 categories",
-                            fontSize = 16.sp,
-                            color = Color(0xFF6B7280),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
-                        )
-
-                        Text(
-                            text = "${selectedCategories.size}/3 selected",
-                            fontSize = 14.sp,
-                            color = Color(0xFF212937),
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-
-                    // Categories Grid
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        items(
-                            items = categories,
-                            key = { category -> category.id }
-                        ) { category ->
-                            CategoryCard(
-                                category = category,
-                                isSelected = selectedCategories.contains(category.id.toString()),
-                                isDisabled = !selectedCategories.contains(category.id.toString()) && selectedCategories.size >= 3,
-                                onClick = { toggleCategory(category.id.toString()) }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    // Progress indicator
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
+                            .fillMaxSize()
+                            .background(Color(0xFFCBDAE0).copy(alpha = 0.40f))
                     ) {
-                        repeat(3) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        if (index == 0) Color(0xFF212937) else Color(0xFFE5E7EB),
-                                        CircleShape
-                                    )
-                            )
-                            if (index < 2) {
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                        }
-                    }
-
-                    // Error message display
-                    if (favCategoryUiState is FavCategoryUiState.Error) {
-                        Text(
-                            text = (favCategoryUiState as FavCategoryUiState.Error).message,
-                            color = Color.Red,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                    }
-
-                    // Next Button
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Button(
-                            onClick = { submitFavoriteCategories() },
-                            enabled = selectedCategories.isNotEmpty() && favCategoryUiState !is FavCategoryUiState.Loading,
+                        Column(
                             modifier = Modifier
-                                .height(56.dp)
-                                .widthIn(min = 120.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF212937),
-                                disabledContainerColor = Color(0xFFD1D5DB)
-                            )
+                                .fillMaxSize()
+                                .padding(16.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            // Header
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(bottom = 16.dp)
                             ) {
-                                if (favCategoryUiState is FavCategoryUiState.Loading) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(20.dp),
-                                        color = Color.White,
-                                        strokeWidth = 2.dp
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .padding(bottom = 8.dp)
+                                )
+
+                                Text(
+                                    text = "Select your favorite categories",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Text(
+                                    text = "Select at least one - up to 3 categories",
+                                    fontSize = 12.sp,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)
+                                )
+
+                                Text(
+                                    text = "${selectedCategories.size}/3 selected",
+                                    fontSize = 10.sp,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+
+                            // Categories Grid
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                items(
+                                    items = categories,
+                                    key = { category -> category.id }
+                                ) { category ->
+                                    CategoryCard(
+                                        category = category,
+                                        isSelected = selectedCategories.contains(category.id.toString()),
+                                        isDisabled = !selectedCategories.contains(category.id.toString()) && selectedCategories.size >= 3,
+                                        onClick = { toggleCategory(category.id.toString()) }
                                     )
-                                } else {
-                                    Text(
-                                        text = "NEXT",
-                                        color = Color.White,
-                                        fontWeight = FontWeight.SemiBold
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Progress indicator
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                repeat(3) { index ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(5.dp)
+                                            .background(
+                                                if (index == 0) Color.White else Color.White.copy(alpha = 0.3f),
+                                                CircleShape
+                                            )
                                     )
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowForward,
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(20.dp)
+                                    if (index < 2) {
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                    }
+                                }
+                            }
+
+                            // Error message display
+                            if (favCategoryUiState is FavCategoryUiState.Error) {
+                                Text(
+                                    text = (favCategoryUiState as FavCategoryUiState.Error).message,
+                                    color = Color.Red,
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
+
+                            // Next Button
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Button(
+                                    onClick = { submitFavoriteCategories() },
+                                    enabled = selectedCategories.isNotEmpty() && favCategoryUiState !is FavCategoryUiState.Loading,
+                                    modifier = Modifier
+                                        .height(40.dp)
+                                        .widthIn(min = 80.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF8EC5FF),
+                                        disabledContainerColor = Color.White.copy(alpha = 0.2f)
                                     )
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        if (favCategoryUiState is FavCategoryUiState.Loading) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(16.dp),
+                                                color = Color.White,
+                                                strokeWidth = 2.dp
+                                            )
+                                        } else {
+                                            Text(
+                                                text = "NEXT",
+                                                color = Color.White,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 12.sp
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Default.ArrowForward,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

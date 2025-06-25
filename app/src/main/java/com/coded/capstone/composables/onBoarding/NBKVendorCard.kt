@@ -59,96 +59,70 @@ fun NBKVendorCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
+            .height(120.dp)
             .scale(scale),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
             2.dp,
-            if (isSelected) Color(0xFF4CAF50) else Color(0xFFE5E7EB)
+            if (isSelected) Color(0xFF8EC5FF) else Color.White.copy(alpha = 0.3f)
         ),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                Color(0xFF4CAF50).copy(alpha = 0.08f)
+                Color(0xFF8EC5FF).copy(alpha = 0.15f)
             } else {
-                Color.White
+                Color.White.copy(alpha = 0.15f)
             }
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 8.dp else 2.dp
+            defaultElevation = if (isSelected) 6.dp else 2.dp
         )
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
         ) {
-            // Selection indicator
-            if (isSelected) {
-                Box(
+            // Logo - use AsyncImage for network image
+            if (vendor.logoUrl.isNotEmpty()) {
+                AsyncImage(
+                    model = vendor.logoUrl,
+                    contentDescription = "${vendor.name} logo",
                     modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            Color(0xFF4CAF50),
-                            CircleShape
-                        )
-                        .align(Alignment.TopEnd)
-                        .offset((-8).dp, 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Logo - use AsyncImage for network image
-                if (vendor.logoUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = vendor.logoUrl,
-                        contentDescription = "${vendor.name} logo",
-                        modifier = Modifier
-                            .size(35.dp)
-                            .clip(RoundedCornerShape(6.dp)),
-                        contentScale = ContentScale.Fit
-                    )
-                } else {
-                    // Fallback to category icon
-                    Icon(
-                        imageVector = getCategoryIcon(vendor.category.name),
-                        contentDescription = "${vendor.category.name} category",
-                        tint = Color(0xFF03A9F4),
-                        modifier = Modifier
-                            .size(35.dp)
-                            .padding(bottom = 8.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = vendor.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1F2937),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                        .size(28.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentScale = ContentScale.Fit
                 )
-                Text(
-                    text = vendor.category.name,
-                    fontSize = 12.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 2.dp)
+            } else {
+                // Fallback to category icon
+                Icon(
+                    imageVector = getCategoryIcon(vendor.category.name),
+                    contentDescription = "${vendor.category.name} category",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .padding(bottom = 4.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = vendor.name,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+            Text(
+                text = vendor.category.name,
+                fontSize = 10.sp,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 1.dp)
+            )
         }
     }
 }

@@ -69,6 +69,8 @@ import com.coded.capstone.SVG.BankFillIcon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import com.coded.capstone.R
+import com.coded.capstone.data.responses.kyc.KYCResponse
 
 // Dark theme colors
 private val DarkBackground = Color(0xFF0A0A0A)
@@ -80,6 +82,177 @@ private val AccentBlue = Color(0xFF3B82F6)
 private val AccentGreen = Color(0xFF10B981)
 private val AccentRed = Color(0xFFEF4444)
 
+@Composable
+fun FilterDropdownMenu() {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedFilter by remember { mutableStateOf("Filter") }
+    Box {
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                imageVector = Icons.Default.FilterList,
+                contentDescription = "Filter",
+                tint = Color.White
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text("Date") },
+                onClick = {
+                    selectedFilter = "Date"
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Amount") },
+                onClick = {
+                    selectedFilter = "Amount"
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Deposit") },
+                onClick = {
+                    selectedFilter = "Deposit"
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Withdraw") },
+                onClick = {
+                    selectedFilter = "Withdraw"
+                    expanded = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun TransactionListItem(
+    transaction: TransactionDetails,
+    currentAccountNumber: String
+) {
+    val isReceived = transaction.destinationAccountNumber == currentAccountNumber
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1E1E1E)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Transaction icon and details
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                // Icon with background
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(
+                            color = if (isReceived) {
+                                Color(0xFF4CAF50).copy(alpha = 0.15f)
+                            } else {
+                                Color(0xFFE57373).copy(alpha = 0.15f)
+                            },
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isReceived) {
+                            Icons.Default.ArrowDownward
+                        } else {
+                            Icons.Default.ArrowUpward
+                        },
+                        contentDescription = null,
+                        tint = if (isReceived) {
+                            Color(0xFF4CAF50)
+                        } else {
+                            Color(0xFFE57373)
+                        },
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                // Transaction details
+                Column {
+                    Text(
+                        text = transaction.category.ifEmpty { "Transaction" },
+                        style = AppTypography.bodyLarge.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        ),
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = formatTransactionDate(transaction.createdAt),
+                        style = AppTypography.bodySmall.copy(
+                            fontSize = 12.sp
+                        ),
+                        color = Color.Gray
+                    )
+                }
+            }
+            
+            // Amount
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${if (isReceived) "+" else "-"}${String.format("%,.3f", transaction.amount.abs())} KWD",
+                    style = AppTypography.bodyLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    ),
+                    color = if (isReceived) {
+                        Color(0xFF4CAF50)
+                    } else {
+                        Color(0xFFE57373)
+                    }
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (isReceived) "Received" else "Sent",
+                    style = AppTypography.bodySmall.copy(
+                        fontSize = 12.sp
+                    ),
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+}
+
+fun formatTransactionDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val date = inputFormat.parse(dateString)
+        outputFormat.format(date ?: Date())
+    } catch (e: Exception) {
+        "Unknown date"
+    }
+}
 
 enum class TransactionType {
     INCOME, EXPENSE, TRANSFER
@@ -101,17 +274,37 @@ fun AccountDetailsScreen(
         label = "sheetHeight"
     )
 
+    // State management
+    var isLoading by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var isAccountNumberVisible by remember { mutableStateOf(false) }
     val accountState by viewModel.selectedAccount.collectAsState()
     val transactions by viewModel.transactions.collectAsState()
-    val kyc by viewModel.kyc.collectAsState()
+    val categories by viewModel.categories.collectAsState()
 
+    // Fetch account details and transactions
     LaunchedEffect(accountId) {
-        viewModel.fetchAccountDetails(accountId)
-    }
-
-    LaunchedEffect(accountState) {
-        accountState?.accountNumber?.let { accountNumber ->
-            viewModel.fetchTransactionHistory(accountNumber)
+        Log.d("AccountDetailsScreen", "Fetching account details for ID: $accountId")
+        isLoading = true
+        error = null
+        try {
+            viewModel.fetchAccountDetails(accountId)
+            // Wait for account details to be loaded
+            var attempts = 0
+            while (accountState == null && attempts < 10) {
+                delay(100)
+                attempts++
+            }
+            // Once we have the account details, fetch transactions
+            accountState?.accountNumber?.let { accountNumber ->
+                Log.d("AccountDetailsScreen", "Fetching transactions for account: $accountNumber")
+                viewModel.fetchTransactionHistory(accountNumber)
+            }
+            isLoading = false
+        } catch (e: Exception) {
+            error = "Failed to load account details."
+            isLoading = false
+            Log.e("AccountDetailsScreen", "Error fetching account details: ${e.message}")
         }
     }
 
@@ -201,7 +394,7 @@ fun AccountDetailsScreen(
                         TransactionHistorySheetContent(
                             transactions = transactions,
                             account = account,
-                            kyc = kyc,
+                            kyc = null,
                             sheetExpanded = sheetExpanded,
                             onToggleExpand = { sheetExpanded = !sheetExpanded }
                         )
@@ -215,7 +408,7 @@ fun AccountDetailsScreen(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FlippableAccountCard(
-    account: com.coded.capstone.data.responses.account.AccountResponse,
+    account: AccountResponse,
     modifier: Modifier = Modifier
 ) {
     var flipped by remember { mutableStateOf(false) }
@@ -281,7 +474,7 @@ fun FlippableAccountCard(
 @Composable
 private fun FrontSide(
     modifier: Modifier = Modifier,
-    account: com.coded.capstone.data.responses.account.AccountResponse,
+    account: AccountResponse,
     formattedAccountNumber: String,
     showSensitive: Boolean,
     onToggle: () -> Unit
@@ -465,14 +658,13 @@ fun QuickActionItem(icon: ImageVector, text: String) {
 @Composable
 fun TransactionHistorySheetContent(
     transactions: List<TransactionDetails>,
-    account: com.coded.capstone.data.responses.account.AccountResponse?,
-    kyc: com.coded.capstone.data.responses.kyc.KYCResponse?,
+    account: AccountResponse?,
+    kyc: KYCResponse?,
     sheetExpanded: Boolean,
     onToggleExpand: () -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabTitles = listOf("Transaction History", "Details")
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -493,12 +685,14 @@ fun TransactionHistorySheetContent(
                 )
                 .blur(24.dp)
         )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Sheet header
             // Expand/collapse button
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -506,7 +700,7 @@ fun TransactionHistorySheetContent(
             ) {
                 IconButton(onClick = onToggleExpand) {
                     Icon(
-                        painter = painterResource(id = if (sheetExpanded) com.coded.capstone.R.drawable.baseline_keyboard_double_arrow_down_24 else com.coded.capstone.R.drawable.baseline_keyboard_double_arrow_up_24),
+                        painter = painterResource(id = if (sheetExpanded) R.drawable.baseline_keyboard_double_arrow_down_24 else R.drawable.baseline_keyboard_double_arrow_up_24),
                         contentDescription = if (sheetExpanded) "Collapse" else "Expand",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
@@ -573,20 +767,29 @@ fun TransactionHistorySheetContent(
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
-                                    "No transactions yet",
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = "No transactions yet",
+                                    style = AppTypography.bodyLarge,
                                     color = Color.Gray
                                 )
                             }
                         }
                     } else {
-                        LazyColumn {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) {
                             items(transactions, key = { it.transactionId }) { transaction ->
-                                TransactionListItem(transaction = transaction)
+                                TransactionListItem(
+                                    transaction = transaction,
+                                    currentAccountNumber = account?.accountNumber ?: ""
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
                 }
+
                 1 -> {
                     // Details page
                     Column(
@@ -611,171 +814,62 @@ fun TransactionHistorySheetContent(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         if (account != null) {
-                            Text("Account Type: ${account.accountType ?: "-"}", style = AppTypography.bodyLarge, color = Color.White)
+                            Text(
+                                "Account Type: ${account.accountType ?: "-"}",
+                                style = AppTypography.bodyLarge,
+                                color = Color.White
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Account Number: ${account.accountNumber ?: "-"}", style = AppTypography.bodyLarge, color = Color.White)
+                            Text(
+                                "Account Number: ${account.accountNumber ?: "-"}",
+                                style = AppTypography.bodyLarge,
+                                color = Color.White
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Balance: ${String.format("%,.3f", account.balance)} KWD", style = AppTypography.bodyLarge, color = Color.White)
+                            Text(
+                                "Balance: ${String.format("%,.3f", account.balance)} KWD",
+                                style = AppTypography.bodyLarge,
+                                color = Color.White
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Account Product ID: ${account.accountProductId ?: "-"}", style = AppTypography.bodyLarge, color = Color.White)
+                            Text(
+                                "Account Product ID: ${account.accountProductId ?: "-"}",
+                                style = AppTypography.bodyLarge,
+                                color = Color.White
+                            )
                         } else {
-                            Text("No account details available.", style = AppTypography.bodyLarge, color = Color.White)
+                            Text(
+                                "No account details available.",
+                                style = AppTypography.bodyLarge,
+                                color = Color.White
+                            )
                         }
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun FilterDropdownMenu() {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf("Filter") }
-    Box {
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                imageVector = Icons.Default.FilterList,
-                contentDescription = "Filter",
-                tint = Color.White
-            )
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            DropdownMenuItem(
-                text = { Text("Date") },
-                onClick = {
-                    selectedFilter = "Date"
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Amount") },
-                onClick = {
-                    selectedFilter = "Amount"
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Deposit") },
-                onClick = {
-                    selectedFilter = "Deposit"
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Withdraw") },
-                onClick = {
-                    selectedFilter = "Withdraw"
-                    expanded = false
-                }
-            )
+    fun getCategoryIcon(category: String?): ImageVector {
+        return when (category?.lowercase()) {
+            "salary" -> Icons.Default.MonetizationOn
+            "freelance" -> Icons.Default.Work
+            "investment" -> Icons.Default.TrendingUp
+            "groceries" -> Icons.Default.ShoppingCart
+            "dining" -> Icons.Default.Fastfood
+            "transport" -> Icons.Default.Commute
+            "utilities" -> Icons.Default.ReceiptLong
+            "rent" -> Icons.Default.Home
+            "health" -> Icons.Default.LocalHospital
+            "entertainment" -> Icons.Default.Theaters
+            "shopping" -> Icons.Default.ShoppingBag
+            "travel" -> Icons.Default.Flight
+            "transfer" -> Icons.Default.SwapHoriz
+            else -> Icons.Default.Receipt
         }
     }
 }
-
-@Composable
-fun TransactionListItem(transaction: TransactionDetails) {
-    val categoryIcon = getCategoryIcon(transaction.category)
-    val transactionType = getTransactionType(transaction)
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.05f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = categoryIcon,
-                        contentDescription = transaction.category,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        text = transaction.category.replaceFirstChar { it.uppercase() },
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = formatTransactionDate(transaction.createdAt),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.7f)
-                    )
-                }
-            }
-            Text(
-                text = "${if (transactionType == TransactionType.INCOME) "+" else "-"} ${String.format("%.3f", transaction.amount)} KWD",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = if (transactionType == TransactionType.INCOME) Color(0xFF4ADE80) else Color.White
-            )
-        }
-    }
-}
-
-fun getTransactionType(transaction: TransactionDetails): TransactionType {
-    return when {
-        transaction.amount > BigDecimal.ZERO -> TransactionType.INCOME
-        else -> TransactionType.EXPENSE
-    }
-}
-
-private fun formatTransactionDate(dateString: String): String {
-    return try {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-        val date = inputFormat.parse(dateString)
-        outputFormat.format(date ?: Date())
-    } catch (e: Exception) {
-        "Unknown date"
-    }
-}
-
-fun getCategoryIcon(category: String?): ImageVector {
-    return when (category?.lowercase()) {
-        "salary" -> Icons.Default.MonetizationOn
-        "freelance" -> Icons.Default.Work
-        "investment" -> Icons.Default.TrendingUp
-        "groceries" -> Icons.Default.ShoppingCart
-        "dining" -> Icons.Default.Fastfood
-        "transport" -> Icons.Default.Commute
-        "utilities" -> Icons.Default.ReceiptLong
-        "rent" -> Icons.Default.Home
-        "health" -> Icons.Default.LocalHospital
-        "entertainment" -> Icons.Default.Theaters
-        "shopping" -> Icons.Default.ShoppingBag
-        "travel" -> Icons.Default.Flight
-        "transfer" -> Icons.Default.SwapHoriz
-        else -> Icons.Default.Receipt
-    }
-}
-
-private data class AccountColors(
+data class AccountColors(
     val primary: Color,
     val secondary: Color
 )
