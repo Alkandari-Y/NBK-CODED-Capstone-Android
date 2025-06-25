@@ -24,9 +24,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coded.capstone.data.responses.xp.UserXpInfoResponse
+import com.coded.capstone.data.responses.xp.XpTierResponse
 
 @Composable
- fun TierProgressSection() {
+fun TierProgressSection(
+    userXp: UserXpInfoResponse?,
+    allTiers: List<XpTierResponse>
+) {
+    // Find next tier
+    val currentTier = userXp?.xpTier
+    val nextTier = if (currentTier != null) {
+        allTiers.find { it.minXp > currentTier.maxXp }
+    } else null
+
+    // Calculate progress
+    val progress = if (currentTier != null && userXp != null) {
+        val range = currentTier.maxXp - currentTier.minXp
+        val current = userXp.userXpAmount - currentTier.minXp
+        (current.toFloat() / range.toFloat()).coerceIn(0f, 1f)
+    } else 0f
+
+    // Calculate XP to next tier
+    val xpToNextTier = if (nextTier != null && userXp != null) {
+        nextTier.minXp - userXp.userXpAmount
+    } else 0
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -65,13 +88,13 @@ import androidx.compose.ui.unit.sp
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Current: Gold", // 🔥 REPLACE: Get current tier from your XP system
+                    text = "Current: ${currentTier?.name ?: "Loading"}",
                     fontSize = 14.sp,
                     color = Color.Gray,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "Next: Platinum", // 🔥 REPLACE: Get next tier from your XP system
+                    text = "Next: ${nextTier?.name ?: "Max Tier"}",
                     fontSize = 14.sp,
                     color = Color.Gray,
                     fontWeight = FontWeight.Medium
@@ -82,7 +105,7 @@ import androidx.compose.ui.unit.sp
 
             // Progress Bar
             LinearProgressIndicator(
-                progress = 0.75f, // 🔥 REPLACE: Calculate progress = currentXP / xpNeededForNextTier
+                progress = progress,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
@@ -99,33 +122,33 @@ import androidx.compose.ui.unit.sp
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "7,500 XP", // 🔥 REPLACE: Get current XP from your system
+                    text = "${userXp?.userXpAmount ?: 0} XP",
                     fontSize = 14.sp,
                     color = Color(0xFF2196F3),
                     fontWeight = FontWeight.Medium
                 )
-                Text(
-                    text = "2,500 XP to go", // 🔥 REPLACE: Calculate remaining XP needed
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
+                if (nextTier != null) {
+                    Text(
+                        text = "$xpToNextTier XP to go",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
             }
-
-
-
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // XP Tier Requirements
             TierRequirementItem(
-                text = "Account age: 6+ months", // 🔥 REPLACE: Calculate actual account age
-                isCompleted = true // 🔥 REPLACE: Check if user meets age requirement
+                text = "Min XP: ${currentTier?.minXp ?: 0}",
+                isCompleted = userXp?.userXpAmount?.let { it >= (currentTier?.minXp ?: 0) } ?: false
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             TierRequirementItem(
-                text = "Investment portfolio: \$5,000+", // 🔥 REPLACE: Get actual investment data
-                isCompleted = false // 🔥 REPLACE: Check if user meets investment requirement
+                text = "Max XP: ${currentTier?.maxXp ?: 0}",
+                isCompleted = userXp?.userXpAmount?.let { it >= (currentTier?.maxXp ?: 0) } ?: false
             )
         }
     }

@@ -11,6 +11,9 @@ import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
 import com.coded.capstone.data.responses.perk.PerkDto
+import com.coded.capstone.data.responses.xp.UserXpInfoResponse
+import com.coded.capstone.data.responses.xp.XpHistoryDto
+import com.coded.capstone.data.responses.xp.XpTierResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -74,4 +77,20 @@ interface BankingServiceProvider {
     // Partners
     @GET("/api/v1/partners")
     suspend fun getBusinessPartners(): Response<List<PartnerDto>>
+
+
+    // XP Tier
+    @GET("/api/v1/xp/tiers")
+    suspend fun getAllXpTiers(): Response<List<XpTierResponse>>
+
+    @GET("/api/v1/xp/tiers/{tierId}")
+    suspend fun getXpTierById(@Path("tierId") tierId: String,): Response<XpTierResponse>
+
+    @GET("/api/v1/xp")
+    suspend fun getUserXpInfo(): Response<UserXpInfoResponse>
+
+    @GET("/api/v1/xp/history")
+    suspend fun getUserXpHistory(): Response<List<XpHistoryDto>>
+
+
 }

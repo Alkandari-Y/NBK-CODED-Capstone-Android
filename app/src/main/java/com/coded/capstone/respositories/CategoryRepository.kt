@@ -1,14 +1,11 @@
 package com.coded.capstone.respositories
 
 import android.content.Context
-import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
-import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.recommendation.FavCategoryDto
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
 import com.coded.capstone.providers.RetrofitInstance
-import com.coded.capstone.respositories.AccountRepository.myAccounts
 import kotlin.collections.listOf
 
 object CategoryRepository {

@@ -83,6 +83,12 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val kyc by viewModel.kyc.collectAsState()
     val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
+    val userXp by viewModel.userXp.collectAsState()
+
+    // Fetch user XP info when screen loads
+    LaunchedEffect(Unit) {
+        viewModel.getUserXpInfo()
+    }
 
     // Separate accounts into reward cards and regular accounts
     val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
@@ -266,6 +272,7 @@ fun HomeScreen(
                                 ) {
                                     RewardCard(
                                         account = rewardCards.first(),
+                                        userXp = userXp,
                                         onClick = {
                                             onAccountClick(rewardCards.first().id.toString())
                                         }
