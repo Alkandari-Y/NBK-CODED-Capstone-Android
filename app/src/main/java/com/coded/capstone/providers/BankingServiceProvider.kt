@@ -55,7 +55,7 @@ interface BankingServiceProvider {
     // Transactions controller
     @GET("/api/v1/transactions/account")
     suspend fun getAllTransactionsByAccountNumber(
-        @Query("accountId") accountId: String,
+        @Query("accountNumber") accountNumber: String,
     ): Response<List<TransactionDetails>>
 
     // Transfer endpoint

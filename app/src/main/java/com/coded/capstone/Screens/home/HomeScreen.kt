@@ -272,7 +272,6 @@ fun HomeScreen(
                                         account = rewardCards.first(),
                                         onClick = {
                                             onAccountClick(rewardCards.first().id.toString())
-                                            navController.navigate(NavRoutes.accountDetailRoute(rewardCards.first().id.toString()))
                                         }
                                     )
                                 }
@@ -385,6 +384,12 @@ fun HomeScreen(
                                                             .fillMaxWidth()
                                                             .clip(RoundedCornerShape(16.dp))
                                                             .padding(horizontal = 0.dp, vertical = 2.dp)
+//                                                             .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
+//                                                             .clickable {
+//                                                                 onAccountClick(account.id.toString())
+//                                                             },
+//                                                         horizontalArrangement = Arrangement.SpaceBetween,
+//                                                         verticalAlignment = Alignment.CenterVertically
                                                     ) {
                                                         Box(
                                                             modifier = Modifier
