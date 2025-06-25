@@ -1,7 +1,11 @@
 package com.coded.capstone.Screens.Wallet
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -9,21 +13,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.coded.capstone.R
 import kotlinx.coroutines.delay
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.composables.wallet.ApplePayCardStack
@@ -39,6 +47,12 @@ import com.coded.capstone.viewModels.AccountsUiState
 import com.coded.capstone.data.states.TransferUiState
 import com.coded.capstone.data.states.TopUpUiState
 import com.coded.capstone.ui.AppBackground
+import com.coded.capstone.SVG.CardTransferBoldIcon
+
+// Roboto font family
+private val RobotoFont = FontFamily(
+    androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
+)
 
 @Composable
 fun SuccessToast(
@@ -131,12 +145,23 @@ fun WalletScreen(
     var expandedPerks by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
     var transferSourceAccount by remember { mutableStateOf<AccountResponse?>(null) }
+    var isFirstLoad by remember { mutableStateOf(true) }
+    var cardAnimationTrigger by remember { mutableStateOf(false) }
+    var externalExpandTrigger by remember { mutableStateOf(false) }
 
     // Toast states
     var showSuccessToast by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
 
     val pagerState = rememberPagerState(pageCount = { accounts.size })
+
+    // Auto-trigger bottom sheet on first load when accounts are available
+    LaunchedEffect(accounts, isFirstLoad) {
+        if (isFirstLoad && accounts.isNotEmpty()) {
+            // Don't auto-select a card, let users see the card stack first
+            isFirstLoad = false
+        }
+    }
 
     // Handle transfer success
     LaunchedEffect(transferUiState) {
@@ -206,47 +231,35 @@ fun WalletScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(20.dp)
+                    .clickable(
+                        enabled = selectedCard == null // Only enable when no card is selected
+                    ) {
+                        // Trigger external expansion
+                        externalExpandTrigger = !externalExpandTrigger
+                    }
             ) {
-                // Enhanced Header
+                // Enhanced Header with back button on the left
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 32.dp, top = 16.dp),
+                        .padding(bottom = if (selectedCard != null) 16.dp else 20.dp, top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(
-                            text = "My Wallet",
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontSize = 32.sp,
-                                fontWeight = FontWeight.ExtraBold
-                            ),
-                            color = Color.White
-                        )
-                        if (accounts.isNotEmpty() && selectedCard == null) {
-                            Text(
-                                text = "${currentCardIndex + 1} of ${accounts.size} accounts",
-                                color = Color.White.copy(alpha = 0.6f),
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                        }
-                    }
-
                     // Back button when card is selected
                     AnimatedVisibility(
                         visible = selectedCard != null,
-                        enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
-                        exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                        enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
+                        exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
                     ) {
                         IconButton(
                             onClick = {
                                 selectedCard = null
                                 showBottomSheet = false
+                                cardAnimationTrigger = false // Reset animation trigger
                             },
                             modifier = Modifier
-                                .size(48.dp)
+                                .size(40.dp)
                                 .background(
                                     Color.White.copy(alpha = 0.1f),
                                     CircleShape
@@ -256,9 +269,38 @@ fun WalletScreen(
                                 Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back to all cards",
                                 tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = if (selectedCard != null) "Card Details" else "My Wallet",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontSize = if (selectedCard != null) 20.sp else 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = RobotoFont
+                            ),
+                            color = Color.White
+                        )
+                        if (accounts.isNotEmpty() && selectedCard == null) {
+                            Text(
+                                text = "${currentCardIndex + 1} of ${accounts.size} accounts",
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontSize = 12.sp,
+                                fontFamily = RobotoFont,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Empty space to balance the layout when back button is visible
+                    if (selectedCard != null) {
+                        Spacer(modifier = Modifier.width(40.dp))
                     }
                 }
 
@@ -289,15 +331,72 @@ fun WalletScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(if (selectedCard != null) 240.dp else 450.dp),
+                                    .height(if (selectedCard != null) 320.dp else 450.dp),
                                 contentAlignment = Alignment.TopCenter
                             ) {
                                 if (selectedCard != null) {
-                                    // Single selected card at top
-                                    SingleSelectedCard(
-                                        account = selectedCard!!,
-                                        onCardClick = { showBottomSheet = true }
+                                    // Single selected card at top - show the actual selected card
+                                    val cardOffset by animateDpAsState(
+                                        targetValue = if (cardAnimationTrigger) 0.dp else (-100).dp,
+                                        animationSpec = tween(durationMillis = 600),
+                                        label = "cardOffset"
                                     )
+                                    
+                                    // Transfer button slide-in animation
+                                    val transferButtonOffset by animateDpAsState(
+                                        targetValue = if (cardAnimationTrigger) 0.dp else (-100).dp,
+                                        animationSpec = tween(durationMillis = 600, delayMillis = 200),
+                                        label = "transferButtonOffset"
+                                    )
+                                    
+                                    // Trigger animation when card is selected
+                                    LaunchedEffect(selectedCard) {
+                                        cardAnimationTrigger = true
+                                    }
+                                    
+                                    // Vertical layout: Card -> Transfer Button
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        // Card
+                                        Box(
+                                            modifier = Modifier.offset(y = cardOffset)
+                                        ) {
+                                            SingleSelectedCard(
+                                                account = selectedCard!!,
+                                                onCardClick = { showBottomSheet = true }
+                                            )
+                                        }
+                                        
+                                        // Transfer button below the card
+                                        Spacer(modifier = Modifier.height(20.dp))
+                                        
+                                        // Transfer button positioned to the left
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .offset(x = transferButtonOffset)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(start = 20.dp)
+                                                    .size(64.dp)
+                                                    .background(
+                                                        Color.White.copy(alpha = 0.1f),
+                                                        CircleShape
+                                                    )
+                                                    .clickable {
+                                                        transferSourceAccount = selectedCard!!
+                                                        showTransferDialog = true
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                CardTransferBoldIcon(
+                                                    modifier = Modifier.size(32.dp)
+                                                )
+                                            }
+                                        }
+                                    }
                                 } else {
                                     // Apple Pay Card Stack
                                     ApplePayCardStack(
@@ -307,37 +406,43 @@ fun WalletScreen(
                                         scrollVelocity = scrollVelocity,
                                         onCardSelected = { account ->
                                             selectedCard = account
+                                            showBottomSheet = true // Auto-expand bottom sheet
                                             hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         },
                                         onScrollVelocityChange = { velocity ->
                                             scrollVelocity = velocity
-                                        }
-                                    )
-                                }
-                            }
-
-                            // Action Buttons (only visible when card is selected)
-                            AnimatedVisibility(
-                                visible = selectedCard != null,
-                                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
-                            ) {
-                                selectedCard?.let { card ->
-
-                                    PerksBottomSheet(
-                                        account = card,
-                                        perks = perksOfAccountProduct,
-                                        onPayAction = {
-                                            transferSourceAccount = card
-                                            showTransferDialog = true
                                         },
-                                        onUpgradeAccount = { /* ... */ }
+                                        externalExpandTrigger = externalExpandTrigger
                                     )
                                 }
                             }
-
                         }
                     }
+                }
+            }
+
+            // Bottom Sheet - positioned outside the Column to take full width
+            selectedCard?.let { card ->
+                val sheetHeight by animateDpAsState(
+                    targetValue = if (showBottomSheet) 0.dp else (-1000).dp,
+                    animationSpec = tween(durationMillis = 600),
+                    label = "sheetHeight"
+                )
+                
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(400.dp) // Increased height for the sheet
+                        .clip(RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp))
+                        .zIndex(100f)
+                        .offset(y = sheetHeight)
+                ) {
+                    PerksBottomSheet(
+                        account = card,
+                        perks = perksOfAccountProduct,
+                        onUpgradeAccount = { /* ... */ }
+                    )
                 }
             }
 

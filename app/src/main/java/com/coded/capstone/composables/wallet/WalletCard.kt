@@ -41,40 +41,40 @@ fun WalletCard(
     val cardGradient = when (account.accountType?.lowercase()) {
         "debit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF141C2C), // Slate 800
-                Color(0xFF070C11), // Slate 700
-                Color(0xFF20222A), // Slate 600
-                Color(0xFF546D7A)  // Slate 500
+                Color(0xFF8EC5FF), // Slate 800
+                Color(0xFFB3D5FA), // Slate 700
+                Color(0xFF68AAF5), // Slate 600
+                Color(0xFF8EC5FF)  // Slate 500
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         "credit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFFC62828), // Red 800
-                Color(0xFFF44336), // Red 800
-                Color(0xFFdc2626), // Red 600
-                Color(0xFFef4444)  // Red 500
+                Color(0xFF3EB0C5), // Red 800
+                Color(0xFF83DCEC), // Red 800
+                Color(0xFF2798AD), // Red 600
+                Color(0xFF3EB0C5)  // Red 500
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         "savings" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF14532d), // Green 900
-                Color(0xFF166534), // Green 800
-                Color(0xFF16a34a), // Green 600
-                Color(0xFF22c55e)  // Green 500
+                Color(0xFF4E5454), // Green 900
+                Color(0xFF818A8A), // Green 800
+                Color(0xFF2F3333), // Green 600
+                Color(0xFF4E5454)  // Green 500
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         "business" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF1e1b4b), // Indigo 900
-                Color(0xFF3730a3), // Indigo 800
-                Color(0xFF4f46e5), // Indigo 600
-                Color(0xFF6366f1)  // Indigo 500
+                Color(0xFF3730a3), // Indigo 900
+                Color(0xFF6862C7), // Indigo 800
+                Color(0xFF201F5B), // Indigo 600
+                Color(0xFF3730a3)  // Indigo 500
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
