@@ -1,8 +1,13 @@
 package com.coded.capstone.viewModels
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.Services.FirebaseToken
@@ -16,6 +21,7 @@ import com.coded.capstone.data.responses.errors.ValidationError
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.UserRepository
+import com.coded.capstone.services.BleScanService
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.google.gson.Gson
@@ -75,6 +81,7 @@ class AuthViewModel(
                         TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
                         UserRepository.loadUserInfo(context)
                         uiState.value = AuthUiState.Success(jwtResponse)
+                        startBleScanService()
                     }
                 } else {
                     if (response.code() == 400) {
@@ -106,7 +113,7 @@ class AuthViewModel(
                         decodedToken.value = TokenManager.decodeAccessToken(context)
                         TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
                         sendFcmTokenToServer()
-                        
+                        startBleScanService()
                         // Load user info after successful login
                         UserRepository.loadUserInfo(context)
 
@@ -181,5 +188,27 @@ class AuthViewModel(
         // Clear KYC on logout
         UserRepository.kyc = null
     }
+    private fun startBleScanService() {
+        if (hasBluetoothPermissions(context)) {
+            val intent = Intent(context, BleScanService::class.java)
+            context.startForegroundService(intent)
+        } else {
+            Log.w("BLE", "BLE permissions not granted. Cannot start scan service.")
+        }
+    }
 
+
+    private fun hasBluetoothPermissions(context: Context): Boolean {
+        val permissions = mutableListOf(
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            permissions.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        }
+        return permissions.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
+    }
 }

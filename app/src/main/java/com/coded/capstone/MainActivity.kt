@@ -1,12 +1,14 @@
 package com.coded.capstone
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,11 +27,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val permissionRequestCode = 101
 
+
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestFirebaseNotificationPermission()
-
+        if (!hasBluetoothPermissions(this)) {
+            ActivityCompat.requestPermissions(this, getBluetoothPermissions(), permissionRequestCode)
+        }
         enableEdgeToEdge()
 
         setContent {
@@ -70,6 +77,30 @@ class MainActivity : ComponentActivity() {
                     0
                 )
             }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun getBluetoothPermissions(): Array<String> {
+        val permissions = mutableListOf(
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            permissions.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        }
+
+        return permissions.toTypedArray()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun hasBluetoothPermissions(context: Context): Boolean {
+        val permissions = getBluetoothPermissions()
+        return permissions.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
     }
 }
