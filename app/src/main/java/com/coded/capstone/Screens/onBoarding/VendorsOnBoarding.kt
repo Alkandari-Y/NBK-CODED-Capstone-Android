@@ -37,6 +37,7 @@ import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.respositories.CategoryRepository
 import com.coded.capstone.viewModels.FavBusinessUiState
+import com.coded.capstone.ui.AppBackground
 
 // Category icon mapping
 fun getCategoryIcon(category: String): ImageVector = when (category) {
@@ -94,222 +95,212 @@ fun VendorsOnBoarding(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFE0E0E0),
-                        Color(0xFF212937).copy(alpha = 0.05f),
-                        Color(0xFF212937).copy(alpha = 0.1f)
-                    )
-                )
-            )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    AppBackground {
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Logo
-            Box(
+            Column(
                 modifier = Modifier
-                    .size(64.dp)
-                    .background(
-                        Color(0xFF081538),
-                        RoundedCornerShape(16.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(
-                    text = "KLUE",
-                    color = Color.White,
+                    text = "Personalize Your Banking",
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    color = Color.White,
+                    textAlign = TextAlign.Center
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Never Be KLUEless Again",
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(top = 8.dp),
+                    textAlign = TextAlign.Center
+                )
 
-            Text(
-                text = "Personalize Your Banking",
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1F2937)
-            )
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "Never Be KLUEless Again",
-                fontSize = 16.sp,
-                color = Color(0xFF212937),
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Content Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(
+                // Main Content Container - Takes almost full screen
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp)
+                        .fillMaxWidth()
+                        .weight(1f),
+                    shape = RoundedCornerShape(
+                        topStart = 50.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                 ) {
-                    // Header
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(bottom = 20.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFCBDAE0).copy(alpha = 0.40f))
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Store,
-                            contentDescription = null,
-                            tint = Color(0xFF20436C),
+                        Column(
                             modifier = Modifier
-                                .size(48.dp)
-                                .padding(bottom = 16.dp)
-                        )
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        ) {
+                            // Header
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Store,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .padding(bottom = 8.dp)
+                                )
 
-                        Text(
-                            text = "Select your favorite vendors",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1F2937),
-                            textAlign = TextAlign.Center
-                        )
+                                Text(
+                                    text = "Select your favorite vendors",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
 
-                        Text(
-                            text = "Personalized offers from Kuwait's best merchants",
-                            fontSize = 16.sp,
-                            color = Color(0xFF6B7280),
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
-                        )
+                                Text(
+                                    text = "Personalized offers from Kuwait's best merchants",
+                                    fontSize = 12.sp,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)
+                                )
 
-                        Text(
-                            text = "Based on your interests: ${CategoryRepository.favCategories.map { it.categoryId }.joinToString(", ")}",
-                            fontSize = 14.sp,
-                            color = Color(0xFF6B7280),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
+                                Text(
+                                    text = "Based on your interests: ${CategoryRepository.favCategories.map { it.categoryId }.joinToString(", ")}",
+                                    fontSize = 10.sp,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(top = 1.dp)
+                                )
 
-                        Text(
-                            text = "${selectedVendors.size} vendors selected",
-                            fontSize = 14.sp,
-                            color = Color(0xFF212937),
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-
-                    // Search Bar
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        placeholder = { Text("Search vendors, categories...") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null,
-                                tint = Color(0xFF6B7280)
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF212937),
-                            unfocusedBorderColor = Color(0xFFE5E7EB)
-                        )
-                    )
-
-                    // Vendors Scrollable Grid
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        items(filteredPartners) { partner ->
-                            NBKVendorCard(
-                                vendor = partner,
-                                isSelected = partner.id?.let { selectedVendors.contains(it) } ?: false,
-                                onClick = { partner.id?.let { toggleVendor(it) } }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    ) {
-                        repeat(3) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        if (index == 1) Color(0xFF212937) else Color(0xFFE5E7EB),
-                                        CircleShape
-                                    )
-                            )
-                            if (index < 2) {
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "${selectedVendors.size} vendors selected",
+                                    fontSize = 10.sp,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
                             }
-                        }
-                    }
 
-                    // Navigation Buttons
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TextButton(
-                            onClick = {
-                                navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
-                            },
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = Color(0xFF6B7280)
+                            // Search Bar
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                placeholder = { Text("Search vendors, categories...", color = Color.White.copy(alpha = 0.6f)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = null,
+                                        tint = Color.White.copy(alpha = 0.7f)
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Color(0xFF8EC5FF),
+                                    unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                                    focusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                    unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White
+                                )
                             )
-                        ) {
-                            Text("Skip this step")
-                        }
 
-                        Button(
-                            onClick = {
-                                val selectedBusinessIds = selectedVendors.map { it.toString() }
-                                viewModel.submitFavoriteBusinesses(selectedBusinessIds)
-                            },
-                            modifier = Modifier
-                                .height(56.dp)
-                                .widthIn(min = 120.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF212937)
-                            )
-                        ) {
-                            Text(
-                                text = "Continue",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
+                            // Vendors Scrollable Grid
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                items(filteredPartners) { partner ->
+                                    NBKVendorCard(
+                                        vendor = partner,
+                                        isSelected = partner.id?.let { selectedVendors.contains(it) } ?: false,
+                                        onClick = { partner.id?.let { toggleVendor(it) } }
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                repeat(3) { index ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(5.dp)
+                                            .background(
+                                                if (index == 1) Color.White else Color.White.copy(alpha = 0.3f),
+                                                CircleShape
+                                            )
+                                    )
+                                    if (index < 2) {
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                    }
+                                }
+                            }
+
+                            // Navigation Buttons
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                TextButton(
+                                    onClick = {
+                                        navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
+                                    },
+                                    colors = ButtonDefaults.textButtonColors(
+                                        contentColor = Color.White.copy(alpha = 0.8f)
+                                    ),
+                                    modifier = Modifier.padding(end = 8.dp)
+                                ) {
+                                    Text("Skip this step", fontSize = 10.sp)
+                                }
+
+                                Button(
+                                    onClick = {
+                                        val selectedBusinessIds = selectedVendors.map { it.toString() }
+                                        viewModel.submitFavoriteBusinesses(selectedBusinessIds)
+                                    },
+                                    modifier = Modifier
+                                        .height(40.dp)
+                                        .widthIn(min = 80.dp)
+                                        .padding(start = 8.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF8EC5FF)
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Continue",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            }
                         }
                     }
                 }

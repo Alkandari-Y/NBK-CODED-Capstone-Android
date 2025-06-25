@@ -35,11 +35,39 @@ fun RewardCard(
     userXp: UserXpInfoResponse?,
     onClick: () -> Unit
 ) {
-    val glassShape: Shape = RectangleShape
+
+    // Generate stable reward data based on account ID to prevent constant changes
+    val points = remember(account.id) { 
+        // Use account ID as seed for consistent random generation
+        Random(account.id.toLong()).nextInt(500, 2500) 
+    }
+    val cashbackAmount = remember(account.balance) { 
+        (account.balance * BigDecimal("0.02")).setScale(2, java.math.RoundingMode.HALF_UP) 
+    }
+    val tier = remember(points) {
+        when {
+            points > 2000 -> "Platinum"
+            points > 1500 -> "Gold"
+            points > 1000 -> "Silver"
+            else -> "Bronze"
+        }
+    }
+    val nextTierPoints = remember(points, tier) {
+        when (tier) {
+            "Bronze" -> 1000 - points
+            "Silver" -> 1500 - points
+            "Gold" -> 2000 - points
+            else -> 0
+        }
+    }
+
+    val glassShape: Shape = RoundedCornerShape(24.dp) 
+
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .wrapContentHeight()
             .clickable { onClick() },
         shape = glassShape,
@@ -49,7 +77,7 @@ fun RewardCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Blurred glass background with bleeding effect
+            // Glass background (already present)
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -57,13 +85,31 @@ fun RewardCard(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.18f),
-                                Color.White.copy(alpha = 0.01f)
+
+                                Color.White.copy(alpha = 0.30f),
+                                Color.White.copy(alpha = 0.02f)
+
                             ),
                             center = Offset(250f, 90f),
                             radius = 500f
                         ),
                         shape = glassShape
+                    )
+            )
+            // White inner shadow overlay
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(glassShape)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.18f),
+                                Color.Transparent
+                            ),
+                            center = Offset(0.5f, 0.5f),
+                            radius = 600f
+                        )
                     )
             )
             // Card content (not blurred)
