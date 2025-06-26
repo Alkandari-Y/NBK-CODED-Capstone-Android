@@ -26,7 +26,6 @@ import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
-import com.coded.capstone.screens.xp.XpHistoryScreen
 import com.coded.capstone.screens.xp.XpTierScreen
 
 
