@@ -31,15 +31,16 @@ fun RewardCard(
     userXp: UserXpInfoResponse?,
     onClick: () -> Unit
 ) {
-    val glassShape: Shape = RectangleShape
+    val glassShape: Shape = RoundedCornerShape(24.dp)
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
         shape = glassShape,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
@@ -66,7 +67,7 @@ fun RewardCard(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(15.dp),
+                    .padding(horizontal = 20.dp, vertical = 15.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Top Row: Tier and Balance
