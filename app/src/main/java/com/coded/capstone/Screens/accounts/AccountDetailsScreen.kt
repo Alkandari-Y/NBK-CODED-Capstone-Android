@@ -390,6 +390,7 @@ fun AccountDetailsScreen(
                             .fillMaxWidth()
                             .fillMaxHeight(sheetHeight)
                             .clip(androidx.compose.foundation.shape.RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp))
+                            .background(Color(0xFF23272E))
                     ) {
                         TransactionHistorySheetContent(
                             transactions = transactions,
@@ -614,48 +615,6 @@ private fun BackSide(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun QuickActions() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        QuickActionItem(icon = Icons.Default.SwapHoriz, text = "Transfer")
-        QuickActionItem(icon = Icons.Default.Payment, text = "Pay")
-        QuickActionItem(icon = Icons.Default.Receipt, text = "Statement")
-        QuickActionItem(icon = Icons.Default.Settings, text = "Manage")
-    }
-}
-
-@Composable
-fun QuickActionItem(icon: ImageVector, text: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { /* Handle action */ }
-    ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(Color.Transparent),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                tint = Color.White,
-                modifier = Modifier.size(28.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = text,
-            style = AppTypography.bodyMedium,
-            color = Color.White.copy(alpha = 0.9f)
-        )
-    }
-}
-
-@Composable
 fun TransactionHistorySheetContent(
     transactions: List<TransactionDetails>,
     account: AccountResponse?,
@@ -668,24 +627,8 @@ fun TransactionHistorySheetContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFF23272E))
     ) {
-        // AppBackground-style background
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF555D6B), // Center (light gray)
-                            Color(0xFF141818)  // Edge (dark gray)
-                        ),
-                        center = Offset(200f, 200f),
-                        radius = 1600f
-                    )
-                )
-                .blur(24.dp)
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()

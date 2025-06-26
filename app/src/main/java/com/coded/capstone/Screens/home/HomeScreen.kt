@@ -60,6 +60,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.graphics.graphicsLayer
 import com.coded.capstone.SVG.BankFillIcon
 import androidx.compose.foundation.layout.Spacer as Spacer
+import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,19 +72,26 @@ fun HomeScreen(
     onViewAllAccounts: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val viewModel: HomeScreenViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
+    val factory = remember {
+        object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                 return HomeScreenViewModel(context) as T
             }
         }
-    )
+    }
+    val viewModel: HomeScreenViewModel = viewModel(factory = factory)
     val accountsUiState by viewModel.accountsUiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val kyc by viewModel.kyc.collectAsState()
     val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
     val userXp by viewModel.userXp.collectAsState()
+
+    // Fetch accounts when HomeScreen loads
+    LaunchedEffect(Unit) {
+        Log.d("HomeScreen", "LaunchedEffect for fetchAccounts triggered")
+        viewModel.fetchAccounts()
+    }
 
     // Fetch user XP info when screen loads
     LaunchedEffect(Unit) {
@@ -108,7 +116,6 @@ fun HomeScreen(
         regularAccounts.take(3)
     }
 
-
     // Animation states
     var greetingVisible by remember { mutableStateOf(false) }
     var rewardCardVisible by remember { mutableStateOf(false) }
@@ -129,304 +136,334 @@ fun HomeScreen(
     }
 
     AppBackground {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                DrawerContent(
-                    userName = userName ?: "...",
-                    onProfileClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate(NavRoutes.NAV_ROUTE_PROFILE)
-                    },
-                    onSettingsClick = {
-                        scope.launch { drawerState.close() }
-                        navController.navigate("settings")
-                    },
-                    onLogoutClick = {
-                        scope.launch { drawerState.close() }
-                        authViewModel.logout()
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                )
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF6F8FB))
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    DrawerContent(
+                        userName = userName ?: "...",
+                        onProfileClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(NavRoutes.NAV_ROUTE_PROFILE)
+                        },
+                        onSettingsClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate("settings")
+                        },
+                        onLogoutClick = {
+                            scope.launch { drawerState.close() }
+                            authViewModel.logout()
+                            navController.navigate("login") {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    )
+                }
             ) {
-                Column(
+                Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Top bar with hamburger menu
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        IconButton(
-                            onClick = {
-                                scope.launch { drawerState.open() }
-                            },
+                        // Top bar with hamburger menu
+                        Row(
                             modifier = Modifier
-                                .size(44.dp)
-                                .clip(RoundedCornerShape(12.dp))
-//                                .background(
-//                                    brush = Brush.linearGradient(
-//                                        colors = listOf(
-//                                            Color.White.copy(alpha = 0.1f),
-//                                            Color.White.copy(alpha = 0.05f)
-//                                        )
-//                                    )
-//                                )
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-                        IconButton(
-                            onClick = onNotificationClick,
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(RoundedCornerShape(12.dp))
-//                                .background(
-//                                    brush = Brush.linearGradient(
-//                                        colors = listOf(
-//                                            Color.White.copy(alpha = 0.1f),
-//                                            Color.White.copy(alpha = 0.05f)
-//                                        )
-//                                    )
-//                                )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Notifications",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(0.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        item {
-                            // Greeting Section
-                            AnimatedVisibility(
-                                visible = greetingVisible,
-                                enter = slideInHorizontally(
-                                    initialOffsetX = { -it },
-                                    animationSpec = tween(600)
-                                ) + fadeIn(animationSpec = tween(600)),
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(horizontal = 16.dp)
-                                    ) {
-                                        if (userName == null) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(28.dp),
-                                                color = Color.White
-                                            )
-                                        } else {
-                                            Text(
-                                                text = "$greeting, $userName",
-                                                style = AppTypography.headlineMedium,
-                                                fontWeight = FontWeight.Bold, fontSize = 23.sp,
-                                                color = Color.White
-                                            )
-                                        }
-                                        Text(
-                                            text = "Welcome back to KLUE",
-                                            style = AppTypography.bodySmall, fontSize = 18.sp,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(45.dp))
-
-                        }
-
-                        // Reward Cards Section
-                        if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
-                            item {
-                                AnimatedVisibility(
-                                    visible = rewardCardVisible,
-                                    enter = slideInHorizontally(
-                                        initialOffsetX = { it },
-                                        animationSpec = tween(700)
-                                    ) + fadeIn(animationSpec = tween(700)) + scaleIn(initialScale = 0.95f),
-                                ) {
-                                    RewardCard(
-                                        account = rewardCards.first(),
-                                        userXp = userXp,
-                                        onClick = {
-                                            onAccountClick(rewardCards.first().id.toString())
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.height(50.dp))
-
-                            // My Accounts Section Header
-                            Row(
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .size(44.dp)
+                                    .clip(CircleShape)
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    BankFillIcon(
-                                        modifier = Modifier.size(23.dp),
-                                        color = Color.White
-                                    )
-                                    Text(
-                                        text = "My Accounts",
-                                        fontSize = 23.sp,
-                                        style = AppTypography.headlineSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                }
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+                                        .blur(8.dp)
+                                )
                                 IconButton(
-                                    onClick = { isAccountsExpanded = !isAccountsExpanded },
-                                    modifier = Modifier.size(48.dp)
+                                    onClick = {
+                                        scope.launch { drawerState.open() }
+                                    },
+                                    modifier = Modifier.matchParentSize()
                                 ) {
                                     Icon(
-                                        imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                        contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
-                                        tint = Color(0xFF8EC5FF),
-                                        modifier = Modifier.size(32.dp)
+                                        Icons.Default.Menu,
+                                        contentDescription = "Menu",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+                                        .blur(8.dp)
+                                )
+                                IconButton(
+                                    onClick = onNotificationClick,
+                                    modifier = Modifier.matchParentSize()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Notifications,
+                                        contentDescription = "Notifications",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
                                     )
                                 }
                             }
                         }
 
-                        // Handle different UI states for regular accounts
-                        when (accountsUiState) {
-                            is AccountsUiState.Loading -> {
-                                item {
-                                    Box(
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(0.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            item {
+                                // Greeting Section
+                                AnimatedVisibility(
+                                    visible = greetingVisible,
+                                    enter = slideInHorizontally(
+                                        initialOffsetX = { -it },
+                                        animationSpec = tween(600)
+                                    ) + fadeIn(animationSpec = tween(600)),
+                                ) {
+                                    Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        CircularProgressIndicator(
-                                            color = Color(0xFF8EC5FF)
+                                        Column(
+                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                        ) {
+                                            if (userName == null) {
+                                                CircularProgressIndicator(
+                                                    modifier = Modifier.size(28.dp),
+                                                    color = Color(0xFF374151)
+                                                )
+                                            } else {
+                                                Text(
+                                                    text = "$greeting, $userName",
+                                                    style = AppTypography.headlineMedium,
+                                                    fontWeight = FontWeight.Bold, fontSize = 23.sp,
+                                                    color = Color(0xFF23272E)
+                                                )
+                                            }
+                                            Text(
+                                                text = "Welcome back to KLUE",
+                                                style = AppTypography.bodySmall, fontSize = 18.sp,
+                                                color = Color(0xFF6B7280)
+                                            )
+                                        }
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(45.dp))
+
+                            }
+
+                            // Reward Cards Section
+                            if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
+                                item {
+                                    AnimatedVisibility(
+                                        visible = rewardCardVisible,
+                                        enter = slideInHorizontally(
+                                            initialOffsetX = { it },
+                                            animationSpec = tween(700)
+                                        ) + fadeIn(animationSpec = tween(700)) + scaleIn(initialScale = 0.95f),
+                                    ) {
+                                        RewardCard(
+                                            account = rewardCards.first(),
+                                            userXp = userXp,
+                                            onClick = {
+                                                onAccountClick(rewardCards.first().id.toString())
+                                            }
                                         )
                                     }
                                 }
                             }
-                            is AccountsUiState.Error -> {
-                                item {
-                                    val message = (accountsUiState as AccountsUiState.Error).message
-                                    Box(Modifier.padding(horizontal = 16.dp)) {
-                                        ErrorStateCard(
-                                            message = message,
-                                            onRetry = { viewModel.fetchAccounts() }
+
+                            item {
+                                Spacer(modifier = Modifier.height(50.dp))
+
+                                // My Accounts Section Container (full width, dark gray, only top corners rounded)
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f)
+                                        .background(
+                                            color = Color(0xFF23272E),
+                                            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
                                         )
-                                    }
-                                }
-                            }
-                            is AccountsUiState.Success -> {
-                                // Show regular accounts (non-reward cards)
-                                item {
-                                    Box(
+                                ) {
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 8.dp)
+                                            .padding(top = 24.dp, bottom = 0.dp)
                                     ) {
-                                        Column {
-                                            displayedAccounts.forEachIndexed { index, account ->
-
-                                                val isInitiallyVisible = index < 3
-
-                                                var visible by remember { mutableStateOf(false) }
-                                                LaunchedEffect(Unit) {
-                                                    visible = true
-                                                }
-
-                                                AnimatedVisibility(
-                                                    visible = visible,
-                                                    enter = if (isInitiallyVisible) EnterTransition.None else fadeIn(animationSpec = tween(durationMillis = 400, delayMillis = (index - 3).coerceAtLeast(0) * 80)),
-                                                    exit = fadeOut(animationSpec = tween(200))
+                                        // My Accounts Section Header
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                BankFillIcon(
+                                                    modifier = Modifier.size(23.dp),
+                                                    color = Color.White
+                                                )
+                                                Text(
+                                                    text = "My Accounts",
+                                                    fontSize = 23.sp,
+                                                    style = AppTypography.headlineSmall,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color.White
+                                                )
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .clip(CircleShape)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .matchParentSize()
+                                                        .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+                                                        .blur(8.dp)
+                                                )
+                                                IconButton(
+                                                    onClick = { isAccountsExpanded = !isAccountsExpanded },
+                                                    modifier = Modifier.matchParentSize()
                                                 ) {
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
-                                                            .clickable {
-                                                                onAccountClick(account.id.toString())
-                                                            },
-                                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                                        verticalAlignment = Alignment.CenterVertically
-                                                    ) {
-                                                        Column {
-                                                            Text(
-                                                                text = account.accountType?.replaceFirstChar { it.uppercase() }
-                                                                    ?: "Account",
-                                                                style = AppTypography.titleMedium,
-                                                                color = Color.White,
-                                                                fontSize = 18.sp
-                                                            )
-                                                            Text(
-                                                                text = "•••• ${account.accountNumber?.takeLast(4)}",
-                                                                style = AppTypography.bodySmall,
-                                                                color = Color(0xFF8EC5FF)
-                                                            )
-                                                        }
-                                                        Text(
-                                                            text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
-                                                            style = AppTypography.titleMedium,
-                                                            color = Color.White,
-                                                            fontWeight = FontWeight.Bold,
-                                                            fontSize = 18.sp
-                                                        )
-                                                    }
-                                                }
-                                                if (index < displayedAccounts.size - 1) {
-                                                    Divider(
-                                                        color = Color.White.copy(alpha = 0.1f),
-                                                        thickness = 1.dp,
-                                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                                    Icon(
+                                                        imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                                        contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
+                                                        tint = Color(0xFF8EC5FF),
+                                                        modifier = Modifier.size(32.dp)
                                                     )
+                                                }
+                                            }
+                                        }
+
+                                        // The account list and its items will be rendered here, all inside this dark gray Box
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth().fillParentMaxHeight()
+                                                .background(Color(0xFF23272E))
+                                        ) {
+                                            Column {
+                                                Log.d("HomeScreen", "displayedAccounts size: ${displayedAccounts.size} - $displayedAccounts")
+                                                displayedAccounts.forEachIndexed { index, account ->
+                                                    AnimatedVisibility(
+                                                        visible = true, // your animation logic here
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .clip(RoundedCornerShape(16.dp))
+                                                                .background(Color(0xFF23272E))
+                                                                .padding(horizontal = 0.dp, vertical = 0.dp)
+                                                        ) {
+                                                            Row(
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .height(72.dp)
+                                                                    .clickable {
+                                                                        onAccountClick(account.id.toString())
+                                                                        navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                                                    }
+                                                                    .padding(start = 32.dp, end = 24.dp, top = 12.dp, bottom = 12.dp),
+                                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                                verticalAlignment = Alignment.CenterVertically
+                                                            ) {
+                                                                Column {
+                                                                    Text(
+                                                                        text = account.accountType?.replaceFirstChar { it.uppercase() } ?: "Account",
+                                                                        style = AppTypography.titleMedium,
+                                                                        color = Color.White,
+                                                                        fontSize = 18.sp
+                                                                    )
+                                                                    Text(
+                                                                        text = "•••• ${account.accountNumber?.takeLast(4)}",
+                                                                        style = AppTypography.bodySmall,
+                                                                        color = Color.White
+                                                                    )
+                                                                }
+                                                                Text(
+                                                                    text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
+                                                                    style = AppTypography.titleMedium,
+                                                                    color = Color.White,
+                                                                    fontWeight = FontWeight.Bold,
+                                                                    fontSize = 18.sp
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+//                                                    if (index < displayedAccounts.size - 1) {
+//                                                        Spacer(modifier = Modifier.height(6.dp))
+//                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                // If no regular accounts exist, show empty state
-                                if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
+                            }
+
+                            // Handle different UI states for regular accounts
+                            when (accountsUiState) {
+                                is AccountsUiState.Loading -> {
                                     item {
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = Color(0xFF8EC5FF)
+                                            )
+                                        }
+                                    }
+                                }
+                                is AccountsUiState.Error -> {
+                                    item {
+                                        val message = (accountsUiState as AccountsUiState.Error).message
                                         Box(Modifier.padding(horizontal = 16.dp)) {
-                                            EmptyAccountsCard()
+                                            ErrorStateCard(
+                                                message = message,
+                                                onRetry = { viewModel.fetchAccounts() }
+                                            )
+                                        }
+                                    }
+                                }
+                                is AccountsUiState.Success -> {
+                                    // If no regular accounts exist, show empty state
+                                    if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
+                                        item {
+                                            Box(Modifier.padding(horizontal = 16.dp)) {
+                                                EmptyAccountsCard()
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
                 }

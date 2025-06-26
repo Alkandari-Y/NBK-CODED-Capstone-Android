@@ -87,7 +87,7 @@ fun LoginScreen(
     // Animation states
     var cardVisible by remember { mutableStateOf(false) }
     val cardOffsetY by animateDpAsState(
-        targetValue = if (cardVisible) 180.dp else 800.dp,
+        targetValue = if (cardVisible) 140.dp else 800.dp,
         animationSpec = tween(
             durationMillis = 800,
             easing = FastOutSlowInEasing
@@ -127,7 +127,7 @@ fun LoginScreen(
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .offset(y = 80.dp)
+                    .offset(y = 32.dp)
                     .align(Alignment.TopCenter)
                     .background(
                         Color.White,
@@ -165,14 +165,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xFF151521).copy(alpha = 0.85f), // Center: dark
-                                    Color(0xFFE8E9EF).copy(alpha = 0.05f)  // Edge: light, almost transparent
-                                ),
-                                center = androidx.compose.ui.geometry.Offset(0f, 0f), // Top-left for a bleed effect
-                                radius = 700f
-                            )
+                            Color(0xFFFFFFFF).copy(alpha = 1f)
                         )
                 ) {
                     Column(
@@ -186,7 +179,7 @@ fun LoginScreen(
                             style = TextStyle(
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF374151)
                             ),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -195,7 +188,7 @@ fun LoginScreen(
                             text = "Sign in to continue",
                             style = TextStyle(
                                 fontSize = 16.sp,
-                                color = Color.White.copy(alpha = 0.7f)
+                                color = Color(0xFF6B7280)
                             ),
                             modifier = Modifier.padding(bottom = 40.dp)
                         )
@@ -207,14 +200,14 @@ fun LoginScreen(
                             label = {
                                 Text(
                                     "Username",
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = Color(0xFF6B7280),
                                     fontSize = 14.sp
                                 )
                             },
                             placeholder = {
                                 Text(
                                     "Enter your username",
-                                    color = Color.White.copy(alpha = 0.5f),
+                                    color = Color(0xFF9CA3AF),
                                     fontSize = 14.sp
                                 )
                             },
@@ -226,11 +219,11 @@ fun LoginScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                cursorColor = Color(0xFF374151)
                             ),
                             isError = formState.usernameError != null,
                             supportingText = {
@@ -249,7 +242,7 @@ fun LoginScreen(
                             label = {
                                 Text(
                                     "Password",
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = Color(0xFF6B7280),
                                     fontSize = 14.sp
                                 )
                             },
@@ -261,11 +254,11 @@ fun LoginScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                cursorColor = Color(0xFF374151)
                             ),
                             isError = formState.passwordError != null,
                             supportingText = {
@@ -279,7 +272,7 @@ fun LoginScreen(
                                     Icon(
                                         imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                         contentDescription = "Toggle password visibility",
-                                        tint = Color.White.copy(alpha = 0.7f)
+                                        tint = Color(0xFF6B7280)
                                     )
                                 }
                             },
@@ -367,7 +360,7 @@ fun LoginScreen(
                         // Sign up link
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color.White.copy(alpha = 0.6f))) {
+                                withStyle(style = SpanStyle(color = Color(0xFF6B7280))) {
                                     append("Don't have an account? ")
                                 }
                                 withStyle(
