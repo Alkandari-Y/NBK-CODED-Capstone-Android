@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import com.coded.capstone.R
 import com.coded.capstone.composables.perks.getPerkColor
 import com.coded.capstone.composables.perks.getPerkIcon
+
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.perk.PerkDto
 
@@ -160,6 +161,61 @@ fun PerksBottomSheet(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+
+//     onUpgradeAccount: () -> Unit = {}
+// ) {
+//     // AppBackground-style background
+//     Box(
+//         modifier = Modifier
+//             .fillMaxSize()
+//             .background(
+//                 Color(0xFFCBDAE0).copy(alpha = 0.40f)
+//             )
+//     )
+    
+//     Column(
+//         modifier = Modifier
+//             .fillMaxSize()
+//             .padding(horizontal = 20.dp, vertical = 8.dp),
+//         verticalArrangement = Arrangement.Top
+//     ) {
+//         // Drag handle
+//         Box(
+//             modifier = Modifier
+//                 .width(40.dp)
+//                 .height(4.dp)
+//                 .background(
+//                     Color.White.copy(alpha = 0.3f),
+//                     shape = RoundedCornerShape(2.dp)
+//                 )
+//                 .align(Alignment.CenterHorizontally)
+//         )
+
+//         Spacer(modifier = Modifier.height(16.dp))
+
+//         // Header
+//         Column {
+//             Text(
+//                 text = "Account Perks",
+//                 style = MaterialTheme.typography.headlineSmall.copy(
+//                     fontWeight = FontWeight.Bold,
+//                     fontSize = 20.sp,
+//                     fontFamily = RobotoFont
+//                 ),
+//                 color = Color.White
+//             )
+//             Text(
+//                 text = "${perks.size} benefits available",
+//                 style = MaterialTheme.typography.bodyMedium.copy(
+//                     fontSize = 14.sp,
+//                     fontFamily = RobotoFont
+//                 ),
+//                 color = Color.White.copy(alpha = 0.7f)
+//             )
+//         }
+
+//         Spacer(modifier = Modifier.height(24.dp))
+
         // Perks Content
         if (perks.isNotEmpty()) {
             LazyColumn(
@@ -177,6 +233,7 @@ fun PerksBottomSheet(
                         )
                     ) {
                         ModernPerkItem(perk = perk)
+
                     }
                 }
 
@@ -345,6 +402,7 @@ fun ModernPerkItem(perk: PerkDto) {
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
+
             }
         }
     }

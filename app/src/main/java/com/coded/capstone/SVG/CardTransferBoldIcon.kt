@@ -42,6 +42,7 @@ fun CardTransferBoldIcon(modifier: Modifier = Modifier, color: Color = Color.Uns
         addPath(
             pathData = path3,
             fill = SolidColor(Color(0xFF8EC5FF))
+
         )
     }.build()
 

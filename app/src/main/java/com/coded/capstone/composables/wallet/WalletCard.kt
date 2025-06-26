@@ -45,6 +45,7 @@ fun WalletCard(
                 Color(0xFF263D64), // Slate 700
                 Color(0xFF0A121F), // Slate 600
                 Color(0xFF132138)  // Slate 500
+
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
@@ -55,6 +56,7 @@ fun WalletCard(
                 Color(0xFF343A3B), // Red 800
                 Color(0xFF000000), // Red 600
                 Color(0xFF16191A)  // Red 500
+
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)

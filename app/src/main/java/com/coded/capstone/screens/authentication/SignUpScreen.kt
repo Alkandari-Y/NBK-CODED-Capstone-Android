@@ -177,6 +177,7 @@ fun SignUpScreen(
                         .fillMaxSize()
                         .background(
                             Color.White
+
                         )
                 ) {
                     Column(
@@ -236,6 +237,7 @@ fun SignUpScreen(
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.usernameError != null,
                             supportingText = {
@@ -283,6 +285,7 @@ fun SignUpScreen(
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.emailError != null,
                             supportingText = {
@@ -324,6 +327,7 @@ fun SignUpScreen(
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.passwordError != null,
                             supportingText = {
@@ -375,6 +379,7 @@ fun SignUpScreen(
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.confirmPasswordError != null,
                             supportingText = {

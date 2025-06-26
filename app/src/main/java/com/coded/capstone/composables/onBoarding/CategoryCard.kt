@@ -65,10 +65,15 @@ fun CategoryCard(
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isSelected) 8.dp else 4.dp
+
         )
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
         ) {
             // Main content
             Column(
@@ -119,6 +124,7 @@ fun CategoryCard(
                     )
                 }
             }
+
         }
     }
 }

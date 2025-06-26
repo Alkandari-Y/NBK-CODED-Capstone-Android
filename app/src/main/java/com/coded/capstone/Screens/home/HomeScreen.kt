@@ -170,6 +170,7 @@ fun HomeScreen(
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
+
                         // Top bar with hamburger menu
                         Row(
                             modifier = Modifier
@@ -182,6 +183,72 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .size(44.dp)
                                     .clip(CircleShape)
+
+//                         Box(
+//                             modifier = Modifier
+//                                 .size(44.dp)
+//                                 .clip(CircleShape)
+//                         ) {
+//                             Box(
+//                                 modifier = Modifier
+//                                     .matchParentSize()
+//                                     .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+//                                     .blur(8.dp)
+//                             )
+//                             IconButton(
+//                                 onClick = {
+//                                     scope.launch { drawerState.open() }
+//                                 },
+//                                 modifier = Modifier.matchParentSize()
+//                             ) {
+//                                 Icon(
+//                                     Icons.Default.Menu,
+//                                     contentDescription = "Menu",
+//                                     tint = Color.White,
+//                                     modifier = Modifier.size(24.dp)
+//                                 )
+//                             }
+//                         }
+
+//                         Box(
+//                             modifier = Modifier
+//                                 .size(44.dp)
+//                                 .clip(CircleShape)
+//                         ) {
+//                             Box(
+//                                 modifier = Modifier
+//                                     .matchParentSize()
+//                                     .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+//                                     .blur(8.dp)
+//                             )
+//                             IconButton(
+//                                 onClick = onNotificationClick,
+//                                 modifier = Modifier.matchParentSize()
+//                             ) {
+//                                 Icon(
+//                                     imageVector = Icons.Default.Notifications,
+//                                     contentDescription = "Notifications",
+//                                     tint = Color.White,
+//                                     modifier = Modifier.size(24.dp)
+//                                 )
+//                             }
+//                         }
+//                     }
+
+//                     LazyColumn(
+//                         modifier = Modifier.fillMaxSize(),
+//                         contentPadding = PaddingValues(0.dp),
+//                         verticalArrangement = Arrangement.spacedBy(16.dp)
+//                     ) {
+//                         item {
+//                             // Greeting Section
+//                             AnimatedVisibility(
+//                                 visible = greetingVisible,
+//                                 enter = slideInHorizontally(
+//                                     initialOffsetX = { -it },
+//                                     animationSpec = tween(600)
+//                                 ) + fadeIn(animationSpec = tween(600)),
+
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -224,7 +291,19 @@ fun HomeScreen(
                                         contentDescription = "Notifications",
                                         tint = Color.White,
                                         modifier = Modifier.size(24.dp)
+
                                     )
+                                    IconButton(
+                                        onClick = { isAccountsExpanded = !isAccountsExpanded },
+                                        modifier = Modifier.matchParentSize()
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                            contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
+                                            tint = Color(0xFF8EC5FF),
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -314,6 +393,7 @@ fun HomeScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 24.dp, bottom = 0.dp)
+
                                     ) {
                                         // My Accounts Section Header
                                         Row(
@@ -363,6 +443,7 @@ fun HomeScreen(
                                                 }
                                             }
                                         }
+
 
                                         // The account list and its items will be rendered here, all inside this dark gray Box
                                         Box(
@@ -421,6 +502,7 @@ fun HomeScreen(
 //                                                    if (index < displayedAccounts.size - 1) {
 //                                                        Spacer(modifier = Modifier.height(6.dp))
 //                                                    }
+
                                                 }
                                             }
                                         }
@@ -465,6 +547,7 @@ fun HomeScreen(
                                 }
                             }
                         }
+
                     }
                 }
             }

@@ -166,6 +166,7 @@ fun LoginScreen(
                         .fillMaxSize()
                         .background(
                             Color(0xFFFFFFFF).copy(alpha = 1f)
+
                         )
                 ) {
                     Column(
@@ -224,6 +225,7 @@ fun LoginScreen(
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.usernameError != null,
                             supportingText = {
@@ -259,6 +261,7 @@ fun LoginScreen(
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.passwordError != null,
                             supportingText = {

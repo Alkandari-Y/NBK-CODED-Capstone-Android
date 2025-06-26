@@ -71,10 +71,15 @@ fun NBKVendorCard(
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isSelected) 8.dp else 4.dp
+
         )
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
         ) {
             // Main content
             Column(
@@ -156,6 +161,47 @@ fun NBKVendorCard(
                     )
                 }
             }
+
+            // Logo - use AsyncImage for network image
+//             if (vendor.logoUrl.isNotEmpty()) {
+//                 AsyncImage(
+//                     model = vendor.logoUrl,
+//                     contentDescription = "${vendor.name} logo",
+//                     modifier = Modifier
+//                         .size(28.dp)
+//                         .clip(RoundedCornerShape(4.dp)),
+//                     contentScale = ContentScale.Fit
+//                 )
+//             } else {
+//                 // Fallback to category icon
+//                 Icon(
+//                     imageVector = getCategoryIcon(vendor.category.name),
+//                     contentDescription = "${vendor.category.name} category",
+//                     tint = Color.White,
+//                     modifier = Modifier
+//                         .size(28.dp)
+//                         .padding(bottom = 4.dp)
+//                 )
+//             }
+
+//             Spacer(modifier = Modifier.height(6.dp))
+
+//             Text(
+//                 text = vendor.name,
+//                 fontSize = 14.sp,
+//                 fontWeight = FontWeight.Bold,
+//                 color = Color.White,
+//                 textAlign = TextAlign.Center,
+//                 modifier = Modifier.padding(bottom = 2.dp)
+//             )
+//             Text(
+//                 text = vendor.category.name,
+//                 fontSize = 10.sp,
+//                 color = Color.White.copy(alpha = 0.8f),
+//                 textAlign = TextAlign.Center,
+//                 modifier = Modifier.padding(bottom = 1.dp)
+//             )
+
         }
     }
 }

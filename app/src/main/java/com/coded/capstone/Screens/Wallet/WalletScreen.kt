@@ -52,6 +52,7 @@ import java.math.BigDecimal
 import androidx.navigation.NavController
 import com.coded.capstone.navigation.NavRoutes
 
+
 // Roboto font family
 private val RobotoFont = FontFamily(
     androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
@@ -250,7 +251,9 @@ fun WalletScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+
                         .padding(bottom = if (selectedCard != null) 10.dp else 10.dp, top = 8.dp),
+
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -260,6 +263,7 @@ fun WalletScreen(
                         enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
                         exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
                     ) {
+
 //                        IconButton(
 //                            onClick = {
 //                                selectedCard = null
@@ -309,6 +313,36 @@ fun WalletScreen(
                     // Empty space to balance the layout when back button is visible
                     if (selectedCard != null) {
                         Spacer(modifier = Modifier.width(20.dp))
+
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = if (selectedCard != null) "Card Details" else "My Wallet",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontSize = if (selectedCard != null) 20.sp else 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = RobotoFont
+                            ),
+                            color = Color.White
+                        )
+                        if (accounts.isNotEmpty() && selectedCard == null) {
+                            Text(
+                                text = "${currentCardIndex + 1} of ${accounts.size} accounts",
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontSize = 12.sp,
+                                fontFamily = RobotoFont,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Empty space to balance the layout when back button is visible
+                    if (selectedCard != null) {
+                        Spacer(modifier = Modifier.width(40.dp))
                     }
                 }
 
@@ -339,8 +373,10 @@ fun WalletScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+
                                     .height(if (selectedCard != null) 320.dp else 450.dp)
                                     .background(Color.White),
+
                                 contentAlignment = Alignment.TopCenter
                             ) {
                                 if (selectedCard != null) {
@@ -379,6 +415,7 @@ fun WalletScreen(
                                         
                                         // Transfer button below the card
                                         Spacer(modifier = Modifier.height(13.dp))
+
                                         
                                         // Transfer button positioned to the left
                                         Box(
@@ -392,17 +429,20 @@ fun WalletScreen(
                                                     .size(45.dp)
                                                     .background(
                                                         Color(0xFF23272E).copy(alpha = 0.99f),
+
                                                         CircleShape
                                                     )
                                                     .clickable {
                                                         transferSourceAccount = selectedCard!!
                                                         navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
+
                                                     },
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 CardTransferBoldIcon(
                                                     modifier = Modifier.size(32.dp),
                                                     color = Color(0xFF8EC5FF)
+
                                                 )
                                             }
                                         }
@@ -435,6 +475,7 @@ fun WalletScreen(
             selectedCard?.let { card ->
                 var sheetExpanded by remember { mutableStateOf(false) }
                 
+
                 val sheetHeight by animateDpAsState(
                     targetValue = if (showBottomSheet) 0.dp else (-1000).dp,
                     animationSpec = tween(durationMillis = 600),
@@ -447,6 +488,7 @@ fun WalletScreen(
                     label = "dynamicSheetHeight"
                 )
                 
+
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -473,6 +515,7 @@ fun WalletScreen(
                         onExpandChange = { expanded ->
                             sheetExpanded = expanded
                         }
+
                     )
                 }
             }

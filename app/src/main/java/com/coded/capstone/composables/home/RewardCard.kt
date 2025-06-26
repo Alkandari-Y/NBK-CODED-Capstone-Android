@@ -1,15 +1,12 @@
 package com.coded.capstone.composables.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +26,7 @@ import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 import com.coded.capstone.ui.theme.AppTypography
 import java.math.BigDecimal
 import kotlin.random.Random
+
 
 @Composable
 fun RewardCard(

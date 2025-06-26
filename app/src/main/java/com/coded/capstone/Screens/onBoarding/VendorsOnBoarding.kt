@@ -111,6 +111,7 @@ fun VendorsOnBoarding(
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF374151),
+
                     textAlign = TextAlign.Center
                 )
 
@@ -118,6 +119,7 @@ fun VendorsOnBoarding(
                     text = "Never Be KLUEless Again",
                     fontSize = 16.sp,
                     color = Color(0xFF6B7280),
+
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = 8.dp),
                     textAlign = TextAlign.Center
@@ -143,6 +145,7 @@ fun VendorsOnBoarding(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(Color.White)
+
                     ) {
                         Column(
                             modifier = Modifier
@@ -158,6 +161,7 @@ fun VendorsOnBoarding(
                                     imageVector = Icons.Outlined.Store,
                                     contentDescription = null,
                                     tint = Color(0xFF6B7280),
+
                                     modifier = Modifier
                                         .size(32.dp)
                                         .padding(bottom = 8.dp)
@@ -168,6 +172,7 @@ fun VendorsOnBoarding(
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF374151),
+
                                     textAlign = TextAlign.Center
                                 )
 
@@ -175,6 +180,7 @@ fun VendorsOnBoarding(
                                     text = "Personalized offers from Kuwait's best merchants",
                                     fontSize = 12.sp,
                                     color = Color(0xFF6B7280),
+
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)
@@ -184,6 +190,7 @@ fun VendorsOnBoarding(
                                     text = "Based on your interests: ${CategoryRepository.favCategories.map { it.categoryId }.joinToString(", ")}",
                                     fontSize = 10.sp,
                                     color = Color(0xFF6B7280),
+
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(top = 1.dp)
                                 )
@@ -192,6 +199,7 @@ fun VendorsOnBoarding(
                                     text = "${selectedVendors.size} vendors selected",
                                     fontSize = 10.sp,
                                     color = Color(0xFF374151),
+
                                     fontWeight = FontWeight.Medium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
@@ -201,12 +209,15 @@ fun VendorsOnBoarding(
                             OutlinedTextField(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
+
                                 placeholder = { Text("Search vendors, categories...", color = Color(0xFF9CA3AF)) },
+
                                 leadingIcon = {
                                     Icon(
                                         Icons.Default.Search,
                                         contentDescription = null,
                                         tint = Color(0xFF6B7280)
+
                                     )
                                 },
                                 modifier = Modifier
@@ -220,6 +231,7 @@ fun VendorsOnBoarding(
                                     unfocusedContainerColor = Color(0xFFF3F4F6),
                                     focusedTextColor = Color(0xFF374151),
                                     unfocusedTextColor = Color(0xFF374151)
+
                                 )
                             )
 
@@ -273,6 +285,7 @@ fun VendorsOnBoarding(
                                     },
                                     colors = ButtonDefaults.textButtonColors(
                                         contentColor = Color(0xFF6B7280)
+
                                     ),
                                     modifier = Modifier.padding(end = 8.dp)
                                 ) {

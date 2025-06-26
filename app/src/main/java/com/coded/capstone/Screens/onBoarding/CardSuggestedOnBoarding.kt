@@ -72,6 +72,7 @@ fun CardSuggestedOnBoarding(
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF374151),
+
                     textAlign = TextAlign.Center
                 )
 
@@ -79,6 +80,7 @@ fun CardSuggestedOnBoarding(
                     text = "Never Be KLUEless Again",
                     fontSize = 16.sp,
                     color = Color(0xFF6B7280),
+
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = 8.dp),
                     textAlign = TextAlign.Center
@@ -104,6 +106,7 @@ fun CardSuggestedOnBoarding(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(Color.White)
+
                     ) {
                         Column(
                             modifier = Modifier
@@ -118,6 +121,7 @@ fun CardSuggestedOnBoarding(
                                     .height(120.dp)
                                     .background(
                                         Color.White,
+
                                         RoundedCornerShape(10.dp)
                                     )
                                     .padding(12.dp),
@@ -156,13 +160,16 @@ fun CardSuggestedOnBoarding(
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color(0xFF374151),
+
                                         textAlign = TextAlign.Center
                                     )
 
                                     Text(
                                         text = recommendedCard?.accountType ?: "Credit Card",
                                         fontSize = 10.sp,
+
                                         color = Color(0xFF6B7280),
+
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.padding(top = 1.dp)
                                     )
@@ -176,6 +183,7 @@ fun CardSuggestedOnBoarding(
                                 text = recommendedCard?.description ?: "A personalized card recommendation based on your preferences.",
                                 fontSize = 12.sp,
                                 color = Color(0xFF6B7280),
+
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
@@ -233,7 +241,9 @@ fun CardSuggestedOnBoarding(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(8.dp),
                                 colors = CardDefaults.cardColors(
+
                                     containerColor = Color.White
+
                                 )
                             ) {
                                 Column(
@@ -243,7 +253,9 @@ fun CardSuggestedOnBoarding(
                                         text = "Why this is perfect for you",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
+
                                         color = Color(0xFF374151),
+
                                         modifier = Modifier.padding(bottom = 6.dp)
                                     )
 
@@ -265,6 +277,7 @@ fun CardSuggestedOnBoarding(
                                                 text = perk.type ?: "Benefit",
                                                 fontSize = 10.sp,
                                                 color = Color(0xFF6B7280),
+
                                                 modifier = Modifier.weight(1f)
                                             )
                                         }
@@ -276,7 +289,9 @@ fun CardSuggestedOnBoarding(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .background(
+
                                                     Color(0xFF8EC5FF).copy(alpha = 0.1f),
+
                                                     RoundedCornerShape(4.dp)
                                                 )
                                                 .padding(6.dp)
@@ -293,6 +308,7 @@ fun CardSuggestedOnBoarding(
                                                 fontSize = 10.sp,
                                                 fontWeight = FontWeight.Medium,
                                                 color = Color(0xFF374151)
+
                                             )
                                         }
                                     }
@@ -308,6 +324,7 @@ fun CardSuggestedOnBoarding(
                                     shape = RoundedCornerShape(8.dp),
                                     colors = CardDefaults.cardColors(
                                         containerColor = Color.White
+
                                     )
                                 ) {
                                     Column(
@@ -318,6 +335,7 @@ fun CardSuggestedOnBoarding(
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color(0xFF374151),
+
                                             modifier = Modifier.padding(bottom = 4.dp)
                                         )
 
@@ -328,7 +346,9 @@ fun CardSuggestedOnBoarding(
                                         Text(
                                             text = matchText,
                                             fontSize = 9.sp,
+
                                             color = Color(0xFF6B7280)
+
                                         )
                                     }
                                 }
