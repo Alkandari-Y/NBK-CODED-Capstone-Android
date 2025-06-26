@@ -1,13 +1,13 @@
 package com.coded.capstone.navigation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -30,12 +30,9 @@ fun MainScaffoldWithTabs(
     val context = LocalContext.current
     val recommendationViewModel = remember { RecommendationViewModel(context) }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Main content
+        Box(modifier = Modifier.fillMaxSize()) {
             when (selectedTab) {
                 0 -> HomeScreen(navController, authViewModel, onAccountClick = { accountId ->
                     navController.navigate(NavRoutes.accountDetailRoute(accountId))
@@ -47,6 +44,13 @@ fun MainScaffoldWithTabs(
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }
-
+        
+        // Bottom Navigation Bar overlay
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        ) {
+            BottomNavBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
+        }
     }
 }
