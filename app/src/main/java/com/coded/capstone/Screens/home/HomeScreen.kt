@@ -278,7 +278,7 @@ fun HomeScreen(
                                         account = rewardCards.first(),
                                         userXp = userXp,
                                         onClick = {
-                                            onAccountClick(rewardCards.first().id.toString())
+                                            navController.navigate(NavRoutes.NAV_ROUTE_XP_HISTORY)
                                         }
                                     )
                                 }

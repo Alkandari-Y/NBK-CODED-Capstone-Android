@@ -41,20 +41,22 @@ fun WalletCard(
     val cardGradient = when (account.accountType?.lowercase()) {
         "debit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF8EC5FF), // Slate 800
-                Color(0xFFB3D5FA), // Slate 700
-                Color(0xFF68AAF5), // Slate 600
-                Color(0xFF8EC5FF)  // Slate 500
+                Color(0xFF132138), // Slate 800
+                Color(0xFF263D64), // Slate 700
+                Color(0xFF0A121F), // Slate 600
+                Color(0xFF132138)  // Slate 500
+
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
         "credit" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF3EB0C5), // Red 800
-                Color(0xFF83DCEC), // Red 800
-                Color(0xFF2798AD), // Red 600
-                Color(0xFF3EB0C5)  // Red 500
+                Color(0xFF16191A), // Red 800
+                Color(0xFF343A3B), // Red 800
+                Color(0xFF000000), // Red 600
+                Color(0xFF16191A)  // Red 500
+
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
@@ -81,10 +83,10 @@ fun WalletCard(
         )
         else -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF374151), // Gray 700
-                Color(0xFF4b5563), // Gray 600
-                Color(0xFF6b7280), // Gray 500
-                Color(0xFF9ca3af)  // Gray 400
+                Color(0xFF384349), // Gray 700
+                Color(0xFF58656C), // Gray 600
+                Color(0xFF273034), // Gray 500
+                Color(0xFF384349)  // Gray 400
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)

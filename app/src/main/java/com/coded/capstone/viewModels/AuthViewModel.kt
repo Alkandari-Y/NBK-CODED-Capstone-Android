@@ -179,7 +179,6 @@ class AuthViewModel(
         token.value = null
         decodedToken.value = null
         uiState.value = AuthUiState.Loading
-        // Clear KYC on logout
         UserRepository.kyc = null
     }
 

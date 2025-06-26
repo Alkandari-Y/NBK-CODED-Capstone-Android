@@ -39,7 +39,6 @@ import com.coded.capstone.composables.wallet.EmptyAccountsCard
 import com.coded.capstone.composables.wallet.ErrorCard
 import com.coded.capstone.composables.wallet.PerksBottomSheet
 import com.coded.capstone.composables.wallet.SingleSelectedCard
-import com.coded.capstone.composables.wallet.TopUpDialog
 import com.coded.capstone.composables.wallet.TransferDialog
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.TransactionViewModel
