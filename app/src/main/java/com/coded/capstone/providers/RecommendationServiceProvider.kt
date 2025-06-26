@@ -34,6 +34,6 @@ interface RecommendationServiceProvider{
     suspend fun getOnboardingRecommendation(): Response<AccountProductResponse>
 
     // ble
-    @POST("/api/v1/recommendations/ble")
+    @POST("/api/v1/recommendations/bluetooth-beacon")
     suspend fun sendBleDevice(@Body payload: BlueToothBeaconNotificationRequest): Response<Void>
 }

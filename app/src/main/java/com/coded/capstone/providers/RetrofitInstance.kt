@@ -71,8 +71,8 @@ object RetrofitInstance {
             .create(RecommendationServiceProvider::class.java)
     }
 
-    private fun getBaseUrl(port: Int): String = "http://192.168.62.238:$port/"
+//    private fun getBaseUrl(port: Int): String = "http://192.168.13.44:$port/"
 //    private fun getDeviceBaseUrl(port: Int): String = "$DEVICE_BASE_URL$port/"
-//    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
+    private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
 
 }
