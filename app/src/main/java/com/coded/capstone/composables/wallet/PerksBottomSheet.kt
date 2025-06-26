@@ -5,6 +5,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -45,6 +51,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.R
+import com.coded.capstone.composables.perks.getPerkColor
+import com.coded.capstone.composables.perks.getPerkIcon
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.perk.PerkDto
 
@@ -57,34 +65,69 @@ private val RobotoFont = FontFamily(
 fun PerksBottomSheet(
     account: AccountResponse,
     perks: List<PerkDto>,
-    onUpgradeAccount: () -> Unit = {}
+    onUpgradeAccount: () -> Unit = {},
+    onExpandChange: (Boolean) -> Unit = {}
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val dragThreshold = 50f
+    var dragOffset by remember { mutableStateOf(0f) }
+    var isDragging by remember { mutableStateOf(false) }
+
+    val draggableState = rememberDraggableState { delta ->
+        dragOffset += delta
+        isDragging = true
+        if (!isExpanded && dragOffset < -dragThreshold) {
+            isExpanded = true
+            onExpandChange(true)
+            dragOffset = 0f
+            isDragging = false
+        } else if (isExpanded && dragOffset > dragThreshold) {
+            isExpanded = false
+            onExpandChange(false)
+            dragOffset = 0f
+            isDragging = false
+        }
+    }
+
     // AppBackground-style background
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Color(0xFFCBDAE0).copy(alpha = 0.40f)
-            )
+//            .background(
+//                Color(0xFFCBDAE0).copy(alpha = 0.90f)
+//            )
     )
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        // Drag handle
+        // Draggable handle
         Box(
             modifier = Modifier
-                .width(40.dp)
-                .height(4.dp)
-                .background(
-                    Color.White.copy(alpha = 0.3f),
-                    shape = RoundedCornerShape(2.dp)
-                )
                 .align(Alignment.CenterHorizontally)
-        )
+                .fillMaxWidth(0.3f)
+                .height(32.dp)
+                .draggable(
+                    state = draggableState,
+                    orientation = androidx.compose.foundation.gestures.Orientation.Vertical,
+                    onDragStarted = { isDragging = true },
+                    onDragStopped = { dragOffset = 0f; isDragging = false }
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(4.dp)
+                    .background(
+                        if (isDragging) Color.White.copy(alpha = 0.6f) else Color.White.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(2.dp)
+                    )
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -97,7 +140,10 @@ fun PerksBottomSheet(
                     fontSize = 20.sp,
                     fontFamily = RobotoFont
                 ),
-                color = Color.White
+                color = Color.White,
+                modifier = Modifier
+                    .padding(start = 8.dp, bottom = 2.dp)
+                    .align(Alignment.Start)
             )
             Text(
                 text = "${perks.size} benefits available",
@@ -105,7 +151,10 @@ fun PerksBottomSheet(
                     fontSize = 14.sp,
                     fontFamily = RobotoFont
                 ),
-                color = Color.White.copy(alpha = 0.7f)
+                color = Color(0xFF8EC5FF),
+                modifier = Modifier
+                    .padding(start = 8.dp, bottom = 2.dp)
+                    .align(Alignment.Start)
             )
         }
 
@@ -127,7 +176,7 @@ fun PerksBottomSheet(
                             animationSpec = tween(400, delayMillis = index * 100)
                         )
                     ) {
-                        DarkEnhancedPerkItem(perk = perk)
+                        ModernPerkItem(perk = perk)
                     }
                 }
 
@@ -166,32 +215,136 @@ fun PerksBottomSheet(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    fontFamily = RobotoFont
+                    fontFamily = RobotoFont,
+                    modifier = Modifier
+                        .padding(start = 8.dp, bottom = 2.dp)
+                        .align(Alignment.Start)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Upgrade your account to unlock exclusive benefits",
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = Color.White,
                     fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                    fontFamily = RobotoFont
+                    textAlign = TextAlign.Start,
+                    fontFamily = RobotoFont,
+                    modifier = Modifier
+                        .padding(start = 8.dp, bottom = 2.dp)
+                        .align(Alignment.Start)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                Button(
-                    onClick = onUpgradeAccount,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF8EC5FF)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
-                ) {
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernPerkItem(perk: PerkDto) {
+    val isCashback = perk.type?.contains("cashback", ignoreCase = true) == true
+    val isDiscount = perk.type?.contains("discount", ignoreCase = true) == true
+    val perkColor = when {
+        isCashback -> Color(0xFF8EC5FF)
+        isDiscount -> Color(0xFFA855F7)
+        else -> getPerkColor(perk.type)
+    }
+    val xpColor = when {
+        isCashback -> Color(0xFF8EC5FF)
+        isDiscount -> Color(0xFFA855F7)
+        else -> Color(0xFF10B981)
+    }
+    val xpBackgroundColor = when {
+        isCashback -> Color(0xFFDBEAFE)
+        isDiscount -> Color(0xFFF3E8FF)
+        else -> Color(0xFF065F46)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 2.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icon
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(perkColor.copy(alpha = 0.15f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = getPerkIcon(perk.type),
+                    contentDescription = perk.type,
+                    tint = perkColor,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            // Perk Info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = perk.type?.replaceFirstChar { it.uppercase() } ?: "Perk",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                perk.perkAmount?.let { amount ->
                     Text(
-                        text = "Explore Upgrades",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = RobotoFont
+                        text = when {
+                            isCashback -> "$amount% Back"
+                            isDiscount -> "$amount% Off"
+                            else -> "$amount Points"
+                        },
+                        color = perkColor,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
                     )
                 }
+                // Categories
+                if (!perk.categories.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        perk.categories.forEach { category ->
+                            Text(
+                                text = category.name ?: "",
+                                color = Color(0xFF8EC5FF),
+                                fontSize = 12.sp,
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xFF23272E).copy(alpha = 0.5f),
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
+            }
+            // XP Badge
+            if (perk.rewardsXp != null) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${perk.rewardsXp} XP",
+                    color = xpColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    modifier = Modifier
+                        .background(
+                            color = xpBackgroundColor,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             }
         }
     }
