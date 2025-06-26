@@ -92,14 +92,16 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                     text = "Personalize Your Banking",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = Color(0xFF374151),
+
                     textAlign = TextAlign.Center
                 )
 
                 Text(
                     text = "Never Be KLUEless Again",
                     fontSize = 16.sp,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = Color(0xFF6B7280),
+
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = 8.dp),
                     textAlign = TextAlign.Center
@@ -124,7 +126,8 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFCBDAE0).copy(alpha = 0.40f))
+                            .background(Color.White)
+
                     ) {
                         Column(
                             modifier = Modifier
@@ -139,7 +142,8 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 Icon(
                                     imageVector = Icons.Default.Star,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = Color(0xFF6B7280),
+
                                     modifier = Modifier
                                         .size(32.dp)
                                         .padding(bottom = 8.dp)
@@ -149,14 +153,17 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                     text = "Select your favorite categories",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White,
+
+                                    color = Color(0xFF374151),
+
                                     textAlign = TextAlign.Center
                                 )
 
                                 Text(
                                     text = "Select at least one - up to 3 categories",
                                     fontSize = 12.sp,
-                                    color = Color.White.copy(alpha = 0.8f),
+                                    color = Color(0xFF6B7280),
+
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)
                                 )
@@ -164,7 +171,8 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 Text(
                                     text = "${selectedCategories.size}/3 selected",
                                     fontSize = 10.sp,
-                                    color = Color.White,
+                                    color = Color(0xFF374151),
+
                                     fontWeight = FontWeight.Medium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )

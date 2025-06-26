@@ -42,7 +42,7 @@ fun MainScaffoldWithTabs(
                 }, onViewAllAccounts = {
                     navController.navigate(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL)
                 })
-                1 -> WalletScreen()
+                1 -> WalletScreen(navController = navController)
                 2 -> CalendarScreen(viewModel = recommendationViewModel)
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }

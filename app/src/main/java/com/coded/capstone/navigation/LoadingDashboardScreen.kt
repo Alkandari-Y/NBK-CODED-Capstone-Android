@@ -19,9 +19,7 @@ fun LoadingDashboardScreen(
 ) {
     LaunchedEffect(Unit) {
         delay(1500L)
-//        viewModel.fetchCategories()
-        viewModel.fetchAccounts()
-
+        // viewModel.fetchAccounts() removed; HomeScreen will fetch accounts
         navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
             popUpTo(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) { inclusive = true }
         }

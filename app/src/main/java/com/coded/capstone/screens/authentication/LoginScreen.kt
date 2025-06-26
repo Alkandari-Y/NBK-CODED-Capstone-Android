@@ -165,7 +165,8 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Color(0xFFCBDAE0).copy(alpha = 0.40f)
+                            Color(0xFFFFFFFF).copy(alpha = 1f)
+
                         )
                 ) {
                     Column(
@@ -179,7 +180,7 @@ fun LoginScreen(
                             style = TextStyle(
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color(0xFF374151)
                             ),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
@@ -188,7 +189,7 @@ fun LoginScreen(
                             text = "Sign in to continue",
                             style = TextStyle(
                                 fontSize = 16.sp,
-                                color = Color.White.copy(alpha = 0.7f)
+                                color = Color(0xFF6B7280)
                             ),
                             modifier = Modifier.padding(bottom = 40.dp)
                         )
@@ -200,14 +201,14 @@ fun LoginScreen(
                             label = {
                                 Text(
                                     "Username",
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = Color(0xFF6B7280),
                                     fontSize = 14.sp
                                 )
                             },
                             placeholder = {
                                 Text(
                                     "Enter your username",
-                                    color = Color.White.copy(alpha = 0.5f),
+                                    color = Color(0xFF9CA3AF),
                                     fontSize = 14.sp
                                 )
                             },
@@ -219,11 +220,12 @@ fun LoginScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.usernameError != null,
                             supportingText = {
@@ -242,7 +244,7 @@ fun LoginScreen(
                             label = {
                                 Text(
                                     "Password",
-                                    color = Color.White.copy(alpha = 0.7f),
+                                    color = Color(0xFF6B7280),
                                     fontSize = 14.sp
                                 )
                             },
@@ -254,11 +256,12 @@ fun LoginScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.passwordError != null,
                             supportingText = {
@@ -272,7 +275,7 @@ fun LoginScreen(
                                     Icon(
                                         imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                         contentDescription = "Toggle password visibility",
-                                        tint = Color.White.copy(alpha = 0.7f)
+                                        tint = Color(0xFF6B7280)
                                     )
                                 }
                             },
@@ -360,7 +363,7 @@ fun LoginScreen(
                         // Sign up link
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color.White.copy(alpha = 0.6f))) {
+                                withStyle(style = SpanStyle(color = Color(0xFF6B7280))) {
                                     append("Don't have an account? ")
                                 }
                                 withStyle(

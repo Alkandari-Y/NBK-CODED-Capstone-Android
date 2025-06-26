@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 import com.coded.capstone.ui.theme.AppTypography
+import java.math.BigDecimal
+import kotlin.random.Random
+
 
 @Composable
 fun RewardCard(
@@ -31,38 +34,55 @@ fun RewardCard(
     userXp: UserXpInfoResponse?,
     onClick: () -> Unit
 ) {
-    val glassShape: Shape = RectangleShape
+
+    // Generate stable reward data based on account ID to prevent constant changes
+    val points = remember(account.id) { 
+        // Use account ID as seed for consistent random generation
+        Random(account.id.toLong()).nextInt(500, 2500)
+    }
+    val cashbackAmount = remember(account.balance) { 
+        (account.balance * BigDecimal("0.02")).setScale(2, java.math.RoundingMode.HALF_UP) 
+    }
+    val tier = remember(points) {
+        when {
+            points > 2000 -> "Platinum"
+            points > 1500 -> "Gold"
+            points > 1000 -> "Silver"
+            else -> "Bronze"
+        }
+    }
+    val nextTierPoints = remember(points, tier) {
+        when (tier) {
+            "Bronze" -> 1000 - points
+            "Silver" -> 1500 - points
+            "Gold" -> 2000 - points
+            else -> 0
+        }
+    }
+
+    val glassShape: Shape = RoundedCornerShape(24.dp) 
+
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .wrapContentHeight()
             .clickable { onClick() },
         shape = glassShape,
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Blurred glass background with bleeding effect
+            // White background
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .blur(50.dp)
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.18f),
-                                Color.White.copy(alpha = 0.01f)
-                            ),
-                            center = Offset(250f, 90f),
-                            radius = 500f
-                        ),
-                        shape = glassShape
-                    )
+                    .background(Color.White, shape = glassShape)
             )
-            // Card content (not blurred)
+            // Card content
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -96,7 +116,7 @@ fun RewardCard(
                         }
                         Text(
                             "${userXp?.xpTier?.name ?: "Loading"} Tier",
-                            color = Color.White,
+                            color = Color(0xFF23272E),
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
                         )
@@ -114,13 +134,13 @@ fun RewardCard(
                                 text = "XP",
                                 fontSize = 20.sp,
                                 style = AppTypography.bodySmall,
-                                color = Color.White.copy(alpha = 0.7f),
+                                color = Color(0xFF6B7280),
                                 modifier = Modifier.padding(start = 4.dp)
                             )
                         }
                         Text(
                             text = "${userXp?.userXpAmount ?: 0}",
-                            color = Color.White,
+                            color = Color(0xFF23272E),
                             fontSize = 35.sp,
                             style = AppTypography.headlineMedium,
                             fontWeight = FontWeight.Bold
@@ -136,13 +156,13 @@ fun RewardCard(
                     // Min XP info
                     Text(
                         "Min XP: ${userXp?.xpTier?.minXp ?: 0}",
-                        color = Color.White.copy(alpha = 0.9f),
+                        color = Color(0xFF6B7280),
                         style = AppTypography.bodySmall
                     )
                     // Max XP info
                     Text(
                         "Max XP: ${userXp?.xpTier?.maxXp ?: 0}",
-                        color = Color.White.copy(alpha = 0.9f),
+                        color = Color(0xFF6B7280),
                         style = AppTypography.bodySmall
                     )
                 }

@@ -150,7 +150,9 @@ fun KycScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFCBDAE0).copy(alpha = 0.40f))
+
+                        .background(Color.White)
+
                 ) {
                     Column(
                         modifier = Modifier
@@ -163,7 +165,9 @@ fun KycScreen(
                             text = if (isEditMode) "Edit Profile" else "Profile",
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+
+                                color = Color(0xFF374151)
+
                             ),
                             modifier = Modifier.padding(bottom = 24.dp)
                         )
@@ -174,8 +178,10 @@ fun KycScreen(
                             onValueChange = {
                                 viewModel.formState.value = formState.copy(firstName = it).validate()
                             },
-                            label = { Text("First Name", color = Color.White, fontSize = 14.sp) },
-                            placeholder = { Text("Enter your first name", color = Color.White, fontSize = 14.sp) },
+
+                            label = { Text("First Name", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                            placeholder = { Text("Enter your first name", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
@@ -184,13 +190,15 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                unfocusedPlaceholderColor = Color.White,
-                                focusedPlaceholderColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.firstNameError != null,
                             supportingText = {
@@ -199,7 +207,9 @@ fun KycScreen(
                                 }
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Person, contentDescription = "First Name", tint = Color.White)
+
+                                Icon(Icons.Default.Person, contentDescription = "First Name", tint = Color(0xFF6B7280))
+
                             }
                         )
 
@@ -209,8 +219,10 @@ fun KycScreen(
                             onValueChange = {
                                 viewModel.formState.value = formState.copy(lastName = it).validate()
                             },
-                            label = { Text("Last Name", color = Color.White, fontSize = 14.sp) },
-                            placeholder = { Text("Enter your last name", color = Color.White, fontSize = 14.sp) },
+
+                            label = { Text("Last Name", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                            placeholder = { Text("Enter your last name", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
@@ -219,13 +231,15 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                unfocusedPlaceholderColor = Color.White,
-                                focusedPlaceholderColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.lastNameError != null,
                             supportingText = {
@@ -234,7 +248,9 @@ fun KycScreen(
                                 }
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Person, contentDescription = "Last Name", tint = Color.White)
+
+                                Icon(Icons.Default.Person, contentDescription = "Last Name", tint = Color(0xFF6B7280))
+
                             }
                         )
 
@@ -248,8 +264,10 @@ fun KycScreen(
                             OutlinedTextField(
                                 value = formState.dateOfBirth,
                                 onValueChange = { /* No-op to prevent any text input */ },
-                                label = { Text("Date of Birth", color = Color.White, fontSize = 14.sp) },
-                                placeholder = { Text("DD-MM-YYYY", color = Color.White, fontSize = 14.sp) },
+
+                                label = { Text("Date of Birth", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                                placeholder = { Text("DD-MM-YYYY", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                                 modifier = Modifier.fillMaxWidth(),
                                 enabled = false,
                                 readOnly = true,
@@ -257,13 +275,15 @@ fun KycScreen(
                                 colors = OutlinedTextFieldDefaults.colors(
                                     unfocusedBorderColor = Color.Transparent,
                                     focusedBorderColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                    focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                    unfocusedTextColor = Color.White,
-                                    focusedTextColor = Color.White,
-                                    unfocusedPlaceholderColor = Color.White,
-                                    focusedPlaceholderColor = Color.White,
-                                    cursorColor = Color(0xFF8EC5FF)
+
+                                    unfocusedContainerColor = Color(0xFFF3F4F6),
+                                    focusedContainerColor = Color(0xFFF3F4F6),
+                                    unfocusedTextColor = Color(0xFF374151),
+                                    focusedTextColor = Color(0xFF374151),
+                                    unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                    focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                    cursorColor = Color(0xFF374151)
+
                                 ),
                                 isError = formState.dateOfBirthError != null,
                                 supportingText = {
@@ -272,14 +292,18 @@ fun KycScreen(
                                     }
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Default.DateRange, contentDescription = "Date of Birth", tint = Color.White)
+
+                                    Icon(Icons.Default.DateRange, contentDescription = "Date of Birth", tint = Color(0xFF6B7280))
+
                                 },
                                 trailingIcon = {
                                     if (isEditMode) {
                                         Icon(
                                             imageVector = Icons.Default.DateRange,
                                             contentDescription = "Pick date",
-                                            tint = Color.White.copy(alpha = 0.7f)
+
+                                            tint = Color(0xFF6B7280)
+
                                         )
                                     }
                                 }
@@ -321,8 +345,10 @@ fun KycScreen(
                             onValueChange = {
                                 viewModel.formState.value = formState.copy(salary = it).validate()
                             },
-                            label = { Text("Monthly Salary", color = Color.White, fontSize = 14.sp) },
-                            placeholder = { Text("Enter your monthly salary", color = Color.White, fontSize = 14.sp) },
+
+                            label = { Text("Monthly Salary", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                            placeholder = { Text("Enter your monthly salary", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
@@ -332,13 +358,15 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                unfocusedPlaceholderColor = Color.White,
-                                focusedPlaceholderColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.salaryError != null,
                             supportingText = {
@@ -354,8 +382,10 @@ fun KycScreen(
                             onValueChange = {
                                 viewModel.formState.value = formState.copy(nationality = it).validate()
                             },
-                            label = { Text("Nationality", color = Color.White, fontSize = 14.sp) },
-                            placeholder = { Text("Enter your nationality", color = Color.White, fontSize = 14.sp) },
+
+                            label = { Text("Nationality", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                            placeholder = { Text("Enter your nationality", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
@@ -364,13 +394,15 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                unfocusedPlaceholderColor = Color.White,
-                                focusedPlaceholderColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.nationalityError != null,
                             supportingText = {
@@ -379,7 +411,9 @@ fun KycScreen(
                                 }
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Public, contentDescription = "Nationality", tint = Color.White)
+
+                                Icon(Icons.Default.Public, contentDescription = "Nationality", tint = Color(0xFF6B7280))
+
                             }
                         )
 
@@ -389,8 +423,10 @@ fun KycScreen(
                             onValueChange = {
                                 viewModel.formState.value = formState.copy(mobileNumber = it).validate()
                             },
-                            label = { Text("Mobile Number", color = Color.White, fontSize = 14.sp) },
-                            placeholder = { Text("Enter your mobile number", color = Color.White, fontSize = 14.sp) },
+
+                            label = { Text("Mobile Number", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                            placeholder = { Text("Enter your mobile number", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
@@ -400,13 +436,15 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                unfocusedPlaceholderColor = Color.White,
-                                focusedPlaceholderColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.mobileNumberError != null,
                             supportingText = {
@@ -415,7 +453,9 @@ fun KycScreen(
                                 }
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Phone, contentDescription = "Mobile Number", tint = Color.White)
+
+                                Icon(Icons.Default.Phone, contentDescription = "Mobile Number", tint = Color(0xFF6B7280))
+
                             }
                         )
 
@@ -425,8 +465,10 @@ fun KycScreen(
                             onValueChange = {
                                 viewModel.formState.value = formState.copy(civilId = it).validate()
                             },
-                            label = { Text("Civil ID", color = Color.White, fontSize = 14.sp) },
-                            placeholder = { Text("Enter your civil ID", color = Color.White, fontSize = 14.sp) },
+
+                            label = { Text("Civil ID", color = Color(0xFF6B7280), fontSize = 14.sp) },
+                            placeholder = { Text("Enter your civil ID", color = Color(0xFF9CA3AF), fontSize = 14.sp) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 24.dp),
@@ -436,13 +478,15 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                unfocusedTextColor = Color.White,
-                                focusedTextColor = Color.White,
-                                unfocusedPlaceholderColor = Color.White,
-                                focusedPlaceholderColor = Color.White,
-                                cursorColor = Color(0xFF8EC5FF)
+
+                                unfocusedContainerColor = Color(0xFFF3F4F6),
+                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedTextColor = Color(0xFF374151),
+                                focusedTextColor = Color(0xFF374151),
+                                unfocusedPlaceholderColor = Color(0xFF9CA3AF),
+                                focusedPlaceholderColor = Color(0xFF9CA3AF),
+                                cursorColor = Color(0xFF374151)
+
                             ),
                             isError = formState.civilIdError != null,
                             supportingText = {
@@ -451,7 +495,9 @@ fun KycScreen(
                                 }
                             },
                             leadingIcon = {
-                                Icon(Icons.Default.Badge, contentDescription = "Civil ID", tint = Color.White)
+
+                                Icon(Icons.Default.Badge, contentDescription = "Civil ID", tint = Color(0xFF6B7280))
+
                             }
                         )
 
