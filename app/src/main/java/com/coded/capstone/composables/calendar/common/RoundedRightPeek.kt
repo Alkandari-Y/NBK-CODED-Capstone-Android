@@ -16,6 +16,6 @@ fun RoundedRightPeek() {
             .width(16.dp)
             .height(550.dp)
             .clip(RoundedCornerShape(topStart = 100.dp, bottomStart = 100.dp))
-            .background(Color.Black)
+            .background(Color(0xFF23272E))
     )
 } 
