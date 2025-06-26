@@ -58,14 +58,19 @@ fun CategoryCard(
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
             2.dp,
-            if (isSelected) Color(0xFF8EC5FF) else Color.Transparent
+            if (isSelected) Color(0xFF8EC5FF) else Color.White.copy(alpha = 0.3f)
         ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isSelected) {
+                Color(0xFF8EC5FF).copy(alpha = 0.15f)
+            } else if (isDisabled) {
+                Color.White.copy(alpha = 0.1f)
+            } else {
+                Color.White.copy(alpha = 0.15f)
+            }
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 8.dp else 4.dp
-
+            defaultElevation = if (isSelected) 6.dp else 2.dp
         )
     ) {
         Column(
@@ -75,56 +80,14 @@ fun CategoryCard(
                 .fillMaxSize()
                 .padding(12.dp)
         ) {
-            // Main content
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = category.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDisabled) Color(0xFF9CA3AF) else Color(0xFF374151),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 2.dp)
-                )
-            }
-            
-            // Selection overlay
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                            RoundedCornerShape(12.dp)
-                        )
-                )
-                
-                // Tick icon in top-right corner
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(24.dp)
-                        .background(
-                            Color(0xFF8EC5FF),
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
+            Text(
+                text = category.name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isDisabled) Color.White.copy(alpha = 0.4f) else Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
         }
     }
 }
