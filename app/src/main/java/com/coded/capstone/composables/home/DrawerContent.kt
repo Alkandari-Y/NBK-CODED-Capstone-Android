@@ -30,6 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 
 @Composable
 fun DrawerContent(
@@ -39,13 +42,16 @@ fun DrawerContent(
     onLogoutClick: () -> Unit
 ) {
     ModalDrawerSheet(
-        modifier = Modifier.width(280.dp),
+        modifier = Modifier.width(230.dp),
         drawerContainerColor = Color.White,
         drawerShape = RoundedCornerShape(topEnd = 32.dp, bottomEnd = 32.dp)
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            containerColor = Color.White
+            containerColor = Color.White,
+            topBar = {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+            }
         ) { scaffoldPadding ->
             Box(
                 modifier = Modifier
@@ -59,7 +65,7 @@ fun DrawerContent(
                         .padding(
                             start = 16.dp,
                             end = 16.dp,
-                            top = 24.dp,
+                            top = 8.dp,
                             bottom = 100.dp
                         ),
                     verticalArrangement = Arrangement.SpaceBetween

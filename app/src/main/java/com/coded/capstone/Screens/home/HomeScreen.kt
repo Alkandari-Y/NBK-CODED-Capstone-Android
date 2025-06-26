@@ -61,6 +61,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import com.coded.capstone.SVG.BankFillIcon
 import androidx.compose.foundation.layout.Spacer as Spacer
 import android.util.Log
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,12 +168,14 @@ fun HomeScreen(
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = Color.Transparent,
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0)  // Remove default window insets
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),  // Remove default window insets
+                    topBar = {
+                        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+                    }
                 ) { paddingValues ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            // Only apply top padding from scaffold
                             .padding(top = paddingValues.calculateTopPadding())
                     ) {
                         Column(
