@@ -59,12 +59,12 @@ fun VendorsOnBoarding(
     var searchQuery by remember { mutableStateOf("") }
     val partners by viewModel.partners.collectAsState()
     val favBusinessUiState by viewModel.favBusinessUiState.collectAsState()
-    
+
     // Fetch business partners when screen is first displayed
     LaunchedEffect(Unit) {
         viewModel.fetchBusinessPartners()
     }
-    
+
     // Handle navigation after successful submission
     LaunchedEffect(favBusinessUiState) {
         when (favBusinessUiState) {
@@ -83,7 +83,7 @@ fun VendorsOnBoarding(
     } else {
         partners.filter {
             it.name.contains(searchQuery, ignoreCase = true) ||
-            it.category.name.contains(searchQuery, ignoreCase = true)
+                    it.category.name.contains(searchQuery, ignoreCase = true)
         }
     }
 
@@ -110,14 +110,14 @@ fun VendorsOnBoarding(
                     text = "Personalize Your Banking",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = Color(0xFF374151),
                     textAlign = TextAlign.Center
                 )
 
                 Text(
                     text = "Never Be KLUEless Again",
                     fontSize = 16.sp,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = Color(0xFF6B7280),
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = 8.dp),
                     textAlign = TextAlign.Center
@@ -142,7 +142,7 @@ fun VendorsOnBoarding(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFCBDAE0).copy(alpha = 0.40f))
+                            .background(Color.White)
                     ) {
                         Column(
                             modifier = Modifier
@@ -157,7 +157,7 @@ fun VendorsOnBoarding(
                                 Icon(
                                     imageVector = Icons.Outlined.Store,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = Color(0xFF6B7280),
                                     modifier = Modifier
                                         .size(32.dp)
                                         .padding(bottom = 8.dp)
@@ -167,14 +167,14 @@ fun VendorsOnBoarding(
                                     text = "Select your favorite vendors",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White,
+                                    color = Color(0xFF374151),
                                     textAlign = TextAlign.Center
                                 )
 
                                 Text(
                                     text = "Personalized offers from Kuwait's best merchants",
                                     fontSize = 12.sp,
-                                    color = Color.White.copy(alpha = 0.8f),
+                                    color = Color(0xFF6B7280),
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(top = 6.dp, bottom = 4.dp)
@@ -183,7 +183,7 @@ fun VendorsOnBoarding(
                                 Text(
                                     text = "Based on your interests: ${CategoryRepository.favCategories.map { it.categoryId }.joinToString(", ")}",
                                     fontSize = 10.sp,
-                                    color = Color.White.copy(alpha = 0.8f),
+                                    color = Color(0xFF6B7280),
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(top = 1.dp)
                                 )
@@ -191,7 +191,7 @@ fun VendorsOnBoarding(
                                 Text(
                                     text = "${selectedVendors.size} vendors selected",
                                     fontSize = 10.sp,
-                                    color = Color.White,
+                                    color = Color(0xFF374151),
                                     fontWeight = FontWeight.Medium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
@@ -201,12 +201,12 @@ fun VendorsOnBoarding(
                             OutlinedTextField(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
-                                placeholder = { Text("Search vendors, categories...", color = Color.White.copy(alpha = 0.6f)) },
+                                placeholder = { Text("Search vendors, categories...", color = Color(0xFF9CA3AF)) },
                                 leadingIcon = {
                                     Icon(
                                         Icons.Default.Search,
                                         contentDescription = null,
-                                        tint = Color.White.copy(alpha = 0.7f)
+                                        tint = Color(0xFF6B7280)
                                     )
                                 },
                                 modifier = Modifier
@@ -215,11 +215,11 @@ fun VendorsOnBoarding(
                                 shape = RoundedCornerShape(10.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF8EC5FF),
-                                    unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                                    focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                    unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedContainerColor = Color(0xFFF3F4F6),
+                                    unfocusedContainerColor = Color(0xFFF3F4F6),
+                                    focusedTextColor = Color(0xFF374151),
+                                    unfocusedTextColor = Color(0xFF374151)
                                 )
                             )
 
@@ -272,7 +272,7 @@ fun VendorsOnBoarding(
                                         navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
                                     },
                                     colors = ButtonDefaults.textButtonColors(
-                                        contentColor = Color.White.copy(alpha = 0.8f)
+                                        contentColor = Color(0xFF6B7280)
                                     ),
                                     modifier = Modifier.padding(end = 8.dp)
                                 ) {
