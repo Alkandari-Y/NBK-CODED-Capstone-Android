@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.composables.home.BottomNavBar
@@ -17,6 +18,7 @@ import com.coded.capstone.screens.home.HomeScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.RecommendationViewModel
 
 @Composable
 fun MainScaffoldWithTabs(
@@ -25,6 +27,9 @@ fun MainScaffoldWithTabs(
     homeScreenViewModel: HomeScreenViewModel
 ) {
     var selectedTab by remember { mutableStateOf(0) }
+    val context = LocalContext.current
+    val recommendationViewModel = remember { RecommendationViewModel(context) }
+
     Scaffold(
         bottomBar = {
             BottomNavBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
@@ -32,15 +37,16 @@ fun MainScaffoldWithTabs(
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (selectedTab) {
-                0 -> HomeScreen(navController,authViewModel, onAccountClick = { accountId ->
+                0 -> HomeScreen(navController, authViewModel, onAccountClick = { accountId ->
                     navController.navigate(NavRoutes.accountDetailRoute(accountId))
                 }, onViewAllAccounts = {
                     navController.navigate(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL)
-                },)
+                })
                 1 -> WalletScreen()
-                2 -> CalendarScreen()
+                2 -> CalendarScreen(viewModel = recommendationViewModel)
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }
+
     }
 }

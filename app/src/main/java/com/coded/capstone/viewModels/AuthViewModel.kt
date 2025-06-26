@@ -80,6 +80,7 @@ class AuthViewModel(
                         TokenManager.saveToken(context, jwtResponse)
                         decodedToken.value = TokenManager.decodeAccessToken(context)
                         TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
+                        sendFcmTokenToServer()
                         UserRepository.loadUserInfo(context)
                         uiState.value = AuthUiState.Success(jwtResponse)
                         startBleScanService()
@@ -120,7 +121,7 @@ class AuthViewModel(
 
                         val fcmToken = Firebase.messaging.token.await()
                         Log.d("FCM", "FCM token = $fcmToken")
-                        val result = notificationApiService.testToken(TestFirebaseTokenRequest(token = fcmToken))
+                        val result = notificationApiService.registerFirebaseToken(TestFirebaseTokenRequest(firebaseToken = fcmToken))
                         if (result.isSuccessful) {
                             Log.d("FCM", "Token sent successfully.")
                         } else {
@@ -169,7 +170,7 @@ class AuthViewModel(
             try {
                 val fcmToken = Firebase.messaging.token.await()
                 Log.d("FCM", "FCM token = $fcmToken")
-                val result = notificationApiService.registerFirebaseToken(UserDeviceFBTokenRequest(firebaseToken = fcmToken))
+                
                 if (result.isSuccessful) {
                     Log.d("FCM", "Token sent successfully")
                 } else {
@@ -186,7 +187,6 @@ class AuthViewModel(
         token.value = null
         decodedToken.value = null
         uiState.value = AuthUiState.Loading
-        // Clear KYC on logout
         UserRepository.kyc = null
     }
     private fun startBleScanService() {

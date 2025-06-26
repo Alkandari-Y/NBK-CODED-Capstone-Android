@@ -17,8 +17,8 @@ interface NotificationServiceProvider {
      * @param request The request body containing the FCM token.
      * @return A Response containing a confirmation message from the backend.
      */
-    @POST("/api/v1/here/test")
-    suspend fun testToken(
+    @POST("/api/v1/device/register")
+    suspend fun registerFirebaseToken(
         @Body request: TestFirebaseTokenRequest
     ): Response<ResponseBody>
 

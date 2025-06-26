@@ -83,6 +83,12 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val kyc by viewModel.kyc.collectAsState()
     val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
+    val userXp by viewModel.userXp.collectAsState()
+
+    // Fetch user XP info when screen loads
+    LaunchedEffect(Unit) {
+        viewModel.getUserXpInfo()
+    }
 
     // Separate accounts into reward cards and regular accounts
     val accounts = (accountsUiState as? AccountsUiState.Success)?.accounts
@@ -160,50 +166,54 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(
-                            onClick = {
-                                scope.launch { drawerState.open() }
-                            },
+                        Box(
                             modifier = Modifier
                                 .size(44.dp)
-                                .clip(RoundedCornerShape(12.dp))
-//                                .background(
-//                                    brush = Brush.linearGradient(
-//                                        colors = listOf(
-//                                            Color.White.copy(alpha = 0.1f),
-//                                            Color.White.copy(alpha = 0.05f)
-//                                        )
-//                                    )
-//                                )
+                                .clip(CircleShape)
                         ) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+                                    .blur(8.dp)
                             )
+                            IconButton(
+                                onClick = {
+                                    scope.launch { drawerState.open() }
+                                },
+                                modifier = Modifier.matchParentSize()
+                            ) {
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "Menu",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
 
-                        IconButton(
-                            onClick = onNotificationClick,
+                        Box(
                             modifier = Modifier
                                 .size(44.dp)
-                                .clip(RoundedCornerShape(12.dp))
-//                                .background(
-//                                    brush = Brush.linearGradient(
-//                                        colors = listOf(
-//                                            Color.White.copy(alpha = 0.1f),
-//                                            Color.White.copy(alpha = 0.05f)
-//                                        )
-//                                    )
-//                                )
+                                .clip(CircleShape)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Notifications",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+                                    .blur(8.dp)
                             )
+                            IconButton(
+                                onClick = onNotificationClick,
+                                modifier = Modifier.matchParentSize()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Notifications,
+                                    contentDescription = "Notifications",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
                     }
 
@@ -266,9 +276,9 @@ fun HomeScreen(
                                 ) {
                                     RewardCard(
                                         account = rewardCards.first(),
+                                        userXp = userXp,
                                         onClick = {
-                                            onAccountClick(rewardCards.first().id.toString())
-                                            navController.navigate(NavRoutes.accountDetailRoute(rewardCards.first().id.toString()))
+                                            navController.navigate(NavRoutes.NAV_ROUTE_XP_HISTORY)
                                         }
                                     )
                                 }
@@ -302,16 +312,28 @@ fun HomeScreen(
                                         color = Color.White
                                     )
                                 }
-                                IconButton(
-                                    onClick = { isAccountsExpanded = !isAccountsExpanded },
-                                    modifier = Modifier.size(48.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(CircleShape)
                                 ) {
-                                    Icon(
-                                        imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                        contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
-                                        tint = Color(0xFF8EC5FF),
-                                        modifier = Modifier.size(32.dp)
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .background(Color(0xFF6A7477).copy(alpha = 0.85f))
+                                            .blur(8.dp)
                                     )
+                                    IconButton(
+                                        onClick = { isAccountsExpanded = !isAccountsExpanded },
+                                        modifier = Modifier.matchParentSize()
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                            contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
+                                            tint = Color(0xFF8EC5FF),
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -347,7 +369,7 @@ fun HomeScreen(
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 8.dp)
+                                            .padding(horizontal = 10.dp, vertical = 14.dp)
                                     ) {
                                         Column {
                                             displayedAccounts.forEachIndexed { index, account ->
@@ -364,46 +386,63 @@ fun HomeScreen(
                                                     enter = if (isInitiallyVisible) EnterTransition.None else fadeIn(animationSpec = tween(durationMillis = 400, delayMillis = (index - 3).coerceAtLeast(0) * 80)),
                                                     exit = fadeOut(animationSpec = tween(200))
                                                 ) {
-                                                    Row(
+                                                    Box(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
-                                                            .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
-                                                            .clickable {
-                                                                onAccountClick(account.id.toString())
-                                                                navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
-                                                            },
-                                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                                        verticalAlignment = Alignment.CenterVertically
+                                                            .clip(RoundedCornerShape(16.dp))
+                                                            .padding(horizontal = 0.dp, vertical = 2.dp)
+//                                                             .padding(start = 40.dp, end = 32.dp, top = 16.dp, bottom = 16.dp)
+//                                                             .clickable {
+//                                                                 onAccountClick(account.id.toString())
+//                                                             },
+//                                                         horizontalArrangement = Arrangement.SpaceBetween,
+//                                                         verticalAlignment = Alignment.CenterVertically
                                                     ) {
-                                                        Column {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .matchParentSize()
+                                                                .clip(RoundedCornerShape(16.dp))
+                                                                .background(  Color(0xFFCBDAE0).copy(alpha = 0.40f))
+                                                                .blur(6.dp)
+                                                        )
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .height(72.dp)
+                                                                .clickable {
+                                                                    onAccountClick(account.id.toString())
+                                                                    navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                                                }
+                                                                .padding(start = 32.dp, end = 24.dp, top = 12.dp, bottom = 12.dp),
+                                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Column {
+                                                                Text(
+                                                                    text = account.accountType?.replaceFirstChar { it.uppercase() }
+                                                                        ?: "Account",
+                                                                    style = AppTypography.titleMedium,
+                                                                    color = Color.White,
+                                                                    fontSize = 18.sp
+                                                                )
+                                                                Text(
+                                                                    text = "•••• ${account.accountNumber?.takeLast(4)}",
+                                                                    style = AppTypography.bodySmall,
+                                                                    color = Color(0xFF8EC5FF)
+                                                                )
+                                                            }
                                                             Text(
-                                                                text = account.accountType?.replaceFirstChar { it.uppercase() }
-                                                                    ?: "Account",
+                                                                text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
                                                                 style = AppTypography.titleMedium,
                                                                 color = Color.White,
+                                                                fontWeight = FontWeight.Bold,
                                                                 fontSize = 18.sp
                                                             )
-                                                            Text(
-                                                                text = "•••• ${account.accountNumber?.takeLast(4)}",
-                                                                style = AppTypography.bodySmall,
-                                                                color = Color(0xFF8EC5FF)
-                                                            )
                                                         }
-                                                        Text(
-                                                            text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
-                                                            style = AppTypography.titleMedium,
-                                                            color = Color.White,
-                                                            fontWeight = FontWeight.Bold,
-                                                            fontSize = 18.sp
-                                                        )
                                                     }
                                                 }
                                                 if (index < displayedAccounts.size - 1) {
-                                                    Divider(
-                                                        color = Color.White.copy(alpha = 0.1f),
-                                                        thickness = 1.dp,
-                                                        modifier = Modifier.padding(horizontal = 16.dp)
-                                                    )
+                                                    Spacer(modifier = Modifier.height(6.dp))
                                                 }
                                             }
                                         }
@@ -420,9 +459,9 @@ fun HomeScreen(
                             }
                         }
 
-//                        item {
-//                            Spacer(modifier = Modifier.height(80.dp))
-//                        }
+                        item {
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
                     }
                 }
             }

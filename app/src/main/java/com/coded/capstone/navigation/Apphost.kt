@@ -26,6 +26,7 @@ import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
+import com.coded.capstone.screens.xp.XpTierScreen
 
 
 object NavRoutes {
@@ -45,6 +46,7 @@ object NavRoutes {
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
     const val NAV_ROUTE_PROFILE = "/profile"
+    const val NAV_ROUTE_XP_HISTORY = "xp_history"
 
     fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
 }
@@ -155,5 +157,8 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
         composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
+        composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
+            XpTierScreen(onBackClick = { navController.popBackStack() })
+        }
     }
 }

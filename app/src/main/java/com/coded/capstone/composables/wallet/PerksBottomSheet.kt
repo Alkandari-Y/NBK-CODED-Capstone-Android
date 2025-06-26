@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,172 +36,161 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coded.capstone.R
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.perk.PerkDto
+
+// Roboto font family
+private val RobotoFont = FontFamily(
+    androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
+)
 
 @Composable
 fun PerksBottomSheet(
     account: AccountResponse,
     perks: List<PerkDto>,
-    onPayAction: () -> Unit,
     onUpgradeAccount: () -> Unit = {}
 ) {
-    Card(
+    // AppBackground-style background
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(1f),
-        elevation = CardDefaults.cardElevation(defaultElevation = 24.dp),
-        shape = RoundedCornerShape(
-            topStart = 24.dp,
-            topEnd = 24.dp,
-            bottomStart = 0.dp,
-            bottomEnd = 0.dp
-        ),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 20.dp)
-        ) {
-            // Drag handle
-            Box(
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(4.dp)
-                    .background(
-                        Color(0xFF404040),
-                        shape = RoundedCornerShape(2.dp)
-                    )
-                    .align(Alignment.CenterHorizontally)
+            .fillMaxSize()
+            .background(
+                Color(0xFFCBDAE0).copy(alpha = 0.40f)
             )
+    )
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.Top
+    ) {
+        // Drag handle
+        Box(
+            modifier = Modifier
+                .width(40.dp)
+                .height(4.dp)
+                .background(
+                    Color.White.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(2.dp)
+                )
+                .align(Alignment.CenterHorizontally)
+        )
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Header with close and expand buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        // Header
+        Column {
+            Text(
+                text = "Account Perks",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    fontFamily = RobotoFont
+                ),
+                color = Color.White
+            )
+            Text(
+                text = "${perks.size} benefits available",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 14.sp,
+                    fontFamily = RobotoFont
+                ),
+                color = Color.White.copy(alpha = 0.7f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Perks Content
+        if (perks.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column {
-                    Text(
-                        text = "Account Perks",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
-                        ),
-                        color = Color.White
-                    )
-                    Text(
-                        text = "${perks.size} benefits available",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF9CA3AF)
-                    )
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    WalletActionButton(
-                        icon = Icons.Default.Paid,
-                        text = "Transfer",
-                        onClick = onPayAction,
-                        backgroundColor = Color(0xFF4CAF50)
-                    )
-                }
-
-
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-
-
-            // Perks Content
-            if (perks.isNotEmpty()) {
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    itemsIndexed(perks) { index, perk ->
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn(
-                                animationSpec = tween(400, delayMillis = index * 100)
-                            ) + slideInHorizontally(
-                                initialOffsetX = { it },
-                                animationSpec = tween(400, delayMillis = index * 100)
-                            )
-                        ) {
-                            DarkEnhancedPerkItem(perk = perk)
-                        }
-                    }
-
-                    // Bottom padding for last item
-                    item {
-                        Spacer(modifier = Modifier.height(80.dp))
-                    }
-                }
-            } else {
-                // No perks state
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(
-                                Color(0xFF2D2D2D),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFF6B7280),
-                            modifier = Modifier.size(32.dp)
+                itemsIndexed(perks) { index, perk ->
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(
+                            animationSpec = tween(400, delayMillis = index * 100)
+                        ) + slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(400, delayMillis = index * 100)
                         )
+                    ) {
+                        DarkEnhancedPerkItem(perk = perk)
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                // Bottom padding for last item
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
+            }
+        } else {
+            // No perks state
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .background(
+                            Color.White.copy(alpha = 0.1f),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.7f),
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No Perks Available Yet",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    fontFamily = RobotoFont
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Upgrade your account to unlock exclusive benefits",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    fontFamily = RobotoFont
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = onUpgradeAccount,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                ) {
                     Text(
-                        text = "No Perks Available Yet",
+                        text = "Explore Upgrades",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontFamily = RobotoFont
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Upgrade your account to unlock exclusive benefits",
-                        color = Color(0xFF9CA3AF),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        onClick = onUpgradeAccount,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF10B981)
-                        ),
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
-                    ) {
-                        Text(
-                            text = "Explore Upgrades",
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
                 }
             }
         }

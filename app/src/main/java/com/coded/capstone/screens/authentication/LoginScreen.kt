@@ -87,7 +87,7 @@ fun LoginScreen(
     // Animation states
     var cardVisible by remember { mutableStateOf(false) }
     val cardOffsetY by animateDpAsState(
-        targetValue = if (cardVisible) 180.dp else 800.dp,
+        targetValue = if (cardVisible) 140.dp else 800.dp,
         animationSpec = tween(
             durationMillis = 800,
             easing = FastOutSlowInEasing
@@ -127,7 +127,7 @@ fun LoginScreen(
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .offset(y = 80.dp)
+                    .offset(y = 32.dp)
                     .align(Alignment.TopCenter)
                     .background(
                         Color.White,
@@ -165,14 +165,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xFF151521).copy(alpha = 0.85f), // Center: dark
-                                    Color(0xFFE8E9EF).copy(alpha = 0.05f)  // Edge: light, almost transparent
-                                ),
-                                center = androidx.compose.ui.geometry.Offset(0f, 0f), // Top-left for a bleed effect
-                                radius = 700f
-                            )
+                            Color(0xFFCBDAE0).copy(alpha = 0.40f)
                         )
                 ) {
                     Column(
@@ -226,8 +219,8 @@ fun LoginScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
                                 unfocusedTextColor = Color.White,
                                 focusedTextColor = Color.White,
                                 cursorColor = Color(0xFF8EC5FF)
@@ -261,8 +254,8 @@ fun LoginScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
                                 unfocusedTextColor = Color.White,
                                 focusedTextColor = Color.White,
                                 cursorColor = Color(0xFF8EC5FF)

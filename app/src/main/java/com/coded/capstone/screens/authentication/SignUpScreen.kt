@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -127,7 +128,8 @@ fun SignUpScreen(
         if (uiState is AuthUiState.Success) {
             Toast.makeText(context, "Account created", Toast.LENGTH_SHORT).show()
             navController.navigate(NavRoutes.NAV_ROUTE_EDIT_KYC) {
-                popUpTo(NavRoutes.NAV_ROUTE_SIGNUP) { inclusive = true }
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
             }
         }
     }
@@ -140,7 +142,7 @@ fun SignUpScreen(
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .offset(y = 80.dp)
+                    .offset(y = 32.dp)
                     .align(Alignment.TopCenter)
                     .background(
                         Color.White,
@@ -148,12 +150,10 @@ fun SignUpScreen(
                     )
                     .padding(15.dp)
             ) {
-                // Replace with your actual logo
-                Icon(
-                    imageVector = Icons.Default.PersonAdd,
-                    contentDescription = "Logo",
-                    modifier = Modifier.fillMaxSize(),
-                    tint = Color.Black
+                Image(
+                    painter = painterResource(id = com.coded.capstone.R.drawable.klue),
+                    contentDescription = "KLUE Logo",
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
@@ -177,14 +177,7 @@ fun SignUpScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xFF151521).copy(alpha = 0.85f), // Center: dark
-                                    Color(0xFFE8E9EF).copy(alpha = 0.05f)  // Edge: light, almost transparent
-                                ),
-                                center = androidx.compose.ui.geometry.Offset(0f, 0f), // Top-left for a bleed effect
-                                radius = 700f
-                            )
+                            Color(0xFFCBDAE0).copy(alpha = 0.40f)
                         )
                 ) {
                     Column(
@@ -224,14 +217,14 @@ fun SignUpScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(bottom = 8.dp)
                                 .animateContentSize(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
                                 unfocusedTextColor = Color.White,
                                 focusedTextColor = Color.White,
                                 cursorColor = Color(0xFF8EC5FF)
@@ -271,14 +264,14 @@ fun SignUpScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(bottom = 8.dp)
                                 .animateContentSize(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
                                 unfocusedTextColor = Color.White,
                                 focusedTextColor = Color.White,
                                 cursorColor = Color(0xFF8EC5FF)
@@ -312,14 +305,14 @@ fun SignUpScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(bottom = 8.dp)
                                 .animateContentSize(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
                                 unfocusedTextColor = Color.White,
                                 focusedTextColor = Color.White,
                                 cursorColor = Color(0xFF8EC5FF)
@@ -369,8 +362,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                focusedContainerColor = Color.White.copy(alpha = 0.1f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
                                 unfocusedTextColor = Color.White,
                                 focusedTextColor = Color.White,
                                 cursorColor = Color(0xFF8EC5FF)
@@ -384,7 +377,7 @@ fun SignUpScreen(
                             visualTransformation = if (showConfirmedPassword) VisualTransformation.None else PasswordVisualTransformation(),
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.LockOpen,
+                                    imageVector = Icons.Default.Lock,
                                     contentDescription = "Confirm Password",
                                     tint = Color.White.copy(alpha = 0.7f)
                                 )
