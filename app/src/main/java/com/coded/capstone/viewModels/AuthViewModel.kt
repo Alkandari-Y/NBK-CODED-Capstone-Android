@@ -170,7 +170,7 @@ class AuthViewModel(
             try {
                 val fcmToken = Firebase.messaging.token.await()
                 Log.d("FCM", "FCM token = $fcmToken")
-                
+                val result = notificationApiService.registerFirebaseToken(UserDeviceFBTokenRequest(firebaseToken = fcmToken))
                 if (result.isSuccessful) {
                     Log.d("FCM", "Token sent successfully")
                 } else {
@@ -187,6 +187,7 @@ class AuthViewModel(
         token.value = null
         decodedToken.value = null
         uiState.value = AuthUiState.Loading
+        // Clear KYC on logout
         UserRepository.kyc = null
     }
     private fun startBleScanService() {

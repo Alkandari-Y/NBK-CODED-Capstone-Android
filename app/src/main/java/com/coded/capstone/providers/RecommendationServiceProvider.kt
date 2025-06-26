@@ -48,7 +48,7 @@ interface RecommendationServiceProvider{
 
     @GET("api/v1/promotions/business/{businessId}/active")
     suspend fun getActiveBusinessPromotions(@Path("businessId") businessId: String): Response<List<PromotionResponse>>
-}
+
 
 
     // ble
