@@ -46,23 +46,27 @@ fun DrawerContent(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.White
-        ) { paddingValues ->
-            Column(
+        ) { scaffoldPadding ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 24.dp, bottom = 100.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .padding(scaffoldPadding)
             ) {
-                Column {
-                    // Header with user info
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 24.dp)
-                    ) {
-                        // User avatar
+                // Main content
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 24.dp,
+                            bottom = 100.dp
+                        ),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Top section with user info and main menu items
+                    Column {
+                        // User info section
                         Box(
                             modifier = Modifier
                                 .size(56.dp)
@@ -91,45 +95,48 @@ fun DrawerContent(
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color(0xFF4A90E2)
                         )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        HorizontalDivider(
+                            color = Color(0xFF2A2A2A).copy(alpha = 0.1f),
+                            thickness = 1.dp
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Menu items
+                        DrawerMenuItem(
+                            icon = Icons.Default.Person,
+                            title = "Profile",
+                            onClick = onProfileClick
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        DrawerMenuItem(
+                            icon = Icons.Default.Settings,
+                            title = "Settings",
+                            onClick = onSettingsClick
+                        )
                     }
 
-                    HorizontalDivider(
-                        color = Color(0xFF2A2A2A).copy(alpha = 0.1f),
-                        thickness = 1.dp
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Menu items
-                    DrawerMenuItem(
-                        icon = Icons.Default.Person,
-                        title = "Profile",
-                        onClick = onProfileClick
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    DrawerMenuItem(
-                        icon = Icons.Default.Settings,
-                        title = "Settings",
-                        onClick = onSettingsClick
-                    )
-                }
-
-                // Logout section at bottom
-                Column {
-                    HorizontalDivider(
-                        color = Color(0xFF2A2A2A).copy(alpha = 0.1f),
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(vertical = 12.dp)
-                    )
-                    
-                    DrawerMenuItem(
-                        icon = Icons.AutoMirrored.Filled.ExitToApp,
-                        title = "Logout",
-                        onClick = onLogoutClick,
-                        isDestructive = true
-                    )
+                    // Bottom section with logout
+                    Column {
+                        HorizontalDivider(
+                            color = Color(0xFF2A2A2A).copy(alpha = 0.1f),
+                            thickness = 1.dp
+                        )
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        DrawerMenuItem(
+                            icon = Icons.AutoMirrored.Filled.ExitToApp,
+                            title = "Logout",
+                            onClick = onLogoutClick,
+                            isDestructive = true
+                        )
+                    }
                 }
             }
         }

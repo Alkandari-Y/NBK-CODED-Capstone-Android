@@ -28,6 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 
 @Composable
 fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
@@ -45,38 +47,37 @@ fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
         color = Color.Transparent,
         shadowElevation = 24.dp
     ) {
-        Box(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .height(85.dp),
+            shape = RoundedCornerShape(
+                topStart = 40.dp,
+                topEnd = 40.dp,
+                bottomStart = 0.dp,
+                bottomEnd = 0.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF2A2A2A)
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 24.dp
+            )
         ) {
-            Card(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(85.dp),
-                shape = RoundedCornerShape(40.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF2A2A2A)
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 24.dp
-                )
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    navItems.forEachIndexed { index, item ->
-                        BottomNavItem(
-                            icon = item.icon,
-                            label = item.label,
-                            isSelected = selectedTab == index,
-                            onClick = { onTabSelected(index) }
-                        )
-                    }
+                navItems.forEachIndexed { index, item ->
+                    BottomNavItem(
+                        icon = item.icon,
+                        label = item.label,
+                        isSelected = selectedTab == index,
+                        onClick = { onTabSelected(index) }
+                    )
                 }
             }
         }
