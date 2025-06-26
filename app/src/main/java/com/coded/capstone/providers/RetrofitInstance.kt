@@ -45,7 +45,7 @@ object RetrofitInstance {
 
     fun getGeofenceServiceProvider(context: Context): GeofenceServiceProvider {
         return Retrofit.Builder()
-            .baseUrl(getBaseUrl(NOTIFICATION_SERVER_PORT))
+            .baseUrl(getBaseUrl(RECOMMENDATION_SERVER_PORT))
             .client(createOkHttpClient(context))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -71,7 +71,7 @@ object RetrofitInstance {
             .create(RecommendationServiceProvider::class.java)
     }
 
-//    private fun getBaseUrl(port: Int): String = "http://192.168.123.54:$port/"
+//    private fun getBaseUrl(port: Int): String = "http://192.168.13.44:$port/"
 //    private fun getDeviceBaseUrl(port: Int): String = "$DEVICE_BASE_URL$port/"
     private fun getBaseUrl(port: Int): String = "http://10.0.2.2:$port/"
 

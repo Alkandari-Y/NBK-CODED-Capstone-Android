@@ -18,7 +18,7 @@ interface GeofenceServiceProvider {
      * @param request The request body containing the geofence ID and transition type.
      * @return A Response with no body, indicating success or failure.
      */
-    @POST("/api/v1/geofence/event")
+    @POST("/api/v1/recommendations/geofence")
     suspend fun sendGeofenceEvent(
         @Body request: GeofenceEventRequest
     ): Response<Void>

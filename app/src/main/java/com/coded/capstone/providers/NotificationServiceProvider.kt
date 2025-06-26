@@ -21,5 +21,15 @@ interface NotificationServiceProvider {
     suspend fun registerFirebaseToken(
         @Body request: TestFirebaseTokenRequest
     ): Response<ResponseBody>
-} 
+
+
+    @POST("/api/v1/device/register")
+    suspend fun registerFirebaseToken(
+        @Body request: UserDeviceFBTokenRequest
+    ): Response<ResponseBody>
+}
+
+data class UserDeviceFBTokenRequest(
+    val firebaseToken: String
+)
 

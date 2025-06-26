@@ -2,6 +2,7 @@ package com.coded.capstone.providers
 
 
 import com.coded.capstone.data.requests.account.AccountCreateRequest
+import com.coded.capstone.data.requests.ble.BlueToothBeaconNotificationRequest
 import com.coded.capstone.data.requests.partner.FavBusinessResponse
 import com.coded.capstone.data.requests.partner.SetFavBusinessRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
@@ -47,8 +48,10 @@ interface RecommendationServiceProvider{
 
     @GET("api/v1/promotions/business/{businessId}/active")
     suspend fun getActiveBusinessPromotions(@Path("businessId") businessId: String): Response<List<PromotionResponse>>
-
-
-
 }
 
+
+    // ble
+    @POST("/api/v1/recommendations/bluetooth-beacon")
+    suspend fun sendBleDevice(@Body payload: BlueToothBeaconNotificationRequest): Response<Void>
+}

@@ -130,7 +130,7 @@ object GeofenceManager {
             id = "coded_academy",
             name = "CODED Academy",
             location = LatLng(29.358292292366325, 47.907062076195444),
-            radius = 600f,
+            radius = 100f,
             type = LocationType.EDUCATION,
             description = "Coding academy",
             tags = listOf("education", "coding", "academy", "technology")
