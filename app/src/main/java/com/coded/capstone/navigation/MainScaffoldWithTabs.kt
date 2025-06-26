@@ -47,5 +47,6 @@ fun MainScaffoldWithTabs(
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }
+
     }
 }
