@@ -144,7 +144,7 @@ fun NBKVendorCard(
                 // Tick icon in top-right corner
                 Box(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
+                        .align(Alignment.End)
                         .padding(8.dp)
                         .size(24.dp)
                         .background(
