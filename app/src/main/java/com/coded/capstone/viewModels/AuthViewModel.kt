@@ -20,6 +20,7 @@ import com.coded.capstone.data.responses.errors.ApiErrorResponse
 import com.coded.capstone.data.responses.errors.ValidationError
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.providers.RetrofitInstance
+import com.coded.capstone.providers.UserDeviceFBTokenRequest
 import com.coded.capstone.respositories.UserRepository
 import com.coded.capstone.services.BleScanService
 import com.google.firebase.ktx.Firebase
@@ -168,9 +169,9 @@ class AuthViewModel(
             try {
                 val fcmToken = Firebase.messaging.token.await()
                 Log.d("FCM", "FCM token = $fcmToken")
-                val result = notificationApiService.testToken(TestFirebaseTokenRequest(token = fcmToken))
+                val result = notificationApiService.registerFirebaseToken(UserDeviceFBTokenRequest(firebaseToken = fcmToken))
                 if (result.isSuccessful) {
-                    Log.d("FCM", "Token sent successfully. Response: ${result.body()?.string()}")
+                    Log.d("FCM", "Token sent successfully")
                 } else {
                     Log.w("FCM", "Failed to send token. Code: ${result.code()}")
                 }
