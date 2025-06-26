@@ -96,6 +96,7 @@ class HomeScreenViewModel(
             if (UserRepository.userInfo == null) {
                 UserRepository.loadUserInfo(context)
             }
+            fetchAccounts()
             fetchCategories()
             fetchAccountProducts()
             fetchKyc()
@@ -104,14 +105,16 @@ class HomeScreenViewModel(
     }
 
     fun fetchAccounts() {
-        Log.d("HomeScreenViewModel", "fetchAccounts() called")
         viewModelScope.launch {
             _accountsUiState.value = AccountsUiState.Loading
             try {
                 val response = RetrofitInstance.getBankingServiceProvide(context).getAllAccounts()
                 if (response.isSuccessful) {
                     val accounts = response.body()?.toMutableList() ?: mutableListOf()
-                    Log.d("HomeScreenViewModel", "Accounts fetched: ${accounts.size} - $accounts")
+                    // Debug log: print account numbers and balances
+                    accounts.forEach { acc ->
+                        Log.d("AccountFetchDebug", "Account: ${acc.accountNumber}, Balance: ${acc.balance}")
+                    }
                     _accountsUiState.value = AccountsUiState.Success(accounts)
                     AccountRepository.myAccounts = accounts
                     accountsFetched = true

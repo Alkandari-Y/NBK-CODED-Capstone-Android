@@ -64,14 +64,17 @@ fun NBKVendorCard(
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
             2.dp,
-            if (isSelected) Color(0xFF8EC5FF) else Color.Transparent
+            if (isSelected) Color(0xFF8EC5FF) else Color.White.copy(alpha = 0.3f)
         ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isSelected) {
+                Color(0xFF8EC5FF).copy(alpha = 0.15f)
+            } else {
+                Color.White.copy(alpha = 0.15f)
+            }
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isSelected) 8.dp else 4.dp
-
+            defaultElevation = if (isSelected) 6.dp else 2.dp
         )
     ) {
         Column(
@@ -81,127 +84,45 @@ fun NBKVendorCard(
                 .fillMaxSize()
                 .padding(12.dp)
         ) {
-            // Main content
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(12.dp)
-            ) {
-                // Logo - use AsyncImage for network image
-                if (vendor.logoUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = vendor.logoUrl,
-                        contentDescription = "${vendor.name} logo",
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                        contentScale = ContentScale.Fit
-                    )
-                } else {
-                    // Fallback to category icon
-                    Icon(
-                        imageVector = getCategoryIcon(vendor.category.name),
-                        contentDescription = "${vendor.category.name} category",
-                        tint = Color(0xFF6B7280),
-                        modifier = Modifier
-                            .size(28.dp)
-                            .padding(bottom = 4.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = vendor.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF374151),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 2.dp)
-                )
-                Text(
-                    text = vendor.category.name,
-                    fontSize = 10.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 1.dp)
-                )
-            }
-            
-            // Selection overlay
-            if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                            RoundedCornerShape(12.dp)
-                        )
-                )
-                
-                // Tick icon in top-right corner
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(24.dp)
-                        .background(
-                            Color(0xFF8EC5FF),
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Selected",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-
             // Logo - use AsyncImage for network image
-//             if (vendor.logoUrl.isNotEmpty()) {
-//                 AsyncImage(
-//                     model = vendor.logoUrl,
-//                     contentDescription = "${vendor.name} logo",
-//                     modifier = Modifier
-//                         .size(28.dp)
-//                         .clip(RoundedCornerShape(4.dp)),
-//                     contentScale = ContentScale.Fit
-//                 )
-//             } else {
-//                 // Fallback to category icon
-//                 Icon(
-//                     imageVector = getCategoryIcon(vendor.category.name),
-//                     contentDescription = "${vendor.category.name} category",
-//                     tint = Color.White,
-//                     modifier = Modifier
-//                         .size(28.dp)
-//                         .padding(bottom = 4.dp)
-//                 )
-//             }
+            if (vendor.logoUrl.isNotEmpty()) {
+                AsyncImage(
+                    model = vendor.logoUrl,
+                    contentDescription = "${vendor.name} logo",
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                // Fallback to category icon
+                Icon(
+                    imageVector = getCategoryIcon(vendor.category.name),
+                    contentDescription = "${vendor.category.name} category",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .padding(bottom = 4.dp)
+                )
+            }
 
-//             Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-//             Text(
-//                 text = vendor.name,
-//                 fontSize = 14.sp,
-//                 fontWeight = FontWeight.Bold,
-//                 color = Color.White,
-//                 textAlign = TextAlign.Center,
-//                 modifier = Modifier.padding(bottom = 2.dp)
-//             )
-//             Text(
-//                 text = vendor.category.name,
-//                 fontSize = 10.sp,
-//                 color = Color.White.copy(alpha = 0.8f),
-//                 textAlign = TextAlign.Center,
-//                 modifier = Modifier.padding(bottom = 1.dp)
-//             )
-
+            Text(
+                text = vendor.name,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+            Text(
+                text = vendor.category.name,
+                fontSize = 10.sp,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 1.dp)
+            )
         }
     }
 }

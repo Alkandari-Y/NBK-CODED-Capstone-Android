@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
+import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
@@ -25,8 +26,6 @@ import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
-import com.coded.capstone.screens.transfer.TransferScreen
-import com.coded.capstone.managers.TokenManager
 
 
 object NavRoutes {
@@ -35,7 +34,6 @@ object NavRoutes {
     const val NAV_ROUTE_LOADING_DASHBOARD = "loading_dashboard"
     const val NAV_ROUTE_HOME = "home"
     const val NAV_ROUTE_WALLET ="wallet"
-    const val NAV_ROUTE_TRANSFER = "transfer"
     const val NAV_ROUTE_CALENDER ="calender"
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
@@ -124,7 +122,7 @@ val accountViewModel = remember { AccountViewModel(context) }
         }
         composable(NavRoutes.NAV_ROUTE_HOME) {
             val authViewModel = remember { AuthViewModel(context) }
-            MainScaffoldWithTabs(navController = navController, authViewModel = authViewModel, homeScreenViewModel = homeScreenViewModel)
+            MainScaffoldWithTabs(navController = navController,authViewModel, homeScreenViewModel)
         }
 //        composable(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL) {
 //            AllAccountsScreen(
@@ -155,23 +153,7 @@ val accountViewModel = remember { AccountViewModel(context) }
             )
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
-        composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen(navController = navController) }
-        composable(
-            route = NavRoutes.NAV_ROUTE_TRANSFER + "?selectedAccountId={selectedAccountId}",
-            arguments = listOf(
-                androidx.navigation.navArgument("selectedAccountId") {
-                    type = androidx.navigation.NavType.StringType
-                    defaultValue = ""
-                    nullable = true
-                }
-            )
-        ) { backStackEntry ->
-            val selectedAccountId = backStackEntry.arguments?.getString("selectedAccountId")
-            TransferScreen(
-                navController = navController,
-                selectedAccountId = selectedAccountId
-            )
-        }
+        composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen() }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
     }
 }

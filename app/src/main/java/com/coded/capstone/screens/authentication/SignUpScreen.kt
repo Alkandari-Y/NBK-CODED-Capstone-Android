@@ -176,8 +176,7 @@ fun SignUpScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Color.White
-
+                            Color(0xFFCBDAE0).copy(alpha = 0.40f)
                         )
                 ) {
                     Column(
@@ -192,18 +191,9 @@ fun SignUpScreen(
                             style = androidx.compose.ui.text.TextStyle(
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF374151)
+                                color = Color.White
                             ),
                             modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        Text(
-                            text = "Create your account",
-                            style = androidx.compose.ui.text.TextStyle(
-                                fontSize = 16.sp,
-                                color = Color(0xFF6B7280)
-                            ),
-                            modifier = Modifier.padding(bottom = 32.dp)
                         )
 
                         // Username Field
@@ -213,14 +203,14 @@ fun SignUpScreen(
                             label = {
                                 Text(
                                     "Username",
-                                    color = Color(0xFF6B7280),
+                                    color = Color.White.copy(alpha = 0.7f),
                                     fontSize = 14.sp
                                 )
                             },
                             placeholder = {
                                 Text(
                                     "Enter your username",
-                                    color = Color(0xFF9CA3AF),
+                                    color = Color.White.copy(alpha = 0.5f),
                                     fontSize = 14.sp
                                 )
                             },
@@ -232,12 +222,11 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
-                                unfocusedTextColor = Color(0xFF374151),
-                                focusedTextColor = Color(0xFF374151),
-                                cursorColor = Color(0xFF374151)
-
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
                             ),
                             isError = formState.usernameError != null,
                             supportingText = {
@@ -249,7 +238,7 @@ fun SignUpScreen(
                                 Icon(
                                     imageVector = Icons.Default.Person,
                                     contentDescription = "Username",
-                                    tint = Color(0xFF6B7280)
+                                    tint = Color.White.copy(alpha = 0.7f)
                                 )
                             }
                         )
@@ -261,14 +250,14 @@ fun SignUpScreen(
                             label = {
                                 Text(
                                     "Email",
-                                    color = Color(0xFF6B7280),
+                                    color = Color.White.copy(alpha = 0.7f),
                                     fontSize = 14.sp
                                 )
                             },
                             placeholder = {
                                 Text(
                                     "your.email@example.com",
-                                    color = Color(0xFF9CA3AF),
+                                    color = Color.White.copy(alpha = 0.5f),
                                     fontSize = 14.sp
                                 )
                             },
@@ -280,12 +269,11 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
-                                unfocusedTextColor = Color(0xFF374151),
-                                focusedTextColor = Color(0xFF374151),
-                                cursorColor = Color(0xFF374151)
-
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
                             ),
                             isError = formState.emailError != null,
                             supportingText = {
@@ -297,7 +285,7 @@ fun SignUpScreen(
                                 Icon(
                                     imageVector = Icons.Default.Email,
                                     contentDescription = "Email",
-                                    tint = Color(0xFF6B7280)
+                                    tint = Color.White.copy(alpha = 0.7f)
                                 )
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -310,7 +298,7 @@ fun SignUpScreen(
                             label = {
                                 Text(
                                     "Password",
-                                    color = Color(0xFF6B7280),
+                                    color = Color.White.copy(alpha = 0.7f),
                                     fontSize = 14.sp
                                 )
                             },
@@ -322,12 +310,11 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
-                                unfocusedTextColor = Color(0xFF374151),
-                                focusedTextColor = Color(0xFF374151),
-                                cursorColor = Color(0xFF374151)
-
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
                             ),
                             isError = formState.passwordError != null,
                             supportingText = {
@@ -340,7 +327,7 @@ fun SignUpScreen(
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = "Password",
-                                    tint = Color(0xFF6B7280)
+                                    tint = Color.White.copy(alpha = 0.7f)
                                 )
                             },
                             trailingIcon = {
@@ -348,7 +335,7 @@ fun SignUpScreen(
                                     Icon(
                                         imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                         contentDescription = "Toggle password visibility",
-                                        tint = Color(0xFF6B7280)
+                                        tint = Color.White.copy(alpha = 0.7f)
                                     )
                                 }
                             },
@@ -362,7 +349,7 @@ fun SignUpScreen(
                             label = {
                                 Text(
                                     "Confirm Password",
-                                    color = Color(0xFF6B7280),
+                                    color = Color.White.copy(alpha = 0.7f),
                                     fontSize = 14.sp
                                 )
                             },
@@ -374,12 +361,11 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
-                                unfocusedTextColor = Color(0xFF374151),
-                                focusedTextColor = Color(0xFF374151),
-                                cursorColor = Color(0xFF374151)
-
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                focusedContainerColor = Color.White.copy(alpha = 0.15f),
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color(0xFF8EC5FF)
                             ),
                             isError = formState.confirmPasswordError != null,
                             supportingText = {
@@ -392,7 +378,7 @@ fun SignUpScreen(
                                 Icon(
                                     imageVector = Icons.Default.Lock,
                                     contentDescription = "Confirm Password",
-                                    tint = Color(0xFF6B7280)
+                                    tint = Color.White.copy(alpha = 0.7f)
                                 )
                             },
                             trailingIcon = {
@@ -400,7 +386,7 @@ fun SignUpScreen(
                                     Icon(
                                         imageVector = if (showConfirmedPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                         contentDescription = "Toggle confirm password visibility",
-                                        tint = Color(0xFF6B7280)
+                                        tint = Color.White.copy(alpha = 0.7f)
                                     )
                                 }
                             },
@@ -489,7 +475,7 @@ fun SignUpScreen(
                         // Login link
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color(0xFF6B7280))) {
+                                withStyle(style = SpanStyle(color = Color.White.copy(alpha = 0.6f))) {
                                     append("Already have an account? ")
                                 }
                                 withStyle(

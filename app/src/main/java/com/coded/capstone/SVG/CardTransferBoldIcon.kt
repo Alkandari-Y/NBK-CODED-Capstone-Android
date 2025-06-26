@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CardTransferBoldIcon(modifier: Modifier = Modifier, color: Color = Color.Unspecified) {
+fun CardTransferBoldIcon(modifier: Modifier = Modifier) {
     val path1 = PathParser().parsePathString(
         "M10 4h4c3.771 0 5.657 0 6.828 1.172c.844.843 1.08 2.057 1.146 4.078H2.026c.066-2.021.302-3.235 1.146-4.078C4.343 4 6.229 4 10 4"
     ).toNodes()
@@ -33,16 +33,15 @@ fun CardTransferBoldIcon(modifier: Modifier = Modifier, color: Color = Color.Uns
     ).apply {
         addPath(
             pathData = path1,
-            fill = SolidColor(Color(0xFF8EC5FF))
+            fill = SolidColor(Color.White)
         )
         addPath(
             pathData = path2,
-            fill = SolidColor(Color(0xFF8EC5FF))
+            fill = SolidColor(Color.White)
         )
         addPath(
             pathData = path3,
-            fill = SolidColor(Color(0xFF8EC5FF))
-
+            fill = SolidColor(Color.White)
         )
     }.build()
 
