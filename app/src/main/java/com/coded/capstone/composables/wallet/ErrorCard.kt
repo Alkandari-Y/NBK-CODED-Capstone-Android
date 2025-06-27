@@ -35,12 +35,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.respositories.AccountProductRepository
 
 @Composable
  fun SingleSelectedCard(
     account: AccountResponse,
     onCardClick: () -> Unit
 ) {
+    // Function to get recommendation type from account product category names
+    fun getRecommendationType(account: AccountResponse): String? {
+        // Get the account product to match the recommendation screen logic
+        val accountProduct = AccountProductRepository.accountProducts.find {
+            it.id == account.accountProductId
+        }
+        
+        // Use the same logic as the recommendation screen
+        return when {
+            accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
+            accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
+            accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
+            accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
+            accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
+            accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
+            accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
+            account.accountType?.lowercase() == "credit" -> "shopping"
+            account.accountType?.lowercase() == "savings" -> "family essentials"
+            account.accountType?.lowercase() == "debit" -> "travel"
+            else -> null // Use default account type colors instead of defaulting to shopping
+        }
+    }
+
     val scale by animateFloatAsState(
         targetValue = 1f,
         animationSpec = spring(
@@ -58,6 +82,9 @@ import com.coded.capstone.data.responses.account.AccountResponse
         ),
         label = "selectedCardOffset"
     )
+
+    // Get recommendation type for this account
+    val recommendationType = getRecommendationType(account)
 
     Card(
         modifier = Modifier
@@ -86,12 +113,11 @@ import com.coded.capstone.data.responses.account.AccountResponse
         WalletCard(
             account = account,
             onCardClick = onCardClick,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            recommendationType = recommendationType
         )
     }
 }
-
-
 
 @Composable
  fun ErrorCard(onRetry: () -> Unit) {
