@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -12,17 +13,17 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Paid
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -49,9 +50,23 @@ import com.coded.capstone.data.states.TransferUiState
 import com.coded.capstone.data.states.TopUpUiState
 import com.coded.capstone.ui.AppBackground
 import com.coded.capstone.SVG.CardTransferBoldIcon
+import com.coded.capstone.SVG.RoundTapAndPlayIcon
 import java.math.BigDecimal
 import androidx.navigation.NavController
 import com.coded.capstone.navigation.NavRoutes
+import com.coded.capstone.data.responses.perk.PerkDto
+import com.coded.capstone.data.enums.AccountType
+import com.coded.capstone.respositories.UserRepository
+import kotlinx.coroutines.launch
+import androidx.navigation.compose.rememberNavController
+import com.coded.capstone.ui.theme.AppTypography
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.ui.geometry.Offset
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -156,6 +171,36 @@ fun WalletScreen(
     var cardAnimationTrigger by remember { mutableStateOf(false) }
     var externalExpandTrigger by remember { mutableStateOf(false) }
 
+    // Pay animation states
+    var isPayAnimationActive by remember { mutableStateOf(false) }
+    var payAnimationSeconds by remember { mutableStateOf(59) }
+    var waveAnimationKey by remember { mutableStateOf(0) }
+    val payAnimationRotation by animateFloatAsState(
+        targetValue = if (isPayAnimationActive) 90f else 0f,
+        animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+        label = "payAnimationRotation"
+    )
+    val payAnimationScale by animateFloatAsState(
+        targetValue = if (isPayAnimationActive) 1.2f else 1f,
+        animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+        label = "payAnimationScale"
+    )
+    val payAnimationOffset by animateDpAsState(
+        targetValue = if (isPayAnimationActive) 200.dp else 0.dp,
+        animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+        label = "payAnimationOffset"
+    )
+    val buttonsOpacity by animateFloatAsState(
+        targetValue = if (isPayAnimationActive) 0f else 1f,
+        animationSpec = tween(durationMillis = 300),
+        label = "buttonsOpacity"
+    )
+    val sheetOpacity by animateFloatAsState(
+        targetValue = if (isPayAnimationActive) 0f else 1f,
+        animationSpec = tween(durationMillis = 300),
+        label = "sheetOpacity"
+    )
+
     // Toast states
     var showSuccessToast by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
@@ -238,6 +283,24 @@ fun WalletScreen(
     LaunchedEffect(showBottomSheet) {
         if (!showBottomSheet) {
             expandedPerks = false
+        }
+    }
+
+    // Handle pay animation with counter
+    LaunchedEffect(isPayAnimationActive) {
+        if (isPayAnimationActive) {
+            // Countdown from 59 to 0
+            for (i in 59 downTo 0) {
+                payAnimationSeconds = i
+                waveAnimationKey++ // Trigger wave animation restart
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                delay(1000) // Wait 1 second
+            }
+            // Reset animation after completion
+            isPayAnimationActive = false
+            waveAnimationKey = 0
+            payAnimationSeconds = 59
+            showBottomSheet = true // Show bottom sheet again
         }
     }
 
@@ -372,6 +435,13 @@ fun WalletScreen(
                                         label = "transferButtonOffset"
                                     )
 
+                                    // Pay button slide-in animation
+                                    val payButtonOffset by animateDpAsState(
+                                        targetValue = if (cardAnimationTrigger) 0.dp else 100.dp,
+                                        animationSpec = tween(durationMillis = 600, delayMillis = 200),
+                                        label = "payButtonOffset"
+                                    )
+
                                     // Trigger animation when card is selected
                                     LaunchedEffect(selectedCard) {
                                         cardAnimationTrigger = true
@@ -381,43 +451,112 @@ fun WalletScreen(
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        // Card
+                                        // Card with pay animation
                                         Box(
-                                            modifier = Modifier.offset(y = cardOffset)
+                                            modifier = Modifier
+                                                .offset(y = cardOffset + payAnimationOffset)
+                                                .graphicsLayer(
+                                                    rotationZ = payAnimationRotation,
+                                                    scaleX = payAnimationScale,
+                                                    scaleY = payAnimationScale
+                                                )
                                         ) {
                                             SingleSelectedCard(
                                                 account = selectedCard!!,
-                                                onCardClick = { showBottomSheet = true }
+                                                onCardClick = { 
+                                                    if (!isPayAnimationActive) {
+                                                        showBottomSheet = true 
+                                                    }
+                                                }
                                             )
                                         }
-
-                                        // Transfer button below the card
+                                        
+                                        // Buttons row
                                         Spacer(modifier = Modifier.height(13.dp))
 
-                                        // Transfer button positioned to the left
-                                        Box(
+                                        Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .offset(x = transferButtonOffset)
+                                                .graphicsLayer(alpha = buttonsOpacity),
+                                            horizontalArrangement = Arrangement.Start,
+                                            verticalAlignment = Alignment.CenterVertically
                                         ) {
+                                            Spacer(modifier = Modifier.width(20.dp))
+                                            
+                                            // Transfer button positioned to the left
                                             Box(
-                                                modifier = Modifier
-                                                    .padding(start = 10.dp)
-                                                    .size(45.dp)
-                                                    .background(
-                                                        Color(0xFF23272E).copy(alpha = 0.99f),
-                                                        CircleShape
-                                                    )
-                                                    .clickable {
-                                                        transferSourceAccount = selectedCard!!
-                                                        navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
-                                                    },
-                                                contentAlignment = Alignment.Center
+                                                modifier = Modifier.offset(x = transferButtonOffset)
                                             ) {
-                                                CardTransferBoldIcon(
-                                                    modifier = Modifier.size(32.dp),
-                                                    color = Color(0xFF8EC5FF)
+                                                // Circular shadow
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color.Black.copy(alpha = 0.2f),
+                                                            CircleShape
+                                                        )
+                                                        .offset(y = 4.dp)
                                                 )
+                                                
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color(0xFF8EC5FF).copy(alpha = 0.99f),
+                                                            CircleShape
+                                                        )
+                                                        .clickable {
+                                                            if (!isPayAnimationActive) {
+                                                                transferSourceAccount = selectedCard!!
+                                                                navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
+                                                            }
+                                                        },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CardTransferBoldIcon(
+                                                        modifier = Modifier.size(32.dp),
+                                                        color = Color.White
+                                                    )
+                                                }
+                                            }
+
+                                            Spacer(modifier = Modifier.width(16.dp))
+
+                                            // Pay button positioned next to transfer
+                                            Box(
+                                                modifier = Modifier.offset(x = payButtonOffset)
+                                            ) {
+                                                // Circular shadow
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color.Black.copy(alpha = 0.2f),
+                                                            CircleShape
+                                                        )
+                                                        .offset(y = 4.dp)
+                                                )
+                                                
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color(0xFF8EC5FF).copy(alpha = 0.99f),
+                                                            CircleShape
+                                                        )
+                                                        .clickable {
+                                                            if (!isPayAnimationActive) {
+                                                                isPayAnimationActive = true
+                                                                showBottomSheet = false
+                                                            }
+                                                        },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    RoundTapAndPlayIcon(
+                                                        modifier = Modifier.size(32.dp),
+                                                        color = Color.White
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -450,7 +589,7 @@ fun WalletScreen(
                 var sheetExpanded by remember { mutableStateOf(false) }
 
                 val sheetHeight by animateDpAsState(
-                    targetValue = if (showBottomSheet) 0.dp else (-1000).dp,
+                    targetValue = if (showBottomSheet) 0.dp else 1000.dp,
                     animationSpec = tween(durationMillis = 600),
                     label = "sheetHeight"
                 )
@@ -471,6 +610,9 @@ fun WalletScreen(
                         .offset(y = sheetHeight)
                         .background(Color(0xFF23272E))
                         .padding(bottom = 4.dp)
+
+                        .graphicsLayer(alpha = sheetOpacity)
+
                         .pointerInput(Unit) {
                             detectDragGestures { change, dragAmount ->
                                 // Detect downward swipe to dismiss
@@ -482,6 +624,7 @@ fun WalletScreen(
                                 }
                             }
                         }
+
                 ) {
                     // Glass effect removed/commented out for solid background
                     // Box(
@@ -515,6 +658,88 @@ fun WalletScreen(
                     .padding(top = 100.dp) // Position below the header
                     .zIndex(1000f) // Ensure it appears above other elements
             )
+
+            // Pay Animation Counter - positioned at the bottom
+            if (isPayAnimationActive) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 50.dp)
+                        .zIndex(1000f)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Back handle to cancel
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .background(Color(0xFF23272E), CircleShape)
+                                .clickable {
+                                    isPayAnimationActive = false
+                                    waveAnimationKey = 0
+                                    payAnimationSeconds = 59
+                                    showBottomSheet = true // Show bottom sheet again
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Cancel payment",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        
+                        // Counter with circle background
+                        Box(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .background(Color(0xFF8EC5FF), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = payAnimationSeconds.toString(),
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = RobotoFont
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Wave animation - positioned absolutely in the main Box
+            if (isPayAnimationActive) {
+                val waveScale by animateFloatAsState(
+                    targetValue = if (waveAnimationKey % 2 == 0) 2f else 1.5f,
+                    animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+                    label = "waveScale"
+                )
+                val waveAlpha by animateFloatAsState(
+                    targetValue = if (waveAnimationKey % 2 == 0) 0.3f else 0.6f,
+                    animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+                    label = "waveAlpha"
+                )
+                
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(300.dp)
+                        .graphicsLayer(
+                            scaleX = waveScale,
+                            scaleY = waveScale,
+                            alpha = waveAlpha
+                        )
+                        .background(
+                            Color(0xFF8EC5FF).copy(alpha = 0.6f),
+                            CircleShape
+                        )
+                        .zIndex(100f)
+                )
+            }
 
             // Transaction Dialogs
             if (showTopUpDialog) {
