@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -40,7 +42,6 @@ import com.coded.capstone.composables.wallet.ErrorCard
 import com.coded.capstone.composables.wallet.PerksBottomSheet
 import com.coded.capstone.composables.wallet.SingleSelectedCard
 import com.coded.capstone.composables.wallet.TopUpDialog
-import com.coded.capstone.screens.  transfer.TransferScreen
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.TransactionViewModel
 import com.coded.capstone.viewModels.AccountsUiState
@@ -180,6 +181,7 @@ fun WalletScreen(
             }
         }
     }
+
     // Handle transfer success
     LaunchedEffect(transferUiState) {
         if (transferUiState is TransferUiState.Success) {
@@ -272,26 +274,26 @@ fun WalletScreen(
                         enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
                         exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
                     ) {
-//                        IconButton(
-//                            onClick = {
-//                                selectedCard = null
-//                                showBottomSheet = false
-//                                cardAnimationTrigger = false // Reset animation trigger
-//                            },
-//                            modifier = Modifier
-//                                .size(35.dp)
-//                                .background(
-//                                    Color(0xFF23272E).copy(alpha = 0.05f),
-//                                    CircleShape
-//                                )
-//                        ) {
-//                            Icon(
-//                                Icons.AutoMirrored.Filled.ArrowBack,
-//                                contentDescription = "Back to all cards",
-//                                tint = Color(0xFF23272E),
-//                                modifier = Modifier.size(20.dp)
-//                            )
-//                        }
+                        IconButton(
+                            onClick = {
+                                selectedCard = null
+                                showBottomSheet = false
+                                cardAnimationTrigger = false // Reset animation trigger
+                            },
+                            modifier = Modifier
+                                .size(35.dp)
+                                .background(
+                                    Color(0xFF23272E).copy(alpha = 0.05f),
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back to all cards",
+                                tint = Color(0xFF23272E),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
 
                     Column(
@@ -446,6 +448,22 @@ fun WalletScreen(
             // Bottom Sheet - positioned outside the Column to take full width
             selectedCard?.let { card ->
                 var sheetExpanded by remember { mutableStateOf(false) }
+                
+                // Semi-transparent overlay that can be tapped to dismiss
+                if (showBottomSheet) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
+                            .clickable {
+                                showBottomSheet = false
+                                sheetExpanded = false
+                                selectedCard = null
+                                cardAnimationTrigger = false
+                            }
+                            .zIndex(99f)
+                    )
+                }
 
                 val sheetHeight by animateDpAsState(
                     targetValue = if (showBottomSheet) 0.dp else (-1000).dp,
@@ -469,6 +487,17 @@ fun WalletScreen(
                         .offset(y = sheetHeight)
                         .background(Color(0xFF23272E))
                         .padding(bottom = 4.dp)
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                // Detect downward swipe to dismiss
+                                if (dragAmount.y > 50) {
+                                    showBottomSheet = false
+                                    sheetExpanded = false
+                                    selectedCard = null
+                                    cardAnimationTrigger = false
+                                }
+                            }
+                        }
                 ) {
                     // Glass effect removed/commented out for solid background
                     // Box(
@@ -482,10 +511,12 @@ fun WalletScreen(
                         perks = perksOfAccountProduct,
                         navController = navController,
                         productId = card.accountProductId?.toString() ?: "",
-                        accountId = preSelectedAccountId?:"",
+                        accountId = card.id.toString()?: "",
                         onDismiss = {
                             showBottomSheet = false
                             sheetExpanded = false
+                            selectedCard = null
+                            cardAnimationTrigger = false
                         }
                     )
                 }
