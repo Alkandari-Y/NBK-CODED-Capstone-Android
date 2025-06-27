@@ -27,7 +27,9 @@ fun WalletCard(
     modifier: Modifier = Modifier,
     tiltAngle: Float = 0f,
     scale: Float = 1f,
-    alpha: Float = 1f
+    alpha: Float = 1f,
+    recommendationType: String? = null,
+    showDetails: Boolean = true
 ) {
     // Get account product details
     val accountProduct = AccountProductRepository.accountProducts.find {
@@ -37,9 +39,81 @@ fun WalletCard(
     val bankName = accountProduct?.name ?: "Bank"
     val cardType = account.accountType?.uppercase() ?: "ACCOUNT"
 
-    // Modern premium card gradients based on account type
-    val cardGradient = when (account.accountType?.lowercase()) {
-        "debit" -> Brush.linearGradient(
+    // Modern premium card gradients based on account type and recommendation type
+    val cardGradient = when {
+        // Special recommendation cards
+        recommendationType?.lowercase() == "travel" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF7AF380), // Blue 800
+                Color(0xFFA5F5A9), // Blue 500
+                Color(0xFF136870), // Blue 700
+                Color(0xFF136870)  // Blue 800
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        recommendationType?.lowercase() == "family essentials" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF49899F), // Emerald 600
+                Color(0xFF80D1EC), // Emerald 500
+                Color(0xFF115F79), // Emerald 700
+                Color(0xFF115F79)  // Emerald 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        recommendationType?.lowercase() == "entertainment" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF651351), // Violet 600
+                Color(0xFF8D3077), // Violet 500
+                Color(0xFF2C1365), // Violet 700
+                Color(0xFF2C1365)  // Violet 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        recommendationType?.lowercase() == "shopping" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF6B1D45), // Red 600
+                Color(0xFF9F3B70), // Red 500
+                Color(0xFF501233), // Red 700
+                Color(0xFF4F1332)  // Red 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        recommendationType?.lowercase() == "dining" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFFD97706), // Amber 600
+                Color(0xFFF59E0B), // Amber 500
+                Color(0xFFB45309), // Amber 700
+                Color(0xFFD97706)  // Amber 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        recommendationType?.lowercase() == "health" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF600612), // Cyan 600
+                Color(0xFF861020), // Cyan 500
+                Color(0xFF600612), // Cyan 700
+                Color(0xFF600612)  // Cyan 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        recommendationType?.lowercase() == "education" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF219406), // Orange 800
+                Color(0xFF8CC241), // Orange 600
+                Color(0xFF219406), // Orange 700
+                Color(0xFF219406)  // Orange 800
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        // Regular account type cards
+        account.accountType?.lowercase() == "debit" -> Brush.linearGradient(
             colors = listOf(
                 Color(0xFF132138), // Slate 800
                 Color(0xFF263D64), // Slate 700
@@ -50,7 +124,7 @@ fun WalletCard(
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        "credit" -> Brush.linearGradient(
+        account.accountType?.lowercase() == "credit" -> Brush.linearGradient(
             colors = listOf(
                 Color(0xFF16191A), // Red 800
                 Color(0xFF343A3B), // Red 800
@@ -61,7 +135,7 @@ fun WalletCard(
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        "savings" -> Brush.linearGradient(
+        account.accountType?.lowercase() == "savings" -> Brush.linearGradient(
             colors = listOf(
                 Color(0xFF4E5454), // Green 900
                 Color(0xFF818A8A), // Green 800
@@ -71,7 +145,7 @@ fun WalletCard(
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        "business" -> Brush.linearGradient(
+        account.accountType?.lowercase() == "business" -> Brush.linearGradient(
             colors = listOf(
                 Color(0xFF3730a3), // Indigo 900
                 Color(0xFF6862C7), // Indigo 800
@@ -92,6 +166,32 @@ fun WalletCard(
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
     }
+
+    // Get recommendation icon
+    val recommendationIcon = when (recommendationType?.lowercase()) {
+        "travel" -> Icons.Default.Flight
+        "family essentials" -> Icons.Default.FamilyRestroom
+        "entertainment" -> Icons.Default.Movie
+        "shopping" -> Icons.Default.ShoppingCart
+        "dining" -> Icons.Default.Restaurant
+        "health" -> Icons.Default.LocalHospital
+        "education" -> Icons.Default.School
+        else -> null
+    }
+
+    // Get recommendation label
+    val recommendationLabel = when (recommendationType?.lowercase()) {
+        "travel" -> "TRAVEL"
+        "family essentials" -> "FAMILY"
+        "entertainment" -> "ENTERTAINMENT"
+        "shopping" -> "SHOPPING"
+        "dining" -> "DINING"
+        "health" -> "HEALTH"
+        "education" -> "EDUCATION"
+        else -> null
+    }
+
+    val isProductCard = !showDetails
 
     Card(
         modifier = modifier
@@ -155,10 +255,10 @@ fun WalletCard(
                         letterSpacing = 2.sp
                     )
 
-                    // Contactless payment icon
+                    // Recommendation icon or contactless payment icon
                     Icon(
-                        imageVector = Icons.Default.Contactless,
-                        contentDescription = "Contactless Payment",
+                        imageVector = recommendationIcon ?: Icons.Default.Contactless,
+                        contentDescription = recommendationLabel ?: "Contactless Payment",
                         tint = Color.White.copy(alpha = 0.9f),
                         modifier = Modifier.size(28.dp)
                     )
@@ -217,58 +317,59 @@ fun WalletCard(
 
                 // Bottom section: Card details
                 Column {
-                    // Account number
-                    Text(
-                        text = formatAccountNumber(account.accountNumber),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
-                        letterSpacing = 2.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Bottom row: Card type and balance
+                    if (showDetails) {
+                        // Account number
+                        Text(
+                            text = formatAccountNumber(account.accountNumber),
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium,
+                            letterSpacing = 2.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    // Bottom row: Card type and balance or just type
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom
                     ) {
-                        // Account type
+                        // Account type or recommendation type
                         Column {
                             Text(
-                                text = "ACCOUNT TYPE",
+                                text = if (recommendationLabel != null) "RECOMMENDATION" else "ACCOUNT TYPE",
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
                                 letterSpacing = 1.sp
                             )
                             Text(
-                                text = cardType,
+                                text = recommendationLabel ?: cardType,
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.sp
                             )
                         }
-
-                        // Balance
-                        Column(
-                            horizontalAlignment = Alignment.End
-                        ) {
-                            Text(
-                                text = "BALANCE",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = "${String.format("%.2f", account.balance.toDouble())} KD",
-                                color = Color.White,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        if (showDetails) {
+                            // Balance
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                Text(
+                                    text = "BALANCE",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    letterSpacing = 1.sp
+                                )
+                                Text(
+                                    text = "${String.format("%.2f", account.balance.toDouble())} KD",
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
                 }

@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -122,6 +124,7 @@ fun SuccessToast(
 fun WalletScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    preSelectedAccountId: String? = null,
     onNavigateToMap: () -> Unit = {},
     onPayAction: (AccountResponse) -> Unit = {},
     onDetailsAction: (AccountResponse) -> Unit = {},
@@ -209,6 +212,18 @@ fun WalletScreen(
         if (isFirstLoad && accounts.isNotEmpty()) {
             // Don't auto-select a card, let users see the card stack first
             isFirstLoad = false
+        }
+    }
+
+    // Handle pre-selected account from navigation
+    LaunchedEffect(preSelectedAccountId, accounts) {
+        if (!preSelectedAccountId.isNullOrBlank() && accounts.isNotEmpty()) {
+            val accountToSelect = accounts.find { it.id.toString() == preSelectedAccountId }
+            if (accountToSelect != null) {
+                selectedCard = accountToSelect
+                showBottomSheet = true
+                isFirstLoad = false
+            }
         }
     }
 
@@ -322,26 +337,26 @@ fun WalletScreen(
                         enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
                         exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
                     ) {
-//                        IconButton(
-//                            onClick = {
-//                                selectedCard = null
-//                                showBottomSheet = false
-//                                cardAnimationTrigger = false // Reset animation trigger
-//                            },
-//                            modifier = Modifier
-//                                .size(35.dp)
-//                                .background(
-//                                    Color(0xFF23272E).copy(alpha = 0.05f),
-//                                    CircleShape
-//                                )
-//                        ) {
-//                            Icon(
-//                                Icons.AutoMirrored.Filled.ArrowBack,
-//                                contentDescription = "Back to all cards",
-//                                tint = Color(0xFF23272E),
-//                                modifier = Modifier.size(20.dp)
-//                            )
-//                        }
+                        IconButton(
+                            onClick = {
+                                selectedCard = null
+                                showBottomSheet = false
+                                cardAnimationTrigger = false // Reset animation trigger
+                            },
+                            modifier = Modifier
+                                .size(35.dp)
+                                .background(
+                                    Color(0xFF23272E).copy(alpha = 0.05f),
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back to all cards",
+                                tint = Color(0xFF23272E),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
 
                     Column(
@@ -595,7 +610,21 @@ fun WalletScreen(
                         .offset(y = sheetHeight)
                         .background(Color(0xFF23272E))
                         .padding(bottom = 4.dp)
+
                         .graphicsLayer(alpha = sheetOpacity)
+
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                // Detect downward swipe to dismiss
+                                if (dragAmount.y > 50) {
+                                    showBottomSheet = false
+                                    sheetExpanded = false
+                                    selectedCard = null
+                                    cardAnimationTrigger = false
+                                }
+                            }
+                        }
+
                 ) {
                     // Glass effect removed/commented out for solid background
                     // Box(
@@ -606,11 +635,15 @@ fun WalletScreen(
                     // )
 
                     PerksBottomSheet(
-                        account = card,
                         perks = perksOfAccountProduct,
-                        onUpgradeAccount = { /* ... */ },
-                        onExpandChange = { expanded ->
-                            sheetExpanded = expanded
+                        navController = navController,
+                        productId = card.accountProductId?.toString() ?: "",
+                        accountId = card.id.toString()?: "",
+                        onDismiss = {
+                            showBottomSheet = false
+                            sheetExpanded = false
+                            selectedCard = null
+                            cardAnimationTrigger = false
                         }
                     )
                 }
