@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -78,15 +79,15 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Draw vertical black block on the right covering the bottom half
+        // Draw vertical dark gray block on the right covering the bottom half
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .width(60.dp)
                 .height(780.dp)
-                .background(Color.Black)
+                .background(Color(0xFF23272E))
         )
-        // Draw RoundedRightPeek so it overlays the black block
+        // Draw RoundedRightPeek so it overlays the dark gray block
         Box(modifier = Modifier.align(Alignment.TopEnd).offset(y = 64.dp)) {
             RoundedRightPeek()
         }
@@ -97,7 +98,7 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
 
             // Animate the calendar height
             val calendarHeight by animateDpAsState(
-                targetValue = if (isExpanded) 302.5.dp else 150.dp,
+                targetValue = if (isExpanded) 400.dp else 200.dp,
                 animationSpec = tween(durationMillis = 500, easing = EaseInOutCubic),
                 label = "calendarHeight"
             )
@@ -136,13 +137,13 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-            // Black background fills the rest
+            // Dark gray background fills the rest
             Box(
                 Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .clip(RoundedCornerShape(topStart = 70.dp, topEnd = 60.dp))
-                    .background(Color.Black)
+                    .background(Color(0xFF23272E))
             ) {
                 val dragThreshold = 20f
                 var dragOffset by remember { mutableStateOf(0f) }
@@ -249,7 +250,7 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
                             Button(
                                 onClick = { expanded = true },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF2A2A2A),
+                                    containerColor = Color(0xFF8EC5FF),
                                     contentColor = Color.White
                                 ),
                                 shape = RoundedCornerShape(16.dp)
@@ -373,7 +374,7 @@ fun PromotionItem(
             .clickable(onClick = onToggleExpansion),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A2A2A)
+            containerColor = Color(0xFF374151)
         )
     ) {
         Column(
@@ -397,7 +398,17 @@ fun PromotionItem(
             )
 
             if (isExpanded) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Divider
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color(0xFF8EC5FF).copy(alpha = 0.3f))
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -407,7 +418,7 @@ fun PromotionItem(
                         Text(
                             text = "Start Date",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = Color(0xFF8EC5FF)
                         )
                         Text(
                             text = promotion.startDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
@@ -420,7 +431,7 @@ fun PromotionItem(
                         Text(
                             text = "End Date",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = Color(0xFF8EC5FF)
                         )
                         Text(
                             text = promotion.endDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
@@ -432,11 +443,47 @@ fun PromotionItem(
 
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                Text(
-                    text = "Type: ${promotion.type}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Type: ${promotion.type}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF8EC5FF)
+                    )
+                    
+                    // Expand/Collapse indicator
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        contentDescription = if (isExpanded) "Collapse" else "Expand",
+                        tint = Color(0xFF8EC5FF),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Type: ${promotion.type}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF8EC5FF)
+                    )
+                    
+                    // Expand/Collapse indicator
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        contentDescription = if (isExpanded) "Collapse" else "Expand",
+                        tint = Color(0xFF8EC5FF),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

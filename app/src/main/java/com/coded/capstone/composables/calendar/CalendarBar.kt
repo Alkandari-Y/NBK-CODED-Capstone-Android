@@ -86,19 +86,19 @@ fun CalendarBar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 32.dp, end = 48.dp, start = 16.dp)
-            .height(302.5.dp)
+            .height(400.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             // Year Dropdown
             Box {
                 Text(
                     text = selectedYear.toString(),
-                    color = Color.DarkGray,
+                    color = Color(0xFF8EC5FF),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { expanded = true }
                 )
                 IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.DarkGray)
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color(0xFF8EC5FF))
                 }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     years.forEach { year ->
@@ -119,7 +119,7 @@ fun CalendarBar(
                     val isCurrentMonth = (month == "January" && selectedYear == today.year)
                     Text(
                         text = month,
-                        color = if (month == months[selectedMonth]) Color.DarkGray else Color.Gray,
+                        color = if (month == months[selectedMonth]) Color(0xFF8EC5FF) else Color.Gray,
                         fontWeight = if (month == months[selectedMonth] || isCurrentMonth) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -144,7 +144,7 @@ fun CalendarBar(
                 Text(
                     text = day,
                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
-                    color = Color.Gray,
+                    color = Color(0xFF8EC5FF),
                     fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
                     modifier = Modifier.weight(1f),
                     maxLines = 1
@@ -180,14 +180,14 @@ fun CalendarBar(
                                     .clip(CircleShape)
                                     .background(
                                         when {
-                                            isSelected -> Color.Black
-                                            isToday -> Color(0xFFE0E0E0)
+                                            isSelected -> Color(0xFF8EC5FF)
+                                            isToday -> Color(0xFF8EC5FF).copy(alpha = 0.3f)
                                             else -> Color.Transparent
                                         }
                                     )
                                     .border(
                                         width = if (isToday && !isSelected) 2.dp else 0.dp,
-                                        color = if (isToday && !isSelected) Color.Black else Color.Transparent,
+                                        color = if (isToday && !isSelected) Color(0xFF8EC5FF) else Color.Transparent,
                                         shape = CircleShape
                                     )
                                     .clickable { onDateSelected(date) }
@@ -198,9 +198,16 @@ fun CalendarBar(
                                     style = MaterialTheme.typography.labelLarge.copy(
                                         fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
                                     ),
-                                    color = if (isSelected) Color.White else Color.DarkGray
+                                    color = if (isSelected) Color.White else Color(0xFF8EC5FF)
                                 )
                             }
+                        } else {
+                            // Empty space for days outside the current month
+                            Text(
+                                text = "",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.Transparent
+                            )
                         }
                     }
                 }
