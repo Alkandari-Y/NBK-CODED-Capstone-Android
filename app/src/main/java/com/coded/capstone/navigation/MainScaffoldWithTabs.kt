@@ -1,18 +1,22 @@
 package com.coded.capstone.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.composables.home.BottomNavBar
+import com.coded.capstone.composables.home.DrawerContent
 import com.coded.capstone.screens.calender.CalendarScreen
 import com.coded.capstone.screens.home.HomeScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
@@ -24,18 +28,16 @@ import com.coded.capstone.viewModels.RecommendationViewModel
 fun MainScaffoldWithTabs(
     navController: NavController,
     authViewModel: AuthViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    initialTab: Int = 0
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(initialTab) }
     val context = LocalContext.current
     val recommendationViewModel = remember { RecommendationViewModel(context) }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Main content
+        Box(modifier = Modifier.fillMaxSize()) {
             when (selectedTab) {
                 0 -> HomeScreen(
                     navController = navController, 
@@ -55,6 +57,13 @@ fun MainScaffoldWithTabs(
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }
-
+        
+        // Bottom Navigation Bar overlay
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        ) {
+            BottomNavBar(selectedTab = selectedTab, onTabSelected = { selectedTab = it })
+        }
     }
 }

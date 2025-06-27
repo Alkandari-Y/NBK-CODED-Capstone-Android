@@ -35,8 +35,9 @@ fun CalendarBarShort(
     val firstDayOfMonth = LocalDate.of(selectedYear, selectedMonth + 1, 1)
     // Find the start of the week containing the first day of the month
     val startOfWeek = firstDayOfMonth.with(DayOfWeek.SUNDAY)
-    // Show 6 weeks for the month view
+    // Show 6 weeks for the month view, but only show dates within the selected month
     val weekDates = (0 until 6 * 7).map { startOfWeek.plusDays(it.toLong()) }
+        .filter { date -> date.monthValue == selectedMonth + 1 && date.year == selectedYear }
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = weekDates.indexOf(selectedDate).coerceAtLeast(0))
 
     // Scroll to selected date when it changes
@@ -66,7 +67,7 @@ fun CalendarBarShort(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 32.dp, end = 48.dp, start = 16.dp)
-            .height(150.dp) // Updated height to match MainScreen
+            .height(200.dp) // Updated height to match collapsed state
     ) {
         // Year and Month selectors
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -74,12 +75,12 @@ fun CalendarBarShort(
             Box {
                 Text(
                     text = selectedYear.toString(),
-                    color = Color.DarkGray,
+                    color = Color(0xFF8EC5FF),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { expanded = true }
                 )
                 IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.DarkGray)
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color(0xFF8EC5FF))
                 }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     years.forEach { year ->
@@ -102,7 +103,7 @@ fun CalendarBarShort(
                     val isSelectedMonth = (index == selectedMonth)
                     Text(
                         text = month,
-                        color = if (isSelectedMonth) Color.DarkGray else Color.Gray,
+                        color = if (isSelectedMonth) Color(0xFF8EC5FF) else Color.Gray,
                         fontWeight = if (isSelectedMonth || isCurrentMonth) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -124,14 +125,14 @@ fun CalendarBarShort(
                         .clip(RoundedCornerShape(24.dp))
                         .background(
                             when {
-                                isSelected -> Color.Black
-                                isToday -> Color(0xFFE0E0E0)
+                                isSelected -> Color(0xFF8EC5FF)
+                                isToday -> Color(0xFF8EC5FF).copy(alpha = 0.3f)
                                 else -> Color.Transparent
                             }
                         )
                         .border(
                             width = if (isToday && !isSelected) 2.dp else 0.dp,
-                            color = if (isToday && !isSelected) Color.Black else Color.Transparent,
+                            color = if (isToday && !isSelected) Color(0xFF8EC5FF) else Color.Transparent,
                             shape = RoundedCornerShape(24.dp)
                         )
                         .clickable { onDateSelected(date) },
@@ -141,7 +142,7 @@ fun CalendarBarShort(
                         Text(
                             text = date.dayOfWeek.name.take(1),
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
-                            color = if (isSelected) Color.White else Color.Gray,
+                            color = if (isSelected) Color.White else Color(0xFF8EC5FF),
                             fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
                         )
                         Spacer(modifier = Modifier.height(4.dp))
@@ -150,7 +151,7 @@ fun CalendarBarShort(
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
                             ),
-                            color = if (isSelected) Color.White else Color.DarkGray
+                            color = if (isSelected) Color.White else Color(0xFF8EC5FF)
                         )
                     }
                 }

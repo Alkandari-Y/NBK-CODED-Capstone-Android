@@ -35,14 +35,14 @@ fun DrawerMenuItem(
         Icon(
             imageVector = icon,
             contentDescription = title,
-            tint = if (isDestructive) Color(0xFFFF5252) else Color(0xFFE3F2FD), // Light blue for icons, red for destructive
+            tint = if (isDestructive) Color(0xFFFF5252) else Color(0xFF4A90E2),
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge,
-            color = if (isDestructive) Color(0xFFFF5252) else Color.White, // White text, red for destructive
+            color = if (isDestructive) Color(0xFFFF5252) else Color(0xFF2A2A2A),
             fontWeight = FontWeight.Medium
         )
     }

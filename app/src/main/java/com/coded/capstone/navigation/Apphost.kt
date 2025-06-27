@@ -11,26 +11,26 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.Screens.notifications.NotificationScreen
+import com.coded.capstone.Screens.onBoarding.CardSuggestedOnBoarding
 import com.coded.capstone.managers.TokenManager
-import com.coded.capstone.screens.authentication.SignUpScreen
-import com.coded.capstone.screens.authentication.LoginScreen
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.calender.CalendarScreen
 import com.coded.capstone.screens.accounts.AccountDetailsScreen
+import com.coded.capstone.screens.authentication.LoginScreen
+import com.coded.capstone.screens.authentication.SignUpScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
-import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
 import com.coded.capstone.screens.transfer.TransferScreen
+import com.coded.capstone.screens.wallet.RelatedVendorsScreen
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.screens.xp.XpTierScreen
 import com.coded.capstone.Screens.notifications.PromotionDetailPage
-
 
 object NavRoutes {
     const val NAV_ROUTE_LOGIN = "login"
@@ -39,7 +39,6 @@ object NavRoutes {
     const val NAV_ROUTE_HOME = "home"
     const val NAV_ROUTE_WALLET ="wallet"
     const val NAV_ROUTE_TRANSFER = "transfer"
-
     const val NAV_ROUTE_CALENDER ="calender"
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
@@ -54,7 +53,14 @@ object NavRoutes {
     const val NAV_ROUTE_XP_HISTORY = "xp_history"
 const val NAV_ROUTE_NOTIFICATIONS = "notifications"
     const val NAV_ROUTE_PROMOTION_DETAILS = "promotion/{promotionId}"
+
+    const val NAV_ROUTE_VENDORS = "vendors/{category}"
+    const val NAV_ROUTE_RELATED_VENDOR = "vendor/{perkId}/{productId}/{accountId}"
+
     fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
+    fun vendorsRoute(category: String) = "vendors/$category"
+    fun relatedVendorRoute(perkId: String, productId: String, accountId: String) = "vendor/$perkId/$productId/$accountId"
+    fun homeWithWalletTab() = "home?tab=1"
 }
 
 @Composable
@@ -128,9 +134,23 @@ val accountViewModel = remember { AccountViewModel(context) }
                 accountViewModel
             )
         }
-        composable(NavRoutes.NAV_ROUTE_HOME) {
+        composable(
+            route = NavRoutes.NAV_ROUTE_HOME + "?tab={tab}",
+            arguments = listOf(
+                androidx.navigation.navArgument("tab") {
+                    type = androidx.navigation.NavType.IntType
+                    defaultValue = 0
+                }
+            )
+        ) { backStackEntry ->
             val authViewModel = remember { AuthViewModel(context) }
-            MainScaffoldWithTabs(navController = navController,authViewModel, homeScreenViewModel)
+            val initialTab = backStackEntry.arguments?.getInt("tab") ?: 0
+            MainScaffoldWithTabs(
+                navController = navController, 
+                authViewModel = authViewModel, 
+                homeScreenViewModel = homeScreenViewModel,
+                initialTab = initialTab
+            )
         }
 //        composable(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL) {
 //            AllAccountsScreen(
@@ -155,13 +175,14 @@ val accountViewModel = remember { AccountViewModel(context) }
                     onBack= { navController.popBackStack()})
             }
         }
+
         composable (NavRoutes.NAV_ROUTE_PROFILE){
             ProfilePage(
                 onBackClick = { navController.popBackStack() }
             )
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
-        composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen(navController = navController) }
+
         composable(
             route = NavRoutes.NAV_ROUTE_TRANSFER + "?selectedAccountId={selectedAccountId}",
             arguments = listOf(
@@ -184,5 +205,20 @@ val accountViewModel = remember { AccountViewModel(context) }
         }
         composable(NavRoutes.NAV_ROUTE_NOTIFICATIONS) { NotificationScreen(navController = navController) }
         composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { PromotionDetailPage(navController = navController) }
+        composable (NavRoutes.NAV_ROUTE_RELATED_VENDOR){ backStackEntry ->
+            val perkId = backStackEntry.arguments?.getString("perkId")
+            val productId = backStackEntry.arguments?.getString("productId")
+            val accountId = backStackEntry.arguments?.getString("accountId")
+            if(perkId != null && productId != null && accountId != null){
+                RelatedVendorsScreen(
+                    navController = navController,
+                    perkId = perkId,
+                    productId = productId,
+                    accountId = accountId,
+                    homeViewModel = homeScreenViewModel,
+                    recommendationViewModel = recommendationViewModel
+                )
+            }
+        }
     }
 }
