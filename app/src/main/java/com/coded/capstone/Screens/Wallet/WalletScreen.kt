@@ -448,22 +448,6 @@ fun WalletScreen(
             // Bottom Sheet - positioned outside the Column to take full width
             selectedCard?.let { card ->
                 var sheetExpanded by remember { mutableStateOf(false) }
-                
-                // Semi-transparent overlay that can be tapped to dismiss
-                if (showBottomSheet) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.3f))
-                            .clickable {
-                                showBottomSheet = false
-                                sheetExpanded = false
-                                selectedCard = null
-                                cardAnimationTrigger = false
-                            }
-                            .zIndex(99f)
-                    )
-                }
 
                 val sheetHeight by animateDpAsState(
                     targetValue = if (showBottomSheet) 0.dp else (-1000).dp,

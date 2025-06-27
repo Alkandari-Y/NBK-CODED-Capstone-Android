@@ -6,9 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +27,6 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.responses.perk.PerkDto
-import com.coded.capstone.ui.AppBackground
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.navigation.NavRoutes
@@ -119,204 +119,216 @@ fun RelatedVendorsScreen(
         }
     }
 
-    AppBackground {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = Color.Transparent,
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = if (perkCategories.isNotEmpty()) {
-                                "${perkCategories.joinToString(" & ")} Vendors"
-                            } else {
-                                "Related Vendors"
-                            },
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { 
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color.White,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Available at",
+                        color = Color(0xFF1E1E1E),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { 
                             navController.navigate(NavRoutes.homeWithWalletTab()) {
                                 popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
                             }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White
+                        },
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(40.dp)
+                            .background(
+                                Color.White.copy(alpha = 0.1f),
+                                CircleShape
                             )
-                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFF1E1E1E),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color(0xFF1E1E1E),
+                    navigationIconContentColor = Color(0xFF1E1E1E)
+                )
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
+                .background(Color.White)
+        ) {
+            if (isLoading) {
+                // Loading state
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF8EC5FF))
+                }
+            } else if (currentPerk == null) {
+                // Error state - Perk not found
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Perk Not Found",
+                            color = Color(0xFF1E1E1E),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Unable to find the selected perk",
+                            color = Color(0xFF6D6D6D),
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            } else {
+                // Add top spacing
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Search Bar
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { 
+                        Text(
+                            "Search vendors...", 
+                            color = Color(0xFF8E8E93)
+                        ) 
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = null,
+                            tint = Color(0xFF8EC5FF)
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFF8EC5FF),
+                        unfocusedBorderColor = Color(0xFFE5E5E5),
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        focusedTextColor = Color(0xFF1E1E1E),
+                        unfocusedTextColor = Color(0xFF1E1E1E)
                     )
                 )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-            ) {
-                if (isLoading) {
-                    // Loading state
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+
+                // Perk Info Section
+                currentPerk?.let { perk ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF2A2A2A)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        CircularProgressIndicator(color = Color.White)
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = perk.type?.replaceFirstChar { it.uppercase() } ?: "Unknown",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            perk.perkAmount?.let { amount ->
+                                Text(
+                                    text = when {
+                                        perk.type?.contains("cashback", ignoreCase = true) == true -> "$amount% Cashback"
+                                        perk.type?.contains("discount", ignoreCase = true) == true -> "$amount% Discount"
+                                        else -> "$amount Points"
+                                    },
+                                    color = Color(0xFF8EC5FF),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            if (perkCategories.isNotEmpty()) {
+                                Text(
+                                    text = "Categories: ${perkCategories.joinToString(", ")}",
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
                     }
-                } else if (currentPerk == null) {
-                    // Error state - Perk not found
+                }
+
+                // Vendors List
+                if (filteredPartners.isNotEmpty()) {
+                    Text(
+                        text = "${filteredPartners.size} vendor${if (filteredPartners.size != 1) "s" else ""} found",
+                        color = Color(0xFF6D6D6D),
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(filteredPartners) { partner ->
+                            VendorListItem(partner = partner)
+                        }
+                        
+                        // Bottom padding
+                        item {
+                            Spacer(modifier = Modifier.height(80.dp))
+                        }
+                    }
+                } else {
+                    // No vendors found
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Perk Not Found",
-                                color = Color.White,
+                                text = "No vendors found",
+                                color = Color(0xFF1E1E1E),
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "Unable to find the selected perk",
-                                color = Color.White.copy(alpha = 0.7f),
+                                text = if (searchQuery.isNotBlank()) {
+                                    "Try adjusting your search"
+                                } else {
+                                    "No vendors available for this category"
+                                },
+                                color = Color(0xFF6D6D6D),
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
-                        }
-                    }
-                } else {
-                    // Search Bar
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        placeholder = { 
-                            Text(
-                                "Search vendors...", 
-                                color = Color.White.copy(alpha = 0.6f)
-                            ) 
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null,
-                                tint = Color.White.copy(alpha = 0.7f)
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF8EC5FF),
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                            focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                            unfocusedContainerColor = Color.White.copy(alpha = 0.15f),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        )
-                    )
-
-                    // Perk Info Section
-                    currentPerk?.let { perk ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFF2A2A2A)
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp)
-                            ) {
-                                Text(
-                                    text = "Perk: ${perk.type?.replaceFirstChar { it.uppercase() } ?: "Unknown"}",
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                perk.perkAmount?.let { amount ->
-                                    Text(
-                                        text = when {
-                                            perk.type?.contains("cashback", ignoreCase = true) == true -> "$amount% Cashback"
-                                            perk.type?.contains("discount", ignoreCase = true) == true -> "$amount% Discount"
-                                            else -> "$amount Points"
-                                        },
-                                        color = Color(0xFF8EC5FF),
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                                if (perkCategories.isNotEmpty()) {
-                                    Text(
-                                        text = "Categories: ${perkCategories.joinToString(", ")}",
-                                        color = Color.White.copy(alpha = 0.8f),
-                                        fontSize = 12.sp,
-                                        modifier = Modifier.padding(top = 4.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // Vendors List
-                    if (filteredPartners.isNotEmpty()) {
-                        Text(
-                            text = "${filteredPartners.size} vendor${if (filteredPartners.size != 1) "s" else ""} found",
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(filteredPartners) { partner ->
-                                VendorListItem(partner = partner)
-                            }
-                            
-                            // Bottom padding
-                            item {
-                                Spacer(modifier = Modifier.height(80.dp))
-                            }
-                        }
-                    } else {
-                        // No vendors found
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 40.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "No vendors found",
-                                    color = Color.White,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = if (searchQuery.isNotBlank()) {
-                                        "Try adjusting your search"
-                                    } else {
-                                        "No vendors available for this perk"
-                                    },
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
-                            }
                         }
                     }
                 }
@@ -330,9 +342,11 @@ fun VendorListItem(partner: PartnerDto) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle vendor click if needed */ },
+            .clickable { /* Handle vendor click */ },
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2A2A)
+        ),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A)),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -341,54 +355,52 @@ fun VendorListItem(partner: PartnerDto) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Vendor Logo
-            AsyncImage(
-                model = partner.logoUrl,
-                contentDescription = partner.name,
+            // Vendor logo placeholder
+            Box(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.White.copy(alpha = 0.1f)),
-                contentScale = ContentScale.Crop
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                if (!partner.logoUrl.isNullOrBlank()) {
+                    AsyncImage(
+                        model = partner.logoUrl,
+                        contentDescription = "Vendor Logo",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(
+                        text = partner.name.firstOrNull()?.toString()?.uppercase() ?: "?",
+                        color = Color(0xFF8EC5FF),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Vendor Info
+            // Vendor details
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // Category Tag
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = Color(0xFF8EC5FF).copy(alpha = 0.2f)
-                ) {
-                    Text(
-                        partner.category.name,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        fontSize = 10.sp,
-                        color = Color(0xFF8EC5FF),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(6.dp))
-                
                 Text(
-                    partner.name,
+                    text = partner.name,
+                    color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                
                 Text(
-                    "Available for this perk",
-                    fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.7f),
+                    text = partner.category.name,
+                    color = Color(0xFF8EC5FF),
+                    fontSize = 14.sp,
                     modifier = Modifier.padding(top = 2.dp)
                 )
+ 
             }
         }
     }
