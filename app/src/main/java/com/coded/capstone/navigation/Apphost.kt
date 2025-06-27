@@ -171,8 +171,7 @@ val accountViewModel = remember { AccountViewModel(context) }
                 AccountDetailsScreen(
                     accountId= accountId,
                     viewModel = homeScreenViewModel,
-
-                    onBack= { navController.popBackStack()})
+                    onBack= { navController.popBackStack(NavRoutes.NAV_ROUTE_HOME, inclusive = false) })
             }
         }
 
