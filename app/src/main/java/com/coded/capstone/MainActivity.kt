@@ -2,6 +2,7 @@ package com.coded.capstone
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -14,13 +15,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.coded.capstone.MapAndGeofencing.LocationPermissionHandler
 import com.coded.capstone.MapAndGeofencing.GeofenceManager
+import com.coded.capstone.deeplink.DeepLinkHandler
 import com.coded.capstone.navigation.AppHost
+import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.ui.theme.CapstoneTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +65,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        
+        // Handle deep link if app was launched via deep link
+        handleDeepLink(intent)
+    }
+    
+    /**
+     * Handle deep links when app is already running
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDeepLink(intent)
+    }
+    
+    /**
+     * Process deep link intent
+     */
+    private fun handleDeepLink(intent: Intent?) {
+        // Note: You'll need to pass the NavController from AppHost
+        // For now, this is a placeholder that can be connected later
+        // DeepLinkHandler.handleDeepLink(intent, navController)
     }
 
     private fun requestFirebaseNotificationPermission() {
