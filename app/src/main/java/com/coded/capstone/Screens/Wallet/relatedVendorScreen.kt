@@ -138,8 +138,8 @@ fun RelatedVendorsScreen(
                     },
                     navigationIcon = {
                         IconButton(onClick = { 
-                            navController.navigate(NavRoutes.walletWithSelectedAccountRoute(accountId)) {
-                                popUpTo(NavRoutes.NAV_ROUTE_WALLET) { inclusive = true }
+                            navController.navigate(NavRoutes.homeWithWalletTab()) {
+                                popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
                             }
                         }) {
                             Icon(

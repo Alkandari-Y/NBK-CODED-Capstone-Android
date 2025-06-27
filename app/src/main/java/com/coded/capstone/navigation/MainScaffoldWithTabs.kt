@@ -28,9 +28,10 @@ import com.coded.capstone.viewModels.RecommendationViewModel
 fun MainScaffoldWithTabs(
     navController: NavController,
     authViewModel: AuthViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
+    initialTab: Int = 0
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(initialTab) }
     val context = LocalContext.current
     val recommendationViewModel = remember { RecommendationViewModel(context) }
 
