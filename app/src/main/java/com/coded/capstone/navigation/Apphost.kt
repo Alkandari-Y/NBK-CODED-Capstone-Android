@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
+import com.coded.capstone.Screens.notifications.NotificationScreen
 import com.coded.capstone.Screens.onBoarding.CardSuggestedOnBoarding
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.viewModels.AuthViewModel
@@ -29,6 +30,7 @@ import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.screens.xp.XpTierScreen
+import com.coded.capstone.Screens.notifications.PromotionDetailPage
 
 object NavRoutes {
     const val NAV_ROUTE_LOGIN = "login"
@@ -49,6 +51,9 @@ object NavRoutes {
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
     const val NAV_ROUTE_PROFILE = "/profile"
     const val NAV_ROUTE_XP_HISTORY = "xp_history"
+const val NAV_ROUTE_NOTIFICATIONS = "notifications"
+    const val NAV_ROUTE_PROMOTION_DETAILS = "promotion/{promotionId}"
+
     const val NAV_ROUTE_VENDORS = "vendors/{category}"
     const val NAV_ROUTE_RELATED_VENDOR = "vendor/{perkId}/{productId}/{accountId}"
 
@@ -198,6 +203,8 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
             XpTierScreen(onBackClick = { navController.popBackStack() })
         }
+        composable(NavRoutes.NAV_ROUTE_NOTIFICATIONS) { NotificationScreen(navController = navController) }
+        composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { PromotionDetailPage(navController = navController) }
         composable (NavRoutes.NAV_ROUTE_RELATED_VENDOR){ backStackEntry ->
             val perkId = backStackEntry.arguments?.getString("perkId")
             val productId = backStackEntry.arguments?.getString("productId")
