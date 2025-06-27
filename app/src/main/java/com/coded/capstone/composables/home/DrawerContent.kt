@@ -70,9 +70,7 @@ fun DrawerContent(
                         ),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Top section with user info and main menu items
                     Column {
-                        // User info section
                         Box(
                             modifier = Modifier
                                 .size(56.dp)

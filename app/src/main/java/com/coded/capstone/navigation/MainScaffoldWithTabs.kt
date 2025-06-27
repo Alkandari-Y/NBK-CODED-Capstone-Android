@@ -2,6 +2,9 @@ package com.coded.capstone.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.composables.home.BottomNavBar
+import com.coded.capstone.composables.home.DrawerContent
 import com.coded.capstone.screens.calender.CalendarScreen
 import com.coded.capstone.screens.home.HomeScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen

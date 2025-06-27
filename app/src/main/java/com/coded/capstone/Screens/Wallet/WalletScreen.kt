@@ -108,6 +108,7 @@ fun SuccessToast(
 fun WalletScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
+    preSelectedAccountId: String? = null,
     onNavigateToMap: () -> Unit = {},
     onPayAction: (AccountResponse) -> Unit = {},
     onDetailsAction: (AccountResponse) -> Unit = {},
@@ -168,6 +169,17 @@ fun WalletScreen(
         }
     }
 
+    // Handle pre-selected account from navigation
+    LaunchedEffect(preSelectedAccountId, accounts) {
+        if (!preSelectedAccountId.isNullOrBlank() && accounts.isNotEmpty()) {
+            val accountToSelect = accounts.find { it.id.toString() == preSelectedAccountId }
+            if (accountToSelect != null) {
+                selectedCard = accountToSelect
+                showBottomSheet = true
+                isFirstLoad = false
+            }
+        }
+    }
     // Handle transfer success
     LaunchedEffect(transferUiState) {
         if (transferUiState is TransferUiState.Success) {
@@ -467,11 +479,13 @@ fun WalletScreen(
                     // )
 
                     PerksBottomSheet(
-                        account = card,
                         perks = perksOfAccountProduct,
-                        onUpgradeAccount = { /* ... */ },
-                        onExpandChange = { expanded ->
-                            sheetExpanded = expanded
+                        navController = navController,
+                        productId = card.accountProductId?.toString() ?: "",
+                        accountId = preSelectedAccountId?:"",
+                        onDismiss = {
+                            showBottomSheet = false
+                            sheetExpanded = false
                         }
                     )
                 }

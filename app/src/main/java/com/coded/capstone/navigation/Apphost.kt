@@ -23,12 +23,12 @@ import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
 import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
 import com.coded.capstone.screens.transfer.TransferScreen
+import com.coded.capstone.screens.wallet.RelatedVendorsScreen
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.screens.xp.XpTierScreen
-
 
 object NavRoutes {
     const val NAV_ROUTE_LOGIN = "login"
@@ -37,7 +37,6 @@ object NavRoutes {
     const val NAV_ROUTE_HOME = "home"
     const val NAV_ROUTE_WALLET ="wallet"
     const val NAV_ROUTE_TRANSFER = "transfer"
-
     const val NAV_ROUTE_CALENDER ="calender"
     const val NAV_ROUTE_RECOMMENDATIONS = "recommendations"
     const val NAV_ROUTE_FORGOT_PASSWORD = "forgot_password"
@@ -50,8 +49,13 @@ object NavRoutes {
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
     const val NAV_ROUTE_PROFILE = "/profile"
     const val NAV_ROUTE_XP_HISTORY = "xp_history"
+    const val NAV_ROUTE_VENDORS = "vendors/{category}"
+    const val NAV_ROUTE_RELATED_VENDOR = "vendor/{perkId}/{productId}/{accountId}"
 
     fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
+    fun vendorsRoute(category: String) = "vendors/$category"
+    fun relatedVendorRoute(perkId: String, productId: String, accountId: String) = "vendor/$perkId/$productId/$accountId"
+    fun walletWithSelectedAccountRoute(accountId: String) = "wallet?selectedAccountId=$accountId"
 }
 
 @Composable
@@ -152,13 +156,29 @@ val accountViewModel = remember { AccountViewModel(context) }
                     onBack= { navController.popBackStack()})
             }
         }
+
         composable (NavRoutes.NAV_ROUTE_PROFILE){
             ProfilePage(
                 onBackClick = { navController.popBackStack() }
             )
         }
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
-        composable(NavRoutes.NAV_ROUTE_WALLET) { WalletScreen(navController = navController) }
+        composable(
+            route = NavRoutes.NAV_ROUTE_WALLET + "?selectedAccountId={selectedAccountId}",
+            arguments = listOf(
+                androidx.navigation.navArgument("selectedAccountId") {
+                    type = androidx.navigation.NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val selectedAccountId = backStackEntry.arguments?.getString("selectedAccountId")
+            WalletScreen(
+                navController = navController,
+                preSelectedAccountId = selectedAccountId
+            )
+        }
         composable(
             route = NavRoutes.NAV_ROUTE_TRANSFER + "?selectedAccountId={selectedAccountId}",
             arguments = listOf(
@@ -178,6 +198,21 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
         composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
             XpTierScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable (NavRoutes.NAV_ROUTE_RELATED_VENDOR){ backStackEntry ->
+            val perkId = backStackEntry.arguments?.getString("perkId")
+            val productId = backStackEntry.arguments?.getString("productId")
+            val accountId = backStackEntry.arguments?.getString("accountId")
+            if(perkId != null && productId != null && accountId != null){
+                RelatedVendorsScreen(
+                    navController = navController,
+                    perkId = perkId,
+                    productId = productId,
+                    accountId = accountId,
+                    homeViewModel = homeScreenViewModel,
+                    recommendationViewModel = recommendationViewModel
+                )
+            }
         }
     }
 }
