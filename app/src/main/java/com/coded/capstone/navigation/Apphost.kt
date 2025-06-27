@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
+import com.coded.capstone.Screens.onBoarding.CardSuggestedOnBoarding
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.viewModels.AuthViewModel
 import com.coded.capstone.screens.calender.CalendarScreen
@@ -21,7 +22,6 @@ import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
-import com.coded.capstone.screens.onboarding.CardSuggestedOnBoarding
 import com.coded.capstone.screens.transfer.TransferScreen
 import com.coded.capstone.screens.wallet.RelatedVendorsScreen
 import com.coded.capstone.viewModels.AccountViewModel
