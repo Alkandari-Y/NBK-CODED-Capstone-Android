@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.R
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
@@ -47,7 +48,7 @@ fun CardSuggestedOnBoarding(
     }
 
     // Function to determine recommendation type based on product (same as recommendation screen)
-    fun getRecommendationType(product: com.coded.capstone.data.responses.accountProduct.AccountProductResponse): String? {
+    fun getRecommendationType(product: AccountProductResponse): String? {
         return when {
             product.name?.lowercase()?.contains("travel") == true -> "travel"
             product.name?.lowercase()?.contains("family") == true -> "family essentials"
