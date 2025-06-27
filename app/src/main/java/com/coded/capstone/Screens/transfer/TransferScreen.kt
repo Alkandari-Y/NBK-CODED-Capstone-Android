@@ -47,6 +47,7 @@ import androidx.compose.ui.zIndex
 import com.coded.capstone.R
 import com.coded.capstone.composables.wallet.WalletCard
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.data.states.TransferUiState
 import com.coded.capstone.SVG.CardTransferBoldIcon
 import com.coded.capstone.ui.AppBackground
@@ -76,7 +77,7 @@ fun TransferScreen(
     accounts: List<AccountResponse> = emptyList(),
     defaultSource: AccountResponse? = null,
     onTransfer: (source: AccountResponse, destination: AccountResponse, amount: BigDecimal) -> Unit = { _, _, _ -> },
-    onBack: () -> Unit = { navController.popBackStack() },
+    onBack: () -> Unit = { navController.navigate(NavRoutes.NAV_ROUTE_HOME) },
     transferUiState: TransferUiState = TransferUiState.Idle,
     validateAmount: (BigDecimal, AccountResponse) -> String? = { _, _ -> null }
 ) {
@@ -111,15 +112,30 @@ fun TransferScreen(
     }
     
     // Filter accounts by type for transfer functionality
-    // Source accounts: only debit accounts
+    // Source accounts: debit and credit accounts (exclude cashback)
     val sourceAccounts = allAccounts.filter { account ->
-        account.accountType?.lowercase() == "debit"
-    }
-    
-    // Destination accounts: debit and credit only (exclude cashback)
-    val destinationAccounts = allAccounts.filter { account ->
         val accountType = account.accountType?.lowercase()
         accountType == "debit" || accountType == "credit"
+    }
+    
+    // Dynamic destination accounts based on source account type
+    val getDestinationAccounts = { sourceAccount: AccountResponse? ->
+        when (sourceAccount?.accountType?.lowercase()) {
+            "credit" -> {
+                // Credit source can only transfer to credit accounts
+                allAccounts.filter { account ->
+                    account.accountType?.lowercase() == "credit" && account.id != sourceAccount.id
+                }.distinctBy { it.id }
+            }
+            "debit" -> {
+                // Debit source can transfer to debit or credit accounts
+                allAccounts.filter { account ->
+                    val accountType = account.accountType?.lowercase()
+                    (accountType == "debit" || accountType == "credit") && account.id != sourceAccount.id
+                }.distinctBy { it.id }
+            }
+            else -> emptyList()
+        }
     }
     
     val actualTransferUiState by transactionViewModel.transferUiState.collectAsState()
@@ -131,12 +147,12 @@ fun TransferScreen(
         }
     }
     
-    // Initialize fromCard with a valid debit account only
+    // Initialize fromCard with a valid source account (debit or credit)
     var fromCard by remember { mutableStateOf<AccountResponse?>(null) }
     
-    // Set initial source card (must be debit account)
+    // Set initial source card (debit or credit account)
     LaunchedEffect(sourceAccounts, defaultSource) {
-        fromCard = if (defaultSource != null && defaultSource.accountType?.lowercase() == "debit") {
+        fromCard = if (defaultSource != null && sourceAccounts.contains(defaultSource)) {
             defaultSource
         } else {
             sourceAccounts.firstOrNull()
@@ -146,11 +162,11 @@ fun TransferScreen(
     // Success message state
     var showSuccessMessage by remember { mutableStateOf(false) }
     
-    // Set default source card based on selectedAccountId (only if it's a debit account)
+    // Set default source card based on selectedAccountId (if it's a valid source account)
     LaunchedEffect(sourceAccounts, selectedAccountId) {
         if (selectedAccountId != null && sourceAccounts.isNotEmpty()) {
             val selectedAccount = sourceAccounts.find { it.id.toString() == selectedAccountId }
-            if (selectedAccount != null && selectedAccount.accountType?.lowercase() == "debit") {
+            if (selectedAccount != null) {
                 fromCard = selectedAccount
             }
         }
@@ -174,18 +190,23 @@ fun TransferScreen(
     
     val coroutineScope = rememberCoroutineScope()
     
-    // Get available destination cards (excluding the selected source card, and only debit/credit accounts)
-    val availableDestinations = if (fromCard != null) {
-        destinationAccounts.filter { it.id != fromCard!!.id }
-    } else {
-        destinationAccounts
-    }
+    // Get available destination cards based on source account type
+    val availableDestinations = getDestinationAccounts(fromCard)
     val toCard = availableDestinations.getOrNull(currentToIndex)
     
-    // Reset destination when source changes
-    LaunchedEffect(fromCard) {
-        if (fromCard != null) {
+    // Reset destination when source changes or available destinations change
+    LaunchedEffect(fromCard, availableDestinations.size) {
+        if (fromCard != null && availableDestinations.isNotEmpty()) {
             // Reset to first available destination
+            currentToIndex = 0
+        } else if (availableDestinations.isEmpty()) {
+            currentToIndex = 0
+        }
+    }
+    
+    // Ensure currentToIndex is always within bounds
+    LaunchedEffect(availableDestinations, currentToIndex) {
+        if (availableDestinations.isNotEmpty() && currentToIndex >= availableDestinations.size) {
             currentToIndex = 0
         }
     }
@@ -261,7 +282,7 @@ fun TransferScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "Transfer from debit accounts only. Transfer to debit or credit accounts only.",
+                    text = "Credit accounts can only transfer to credit accounts. Debit accounts can transfer to debit or credit accounts.",
                     color = Color(0xFF6B7280),
                     fontSize = 12.sp,
                     fontFamily = RobotoFont,
@@ -301,7 +322,7 @@ fun TransferScreen(
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                text = "No debit accounts available for transfers. You need at least one debit account to send transfers.",
+                                text = "No valid accounts available for transfers. You need at least one debit or credit account to send transfers.",
                                 color = Color(0xFFEF4444),
                                 fontSize = 14.sp,
                                 fontFamily = RobotoFont,
@@ -309,14 +330,18 @@ fun TransferScreen(
                                 textAlign = TextAlign.Center
                             )
                         }
-                    } else if (destinationAccounts.size <= 1) {
+                    } else if (availableDestinations.isEmpty()) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                text = "You need at least two accounts (debit/credit) to make transfers.",
+                                text = when (fromCard?.accountType?.lowercase()) {
+                                    "credit" -> "No credit accounts available for destination. Credit accounts can only transfer to other credit accounts."
+                                    "debit" -> "No valid destination accounts available. Debit accounts can transfer to debit or credit accounts."
+                                    else -> "No valid destination accounts available for transfers."
+                                },
                                 color = Color(0xFFEF4444),
                                 fontSize = 14.sp,
                                 fontFamily = RobotoFont,
@@ -373,9 +398,9 @@ fun TransferScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(230.dp)
-                            .pointerInput(Unit) {
+                            .pointerInput(availableDestinations) {
                                 detectHorizontalDragGestures { _, dragAmount ->
-                                    if (!isSwapping && availableDestinations.isNotEmpty()) {
+                                    if (!isSwapping && availableDestinations.isNotEmpty() && availableDestinations.size > 1) {
                                         if (dragAmount < -40) {
                                             // Swipe left - go to next destination
                                             currentToIndex = (currentToIndex + 1) % availableDestinations.size
@@ -444,19 +469,24 @@ fun TransferScreen(
                         .border(4.dp, Color.White, shape = RoundedCornerShape(32.dp))
                         .clickable {
                             if (!isSwapping && fromCard != null && toCard != null) {
-                                // Only allow swap if the destination card is a debit account (valid source)
-                                if (toCard!!.accountType?.lowercase() == "debit") {
+                                // Check if swap is valid:
+                                // 1. Destination card must be a valid source account (debit or credit)
+                                // 2. Current source must be a valid destination for the swapped scenario
+                                val canToCardBeSource = sourceAccounts.contains(toCard)
+                                val willFromCardBeValidDestination = getDestinationAccounts(toCard).contains(fromCard)
+                                
+                                if (canToCardBeSource && willFromCardBeValidDestination) {
                                     coroutineScope.launch {
                                         isSwapping = true
                                         delay(300)
                                         val temp = fromCard
                                         fromCard = toCard
-                                        currentToIndex = availableDestinations.indexOf(temp).coerceAtLeast(0)
+                                        currentToIndex = getDestinationAccounts(fromCard).indexOf(temp).coerceAtLeast(0)
                                         delay(300)
                                         isSwapping = false
                                     }
                                 } else {
-                                    // Show some feedback that swap is not allowed for non-debit accounts
+                                    // Show feedback that swap is not allowed due to account type restrictions
                                     hapticFeedback.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                 }
                             }
@@ -581,7 +611,7 @@ fun TransferScreen(
             isVisible = showSuccessMessage,
             onDismiss = {
                 showSuccessMessage = false
-                navController.popBackStack()
+                navController.navigate(NavRoutes.NAV_ROUTE_HOME)
                 transactionViewModel.resetTransferState()
             },
             modifier = Modifier

@@ -32,7 +32,8 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
     fun transfer(
         sourceAccount: AccountResponse,
         destinationAccount: AccountResponse,
-        amount: BigDecimal
+        amount: BigDecimal,
+        onTransactionSuccess: () -> Unit = {}
     ) {
         viewModelScope.launch {
             _transferUiState.value = TransferUiState.Loading
@@ -48,6 +49,7 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
                 if (response.isSuccessful) {
                     response.body()?.let { transaction ->
                         _transferUiState.value = TransferUiState.Success(transaction)
+                        onTransactionSuccess()
                     } ?: run {
                         _transferUiState.value = TransferUiState.Error("Transfer failed: Empty response")
                     }
