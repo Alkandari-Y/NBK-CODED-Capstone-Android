@@ -369,6 +369,7 @@ private fun SuggestedAccountCard(
     accountProduct: com.coded.capstone.data.responses.accountProduct.AccountProductResponse,
     modifier: Modifier = Modifier
 ) {
+    // Use the same gradient logic as WalletCard
     val cardGradient = when (accountProduct.accountType?.lowercase()) {
         "debit" -> Brush.linearGradient(
             colors = listOf(
@@ -414,9 +415,10 @@ private fun SuggestedAccountCard(
 
     Card(
         modifier = modifier
-            .height(240.dp)
+            .fillMaxWidth()
+            .height(220.dp)
             .shadow(
-                elevation = 24.dp,
+                elevation = 20.dp,
                 shape = RoundedCornerShape(20.dp),
                 ambientColor = Color.Black.copy(alpha = 0.4f),
                 spotColor = Color.Black.copy(alpha = 0.4f)
@@ -429,7 +431,7 @@ private fun SuggestedAccountCard(
                 .fillMaxSize()
                 .background(cardGradient)
         ) {
-            // Subtle pattern overlay
+            // Subtle geometric pattern overlay (same as WalletCard)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -451,7 +453,7 @@ private fun SuggestedAccountCard(
                     .padding(28.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top section: Product name and type
+                // Top section: Bank name and contactless (same as WalletCard)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -467,14 +469,14 @@ private fun SuggestedAccountCard(
                     )
 
                     Icon(
-                        imageVector = Icons.Default.Stars,
-                        contentDescription = "Premium Account",
+                        imageVector = Icons.Default.Contactless,
+                        contentDescription = "Contactless Payment",
                         tint = Color.White.copy(alpha = 0.9f),
                         modifier = Modifier.size(28.dp)
                     )
                 }
 
-                // Middle section: EMV Chip
+                // Middle section: EMV Chip (exact same as WalletCard)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start
@@ -486,16 +488,17 @@ private fun SuggestedAccountCard(
                             .background(
                                 Brush.linearGradient(
                                     colors = listOf(
-                                        Color(0xFFFFD700),
-                                        Color(0xFFDAA520),
-                                        Color(0xFFB8860B),
-                                        Color(0xFFFFD700)
+                                        Color(0xFFFFD700), // Gold
+                                        Color(0xFFDAA520), // Goldenrod
+                                        Color(0xFFB8860B), // Dark goldenrod
+                                        Color(0xFFFFD700)  // Gold
                                     )
                                 ),
                                 RoundedCornerShape(6.dp)
                             )
                             .shadow(2.dp, RoundedCornerShape(6.dp))
                     ) {
+                        // Chip contact pattern
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -523,43 +526,44 @@ private fun SuggestedAccountCard(
                     }
                 }
 
-                // Bottom section: Account details
+                // Bottom section: Card details (same structure as WalletCard)
                 Column {
+                    // Card number placeholder
                     Text(
                         text = "•••• •••• •••• NEW",
                         color = Color.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
-                        letterSpacing = 2.sp,
-                        fontFamily = RobotoFont
+                        letterSpacing = 2.sp
                     )
-
+                    
                     Spacer(modifier = Modifier.height(16.dp))
-
+                    
+                    // Bottom row: Card type and status
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom
                     ) {
+                        // Account type
                         Column {
                             Text(
                                 text = "ACCOUNT TYPE",
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp,
-                                fontFamily = RobotoFont
+                                letterSpacing = 1.sp
                             )
                             Text(
                                 text = (accountProduct.accountType ?: "ACCOUNT").uppercase(),
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp,
-                                fontFamily = RobotoFont
+                                letterSpacing = 1.sp
                             )
                         }
-
+                        
+                        // Status
                         Column(
                             horizontalAlignment = Alignment.End
                         ) {
@@ -568,22 +572,20 @@ private fun SuggestedAccountCard(
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp,
-                                fontFamily = RobotoFont
+                                letterSpacing = 1.sp
                             )
                             Text(
                                 text = "RECOMMENDED",
                                 color = Color(0xFF10B981),
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = RobotoFont
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
                 }
             }
 
-            // Premium shine effect
+            // Premium shine effect (same as WalletCard)
             Box(
                 modifier = Modifier
                     .fillMaxSize()

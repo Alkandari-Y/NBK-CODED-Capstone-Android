@@ -112,23 +112,23 @@ fun TransferScreen(
     }
     
     // Filter accounts by type for transfer functionality
-    // Source accounts: debit and credit accounts (exclude cashback)
+    // Source accounts: debit and cashback only (exclude credit)
     val sourceAccounts = allAccounts.filter { account ->
         val accountType = account.accountType?.lowercase()
-        accountType == "debit" || accountType == "credit"
+        accountType == "debit" || accountType == "cashback"
     }
     
     // Dynamic destination accounts based on source account type
     val getDestinationAccounts = { sourceAccount: AccountResponse? ->
         when (sourceAccount?.accountType?.lowercase()) {
-            "credit" -> {
-                // Credit source can only transfer to credit accounts
+            "cashback" -> {
+                // Cashback source can only transfer to debit accounts
                 allAccounts.filter { account ->
-                    account.accountType?.lowercase() == "credit" && account.id != sourceAccount.id
+                    account.accountType?.lowercase() == "debit" && account.id != sourceAccount.id
                 }.distinctBy { it.id }
             }
             "debit" -> {
-                // Debit source can transfer to debit or credit accounts
+                // Debit source can transfer to debit or credit accounts (exclude cashback as destination)
                 allAccounts.filter { account ->
                     val accountType = account.accountType?.lowercase()
                     (accountType == "debit" || accountType == "credit") && account.id != sourceAccount.id
@@ -147,10 +147,10 @@ fun TransferScreen(
         }
     }
     
-    // Initialize fromCard with a valid source account (debit or credit)
+    // Initialize fromCard with a valid source account (debit or cashback)
     var fromCard by remember { mutableStateOf<AccountResponse?>(null) }
     
-    // Set initial source card (debit or credit account)
+    // Set initial source card (debit or cashback account)
     LaunchedEffect(sourceAccounts, defaultSource) {
         fromCard = if (defaultSource != null && sourceAccounts.contains(defaultSource)) {
             defaultSource
@@ -282,7 +282,7 @@ fun TransferScreen(
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "Credit accounts can only transfer to credit accounts. Debit accounts can transfer to debit or credit accounts.",
+                    text = "Only debit and cashback accounts can send transfers. Cashback accounts can only transfer to debit accounts. Debit accounts can transfer to debit or credit accounts.",
                     color = Color(0xFF6B7280),
                     fontSize = 12.sp,
                     fontFamily = RobotoFont,
@@ -322,7 +322,7 @@ fun TransferScreen(
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                text = "No valid accounts available for transfers. You need at least one debit or credit account to send transfers.",
+                                text = "No valid accounts available for transfers. You need at least one debit or cashback account to send transfers.",
                                 color = Color(0xFFEF4444),
                                 fontSize = 14.sp,
                                 fontFamily = RobotoFont,
@@ -338,7 +338,7 @@ fun TransferScreen(
                         ) {
                             Text(
                                 text = when (fromCard?.accountType?.lowercase()) {
-                                    "credit" -> "No credit accounts available for destination. Credit accounts can only transfer to other credit accounts."
+                                    "cashback" -> "No debit accounts available for destination. Cashback accounts can only transfer to debit accounts."
                                     "debit" -> "No valid destination accounts available. Debit accounts can transfer to debit or credit accounts."
                                     else -> "No valid destination accounts available for transfers."
                                 },
@@ -470,7 +470,7 @@ fun TransferScreen(
                         .clickable {
                             if (!isSwapping && fromCard != null && toCard != null) {
                                 // Check if swap is valid:
-                                // 1. Destination card must be a valid source account (debit or credit)
+                                // 1. Destination card must be a valid source account (debit or cashback)
                                 // 2. Current source must be a valid destination for the swapped scenario
                                 val canToCardBeSource = sourceAccounts.contains(toCard)
                                 val willFromCardBeValidDestination = getDestinationAccounts(toCard).contains(fromCard)
@@ -553,46 +553,64 @@ fun TransferScreen(
 
             Spacer(modifier = Modifier.height(0.dp))
 
-            // Transfer Button
-            Button(
-                onClick = {
-                    val source = fromCard
-                    val destination = toCard
-                    val transferAmount = amount.toBigDecimalOrNull()
+            // Transfer Button - only show if source is not a credit account
+            if (fromCard?.accountType?.lowercase() != "credit") {
+                Button(
+                    onClick = {
+                        val source = fromCard
+                        val destination = toCard
+                        val transferAmount = amount.toBigDecimalOrNull()
 
-                    if (source != null && destination != null && transferAmount != null && amountError == null) {
-                        transactionViewModel.transfer(source, destination, transferAmount)
+                        if (source != null && destination != null && transferAmount != null && amountError == null) {
+                            transactionViewModel.transfer(source, destination, transferAmount)
+                        }
+                    },
+                    enabled = fromCard != null &&
+                            toCard != null &&
+                            amount.isNotEmpty() &&
+                            amountError == null &&
+                            actualTransferUiState != TransferUiState.Loading &&
+                            sourceAccounts.isNotEmpty() &&
+                            availableDestinations.isNotEmpty(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF),
+                        disabledContainerColor = Color(0xFF23272E).copy(alpha = 0.1f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    if (actualTransferUiState == TransferUiState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = "Transfer",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            fontFamily = RobotoFont
+                        )
                     }
-                },
-                enabled = fromCard != null &&
-                        toCard != null &&
-                        amount.isNotEmpty() &&
-                        amountError == null &&
-                        actualTransferUiState != TransferUiState.Loading &&
-                        sourceAccounts.isNotEmpty() &&
-                        availableDestinations.isNotEmpty(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8EC5FF),
-                    disabledContainerColor = Color(0xFF23272E).copy(alpha = 0.1f)
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                if (actualTransferUiState == TransferUiState.Loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
-                    )
-                } else {
+                }
+            } else {
+                // Show message when credit account is selected as source
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
                     Text(
-                        text = "Transfer",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        fontFamily = RobotoFont
+                        text = "Credit accounts cannot initiate transfers. Please select a debit or cashback account as the source.",
+                        color = Color(0xFFEF4444),
+                        fontSize = 14.sp,
+                        fontFamily = RobotoFont,
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center
                     )
                 }
             }

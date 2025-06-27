@@ -72,8 +72,13 @@ fun RecommendationScreen(
     LaunchedEffect(accountCreateState) {
         when (accountCreateState) {
             is AccountCreateUiState.Error -> {
-                Toast.makeText(context, (accountCreateState as AccountCreateUiState.Error).message, Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    (accountCreateState as AccountCreateUiState.Error).message,
+                    Toast.LENGTH_LONG
+                ).show()
             }
+
             else -> {}
         }
     }
@@ -103,46 +108,51 @@ fun RecommendationScreen(
     }
 
     // Define Roboto font family
-    val robotoFontFamily = FontFamily.Default // Replace with FontFamily(Font(R.font.roboto_regular)) if you have the font resource
+    val robotoFontFamily =
+        FontFamily.Default // Replace with FontFamily(Font(R.font.roboto_regular)) if you have the font resource
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        Column(
+    Scaffold(
+        containerColor = Color.White
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 24.dp, end = 24.dp, bottom = 0.dp)
+                .padding(paddingValues)
+                .background(Color.White)
         ) {
-            // Header Section
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(start = 24.dp, end = 24.dp, bottom = 0.dp)
             ) {
-                IconButton(
-                    onClick = onBackClick,
+                // Header Section
+                Row(
                     modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color.White.copy(alpha = 0.1f),
-                                    Color.White.copy(alpha = 0.05f)
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
                                 )
                             )
-                        )
-                ) {
+                    ) {
 
-                }
+                    }
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 //                    Text(
 //                        text = "Recommendations",
 //                        fontSize = 20.sp,
@@ -150,266 +160,329 @@ fun RecommendationScreen(
 //                        color = Color(0xFF1E1B4B),
 //                        textAlign = TextAlign.Center
 //                    )
+                        Text(
+                            text = "Tailored for You",
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onNotificationClick,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.05f)
+                                    )
+                                )
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                // Subtitle Section
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = Color(0xFF8EC5FF),
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Tailored for You",
-                        fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.7f),
+                        text = "Recommendations",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.DarkGray,
+                        fontFamily = robotoFontFamily,
                         textAlign = TextAlign.Center
                     )
                 }
-
-                IconButton(
-                    onClick = onNotificationClick,
+                Column(
                     modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color.White.copy(alpha = 0.1f),
-                                    Color.White.copy(alpha = 0.05f)
-                                )
-                            )
-                        )
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Notifications",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
+                    Text(
+                        text = "Based on Your Accounts",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray,
+                        fontFamily = robotoFontFamily,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Discover financial products that match your needs and goals",
+                        fontSize = 15.sp,
+                        color = Color.Gray.copy(alpha = 0.7f),
+                        fontFamily = robotoFontFamily,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp
                     )
                 }
-            }
 
-            // Subtitle Section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = Color(0xFF8EC5FF),
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Recommendations",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.DarkGray,
-                    fontFamily = robotoFontFamily,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Based on Your Accounts",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Gray,
-                    fontFamily = robotoFontFamily,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Discover financial products that match your needs and goals",
-                    fontSize = 13.sp,
-                    color = Color.Gray.copy(alpha = 0.7f),
-                    fontFamily = robotoFontFamily,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 18.sp
-                )
-            }
-
-            // Recommendations Section
-            val uniqueRecommendations = recommendations.distinctBy { it.name to it.accountType }
-            if (uniqueRecommendations.isNotEmpty()) {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(uniqueRecommendations) { product ->
-                        Box(
-                            modifier = Modifier
-                                .width(380.dp)
-                                .height(520.dp)
-                                .background(Color.Transparent, RoundedCornerShape(45.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceBetween
+                // Recommendations Section
+                val uniqueRecommendations = recommendations.distinctBy { it.name to it.accountType }
+                if (uniqueRecommendations.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(0.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uniqueRecommendations) { product ->
+                            Box(
+                                modifier = Modifier
+                                    .width(380.dp)
+                                    .height(520.dp)
+                                    .background(Color.Transparent, RoundedCornerShape(45.dp)),
+                                contentAlignment = Alignment.Center
                             ) {
-                                // Centered, rotated WalletCard
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    WalletCard(
-                                        account = com.coded.capstone.data.responses.account.AccountResponse(
-                                            id = product.id ?: 0L,
-                                            accountNumber = null,
-                                            balance = java.math.BigDecimal.ZERO,
-                                            ownerId = 0L,
-                                            ownerType = null,
-                                            accountProductId = product.id,
-                                            accountType = product.accountType
-                                        ),
-                                        onCardClick = { onItemClick(product) },
-                                        recommendationType = getRecommendationType(product),
-                                        showDetails = false,
-                                        modifier = Modifier
-                                            .width(320.dp)
-                                            .height(200.dp)
-                                            .graphicsLayer {
-                                                rotationZ = 90f
-                                                scaleX = 1f
-                                                scaleY = 1f
-                                            }
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                // Perks/info as premium InfoCards
                                 Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    product.interestRate?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text("Interest Rate", color = Color(0xFF8EC5FF), fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                            Text("${it}%", color = Color(0xFF1E1B4B), fontWeight = FontWeight.Medium, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                        }
-                                    }
-                                    product.creditLimit?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text("Credit Limit", color = Color(0xFF8EC5FF), fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                            Text("KD ${it.toInt()}", color = Color(0xFF1E1B4B), fontWeight = FontWeight.Medium, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                        }
-                                    }
-                                    product.annualFee?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text("Annual Fee", color = Color(0xFF8EC5FF), fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                            Text(if (it == 0.0) "Free" else "KD ${it.toInt()}", color = Color(0xFF1E1B4B), fontWeight = FontWeight.Medium, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                        }
-                                    }
-                                    product.minBalanceRequired?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text("Min Balance", color = Color(0xFF8EC5FF), fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                            Text("KD ${it.toInt()}", color = Color(0xFF1E1B4B), fontWeight = FontWeight.Medium, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                        }
-                                    }
-                                    product.minSalary?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text("Min Salary", color = Color(0xFF8EC5FF), fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                            Text("KD ${it.toInt()}", color = Color(0xFF1E1B4B), fontWeight = FontWeight.Medium, fontSize = 13.sp, fontFamily = robotoFontFamily)
-                                        }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                                // Premium Apply Button
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    val userHasCard = userAccounts.any { acc ->
-                                        acc.accountProductId == product.id
-                                    }
-                                    Button(
-                                        onClick = { handleApplyClick(product) },
-                                        enabled = accountCreateState is AccountCreateUiState.Loading == false && !userHasCard,
+                                    // Centered, rotated WalletCard
+                                    Box(
                                         modifier = Modifier
-                                            .width(330.dp)
-                                            .height(48.dp)
-                                            .then(
-                                                if (!userHasCard && accountCreateState !is AccountCreateUiState.Loading)
-                                                    Modifier.shadow(
-                                                        elevation = 12.dp,
-                                                        shape = RoundedCornerShape(16.dp),
-                                                        ambientColor = Color.White.copy(alpha = 0.3f)
-                                                    )
-                                                else Modifier
-                                            ),
-                                        colors = if (userHasCard) {
-                                            ButtonDefaults.buttonColors(
-                                                containerColor = Color.LightGray,
-                                                contentColor = Color.White,
-                                                disabledContainerColor = Color.LightGray,
-                                                disabledContentColor = Color.White
-                                            )
-                                        } else {
-                                            ButtonDefaults.buttonColors(
-                                                containerColor = Color(0xFF8EC5FF),
-                                                contentColor = Color.White,
-                                                disabledContainerColor = Color(0xFF8EC5FF).copy(alpha = 0.6f),
-                                                disabledContentColor = Color.White.copy(alpha = 0.6f)
-                                            )
-                                        },
-                                        shape = RoundedCornerShape(16.dp)
+                                            .fillMaxWidth()
+                                            .weight(1f),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
-                                        ) {
-                                            if (accountCreateState is AccountCreateUiState.Loading) {
-                                                CircularProgressIndicator(
-                                                    modifier = Modifier.size(20.dp),
-                                                    color = Color(0xFF1E1B4B),
-                                                    strokeWidth = 2.dp
-                                                )
-                                                Spacer(modifier = Modifier.width(8.dp))
+                                        WalletCard(
+                                            account = com.coded.capstone.data.responses.account.AccountResponse(
+                                                id = product.id ?: 0L,
+                                                accountNumber = null,
+                                                balance = java.math.BigDecimal.ZERO,
+                                                ownerId = 0L,
+                                                ownerType = null,
+                                                accountProductId = product.id,
+                                                accountType = product.accountType
+                                            ),
+                                            onCardClick = { onItemClick(product) },
+                                            recommendationType = getRecommendationType(product),
+                                            showDetails = false,
+                                            modifier = Modifier
+                                                .width(320.dp)
+                                                .height(200.dp)
+                                                .graphicsLayer {
+                                                    rotationZ = 90f
+                                                    scaleX = 1f
+                                                    scaleY = 1f
+                                                }
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    // Perks/info as premium InfoCards
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        product.interestRate?.let {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
                                                 Text(
-                                                    text = "Creating Account...",
-                                                    fontSize = 16.sp,
+                                                    "Interest Rate",
+                                                    color = Color(0xFF8EC5FF),
                                                     fontWeight = FontWeight.Bold,
-                                                    fontFamily = robotoFontFamily,
-                                                    color = Color.White
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                                Text(
+                                                    "${it}%",
+                                                    color = Color(0xFF1E1B4B),
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                            }
+                                        }
+                                        product.creditLimit?.let {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    "Credit Limit",
+                                                    color = Color(0xFF8EC5FF),
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                                Text(
+                                                    "KD ${it.toInt()}",
+                                                    color = Color(0xFF1E1B4B),
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                            }
+                                        }
+                                        product.annualFee?.let {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    "Annual Fee",
+                                                    color = Color(0xFF8EC5FF),
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                                Text(
+                                                    if (it == 0.0) "Free" else "KD ${it.toInt()}",
+                                                    color = Color(0xFF1E1B4B),
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                            }
+                                        }
+                                        product.minBalanceRequired?.let {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    "Min Balance",
+                                                    color = Color(0xFF8EC5FF),
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                                Text(
+                                                    "KD ${it.toInt()}",
+                                                    color = Color(0xFF1E1B4B),
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                            }
+                                        }
+                                        product.minSalary?.let {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    "Min Salary",
+                                                    color = Color(0xFF8EC5FF),
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                                Text(
+                                                    "KD ${it.toInt()}",
+                                                    color = Color(0xFF1E1B4B),
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 15.sp,
+                                                    fontFamily = robotoFontFamily
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                    // Premium Apply Button
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        val userHasCard = userAccounts.any { acc ->
+                                            acc.accountProductId == product.id
+                                        }
+                                        Button(
+                                            onClick = { handleApplyClick(product) },
+                                            enabled = accountCreateState is AccountCreateUiState.Loading == false && !userHasCard,
+                                            modifier = Modifier
+                                                .width(330.dp)
+                                                .height(48.dp)
+                                                .then(
+                                                    if (!userHasCard && accountCreateState !is AccountCreateUiState.Loading)
+                                                        Modifier.shadow(
+                                                            elevation = 12.dp,
+                                                            shape = RoundedCornerShape(16.dp),
+                                                            ambientColor = Color.White.copy(alpha = 0.3f)
+                                                        )
+                                                    else Modifier
+                                                ),
+                                            colors = if (userHasCard) {
+                                                ButtonDefaults.buttonColors(
+                                                    containerColor = Color.LightGray,
+                                                    contentColor = Color.White,
+                                                    disabledContainerColor = Color.LightGray,
+                                                    disabledContentColor = Color.White
                                                 )
                                             } else {
-                                                Text(
-                                                    text = if (userHasCard) "Already Owned" else "Apply Now",
-                                                    fontSize = 16.sp,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontFamily = robotoFontFamily,
-                                                    color = Color.White
+                                                ButtonDefaults.buttonColors(
+                                                    containerColor = Color(0xFF8EC5FF),
+                                                    contentColor = Color.White,
+                                                    disabledContainerColor = Color(0xFF8EC5FF).copy(
+                                                        alpha = 0.6f
+                                                    ),
+                                                    disabledContentColor = Color.White.copy(alpha = 0.6f)
                                                 )
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                                if (!userHasCard) {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.ArrowForward,
-                                                        contentDescription = null,
+                                            },
+                                            shape = RoundedCornerShape(16.dp)
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                if (accountCreateState is AccountCreateUiState.Loading) {
+                                                    CircularProgressIndicator(
                                                         modifier = Modifier.size(20.dp),
-                                                        tint = Color.White
+                                                        color = Color(0xFF1E1B4B),
+                                                        strokeWidth = 2.dp
                                                     )
+                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                    Text(
+                                                        text = "Creating Account...",
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontFamily = robotoFontFamily,
+                                                        color = Color.White
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = if (userHasCard) "Already Owned" else "Apply Now",
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontFamily = robotoFontFamily,
+                                                        color = Color.White
+                                                    )
+                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                    if (!userHasCard) {
+                                                        Icon(
+                                                            imageVector = Icons.Filled.ArrowForward,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(20.dp),
+                                                            tint = Color.White
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -418,112 +491,99 @@ fun RecommendationScreen(
                             }
                         }
                     }
-                }
-            } else {
-                // Empty State
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                } else {
+                    // Empty State
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(120.dp)
-                                .clip(RoundedCornerShape(60.dp))
-                                .background(
-                                    brush = Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFF8EC5FF).copy(alpha = 0.2f),
-                                            Color(0xFF8EC5FF).copy(alpha = 0.1f)
-                                        )
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Lightbulb,
-                                contentDescription = null,
-                                tint = Color(0xFF8EC5FF),
-                                modifier = Modifier.size(60.dp)
+                            Box(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .clip(RoundedCornerShape(60.dp))
+                                    .background(
+                                        brush = Brush.radialGradient(
+                                            colors = listOf(
+                                                Color(0xFF8EC5FF).copy(alpha = 0.2f),
+                                                Color(0xFF8EC5FF).copy(alpha = 0.1f)
+                                            )
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Lightbulb,
+                                    contentDescription = null,
+                                    tint = Color(0xFF8EC5FF),
+                                    modifier = Modifier.size(60.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Text(
+                                text = "No Recommendations Yet",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Complete your profile to get personalized recommendations",
+                                fontSize = 16.sp,
+                                color = Color.White.copy(alpha = 0.7f),
+                                textAlign = TextAlign.Center,
+                                lineHeight = 22.sp
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Text(
-                            text = "No Recommendations Yet",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Complete your profile to get personalized recommendations",
-                            fontSize = 16.sp,
-                            color = Color.White.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 22.sp
-                        )
                     }
                 }
             }
+
+            // Decorative Elements
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(200.dp)
+                    .offset(x = 100.dp, y = (-100).dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 200f
+                        ),
+                        shape = RoundedCornerShape(100.dp)
+                    )
+            )
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(150.dp)
+                    .offset(x = (-75).dp, y = 75.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
+                                Color.Transparent
+                            ),
+                            radius = 150f
+                        ),
+                        shape = RoundedCornerShape(75.dp)
+                    )
+            )
         }
-
-        // Decorative Elements
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(200.dp)
-                .offset(x = 100.dp, y = (-100).dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                            Color.Transparent
-                        ),
-                        radius = 200f
-                    ),
-                    shape = RoundedCornerShape(100.dp)
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .size(150.dp)
-                .offset(x = (-75).dp, y = 75.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                            Color.Transparent
-                        ),
-                        radius = 150f
-                    ),
-                    shape = RoundedCornerShape(75.dp)
-                )
-        )
     }
-}
 
-@Composable
-fun InfoChip(text: String) {
-    Text(
-        text = text,
-        color = Color.White,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier
-            .background(Color(0xFF1E1B4B).copy(alpha = 0.7f), RoundedCornerShape(16.dp))
-            .padding(horizontal = 10.dp, vertical = 6.dp)
-            .padding(end = 8.dp)
-    )
 }
