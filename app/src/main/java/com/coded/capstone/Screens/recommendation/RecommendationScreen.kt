@@ -2,6 +2,11 @@
 package com.coded.capstone.screens.recommendation
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +40,7 @@ import com.coded.capstone.composables.recommendation.InfoCard
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.zIndex
 import com.coded.capstone.R
 
 
@@ -59,11 +65,16 @@ fun RecommendationScreen(
         else -> emptyList()
     }
 
+    // Success message state
+    var showSuccessMessage by remember { mutableStateOf(false) }
+    var successMessage by remember { mutableStateOf("") }
+
     // Handle account creation success
     LaunchedEffect(shouldNavigate) {
         if (shouldNavigate) {
             // Show success message and reset navigation flag
-            Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+            successMessage = "Account created successfully!"
+            showSuccessMessage = true
             accountViewModel.resetNavigationFlag()
         }
     }
@@ -243,7 +254,7 @@ fun RecommendationScreen(
                 // Recommendations Section
                 val uniqueRecommendations = recommendations
                     .filter { product ->
-                        // Filter out cashback and business account cards
+                        // Filter out cashback, business, and salary account cards
                         val productName = product.name?.lowercase() ?: ""
                         val accountType = product.accountType?.lowercase() ?: ""
                         
@@ -253,6 +264,13 @@ fun RecommendationScreen(
                         !productName.contains("salary")
                     }
                     .distinctBy { it.name to it.accountType }
+                    .sortedBy { product ->
+                        // Sort by ownership: unowned first (false), then owned (true)
+                        val userHasCard = userAccounts.any { acc ->
+                            acc.accountProductId == product.id
+                        }
+                        userHasCard
+                    }
                 if (uniqueRecommendations.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
@@ -595,6 +613,99 @@ fun RecommendationScreen(
                     )
             )
         }
-    }
 
+        // Success Message - positioned in the center of the screen
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1000f) // Ensure it appears above other elements
+        ) {
+            AccountCreationSuccessMessage(
+                isVisible = showSuccessMessage,
+                onDismiss = {
+                    showSuccessMessage = false
+                },
+                fontFamily = robotoFontFamily,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun AccountCreationSuccessMessage(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    fontFamily: FontFamily,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2E)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Success",
+                    tint = Color(0xFF8EC5FF),
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Account Created Successfully!",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = fontFamily
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Your new account has been created and is ready to use.",
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    fontFamily = fontFamily
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Continue",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        fontFamily = fontFamily
+                    )
+                }
+            }
+        }
+    }
 }
