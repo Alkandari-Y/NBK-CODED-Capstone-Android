@@ -176,7 +176,13 @@ fun SignUpScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Color.White
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.White,
+                                    Color(0xFFE5E7EB), // Light silver
+                                    Color(0xFFD1D5DB)  // Silver
+                                )
+                            )
                         )
                 ) {
                     Column(
@@ -231,8 +237,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFECECEC),
+                                focusedContainerColor = Color(0xFFECECEC),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -278,8 +284,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFE5E5E5),
+                                focusedContainerColor = Color(0xFFE5E5E5),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -319,8 +325,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFE5E5E5),
+                                focusedContainerColor = Color(0xFFE5E5E5),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -370,8 +376,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFE5E5E5),
+                                focusedContainerColor = Color(0xFFE5E5E5),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
