@@ -374,9 +374,10 @@ fun WalletScreen(
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontSize = if (selectedCard != null) 20.sp else 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = RobotoFont
+                                fontFamily = RobotoFont,
+                                        color = Color(0xFF374151),
                             ),
-                            color = Color.White
+//                            color = Color.White
                         )
                         if (accounts.isNotEmpty() && selectedCard == null) {
                             Text(

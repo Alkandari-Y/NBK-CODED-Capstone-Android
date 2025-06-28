@@ -379,9 +379,10 @@ fun AccountDetailsScreen(
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
+                                 color = Color(0xFF374151),
                                 fontFamily = RobotoFont
                             ),
-                            color = Color.White
+//                            color = Color.White
                         )
                         if (accountState != null) {
                             Text(
