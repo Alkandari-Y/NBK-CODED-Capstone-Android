@@ -66,6 +66,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.scaleIn
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.geometry.Offset
 
 // Roboto font family
