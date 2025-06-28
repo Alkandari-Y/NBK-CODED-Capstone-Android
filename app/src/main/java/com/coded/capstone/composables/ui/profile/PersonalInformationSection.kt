@@ -29,13 +29,13 @@ import com.coded.capstone.data.responses.kyc.KYCResponse
 import java.math.BigDecimal
 
 @Composable
- fun PersonalInformationSection(
+fun PersonalInformationSection(
     userProfile: KYCResponse?,
     onEditClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF8EC5FF)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -50,10 +50,10 @@ import java.math.BigDecimal
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Personal Information",
+                    text = "Your Personal Details",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.Black
+                    color = Color.White
                 )
                 IconButton(
                     onClick = onEditClick,
@@ -62,7 +62,7 @@ import java.math.BigDecimal
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = Color.Gray,
+                        tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -77,7 +77,7 @@ import java.math.BigDecimal
             )
 
             PersonalInfoItem(
-                label = "Date of Birth",
+                label = "Birth Date",
                 value = userProfile?.dateOfBirth ?: "Not provided"
             )
 
@@ -87,17 +87,17 @@ import java.math.BigDecimal
             )
 
             PersonalInfoItem(
-                label = "Civil ID",
+                label = "Civil ID Number",
                 value = userProfile?.civilId ?: ""
             )
 
             PersonalInfoItem(
-                label = "Mobile Number",
+                label = "Phone Number",
                 value = userProfile?.mobileNumber ?: ""
             )
 
             PersonalInfoItem(
-                label = "Monthly Income",
+                label = "Monthly Salary",
                 value = "KD ${userProfile?.salary ?: BigDecimal.ZERO}",
                 isLast = true
             )
@@ -106,7 +106,7 @@ import java.math.BigDecimal
 }
 
 @Composable
- fun PersonalInfoItem(
+fun PersonalInfoItem(
     label: String,
     value: String,
     isLast: Boolean = false
@@ -121,13 +121,13 @@ import java.math.BigDecimal
             Text(
                 text = label,
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = Color.White.copy(alpha = 0.8f),
                 modifier = Modifier.weight(1f)
             )
             Text(
                 text = value,
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = Color.White,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.End
@@ -135,7 +135,7 @@ import java.math.BigDecimal
         }
         if (!isLast) {
             Divider(
-                color = Color(0xFFF0F0F0),
+                color = Color.White.copy(alpha = 0.2f),
                 thickness = 1.dp
             )
         }

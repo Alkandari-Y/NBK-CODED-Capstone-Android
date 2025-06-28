@@ -24,7 +24,7 @@ import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.respositories.AccountProductRepository
 
 @Composable
- fun ApplePayCardStack(
+fun ApplePayCardStack(
     accounts: List<AccountResponse>,
     selectedCard: AccountResponse?,
     pagerState: PagerState,
@@ -35,14 +35,14 @@ import com.coded.capstone.respositories.AccountProductRepository
 ) {
     // Expansion state for card stack
     var isExpanded by remember { mutableStateOf(false) }
-    
+
     // Trigger expansion from external source
     LaunchedEffect(externalExpandTrigger) {
         if (externalExpandTrigger) {
             isExpanded = !isExpanded // Toggle expansion state
         }
     }
-    
+
     val expansionOffset by animateFloatAsState(
         targetValue = if (isExpanded) 80f else 0f,
         animationSpec = spring(
@@ -63,7 +63,7 @@ import com.coded.capstone.respositories.AccountProductRepository
         val accountProduct = AccountProductRepository.accountProducts.find {
             it.id == account.accountProductId
         }
-        
+
         // Use the same logic as the recommendation screen
         return when {
             accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
@@ -126,7 +126,7 @@ import com.coded.capstone.respositories.AccountProductRepository
                     )
                     .pointerInput(index) {
                         detectDragGestures(
-                            onDragStart = { 
+                            onDragStart = {
                                 draggedCardIndex = index
                                 isDragging = true
                             },
@@ -177,3 +177,4 @@ import com.coded.capstone.respositories.AccountProductRepository
         }
     }
 }
+
