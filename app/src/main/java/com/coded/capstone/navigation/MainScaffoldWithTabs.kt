@@ -53,7 +53,7 @@ fun MainScaffoldWithTabs(
                     }
                 )
                 1 -> WalletScreen(navController = navController)
-                2 -> CalendarScreen(viewModel = recommendationViewModel)
+                2 -> CalendarScreen(viewModel = recommendationViewModel, navController = navController)
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }

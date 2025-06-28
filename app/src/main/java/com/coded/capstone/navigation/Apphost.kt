@@ -60,6 +60,7 @@ const val NAV_ROUTE_NOTIFICATIONS = "notifications"
     fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
     fun vendorsRoute(category: String) = "vendors/$category"
     fun relatedVendorRoute(perkId: String, productId: String, accountId: String) = "vendor/$perkId/$productId/$accountId"
+    fun promotionDetailsRoute(promotionId: Long) = "promotion/$promotionId"
     fun homeWithWalletTab() = "home?tab=1"
 }
 
@@ -181,7 +182,7 @@ val accountViewModel = remember { AccountViewModel(context) }
                 onBackClick = { navController.popBackStack() }
             )
         }
-        composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen() }
+        composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen(navController = navController) }
 
         composable(
             route = NavRoutes.NAV_ROUTE_TRANSFER + "?selectedAccountId={selectedAccountId}",
@@ -204,7 +205,10 @@ val accountViewModel = remember { AccountViewModel(context) }
             XpTierScreen(onBackClick = { navController.popBackStack() })
         }
         composable(NavRoutes.NAV_ROUTE_NOTIFICATIONS) { NotificationScreen(navController = navController) }
-        composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { PromotionDetailPage(navController = navController) }
+        composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { backStackEntry ->
+            val promotionId = backStackEntry.arguments?.getString("promotionId")
+            PromotionDetailPage(navController = navController, promotionId = promotionId)
+        }
         composable (NavRoutes.NAV_ROUTE_RELATED_VENDOR){ backStackEntry ->
             val perkId = backStackEntry.arguments?.getString("perkId")
             val productId = backStackEntry.arguments?.getString("productId")

@@ -6,18 +6,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,123 +33,169 @@ fun RewardCard(
     userXp: UserXpInfoResponse?,
     onClick: () -> Unit
 ) {
-    val glassShape: Shape = RoundedCornerShape(24.dp)
-
+    val tierName = userXp?.xpTier?.name?.lowercase() ?: "bronze"
+    val tierColors = getTierColors(tierName)
+    val tierIcon = getTierIcon(tierName)
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .height(180.dp) // Reduced height for more compact design
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .shadow(
+                elevation = 12.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = tierColors.shadowColor
+            )
             .clickable { onClick() },
-        shape = glassShape,
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Blurred glass background with bleeding effect
+            // Tier-based gradient background
             Box(
                 modifier = Modifier
-                    .matchParentSize()
-                    .blur(50.dp)
+                    .fillMaxSize()
                     .background(
-                        Brush.radialGradient(
+                        brush = Brush.linearGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.18f),
-                                Color.White.copy(alpha = 0.01f)
+                                tierColors.primary,
+                                tierColors.secondary
                             ),
-                            center = Offset(250f, 90f),
-                            radius = 500f
-                        ),
-                        shape = glassShape
+                            start = Offset(0f, 0f),
+                            end = Offset(1000f, 1000f)
+                        )
                     )
             )
-            // Card content (not blurred)
+            
+            // Minimal decorative element
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .offset(x = 250.dp, y = (-30).dp)
+                    .background(
+                        tierColors.accentColor.copy(alpha = 0.1f),
+                        CircleShape
+                    )
+            )
+            
+            // Card content
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 15.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top Row: Tier and Balance
+                // Header: Tier and icon
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Tier info
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(45.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.9f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                userXp?.xpTier?.name?.firstOrNull()?.toString() ?: "?",
-                                color = Color.Gray,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 28.sp
-                            )
-                        }
+                    Column {
                         Text(
-                            "${userXp?.xpTier?.name ?: "Loading"} Tier",
+                            text = "${userXp?.xpTier?.name ?: "Bronze"} Cashback",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            fontSize = 18.sp
                         )
-                    }
-                    // XP info
-                    Column(horizontalAlignment = Alignment.End) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = Color(0xFF8EC5FF),
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                text = "XP",
-                                fontSize = 20.sp,
-                                style = AppTypography.bodySmall,
-                                color = Color.White.copy(alpha = 0.7f),
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
-                        }
                         Text(
-                            text = "${userXp?.userXpAmount ?: 0}",
-                            color = Color.White,
-                            fontSize = 35.sp,
-                            style = AppTypography.headlineMedium,
-                            fontWeight = FontWeight.Bold
+                            text = "${userXp?.userXpAmount ?: 0} XP",
+                            color = tierColors.accentColor,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
-                }
-                // Points and Next Tier Row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Min XP info
-                    Text(
-                        "Min XP: ${userXp?.xpTier?.minXp ?: 0}",
-                        color = Color.White.copy(alpha = 0.9f),
-                        style = AppTypography.bodySmall
+                    
+                    Icon(
+                        imageVector = tierIcon,
+                        contentDescription = "${tierName} tier",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
                     )
-                    // Max XP info
+                }
+                
+                // Balance section - simplified
+                Column {
                     Text(
-                        "Max XP: ${userXp?.xpTier?.maxXp ?: 0}",
-                        color = Color.White.copy(alpha = 0.9f),
-                        style = AppTypography.bodySmall
+                        text = "${String.format("%.2f", account.balance ?: 0.0)} KWD",
+                        color = Color.White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Available Balance",
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 12.sp
                     )
                 }
             }
         }
     }
 }
+
+@Composable
+private fun TierDecorationOverlay(tierName: String) {
+    // Removed - using minimal decoration in main component
+}
+
+private fun getTierColors(tierName: String): TierColors {
+    return when (tierName) {
+        "bronze" -> TierColors(
+            primary = Color(0xFF8B4513),
+            secondary = Color(0xFFCD7F32),
+            tertiary = Color(0xFFDEB887),
+            accentColor = Color(0xFFFFE4B5),
+            shadowColor = Color(0xFFCD7F32)
+        )
+        "silver" -> TierColors(
+            primary = Color(0xFF708090),
+            secondary = Color(0xFFC0C0C0),
+            tertiary = Color(0xFFDCDCDC),
+            accentColor = Color(0xFFE6E6FA),
+            shadowColor = Color(0xFFC0C0C0)
+        )
+        "gold" -> TierColors(
+            primary = Color(0xFFB8860B),
+            secondary = Color(0xFFFFD700),
+            tertiary = Color(0xFFFFE55C),
+            accentColor = Color(0xFFFFFACD),
+            shadowColor = Color(0xFFFFD700)
+        )
+        "platinum" -> TierColors(
+            primary = Color(0xFF2F4F4F),
+            secondary = Color(0xFF696969),
+            tertiary = Color(0xFF778899),
+            accentColor = Color(0xFFF0F8FF),
+            shadowColor = Color(0xFF696969)
+        )
+        else -> TierColors(
+            primary = Color(0xFF636B69),
+            secondary = Color(0xFF1C1B1B),
+            tertiary = Color(0xFF2A2A2A),
+            accentColor = Color(0xFF8EC5FF),
+            shadowColor = Color(0xFF636B69)
+        )
+    }
+}
+
+private fun getTierIcon(tierName: String): ImageVector {
+    return when (tierName) {
+        "bronze" -> Icons.Default.Star
+        "silver" -> Icons.Default.FavoriteBorder
+        "gold" -> Icons.Default.Favorite
+        "platinum" -> Icons.Default.Diamond
+        else -> Icons.Default.Redeem
+    }
+}
+
+private data class TierColors(
+    val primary: Color,
+    val secondary: Color,
+    val tertiary: Color,
+    val accentColor: Color,
+    val shadowColor: Color
+)

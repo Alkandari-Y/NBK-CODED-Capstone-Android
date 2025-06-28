@@ -121,9 +121,9 @@ fun RelatedVendorsScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Color.White,
+        containerColor = Color.White, // Light background
         topBar = {
-            TopAppBar(
+                            TopAppBar(
                 title = {
                     Text(
                         text = "Available at",
@@ -143,14 +143,14 @@ fun RelatedVendorsScreen(
                             .padding(8.dp)
                             .size(40.dp)
                             .background(
-                                Color.White.copy(alpha = 0.1f),
+                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
                                 CircleShape
                             )
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF1E1E1E),
+                            tint = Color(0xFF8EC5FF),
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -158,7 +158,7 @@ fun RelatedVendorsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                     titleContentColor = Color(0xFF1E1E1E),
-                    navigationIconContentColor = Color(0xFF1E1E1E)
+                    navigationIconContentColor = Color(0xFF8EC5FF)
                 )
             )
         }
@@ -243,10 +243,10 @@ fun RelatedVendorsScreen(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF2A2A2A)
+                            containerColor = Color(0xFF374151)
                         ),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp)
@@ -344,10 +344,10 @@ fun VendorListItem(partner: PartnerDto) {
             .fillMaxWidth()
             .clickable { /* Handle vendor click */ },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A2A2A)
+            containerColor = Color(0xFFF8F9FA)
         ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
     ) {
         Row(
             modifier = Modifier
@@ -359,8 +359,8 @@ fun VendorListItem(partner: PartnerDto) {
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White.copy(alpha = 0.1f)),
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFF8EC5FF)),
                 contentAlignment = Alignment.Center
             ) {
                 if (!partner.logoUrl.isNullOrBlank()) {
@@ -371,9 +371,10 @@ fun VendorListItem(partner: PartnerDto) {
                         contentScale = ContentScale.Crop
                     )
                 } else {
+                    // Default blue background with white text
                     Text(
                         text = partner.name.firstOrNull()?.toString()?.uppercase() ?: "?",
-                        color = Color(0xFF8EC5FF),
+                        color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -388,7 +389,7 @@ fun VendorListItem(partner: PartnerDto) {
             ) {
                 Text(
                     text = partner.name,
-                    color = Color.White,
+                    color = Color(0xFF1E1E1E),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,

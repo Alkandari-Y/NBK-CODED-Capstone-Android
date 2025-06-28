@@ -3,6 +3,7 @@ package com.coded.capstone.composables.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,50 +20,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 import com.coded.capstone.ui.theme.AppTypography
 
 @Composable
 fun AccountCard(
     account: AccountResponse,
     onCardClick: (() -> Unit),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userXp: UserXpInfoResponse? = null
 ) {
-    // Clean, modern color schemes
-    val cardColors = when (account.accountType?.lowercase()) {
-        "debit" -> CardColors(
-            primary = Color(0xFF192234),
-            secondary = Color(0xFF030505),
-            text = Color.White
-        )
-        "credit" -> CardColors(
-            primary = Color(0xFF1D2A31),
-            secondary = Color(0xFF12121E),
-
-            text = Color.White
-        )
-        "cashback" -> CardColors(
-            primary = Color(0xFF636B69),
-            secondary = Color(0xFF1C1B1B),
-            text = Color.White
-        )
-        else -> CardColors(
-            primary = Color(0xFF050303),
-            secondary = Color(0xFF102D49),
-            text = Color.White
-        )
+    // Check if this is a cashback card to apply special styling
+    val isCashbackCard = account.accountType?.lowercase() == "cashback"
+    
+    // Get tier-based colors for cashback cards
+    val tierColors = if (isCashbackCard && userXp?.xpTier != null) {
+        getTierCardColors(userXp.xpTier.name.lowercase())
+    } else {
+        getDefaultCardColors(account.accountType?.lowercase())
     }
 
     val backgroundGradient = Brush.linearGradient(
         colors = listOf(
-            cardColors.primary,
-            cardColors.secondary
+            tierColors.primary,
+            tierColors.secondary
         )
     )
 
     val accountIcon = when (account.accountType?.lowercase()) {
         "debit" -> Icons.Default.CreditCard
         "credit" -> Icons.Default.Payment
-        "cashback" -> Icons.Default.Redeem
+        "cashback" -> getTierIcon(userXp?.xpTier?.name?.lowercase())
         "savings" -> Icons.Default.Savings
         "business" -> Icons.Default.Business
         else -> Icons.Default.AccountBalance
@@ -71,7 +59,7 @@ fun AccountCard(
     val accountName = when (account.accountType?.lowercase()) {
         "debit" -> "Debit Card"
         "credit" -> "Credit Card"
-        "cashback" -> "Cashback Card"
+        "cashback" -> "${userXp?.xpTier?.name ?: "Cashback"} Card"
         "savings" -> "Savings Account"
         "business" -> "Business Account"
         else -> "Bank Account"
@@ -80,13 +68,13 @@ fun AccountCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(if (isCashbackCard) 240.dp else 200.dp) // Taller for cashback cards
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(14.dp)
+                elevation = if (isCashbackCard) 16.dp else 8.dp,
+                shape = RoundedCornerShape(20.dp)
             )
             .clickable { onCardClick() },
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(20.dp), // More rounded corners
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -94,10 +82,15 @@ fun AccountCard(
                 .fillMaxSize()
                 .background(backgroundGradient)
         ) {
+            // Add tier-specific decorative elements for cashback cards
+            if (isCashbackCard) {
+                TierDecorationOverlay(userXp?.xpTier?.name?.lowercase())
+            }
+            
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(20.dp),
+                    .padding(24.dp), // Increased padding
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 // Header with account type and icon
@@ -106,19 +99,30 @@ fun AccountCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = accountName,
-                        style = AppTypography.headlineSmall,
-                        color = cardColors.text,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
+                    Column {
+                        Text(
+                            text = accountName,
+                            style = AppTypography.headlineSmall,
+                            color = tierColors.text,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                        if (isCashbackCard && userXp?.xpTier != null) {
+                            Text(
+                                text = "${userXp.userXpAmount} XP",
+                                style = AppTypography.bodyMedium,
+                                color = tierColors.text.copy(alpha = 0.8f),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
 
                     Icon(
                         imageVector = accountIcon,
                         contentDescription = null,
-                        tint = cardColors.text.copy(alpha = 0.9f),
-                        modifier = Modifier.size(32.dp)
+                        tint = tierColors.text.copy(alpha = 0.9f),
+                        modifier = Modifier.size(36.dp)
                     )
                 }
 
@@ -127,7 +131,7 @@ fun AccountCard(
                     Text(
                         text = "Account Number",
                         style = AppTypography.bodyMedium,
-                        color = cardColors.text.copy(alpha = 0.8f),
+                        color = tierColors.text.copy(alpha = 0.8f),
                         fontWeight = FontWeight.Medium,
                         fontSize = 13.sp
                     )
@@ -141,7 +145,7 @@ fun AccountCard(
                             "•••• •••• •••• ••••"
                         },
                         style = AppTypography.headlineSmall,
-                        color = cardColors.text,
+                        color = tierColors.text,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
                         letterSpacing = 1.sp
@@ -153,7 +157,7 @@ fun AccountCard(
                     Text(
                         text = "Available Balance",
                         style = AppTypography.bodyMedium,
-                        color = cardColors.text.copy(alpha = 0.8f),
+                        color = tierColors.text.copy(alpha = 0.8f),
                         fontWeight = FontWeight.Medium,
                         fontSize = 13.sp
                     )
@@ -163,19 +167,166 @@ fun AccountCard(
                     Text(
                         text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
                         style = AppTypography.displaySmall,
-                        color = cardColors.text,
+                        color = tierColors.text,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 36.sp
+                        fontSize = if (isCashbackCard) 32.sp else 28.sp
                     )
+                }
+                
+                // Additional tier info for cashback cards
+                if (isCashbackCard && userXp?.xpTier != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Cashback Rate",
+                            style = AppTypography.bodySmall,
+                            color = tierColors.text.copy(alpha = 0.7f),
+                            fontSize = 12.sp
+                        )
+                        Text(
+                            text = "${userXp.xpTier.perkAmountPercentage}%",
+                            style = AppTypography.bodyMedium,
+                            color = tierColors.accent,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-// Simple data class for card colors
+@Composable
+private fun TierDecorationOverlay(tierName: String?) {
+    when (tierName) {
+        "bronze" -> {
+            // Bronze decorative elements
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .offset(x = 250.dp, y = (-20).dp)
+                    .background(
+                        Color(0xFFCD7F32).copy(alpha = 0.1f),
+                        CircleShape
+                    )
+            )
+        }
+        "silver" -> {
+            // Silver decorative elements
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .offset(x = 260.dp, y = 10.dp)
+                    .background(
+                        Color(0xFFC0C0C0).copy(alpha = 0.15f),
+                        CircleShape
+                    )
+            )
+        }
+        "gold" -> {
+            // Gold decorative elements
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .offset(x = 240.dp, y = (-30).dp)
+                    .background(
+                        Color(0xFFFFD700).copy(alpha = 0.2f),
+                        CircleShape
+                    )
+            )
+        }
+        "platinum" -> {
+            // Platinum decorative elements
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .offset(x = 270.dp, y = 20.dp)
+                    .background(
+                        Color(0xFFE5E4E2).copy(alpha = 0.2f),
+                        CircleShape
+                    )
+            )
+        }
+    }
+}
+
+private fun getTierCardColors(tierName: String): CardColors {
+    return when (tierName) {
+        "bronze" -> CardColors(
+            primary = Color(0xFF8B4513),
+            secondary = Color(0xFFCD7F32),
+            text = Color.White,
+            accent = Color(0xFFFFE4B5)
+        )
+        "silver" -> CardColors(
+            primary = Color(0xFF708090),
+            secondary = Color(0xFFC0C0C0),
+            text = Color.White,
+            accent = Color(0xFFE6E6FA)
+        )
+        "gold" -> CardColors(
+            primary = Color(0xFFB8860B),
+            secondary = Color(0xFFFFD700),
+            text = Color.White,
+            accent = Color(0xFFFFFACD)
+        )
+        "platinum" -> CardColors(
+            primary = Color(0xFF2F4F4F),
+            secondary = Color(0xFF696969),
+            text = Color.White,
+            accent = Color(0xFFF0F8FF)
+        )
+        else -> getDefaultCardColors("cashback")
+    }
+}
+
+private fun getDefaultCardColors(accountType: String?): CardColors {
+    return when (accountType) {
+        "debit" -> CardColors(
+            primary = Color(0xFF192234),
+            secondary = Color(0xFF030505),
+            text = Color.White,
+            accent = Color(0xFF8EC5FF)
+        )
+        "credit" -> CardColors(
+            primary = Color(0xFF1D2A31),
+            secondary = Color(0xFF12121E),
+            text = Color.White,
+            accent = Color(0xFF8EC5FF)
+        )
+        "cashback" -> CardColors(
+            primary = Color(0xFF636B69),
+            secondary = Color(0xFF1C1B1B),
+            text = Color.White,
+            accent = Color(0xFF8EC5FF)
+        )
+        else -> CardColors(
+            primary = Color(0xFF050303),
+            secondary = Color(0xFF102D49),
+            text = Color.White,
+            accent = Color(0xFF8EC5FF)
+        )
+    }
+}
+
+private fun getTierIcon(tierName: String?): ImageVector {
+    return when (tierName) {
+        "bronze" -> Icons.Default.Star
+        "silver" -> Icons.Default.FavoriteBorder
+        "gold" -> Icons.Default.Favorite
+        "platinum" -> Icons.Default.Diamond
+        else -> Icons.Default.Redeem
+    }
+}
+
+// Enhanced data class for card colors with accent color
 private data class CardColors(
     val primary: Color,
     val secondary: Color,
-    val text: Color
+    val text: Color,
+    val accent: Color = Color(0xFF8EC5FF)
 )

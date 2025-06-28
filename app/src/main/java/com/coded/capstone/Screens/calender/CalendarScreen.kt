@@ -40,7 +40,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(LocalContext.current)) {
+fun CalendarScreen(
+    viewModel: RecommendationViewModel = RecommendationViewModel(LocalContext.current),
+    navController: androidx.navigation.NavController? = null
+) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isExpanded by remember { mutableStateOf(false) }
     var selectedYear by remember { mutableStateOf(selectedDate.year) }
@@ -57,6 +60,15 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
     // Fetch promotions and categories when screen is first displayed
     LaunchedEffect(Unit) {
         viewModel.fetchPromotions()
+        Log.d("CalendarScreen", "Fetching promotions...")
+    }
+    
+    // Debug promotions
+    LaunchedEffect(promotions) {
+        Log.d("CalendarScreen", "Total promotions: ${promotions.size}")
+        promotions.forEachIndexed { index, promotion ->
+            Log.d("CalendarScreen", "Promotion $index: ID=${promotion.id}, Name=${promotion.name}")
+        }
     }
 
     // Filter promotions for selected date and category
@@ -343,6 +355,13 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
                                         isExpanded = expandedPromotionId == promotion.id,
                                         onToggleExpansion = {
                                             expandedPromotionId = if (expandedPromotionId == promotion.id) null else promotion.id
+                                        },
+                                        onPromotionClick = { promotionId ->
+                                            Log.d("CalendarScreen", "Navigating to promotion details with ID: $promotionId")
+                                            Log.d("CalendarScreen", "NavController is null: ${navController == null}")
+                                            val route = com.coded.capstone.navigation.NavRoutes.promotionDetailsRoute(promotionId)
+                                            Log.d("CalendarScreen", "Navigation route: $route")
+                                            navController?.navigate(route)
                                         }
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -366,12 +385,11 @@ fun CalendarScreen(viewModel: RecommendationViewModel = RecommendationViewModel(
 fun PromotionItem(
     promotion: PromotionResponse,
     isExpanded: Boolean,
-    onToggleExpansion: () -> Unit
+    onToggleExpansion: () -> Unit,
+    onPromotionClick: ((Long) -> Unit)? = null
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onToggleExpansion),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF374151)
@@ -382,20 +400,27 @@ fun PromotionItem(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                text = promotion.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-            
-            Spacer(modifier = Modifier.height(4.dp))
-            
-            Text(
-                text = promotion.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.7f)
-            )
+            // Make title and description clickable to expand
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onToggleExpansion() }
+            ) {
+                Text(
+                    text = promotion.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = promotion.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
 
             if (isExpanded) {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -441,7 +466,7 @@ fun PromotionItem(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -454,19 +479,32 @@ fun PromotionItem(
                         color = Color(0xFF8EC5FF)
                     )
                     
-                    // Expand/Collapse indicator
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        contentDescription = if (isExpanded) "Collapse" else "Expand",
-                        tint = Color(0xFF8EC5FF),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    // View Details Button
+                    Button(
+                        onClick = { 
+                            Log.d("CalendarScreen", "View Details clicked for promotion ID: ${promotion.id}")
+                            promotion.id?.let { onPromotionClick?.invoke(it) }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF8EC5FF)
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text(
+                            text = "View Details",
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onToggleExpansion() },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -476,10 +514,10 @@ fun PromotionItem(
                         color = Color(0xFF8EC5FF)
                     )
                     
-                    // Expand/Collapse indicator
+                    // Expand indicator
                     Icon(
-                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        contentDescription = if (isExpanded) "Collapse" else "Expand",
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Expand",
                         tint = Color(0xFF8EC5FF),
                         modifier = Modifier.size(20.dp)
                     )
