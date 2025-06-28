@@ -150,7 +150,15 @@ fun KycScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.White,
+                                    Color(0xFFE5E7EB), // Light silver
+                                    Color(0xFFD1D5DB)  // Silver
+                                )
+                            )
+                        )
                 ) {
                     Column(
                         modifier = Modifier
@@ -184,8 +192,8 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 unfocusedPlaceholderColor = Color(0xFF9CA3AF),
@@ -219,8 +227,8 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 unfocusedPlaceholderColor = Color(0xFF9CA3AF),
@@ -257,8 +265,8 @@ fun KycScreen(
                                 colors = OutlinedTextFieldDefaults.colors(
                                     unfocusedBorderColor = Color.Transparent,
                                     focusedBorderColor = Color.Transparent,
-                                    unfocusedContainerColor = Color(0xFFF3F4F6),
-                                    focusedContainerColor = Color(0xFFF3F4F6),
+                                    unfocusedContainerColor = Color(0xFFEDEEEF),
+                                    focusedContainerColor = Color(0xFFEDEEEF),
                                     unfocusedTextColor = Color(0xFF374151),
                                     focusedTextColor = Color(0xFF374151),
                                     unfocusedPlaceholderColor = Color(0xFF9CA3AF),
@@ -332,8 +340,8 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 unfocusedPlaceholderColor = Color(0xFF9CA3AF),
@@ -364,8 +372,8 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 unfocusedPlaceholderColor = Color(0xFF9CA3AF),
@@ -400,8 +408,8 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 unfocusedPlaceholderColor = Color(0xFF9CA3AF),
@@ -436,8 +444,8 @@ fun KycScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 unfocusedPlaceholderColor = Color(0xFF9CA3AF),
