@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
-import com.coded.capstone.Screens.notifications.NotificationScreen
 import com.coded.capstone.Screens.onBoarding.CardSuggestedOnBoarding
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.viewModels.AuthViewModel
@@ -203,7 +202,6 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
             XpTierScreen(onBackClick = { navController.popBackStack() })
         }
-        composable(NavRoutes.NAV_ROUTE_NOTIFICATIONS) { NotificationScreen(navController = navController) }
         composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { backStackEntry ->
             val promotionId = backStackEntry.arguments?.getString("promotionId")
             PromotionDetailPage(navController = navController, promotionId = promotionId)
