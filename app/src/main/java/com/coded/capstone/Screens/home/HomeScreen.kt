@@ -306,7 +306,7 @@ fun HomeScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(Color.White)
+                                    .background(Color.Transparent)
                                     .shadow(
                                         elevation = 8.dp,
                                         shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
@@ -323,11 +323,11 @@ fun HomeScreen(
                                 ) {
                                     item {
                                         // Spacer above account list
-                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(5.dp))
 
                                         // My Accounts Section Header
                                         Row(
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth().background(Color.Transparent),
                                             horizontalArrangement = Arrangement.SpaceBetween,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
@@ -351,7 +351,7 @@ fun HomeScreen(
                                                 modifier = Modifier
                                                     .size(48.dp)
                                                     .clip(CircleShape)
-                                                    .background(Color(0xFFF3F4F6))
+                                                    .background(Color.Transparent)
                                             ) {
                                                 IconButton(
                                                     onClick = { isAccountsExpanded = !isAccountsExpanded },
