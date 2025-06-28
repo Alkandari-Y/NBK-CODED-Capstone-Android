@@ -33,8 +33,8 @@ class BleScanService : Service() {
     private val lastSentMap = mutableMapOf<Long, Long>()
 
     private val debounceIntervalMillis = 10_000L // 10 seconds
-    private val scanIntervalMillis = 10_000L
-    private val scanDurationMillis = 1_000L
+    private val scanIntervalMillis = 15_000L
+    private val scanDurationMillis = 500L
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("BLEScan", "BleScanService started")
