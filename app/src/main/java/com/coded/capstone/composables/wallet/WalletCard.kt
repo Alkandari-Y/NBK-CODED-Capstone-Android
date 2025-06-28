@@ -188,7 +188,7 @@ fun WalletCard(
         "dining" -> "DINING"
         "health" -> "HEALTH"
         "education" -> "EDUCATION"
-        else -> null
+        else -> null // Don't show recommendation label, show account type instead
     }
 
     val isProductCard = !showDetails
@@ -337,14 +337,14 @@ fun WalletCard(
                         // Account type or recommendation type
                         Column {
                             Text(
-                                text = if (recommendationLabel != null) "RECOMMENDATION" else "ACCOUNT TYPE",
+                                text = "ACCOUNT TYPE",
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
                                 letterSpacing = 1.sp
                             )
                             Text(
-                                text = recommendationLabel ?: cardType,
+                                text = cardType,
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,

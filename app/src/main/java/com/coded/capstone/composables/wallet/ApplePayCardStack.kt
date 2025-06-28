@@ -21,6 +21,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.unit.dp
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.respositories.AccountProductRepository
 
 @Composable
  fun ApplePayCardStack(
@@ -56,6 +57,29 @@ import com.coded.capstone.data.responses.account.AccountResponse
     var dragOffset by remember { mutableStateOf(0f) }
     var isDragging by remember { mutableStateOf(false) }
 
+    // Function to get recommendation type from account product category names
+    fun getRecommendationType(account: AccountResponse): String? {
+        // Get the account product to match the recommendation screen logic
+        val accountProduct = AccountProductRepository.accountProducts.find {
+            it.id == account.accountProductId
+        }
+        
+        // Use the same logic as the recommendation screen
+        return when {
+            accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
+            accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
+            accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
+            accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
+            accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
+            accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
+            accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
+            account.accountType?.lowercase() == "credit" -> "shopping"
+            account.accountType?.lowercase() == "savings" -> "family essentials"
+            account.accountType?.lowercase() == "debit" -> "travel"
+            else -> null // Use default account type colors instead of defaulting to shopping
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,6 +99,9 @@ import com.coded.capstone.data.responses.account.AccountResponse
 
             // Drag offset for this specific card
             val cardDragOffset = if (draggedCardIndex == index) dragOffset else 0f
+
+            // Get recommendation type for this account
+            val recommendationType = getRecommendationType(account)
 
             Card(
                 modifier = Modifier
@@ -136,14 +163,15 @@ import com.coded.capstone.data.responses.account.AccountResponse
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
-                // Use the actual WalletCard design
+                // Use the actual WalletCard design with recommendation type
                 WalletCard(
                     account = account,
                     onCardClick = { /* Handled by parent clickable */ },
                     modifier = Modifier.fillMaxSize(),
                     tiltAngle = 0f,
                     scale = 1f,
-                    alpha = 1f
+                    alpha = 1f,
+                    recommendationType = recommendationType
                 )
             }
         }
