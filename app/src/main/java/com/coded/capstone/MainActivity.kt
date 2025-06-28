@@ -81,10 +81,10 @@ class MainActivity : ComponentActivity() {
     /**
      * Process deep link intent
      */
-    private fun handleDeepLink(intent: Intent?) {
+    private fun handleDeepLink(intent: Intent) {
         // Note: You'll need to pass the NavController from AppHost
         // For now, this is a placeholder that can be connected later
-        // DeepLinkHandler.handleDeepLink(intent, navController)
+        // DeepLinkHandler.handleDeepLink(intent, navController, this)
     }
 
     private fun requestFirebaseNotificationPermission() {
