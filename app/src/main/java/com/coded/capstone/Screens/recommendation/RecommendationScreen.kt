@@ -51,7 +51,7 @@ fun RecommendationScreen(
     val accountViewModel = remember { AccountViewModel(context) }
     val accountCreateState by accountViewModel.accountUiState.collectAsState()
     val shouldNavigate by accountViewModel.shouldNavigate.collectAsState()
-
+    
     val recommendations by viewModel.accountProducts.collectAsState()
     val accountsUiState by viewModel.accountsUiState.collectAsState()
     val userAccounts = when (accountsUiState) {
@@ -112,13 +112,21 @@ fun RecommendationScreen(
         FontFamily.Default // Replace with FontFamily(Font(R.font.roboto_regular)) if you have the font resource
 
     Scaffold(
-        containerColor = Color.White
+        containerColor = Color.Transparent
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.White)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White,
+                            Color(0xFFE5E7EB), // Light silver
+                            Color(0xFFD1D5DB)  // Silver
+                        )
+                    )
+                )
         ) {
             Column(
                 modifier = Modifier
@@ -153,13 +161,13 @@ fun RecommendationScreen(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-//                    Text(
-//                        text = "Recommendations",
-//                        fontSize = 20.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color(0xFF1E1B4B),
-//                        textAlign = TextAlign.Center
-//                    )
+    //                    Text(
+    //                        text = "Recommendations",
+    //                        fontSize = 20.sp,
+    //                        fontWeight = FontWeight.Bold,
+    //                        color = Color(0xFF1E1B4B),
+    //                        textAlign = TextAlign.Center
+    //                    )
                         Text(
                             text = "Tailored for You",
                             fontSize = 14.sp,
@@ -192,29 +200,29 @@ fun RecommendationScreen(
                 }
 
                 // Subtitle Section
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = Color(0xFF8EC5FF),
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Recommendations",
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray,
-                        fontFamily = robotoFontFamily,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFF8EC5FF),
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Recommendations",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.DarkGray,
+                            fontFamily = robotoFontFamily,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -223,37 +231,37 @@ fun RecommendationScreen(
                 ) {
                     Text(
                         text = "Based on Your Accounts",
-                        fontSize = 18.sp,
+                            fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.Gray,
-                        fontFamily = robotoFontFamily,
+                            fontFamily = robotoFontFamily,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Discover financial products that match your needs and goals",
-                        fontSize = 15.sp,
+                            fontSize = 15.sp,
                         color = Color.Gray.copy(alpha = 0.7f),
-                        fontFamily = robotoFontFamily,
+                            fontFamily = robotoFontFamily,
                         textAlign = TextAlign.Center,
-                        lineHeight = 20.sp
+                            lineHeight = 20.sp
                     )
                 }
 
                 // Recommendations Section
                 val uniqueRecommendations = recommendations.distinctBy { it.name to it.accountType }
                 if (uniqueRecommendations.isNotEmpty()) {
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(0.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(0.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(uniqueRecommendations) { product ->
                             Box(
                                 modifier = Modifier
-                                    .width(380.dp)
+                                        .width(380.dp)
                                     .height(520.dp)
-                                    .background(Color.Transparent, RoundedCornerShape(45.dp)),
+                                        .background(Color.Transparent, RoundedCornerShape(45.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Column(
@@ -293,97 +301,97 @@ fun RecommendationScreen(
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
                                     // Perks/info as premium InfoCards
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                                    ) {
-                                        product.interestRate?.let {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                Text(
-                                                    "Interest Rate",
-                                                    color = Color(0xFF8EC5FF),
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                                Text(
-                                                    "${it}%",
-                                                    color = Color(0xFF1E1B4B),
-                                                    fontWeight = FontWeight.Medium,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                            }
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                                        ) {
+                                            product.interestRate?.let {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                "Interest Rate",
+                                                color = Color(0xFF8EC5FF),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
+                                            Text(
+                                                "${it}%",
+                                                color = Color(0xFF1E1B4B),
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
                                         }
-                                        product.creditLimit?.let {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                Text(
-                                                    "Credit Limit",
-                                                    color = Color(0xFF8EC5FF),
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                                Text(
-                                                    "KD ${it.toInt()}",
-                                                    color = Color(0xFF1E1B4B),
-                                                    fontWeight = FontWeight.Medium,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                            }
+                                }
+                                product.creditLimit?.let {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                "Credit Limit",
+                                                color = Color(0xFF8EC5FF),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
+                                            Text(
+                                                "KD ${it.toInt()}",
+                                                color = Color(0xFF1E1B4B),
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
                                         }
-                                        product.annualFee?.let {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                Text(
-                                                    "Annual Fee",
-                                                    color = Color(0xFF8EC5FF),
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                                Text(
-                                                    if (it == 0.0) "Free" else "KD ${it.toInt()}",
-                                                    color = Color(0xFF1E1B4B),
-                                                    fontWeight = FontWeight.Medium,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                            }
+                                }
+                                product.annualFee?.let {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                "Annual Fee",
+                                                color = Color(0xFF8EC5FF),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
+                                            Text(
+                                                if (it == 0.0) "Free" else "KD ${it.toInt()}",
+                                                color = Color(0xFF1E1B4B),
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
                                         }
-                                        product.minBalanceRequired?.let {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                Text(
-                                                    "Min Balance",
-                                                    color = Color(0xFF8EC5FF),
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                                Text(
-                                                    "KD ${it.toInt()}",
-                                                    color = Color(0xFF1E1B4B),
-                                                    fontWeight = FontWeight.Medium,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                            }
+                                    }
+                                    product.minBalanceRequired?.let {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                "Min Balance",
+                                                color = Color(0xFF8EC5FF),
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
+                                            Text(
+                                                "KD ${it.toInt()}",
+                                                color = Color(0xFF1E1B4B),
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 15.sp,
+                                                fontFamily = robotoFontFamily
+                                            )
                                         }
-                                        product.minSalary?.let {
+                                    }
+                                    product.minSalary?.let {
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -406,7 +414,7 @@ fun RecommendationScreen(
                                         }
                                     }
                                     Spacer(modifier = Modifier.height(20.dp))
-                                    // Premium Apply Button
+                                // Premium Apply Button
                                     Box(
                                         modifier = Modifier.fillMaxWidth(),
                                         contentAlignment = Alignment.Center
@@ -414,18 +422,18 @@ fun RecommendationScreen(
                                         val userHasCard = userAccounts.any { acc ->
                                             acc.accountProductId == product.id
                                         }
-                                        Button(
-                                            onClick = { handleApplyClick(product) },
+                                Button(
+                                    onClick = { handleApplyClick(product) },
                                             enabled = accountCreateState is AccountCreateUiState.Loading == false && !userHasCard,
-                                            modifier = Modifier
+                                    modifier = Modifier
                                                 .width(330.dp)
                                                 .height(48.dp)
                                                 .then(
                                                     if (!userHasCard && accountCreateState !is AccountCreateUiState.Loading)
                                                         Modifier.shadow(
-                                                            elevation = 12.dp,
-                                                            shape = RoundedCornerShape(16.dp),
-                                                            ambientColor = Color.White.copy(alpha = 0.3f)
+                                            elevation = 12.dp,
+                                            shape = RoundedCornerShape(16.dp),
+                                            ambientColor = Color.White.copy(alpha = 0.3f)
                                                         )
                                                     else Modifier
                                                 ),
@@ -438,7 +446,7 @@ fun RecommendationScreen(
                                                 )
                                             } else {
                                                 ButtonDefaults.buttonColors(
-                                                    containerColor = Color(0xFF8EC5FF),
+                                        containerColor = Color(0xFF8EC5FF),
                                                     contentColor = Color.White,
                                                     disabledContainerColor = Color(0xFF8EC5FF).copy(
                                                         alpha = 0.6f
@@ -446,144 +454,144 @@ fun RecommendationScreen(
                                                     disabledContentColor = Color.White.copy(alpha = 0.6f)
                                                 )
                                             },
-                                            shape = RoundedCornerShape(16.dp)
-                                        ) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.Center
-                                            ) {
-                                                if (accountCreateState is AccountCreateUiState.Loading) {
-                                                    CircularProgressIndicator(
-                                                        modifier = Modifier.size(20.dp),
-                                                        color = Color(0xFF1E1B4B),
-                                                        strokeWidth = 2.dp
-                                                    )
-                                                    Spacer(modifier = Modifier.width(8.dp))
-                                                    Text(
-                                                        text = "Creating Account...",
-                                                        fontSize = 16.sp,
+                                    shape = RoundedCornerShape(16.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        if (accountCreateState is AccountCreateUiState.Loading) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(20.dp),
+                                                color = Color(0xFF1E1B4B),
+                                                strokeWidth = 2.dp
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = "Creating Account...",
+                                                fontSize = 16.sp,
                                                         fontWeight = FontWeight.Bold,
                                                         fontFamily = robotoFontFamily,
                                                         color = Color.White
-                                                    )
-                                                } else {
-                                                    Text(
+                                            )
+                                        } else {
+                                            Text(
                                                         text = if (userHasCard) "Already Owned" else "Apply Now",
                                                         fontSize = 18.sp,
                                                         fontWeight = FontWeight.Bold,
                                                         fontFamily = robotoFontFamily,
                                                         color = Color.White
-                                                    )
-                                                    Spacer(modifier = Modifier.width(8.dp))
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
                                                     if (!userHasCard) {
-                                                        Icon(
-                                                            imageVector = Icons.Filled.ArrowForward,
-                                                            contentDescription = null,
+                                            Icon(
+                                                imageVector = Icons.Filled.ArrowForward,
+                                                contentDescription = null,
                                                             modifier = Modifier.size(20.dp),
                                                             tint = Color.White
-                                                        )
+                                            )
                                                     }
                                                 }
                                             }
-                                        }
                                     }
                                 }
                             }
                         }
                     }
-                } else {
-                    // Empty State
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
+                }
+            } else {
+                // Empty State
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(120.dp)
-                                    .clip(RoundedCornerShape(60.dp))
-                                    .background(
-                                        brush = Brush.radialGradient(
-                                            colors = listOf(
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(RoundedCornerShape(60.dp))
+                                .background(
+                                    brush = Brush.radialGradient(
+                                        colors = listOf(
                                                 Color(0xFF8EC5FF).copy(alpha = 0.2f),
                                                 Color(0xFF8EC5FF).copy(alpha = 0.1f)
                                             )
-                                        )
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Lightbulb,
-                                    contentDescription = null,
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Lightbulb,
+                                contentDescription = null,
                                     tint = Color(0xFF8EC5FF),
-                                    modifier = Modifier.size(60.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            Text(
-                                text = "No Recommendations Yet",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Complete your profile to get personalized recommendations",
-                                fontSize = 16.sp,
-                                color = Color.White.copy(alpha = 0.7f),
-                                textAlign = TextAlign.Center,
-                                lineHeight = 22.sp
+                                modifier = Modifier.size(60.dp)
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Text(
+                            text = "No Recommendations Yet",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Complete your profile to get personalized recommendations",
+                            fontSize = 16.sp,
+                            color = Color.White.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 22.sp
+                        )
                     }
                 }
             }
-
-            // Decorative Elements
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(200.dp)
-                    .offset(x = 100.dp, y = (-100).dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                                Color.Transparent
-                            ),
-                            radius = 200f
-                        ),
-                        shape = RoundedCornerShape(100.dp)
-                    )
-            )
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .size(150.dp)
-                    .offset(x = (-75).dp, y = 75.dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                                Color.Transparent
-                            ),
-                            radius = 150f
-                        ),
-                        shape = RoundedCornerShape(75.dp)
-                    )
-            )
         }
+
+        // Decorative Elements
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(200.dp)
+                .offset(x = 100.dp, y = (-100).dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
+                            Color.Transparent
+                        ),
+                        radius = 200f
+                    ),
+                    shape = RoundedCornerShape(100.dp)
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .size(150.dp)
+                .offset(x = (-75).dp, y = 75.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
+                            Color.Transparent
+                        ),
+                        radius = 150f
+                    ),
+                    shape = RoundedCornerShape(75.dp)
+                )
+        )
     }
+}
 
 }
