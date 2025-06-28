@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.coded.capstone.R
+import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
-import com.coded.capstone.ui.AppBackground
+
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -46,20 +47,41 @@ fun CardSuggestedOnBoarding(
         recommendationViewModel.fetchRecommendedCard()
     }
 
+    // Function to determine recommendation type based on product (same as recommendation screen)
+    fun getRecommendationType(product: AccountProductResponse): String? {
+        return when {
+            product.name?.lowercase()?.contains("travel") == true -> "travel"
+            product.name?.lowercase()?.contains("family") == true -> "family essentials"
+            product.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
+            product.name?.lowercase()?.contains("shopping") == true -> "shopping"
+            product.name?.lowercase()?.contains("dining") == true -> "dining"
+            product.name?.lowercase()?.contains("health") == true -> "health"
+            product.name?.lowercase()?.contains("education") == true -> "education"
+            product.accountType?.lowercase() == "credit" -> "shopping"
+            product.accountType?.lowercase() == "savings" -> "family essentials"
+            product.accountType?.lowercase() == "debit" -> "travel"
+            else -> "shopping" // Default recommendation type
+        }
+    }
+
     // Early return with loading state if no card is available
     if (recommendedCard == null) {
-        AppBackground {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color.White)
-            }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF23272E)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color.White)
         }
         return
     }
 
-    AppBackground {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF23272E)) // Navy background like bottom navbar
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,21 +101,13 @@ fun CardSuggestedOnBoarding(
                 fontFamily = RobotoFont
             )
 
-            Text(
-                text = "Based on your preferences, we've found the ideal account for you",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier.padding(top = 8.dp).padding(horizontal = 16.dp),
-                textAlign = TextAlign.Center,
-                fontFamily = RobotoFont
-            )
 
             Spacer(modifier = Modifier.height(40.dp))
 
             // Card Display - Similar to WalletCard
             SuggestedAccountCard(
                 accountProduct = recommendedCard!!,
+                recommendationType = getRecommendationType(recommendedCard!!),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -367,56 +381,154 @@ fun CardSuggestedOnBoarding(
 @Composable
 private fun SuggestedAccountCard(
     accountProduct: com.coded.capstone.data.responses.accountProduct.AccountProductResponse,
+    recommendationType: String?,
     modifier: Modifier = Modifier
 ) {
-    val cardGradient = when (accountProduct.accountType?.lowercase()) {
-        "debit" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF132138),
-                Color(0xFF263D64),
-                Color(0xFF0A121F),
-                Color(0xFF132138)
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        "credit" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF16191A),
-                Color(0xFF343A3B),
-                Color(0xFF000000),
-                Color(0xFF16191A)
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        "savings" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF4E5454),
-                Color(0xFF818A8A),
-                Color(0xFF2F3333),
-                Color(0xFF4E5454)
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        else -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF384349),
-                Color(0xFF58656C),
-                Color(0xFF273034),
-                Color(0xFF384349)
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-    }
+    Column(modifier = modifier) {
+        // Recommendation text (same as recommendation screen)
+        recommendationType?.let { type ->
+            Text(
+                text = "Recommended for $type",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.White.copy(alpha = 0.9f),
+                modifier = Modifier.padding(bottom = 16.dp),
+                fontFamily = RobotoFont
+            )
+        }
+        
+        // Use the same gradient logic as WalletCard (recommendation type first, then account type)
+        val cardGradient = when {
+            // Special recommendation cards (same as WalletCard)
+            recommendationType?.lowercase() == "travel" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF7AF380), // Blue 800
+                    Color(0xFFA5F5A9), // Blue 500
+                    Color(0xFF136870), // Blue 700
+                    Color(0xFF136870)  // Blue 800
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            recommendationType?.lowercase() == "family essentials" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF49899F), // Emerald 600
+                    Color(0xFF80D1EC), // Emerald 500
+                    Color(0xFF115F79), // Emerald 700
+                    Color(0xFF115F79)  // Emerald 600
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            recommendationType?.lowercase() == "entertainment" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF651351), // Violet 600
+                    Color(0xFF8D3077), // Violet 500
+                    Color(0xFF2C1365), // Violet 700
+                    Color(0xFF2C1365)  // Violet 600
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            recommendationType?.lowercase() == "shopping" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF6B1D45), // Red 600
+                    Color(0xFF9F3B70), // Red 500
+                    Color(0xFF501233), // Red 700
+                    Color(0xFF4F1332)  // Red 600
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            recommendationType?.lowercase() == "dining" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFFD97706), // Amber 600
+                    Color(0xFFF59E0B), // Amber 500
+                    Color(0xFFB45309), // Amber 700
+                    Color(0xFFD97706)  // Amber 600
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            recommendationType?.lowercase() == "health" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF600612), // Cyan 600
+                    Color(0xFF861020), // Cyan 500
+                    Color(0xFF600612), // Cyan 700
+                    Color(0xFF600612)  // Cyan 600
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            recommendationType?.lowercase() == "education" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF219406), // Orange 800
+                    Color(0xFF8CC241), // Orange 600
+                    Color(0xFF219406), // Orange 700
+                    Color(0xFF219406)  // Orange 800
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            // Regular account type cards (fallback when no recommendation type)
+            accountProduct.accountType?.lowercase() == "debit" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF132138), // Slate 800
+                    Color(0xFF263D64), // Slate 700
+                    Color(0xFF0A121F), // Slate 600
+                    Color(0xFF132138)  // Slate 500
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            accountProduct.accountType?.lowercase() == "credit" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF16191A), // Red 800
+                    Color(0xFF343A3B), // Red 800
+                    Color(0xFF000000), // Red 600
+                    Color(0xFF16191A)  // Red 500
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            accountProduct.accountType?.lowercase() == "savings" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF4E5454), // Green 900
+                    Color(0xFF818A8A), // Green 800
+                    Color(0xFF2F3333), // Green 600
+                    Color(0xFF4E5454)  // Green 500
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            accountProduct.accountType?.lowercase() == "business" -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF3730a3), // Indigo 900
+                    Color(0xFF6862C7), // Indigo 800
+                    Color(0xFF201F5B), // Indigo 600
+                    Color(0xFF3730a3)  // Indigo 500
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+            else -> Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFF384349), // Gray 700
+                    Color(0xFF58656C), // Gray 600
+                    Color(0xFF273034), // Gray 500
+                    Color(0xFF384349)  // Gray 400
+                ),
+                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                end = androidx.compose.ui.geometry.Offset(350f, 250f)
+            )
+        }
 
-    Card(
-        modifier = modifier
-            .height(240.dp)
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
             .shadow(
-                elevation = 24.dp,
+                elevation = 20.dp,
                 shape = RoundedCornerShape(20.dp),
                 ambientColor = Color.Black.copy(alpha = 0.4f),
                 spotColor = Color.Black.copy(alpha = 0.4f)
@@ -429,7 +541,7 @@ private fun SuggestedAccountCard(
                 .fillMaxSize()
                 .background(cardGradient)
         ) {
-            // Subtle pattern overlay
+            // Subtle geometric pattern overlay (same as WalletCard)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -451,7 +563,7 @@ private fun SuggestedAccountCard(
                     .padding(28.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top section: Product name and type
+                // Top section: Bank name and contactless (same as WalletCard)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -467,14 +579,14 @@ private fun SuggestedAccountCard(
                     )
 
                     Icon(
-                        imageVector = Icons.Default.Stars,
-                        contentDescription = "Premium Account",
+                        imageVector = Icons.Default.Contactless,
+                        contentDescription = "Contactless Payment",
                         tint = Color.White.copy(alpha = 0.9f),
                         modifier = Modifier.size(28.dp)
                     )
                 }
 
-                // Middle section: EMV Chip
+                // Middle section: EMV Chip (exact same as WalletCard)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start
@@ -486,16 +598,17 @@ private fun SuggestedAccountCard(
                             .background(
                                 Brush.linearGradient(
                                     colors = listOf(
-                                        Color(0xFFFFD700),
-                                        Color(0xFFDAA520),
-                                        Color(0xFFB8860B),
-                                        Color(0xFFFFD700)
+                                        Color(0xFFFFD700), // Gold
+                                        Color(0xFFDAA520), // Goldenrod
+                                        Color(0xFFB8860B), // Dark goldenrod
+                                        Color(0xFFFFD700)  // Gold
                                     )
                                 ),
                                 RoundedCornerShape(6.dp)
                             )
                             .shadow(2.dp, RoundedCornerShape(6.dp))
                     ) {
+                        // Chip contact pattern
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -523,43 +636,44 @@ private fun SuggestedAccountCard(
                     }
                 }
 
-                // Bottom section: Account details
+                // Bottom section: Card details (same structure as WalletCard)
                 Column {
+                    // Card number placeholder
                     Text(
                         text = "•••• •••• •••• NEW",
                         color = Color.White,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
-                        letterSpacing = 2.sp,
-                        fontFamily = RobotoFont
+                        letterSpacing = 2.sp
                     )
-
+                    
                     Spacer(modifier = Modifier.height(16.dp))
-
+                    
+                    // Bottom row: Card type and status
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom
                     ) {
+                        // Account type
                         Column {
                             Text(
                                 text = "ACCOUNT TYPE",
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp,
-                                fontFamily = RobotoFont
+                                letterSpacing = 1.sp
                             )
                             Text(
                                 text = (accountProduct.accountType ?: "ACCOUNT").uppercase(),
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp,
-                                fontFamily = RobotoFont
+                                letterSpacing = 1.sp
                             )
                         }
-
+                        
+                        // Status
                         Column(
                             horizontalAlignment = Alignment.End
                         ) {
@@ -568,22 +682,20 @@ private fun SuggestedAccountCard(
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp,
-                                fontFamily = RobotoFont
+                                letterSpacing = 1.sp
                             )
                             Text(
                                 text = "RECOMMENDED",
                                 color = Color(0xFF10B981),
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = RobotoFont
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
                 }
             }
 
-            // Premium shine effect
+            // Premium shine effect (same as WalletCard)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -605,6 +717,7 @@ private fun SuggestedAccountCard(
             )
         }
     }
+}
 }
 
 @Composable

@@ -58,7 +58,7 @@ fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                 bottomEnd = 0.dp
             ),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF2A2A2A)
+                containerColor = Color(0xFF23272E)
             ),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 24.dp
