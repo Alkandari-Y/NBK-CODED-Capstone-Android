@@ -55,15 +55,33 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
     fun fetchRecommendedCard() {
         viewModelScope.launch {
             try {
+                println("RecommendationViewModel: Starting API call to getOnboardingRecommendation")
                 val response = RetrofitInstance.getRecommendationServiceProvide(context).getOnboardingRecommendation()
+                println("RecommendationViewModel: API response received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
+                
                 if (response.isSuccessful) {
                     val recommendedCard = response.body()
+                    println("RecommendationViewModel: Response body: $recommendedCard")
                     _recommendedCard.value = recommendedCard
+                    
+                    if (recommendedCard != null) {
+                        println("RecommendationViewModel: Successfully set recommended card: ${recommendedCard.name}")
+                    } else {
+                        println("RecommendationViewModel: Warning - Response was successful but body is null")
+                    }
                 } else {
+                    println("RecommendationViewModel: API call failed with code: ${response.code()}")
+                    println("RecommendationViewModel: Error body: ${response.errorBody()?.string()}")
                     Log.e("RecommendationViewModel", "Suggested Card fetch failed: ${response.code()}")
+                    // Set null to indicate failure
+                    _recommendedCard.value = null
                 }
             } catch (e: Exception) {
+                println("RecommendationViewModel: Exception occurred: ${e.message}")
+                e.printStackTrace()
                 Log.e("RecommendationViewModel", "Error fetching Suggested Card: ${e.message}")
+                // Set null to indicate failure
+                _recommendedCard.value = null
             }
         }
     }
