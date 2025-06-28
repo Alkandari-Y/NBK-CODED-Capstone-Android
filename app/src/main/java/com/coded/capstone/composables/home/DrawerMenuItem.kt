@@ -23,7 +23,8 @@ fun DrawerMenuItem(
     icon: ImageVector,
     title: String,
     onClick: () -> Unit,
-    isDestructive: Boolean = false
+    isDestructive: Boolean = false,
+    color: Color = Color.Unspecified
 ) {
     Row(
         modifier = Modifier

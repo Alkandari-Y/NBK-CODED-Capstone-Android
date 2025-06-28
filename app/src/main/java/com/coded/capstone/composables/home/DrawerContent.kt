@@ -75,7 +75,7 @@ fun DrawerContent(
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF4A90E2)),
+                                .background(Color(0xFF8EC5FF)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -97,7 +97,7 @@ fun DrawerContent(
                         Text(
                             text = "KLUE Banking",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color(0xFF4A90E2)
+                            color = Color(0xFF8EC5FF)
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -113,7 +113,8 @@ fun DrawerContent(
                         DrawerMenuItem(
                             icon = Icons.Default.Person,
                             title = "Profile",
-                            onClick = onProfileClick
+                            onClick = onProfileClick,
+                            color = Color(0xFF8EC5FF)
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -121,7 +122,9 @@ fun DrawerContent(
                         DrawerMenuItem(
                             icon = Icons.Default.Settings,
                             title = "Settings",
-                            onClick = onSettingsClick
+                            onClick = onSettingsClick,
+                            color = Color(0xFF8EC5FF)
+
                         )
                     }
 
