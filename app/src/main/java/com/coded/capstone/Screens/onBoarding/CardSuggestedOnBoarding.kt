@@ -40,11 +40,38 @@ fun CardSuggestedOnBoarding(
     accountViewModel: AccountViewModel
 ) {
     var userWillApply by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     val recommendedCard by recommendationViewModel.recommendedCard.collectAsState()
 
     // Fetch recommended card when screen is first displayed
     LaunchedEffect(Unit) {
-        recommendationViewModel.fetchRecommendedCard()
+        println("CardSuggestedOnBoarding: Starting to fetch recommended card")
+        try {
+            recommendationViewModel.fetchRecommendedCard()
+        } catch (e: Exception) {
+            println("CardSuggestedOnBoarding: Error in LaunchedEffect: ${e.message}")
+            errorMessage = "Failed to load recommendation: ${e.message}"
+            isLoading = false
+        }
+    }
+
+    // Monitor the recommendedCard state changes
+    LaunchedEffect(recommendedCard) {
+        println("CardSuggestedOnBoarding: recommendedCard state changed: $recommendedCard")
+        if (recommendedCard != null) {
+            isLoading = false
+            errorMessage = null
+            println("CardSuggestedOnBoarding: Card loaded successfully: ${recommendedCard?.name}")
+        } else {
+            // Give it some time to load, then show error if still null
+            kotlinx.coroutines.delay(5000) // Wait 5 seconds
+            if (recommendedCard == null) {
+                isLoading = false
+                errorMessage = "No recommended card available. Please check your network connection."
+                println("CardSuggestedOnBoarding: Timeout - no card received after 5 seconds")
+            }
+        }
     }
 
     // Function to determine recommendation type based on product (same as recommendation screen)
@@ -64,101 +91,230 @@ fun CardSuggestedOnBoarding(
         }
     }
 
-    // Early return with loading state if no card is available
-    if (recommendedCard == null) {
+    // Show loading state
+    if (isLoading) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF23272E)),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = Color.White)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(color = Color(0xFF8EC5FF))
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Finding your perfect card...",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontFamily = RobotoFont
+                )
+            }
         }
         return
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF23272E)) // Navy background like bottom navbar
-    ) {
-        Column(
+    // Show error state
+    if (errorMessage != null) {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(Color(0xFF23272E)),
+            contentAlignment = Alignment.Center
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Header Section
-            Text(
-                text = "Your Perfect Match",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                fontFamily = RobotoFont
-            )
-
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Card Display - Similar to WalletCard
-            SuggestedAccountCard(
-                accountProduct = recommendedCard!!,
-                recommendationType = getRecommendationType(recommendedCard!!),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Account Details Section
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(32.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(24.dp)
+                Icon(
+                    imageVector = Icons.Default.Error,
+                    contentDescription = "Error",
+                    tint = Color(0xFFEF4444),
+                    modifier = Modifier.size(64.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Oops! Something went wrong",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = RobotoFont
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = errorMessage!!,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 14.sp,
+                    fontFamily = RobotoFont,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = {
+                        isLoading = true
+                        errorMessage = null
+                        recommendationViewModel.fetchRecommendedCard()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF)
+                    )
                 ) {
                     Text(
-                        text = recommendedCard?.name ?: "Recommended Account",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1F2937),
-                        fontFamily = RobotoFont
-                    )
-                    
-                    Text(
-                        text = "${recommendedCard?.accountType?.uppercase()} ACCOUNT",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF6B7280),
-                        modifier = Modifier.padding(top = 4.dp),
-                        fontFamily = RobotoFont,
-                        letterSpacing = 1.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = recommendedCard?.description ?: "A personalized account recommendation based on your preferences and banking needs.",
-                        fontSize = 16.sp,
-                        color = Color(0xFF4B5563),
-                        lineHeight = 24.sp,
-                        fontFamily = RobotoFont
+                        text = "Try Again",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
+        }
+        return
+    }
 
-            Spacer(modifier = Modifier.height(24.dp))
+    // Show content only if we have a recommended card
+    recommendedCard?.let { card ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF23272E)) // Navy background like bottom navbar
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(40.dp))
 
-            // Key Features Section
-            if (!recommendedCard?.perks.isNullOrEmpty()) {
+                // Header Section
+                Text(
+                    text = "Your Perfect Match",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontFamily = RobotoFont
+                )
+
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Card Display - Similar to WalletCard
+                SuggestedAccountCard(
+                    accountProduct = card,
+                    recommendationType = getRecommendationType(card),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Account Details Section
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp)
+                    ) {
+                        Text(
+                            text = card.name ?: "Recommended Account",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1F2937),
+                            fontFamily = RobotoFont
+                        )
+                        
+                        Text(
+                            text = "${card.accountType?.uppercase()} ACCOUNT",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF6B7280),
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontFamily = RobotoFont,
+                            letterSpacing = 1.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = card.description ?: "A personalized account recommendation based on your preferences and banking needs.",
+                            fontSize = 16.sp,
+                            color = Color(0xFF4B5563),
+                            lineHeight = 24.sp,
+                            fontFamily = RobotoFont
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Key Features Section
+                if (!card.perks.isNullOrEmpty()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Stars,
+                                    contentDescription = null,
+                                    tint = Color(0xFF8B5CF6),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "Key Benefits",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF1F2937),
+                                    fontFamily = RobotoFont
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            card.perks.forEach { perk ->
+                                Row(
+                                    modifier = Modifier.padding(bottom = 12.dp),
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        tint = Color(0xFF10B981),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = perk.type ?: "Special Benefit",
+                                        fontSize = 16.sp,
+                                        color = Color(0xFF374151),
+                                        fontFamily = RobotoFont,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                // Account Specifications
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -174,14 +330,14 @@ fun CardSuggestedOnBoarding(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Stars,
+                                imageVector = Icons.Default.Info,
                                 contentDescription = null,
-                                tint = Color(0xFF8B5CF6),
+                                tint = Color(0xFF3B82F6),
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = "Key Benefits",
+                                text = "Account Details",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF1F2937),
@@ -191,195 +347,136 @@ fun CardSuggestedOnBoarding(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        recommendedCard?.perks?.forEach { perk ->
-                            Row(
-                                modifier = Modifier.padding(bottom = 12.dp),
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    tint = Color(0xFF10B981),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                    text = perk.type ?: "Special Benefit",
-                                    fontSize = 16.sp,
-                                    color = Color(0xFF374151),
-                                    fontFamily = RobotoFont,
-                                    modifier = Modifier.weight(1f)
+                        // Interest Rate
+                        card.interestRate?.let { rate ->
+                            AccountDetailRow(
+                                icon = Icons.Default.TrendingUp,
+                                label = "Interest Rate",
+                                value = "${String.format("%.2f", rate)}% APY"
+                            )
+                        }
+
+                        // Minimum Balance
+                        card.minBalanceRequired?.let { minBalance ->
+                            AccountDetailRow(
+                                icon = Icons.Default.AccountBalance,
+                                label = "Minimum Balance",
+                                value = "${String.format("%.0f", minBalance)} KD"
+                            )
+                        }
+
+                        // Credit Limit (for credit accounts)
+                        if (card.accountType?.lowercase() == "credit") {
+                            card.creditLimit?.let { creditLimit ->
+                                AccountDetailRow(
+                                    icon = Icons.Default.CreditCard,
+                                    label = "Credit Limit",
+                                    value = "${String.format("%.0f", creditLimit)} KD"
                                 )
                             }
+                        }
+
+                        // Annual Fee
+                        card.annualFee?.let { fee ->
+                            AccountDetailRow(
+                                icon = Icons.Default.Payment,
+                                label = "Annual Fee",
+                                value = if (fee == 0.0) "Free" else "${String.format("%.0f", fee)} KD"
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Action Buttons
+                Button(
+                    onClick = {
+                        userWillApply = true
+                        card.id?.let { cardId ->
+                            accountViewModel.createAccount(cardId)
+                        }
+                        navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                            popUpTo(0)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(16.dp),
+                            ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
+                            spotColor = Color(0xFF8EC5FF).copy(alpha = 0.3f)
+                        ),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF)
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp
+                    )
+                ) {
+                    Text(
+                        text = "Open This Account",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        fontFamily = RobotoFont,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TextButton(
+                    onClick = {
+                        userWillApply = false
+                        navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                            popUpTo(0)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Continue Without Opening Account",
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 16.sp,
+                        fontFamily = RobotoFont
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Progress indicator
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    repeat(3) { index ->
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(
+                                    if (index == 2) Color.White else Color.White.copy(alpha = 0.3f),
+                                    CircleShape
+                                )
+                        )
+                        if (index < 2) {
+                            Spacer(modifier = Modifier.width(8.dp))
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
             }
-
-            // Account Specifications
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = Color(0xFF3B82F6),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Account Details",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1F2937),
-                            fontFamily = RobotoFont
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Interest Rate
-                    recommendedCard?.interestRate?.let { rate ->
-                        AccountDetailRow(
-                            icon = Icons.Default.TrendingUp,
-                            label = "Interest Rate",
-                            value = "${String.format("%.2f", rate)}% APY"
-                        )
-                    }
-
-                    // Minimum Balance
-                    recommendedCard?.minBalanceRequired?.let { minBalance ->
-                        AccountDetailRow(
-                            icon = Icons.Default.AccountBalance,
-                            label = "Minimum Balance",
-                            value = "${String.format("%.0f", minBalance)} KD"
-                        )
-                    }
-
-                    // Credit Limit (for credit accounts)
-                    if (recommendedCard?.accountType?.lowercase() == "credit") {
-                        recommendedCard?.creditLimit?.let { creditLimit ->
-                            AccountDetailRow(
-                                icon = Icons.Default.CreditCard,
-                                label = "Credit Limit",
-                                value = "${String.format("%.0f", creditLimit)} KD"
-                            )
-                        }
-                    }
-
-                    // Annual Fee
-                    recommendedCard?.annualFee?.let { fee ->
-                        AccountDetailRow(
-                            icon = Icons.Default.Payment,
-                            label = "Annual Fee",
-                            value = if (fee == 0.0) "Free" else "${String.format("%.0f", fee)} KD"
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Action Buttons
-            Button(
-                onClick = {
-                    userWillApply = true
-                    recommendedCard?.id?.let { cardId ->
-                        accountViewModel.createAccount(cardId)
-                    }
-                    navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
-                        popUpTo(0)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(16.dp),
-                        ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
-                        spotColor = Color(0xFF8EC5FF).copy(alpha = 0.3f)
-                    ),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8EC5FF)
-                ),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 8.dp
-                )
-            ) {
-                Text(
-                    text = "Open This Account",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    fontFamily = RobotoFont,
-                    letterSpacing = 0.5.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextButton(
-                onClick = {
-                    userWillApply = false
-                    navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
-                        popUpTo(0)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Continue Without Opening Account",
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 16.sp,
-                    fontFamily = RobotoFont
-                )
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Progress indicator
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                repeat(3) { index ->
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                if (index == 2) Color.White else Color.White.copy(alpha = 0.3f),
-                                CircleShape
-                            )
-                    )
-                    if (index < 2) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
 @Composable
-private fun SuggestedAccountCard(
+fun SuggestedAccountCard(
     accountProduct: com.coded.capstone.data.responses.accountProduct.AccountProductResponse,
     recommendationType: String?,
     modifier: Modifier = Modifier
@@ -396,7 +493,7 @@ private fun SuggestedAccountCard(
                 fontFamily = RobotoFont
             )
         }
-        
+
         // Use the same gradient logic as WalletCard (recommendation type first, then account type)
         val cardGradient = when {
             // Special recommendation cards (same as WalletCard)
@@ -410,6 +507,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             recommendationType?.lowercase() == "family essentials" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF49899F), // Emerald 600
@@ -420,6 +518,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             recommendationType?.lowercase() == "entertainment" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF651351), // Violet 600
@@ -430,6 +529,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             recommendationType?.lowercase() == "shopping" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF6B1D45), // Red 600
@@ -440,6 +540,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             recommendationType?.lowercase() == "dining" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFFD97706), // Amber 600
@@ -450,6 +551,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             recommendationType?.lowercase() == "health" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF600612), // Cyan 600
@@ -460,6 +562,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             recommendationType?.lowercase() == "education" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF219406), // Orange 800
@@ -481,6 +584,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             accountProduct.accountType?.lowercase() == "credit" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF16191A), // Red 800
@@ -491,6 +595,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             accountProduct.accountType?.lowercase() == "savings" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF4E5454), // Green 900
@@ -501,6 +606,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             accountProduct.accountType?.lowercase() == "business" -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF3730a3), // Indigo 900
@@ -511,6 +617,7 @@ private fun SuggestedAccountCard(
                 start = androidx.compose.ui.geometry.Offset(0f, 0f),
                 end = androidx.compose.ui.geometry.Offset(350f, 250f)
             )
+
             else -> Brush.linearGradient(
                 colors = listOf(
                     Color(0xFF384349), // Gray 700
@@ -527,231 +634,230 @@ private fun SuggestedAccountCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
-            .shadow(
-                elevation = 20.dp,
-                shape = RoundedCornerShape(20.dp),
-                ambientColor = Color.Black.copy(alpha = 0.4f),
-                spotColor = Color.Black.copy(alpha = 0.4f)
-            ),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(cardGradient)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = RoundedCornerShape(20.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.4f),
+                    spotColor = Color.Black.copy(alpha = 0.4f)
+                ),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
-            // Subtle geometric pattern overlay (same as WalletCard)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.03f),
-                                Color.Transparent,
-                                Color.White.copy(alpha = 0.02f)
-                            ),
-                            radius = 400f
-                        )
-                    )
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(28.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .background(cardGradient)
             ) {
-                // Top section: Bank name and contactless (same as WalletCard)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Text(
-                        text = (accountProduct.name ?: "NBK ACCOUNT").uppercase(),
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp,
-                        fontFamily = RobotoFont
-                    )
-
-                    Icon(
-                        imageVector = Icons.Default.Contactless,
-                        contentDescription = "Contactless Payment",
-                        tint = Color.White.copy(alpha = 0.9f),
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-
-                // Middle section: EMV Chip (exact same as WalletCard)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(40.dp)
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFFFFD700), // Gold
-                                        Color(0xFFDAA520), // Goldenrod
-                                        Color(0xFFB8860B), // Dark goldenrod
-                                        Color(0xFFFFD700)  // Gold
-                                    )
+                // Subtle geometric pattern overlay (same as WalletCard)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color.White.copy(alpha = 0.03f),
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.02f)
                                 ),
-                                RoundedCornerShape(6.dp)
+                                radius = 400f
                             )
-                            .shadow(2.dp, RoundedCornerShape(6.dp))
+                        )
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(28.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Top section: Bank name and contactless (same as WalletCard)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
                     ) {
-                        // Chip contact pattern
-                        Column(
+                        Text(
+                            text = (accountProduct.name ?: "NBK ACCOUNT").uppercase(),
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 2.sp,
+                            fontFamily = RobotoFont
+                        )
+
+                        Icon(
+                            imageVector = Icons.Default.Contactless,
+                            contentDescription = "Contactless Payment",
+                            tint = Color.White.copy(alpha = 0.9f),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+
+                    // Middle section: EMV Chip (exact same as WalletCard)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            verticalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            repeat(3) { row ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    repeat(4) { col ->
-                                        Box(
-                                            modifier = Modifier
-                                                .size(3.dp)
-                                                .background(
-                                                    Color(0xFF8B4513).copy(alpha = 0.8f),
-                                                    RoundedCornerShape(1.dp)
-                                                )
+                                .width(50.dp)
+                                .height(40.dp)
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(
+                                            Color(0xFFFFD700), // Gold
+                                            Color(0xFFDAA520), // Goldenrod
+                                            Color(0xFFB8860B), // Dark goldenrod
+                                            Color(0xFFFFD700)  // Gold
                                         )
+                                    ),
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .shadow(2.dp, RoundedCornerShape(6.dp))
+                        ) {
+                            // Chip contact pattern
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                                verticalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                repeat(3) { row ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly
+                                    ) {
+                                        repeat(4) { col ->
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(3.dp)
+                                                    .background(
+                                                        Color(0xFF8B4513).copy(alpha = 0.8f),
+                                                        RoundedCornerShape(1.dp)
+                                                    )
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                // Bottom section: Card details (same structure as WalletCard)
-                Column {
-                    // Card number placeholder
-                    Text(
-                        text = "•••• •••• •••• NEW",
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
-                        letterSpacing = 2.sp
-                    )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // Bottom row: Card type and status
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        // Account type
-                        Column {
-                            Text(
-                                text = "ACCOUNT TYPE",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = (accountProduct.accountType ?: "ACCOUNT").uppercase(),
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
-                            )
-                        }
-                        
-                        // Status
-                        Column(
-                            horizontalAlignment = Alignment.End
+                    // Bottom section: Card details (same structure as WalletCard)
+                    Column {
+                        // Card number placeholder
+                        Text(
+                            text = "•••• •••• •••• NEW",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Medium,
+                            letterSpacing = 2.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Bottom row: Card type and status
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.Bottom
                         ) {
-                            Text(
-                                text = "STATUS",
-                                color = Color.White.copy(alpha = 0.7f),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = "RECOMMENDED",
-                                color = Color(0xFF10B981),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            // Account type
+                            Column {
+                                Text(
+                                    text = "ACCOUNT TYPE",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    letterSpacing = 1.sp
+                                )
+                                Text(
+                                    text = (accountProduct.accountType ?: "ACCOUNT").uppercase(),
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.sp
+                                )
+                            }
+
+                            // Status
+                            Column(
+                                horizontalAlignment = Alignment.End
+                            ) {
+                                Text(
+                                    text = "STATUS",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    letterSpacing = 1.sp
+                                )
+                                Text(
+                                    text = "RECOMMENDED",
+                                    color = Color(0xFF10B981),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            // Premium shine effect (same as WalletCard)
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.White.copy(alpha = 0.12f),
-                                Color.Transparent,
-                                Color.White.copy(alpha = 0.08f),
-                                Color.Transparent,
-                                Color.White.copy(alpha = 0.15f),
-                                Color.Transparent
-                            ),
-                            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-                            end = androidx.compose.ui.geometry.Offset(500f, 300f)
+                // Premium shine effect (same as WalletCard)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.12f),
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.08f),
+                                    Color.Transparent,
+                                    Color.White.copy(alpha = 0.15f),
+                                    Color.Transparent
+                                ),
+                                start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                                end = androidx.compose.ui.geometry.Offset(500f, 300f)
+                            )
                         )
-                    )
-            )
+                )
+            }
         }
     }
 }
-}
-
-@Composable
-private fun AccountDetailRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    @Composable
+    fun AccountDetailRow(
+        icon: androidx.compose.ui.graphics.vector.ImageVector,
+        label: String,
+        value: String
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = Color(0xFF6B7280),
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            color = Color(0xFF6B7280),
-            fontFamily = RobotoFont,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF1F2937),
-            fontFamily = RobotoFont
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color(0xFF6B7280),
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = label,
+                fontSize = 16.sp,
+                color = Color(0xFF6B7280),
+                fontFamily = RobotoFont,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = value,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1F2937),
+                fontFamily = RobotoFont
+            )
+        }
     }
-}
