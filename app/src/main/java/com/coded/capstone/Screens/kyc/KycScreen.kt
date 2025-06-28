@@ -108,8 +108,8 @@ fun KycScreen(
 
     AppBackground {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
+
         ) {
             // Back button
             IconButton(

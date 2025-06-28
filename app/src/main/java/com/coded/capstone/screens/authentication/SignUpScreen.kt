@@ -135,7 +135,7 @@ fun SignUpScreen(
 
     AppBackground {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
         ) {
             // Logo in top section
             Box(
