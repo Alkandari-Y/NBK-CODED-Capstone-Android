@@ -1,5 +1,6 @@
 package com.coded.capstone.Screens.Wallet
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
@@ -68,6 +69,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.scaleIn
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.painterResource
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -305,6 +307,26 @@ fun WalletScreen(
         }
     }
 
+    // BackHandler for sheet
+    BackHandler(enabled = showBottomSheet) {
+        if (expandedPerks) {
+            expandedPerks = false // Collapse the sheet to its original height
+        } else if (showBottomSheet) {
+            showBottomSheet = false
+            expandedPerks = false
+            // Do NOT set selectedCard = null here!
+            // Let the UI handle hiding the sheet first, then clear selectedCard in a LaunchedEffect
+        }
+    }
+
+    // Clear selectedCard only after the sheet is fully hidden
+    LaunchedEffect(showBottomSheet) {
+        if (!showBottomSheet && !isPayAnimationActive) {
+            selectedCard = null
+            cardAnimationTrigger = false
+        }
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.White
@@ -332,33 +354,7 @@ fun WalletScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Back button when card is selected
-                    AnimatedVisibility(
-                        visible = selectedCard != null,
-                        enter = slideInHorizontally(initialOffsetX = { -it }) + fadeIn(),
-                        exit = slideOutHorizontally(targetOffsetX = { -it }) + fadeOut()
-                    ) {
-                        IconButton(
-                            onClick = {
-                                selectedCard = null
-                                showBottomSheet = false
-                                cardAnimationTrigger = false // Reset animation trigger
-                            },
-                            modifier = Modifier
-                                .size(35.dp)
-                                .background(
-                                    Color(0xFF23272E).copy(alpha = 0.05f),
-                                    CircleShape
-                                )
-                        ) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back to all cards",
-                                tint = Color(0xFF23272E),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
+                    // Back button disabled
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -464,14 +460,14 @@ fun WalletScreen(
                                         ) {
                                             SingleSelectedCard(
                                                 account = selectedCard!!,
-                                                onCardClick = { 
+                                                onCardClick = {
                                                     if (!isPayAnimationActive) {
-                                                        showBottomSheet = true 
+                                                        showBottomSheet = true
                                                     }
                                                 }
                                             )
                                         }
-                                        
+
                                         // Buttons row
                                         Spacer(modifier = Modifier.height(13.dp))
 
@@ -483,50 +479,45 @@ fun WalletScreen(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Spacer(modifier = Modifier.width(20.dp))
-                                            
-                                            // Transfer button positioned to the left - only show if not credit account
-                                            if (selectedCard?.accountType?.lowercase() != "credit") {
+
+                                            // Transfer button positioned to the left
+                                            Box(
+                                                modifier = Modifier.offset(x = transferButtonOffset)
+                                            ) {
+                                                // Circular shadow
                                                 Box(
-                                                    modifier = Modifier.offset(x = transferButtonOffset)
-                                                ) {
-                                                    // Circular shadow
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .size(45.dp)
-                                                            .background(
-                                                                Color.Black.copy(alpha = 0.2f),
-                                                                CircleShape
-                                                            )
-                                                            .offset(y = 4.dp)
-                                                    )
-                                                    
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .size(45.dp)
-                                                            .background(
-                                                                Color(0xFF8EC5FF).copy(alpha = 0.99f),
-                                                                CircleShape
-                                                            )
-                                                            .clickable {
-                                                                if (!isPayAnimationActive) {
-                                                                    transferSourceAccount = selectedCard!!
-                                                                    navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
-                                                                }
-                                                            },
-                                                        contentAlignment = Alignment.Center
-                                                    ) {
-                                                        CardTransferBoldIcon(
-                                                            modifier = Modifier.size(32.dp),
-                                                            color = Color.White
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color.Black.copy(alpha = 0.2f),
+                                                            CircleShape
                                                         )
-                                                    }
+                                                        .offset(y = 4.dp)
+                                                )
+
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color(0xFF8EC5FF).copy(alpha = 0.99f),
+                                                            CircleShape
+                                                        )
+                                                        .clickable {
+                                                            if (!isPayAnimationActive) {
+                                                                transferSourceAccount = selectedCard!!
+                                                                navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
+                                                            }
+                                                        },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CardTransferBoldIcon(
+                                                        modifier = Modifier.size(32.dp),
+                                                        color = Color.White
+                                                    )
                                                 }
                                             }
 
-                                            // Only add spacing if transfer button is visible
-                                            if (selectedCard?.accountType?.lowercase() != "credit") {
-                                                Spacer(modifier = Modifier.width(16.dp))
-                                            }
+                                            Spacer(modifier = Modifier.width(16.dp))
 
                                             // Pay button positioned next to transfer
                                             Box(
@@ -542,7 +533,7 @@ fun WalletScreen(
                                                         )
                                                         .offset(y = 4.dp)
                                                 )
-                                                
+
                                                 Box(
                                                     modifier = Modifier
                                                         .size(45.dp)
@@ -601,7 +592,7 @@ fun WalletScreen(
                 )
 
                 val dynamicSheetHeight by animateDpAsState(
-                    targetValue = if (sheetExpanded) 1000.dp else 368.dp,
+                    targetValue = if (sheetExpanded) 1000.dp else 510.dp,
                     animationSpec = tween(durationMillis = 400),
                     label = "dynamicSheetHeight"
                 )
@@ -616,42 +607,83 @@ fun WalletScreen(
                         .offset(y = sheetHeight)
                         .background(Color(0xFF23272E))
                         .padding(bottom = 4.dp)
-
                         .graphicsLayer(alpha = sheetOpacity)
-
-                        .pointerInput(Unit) {
-                            detectDragGestures { change, dragAmount ->
-                                // Detect downward swipe to dismiss
-                                if (dragAmount.y > 50) {
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (!isPayAnimationActive) {
+                            // Top row: Drag handle (center) and expand/collapse button (right)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp, bottom = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Drag handle (centered)
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(32.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(48.dp)
+                                            .height(5.dp)
+                                            .background(
+                                                color = Color.LightGray.copy(alpha = 0.6f),
+                                                shape = RoundedCornerShape(2.5.dp)
+                                            )
+                                            .pointerInput(Unit) {
+                                                detectDragGestures { change, dragAmount ->
+                                                    if (dragAmount.y > 50) {
+                                                        // Downward swipe: dismiss/collapse
+                                                        showBottomSheet = false
+                                                        sheetExpanded = false
+                                                    } else if (dragAmount.y < -50) {
+                                                        // Upward swipe: expand
+                                                        sheetExpanded = true
+                                                    }
+                                                }
+                                            }
+                                    )
+                                }
+                                // Expand/collapse button (top right)
+                                IconButton(
+                                    onClick = {
+                                        sheetExpanded = !sheetExpanded
+                                    },
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                ) {
+                                    Icon(
+                                        painter = if (sheetExpanded)
+                                            painterResource(id = R.drawable.baseline_keyboard_double_arrow_down_24)
+                                        else
+                                            painterResource(id = R.drawable.baseline_keyboard_double_arrow_up_24),
+                                        contentDescription = if (sheetExpanded) "Collapse" else "Expand",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+                            }
+                            // Sheet content
+                            PerksBottomSheet(
+                                perks = perksOfAccountProduct,
+                                navController = navController,
+                                productId = card.accountProductId?.toString() ?: "",
+                                accountId = card.id.toString()?: "",
+                                onDismiss = {
                                     showBottomSheet = false
                                     sheetExpanded = false
                                     selectedCard = null
                                     cardAnimationTrigger = false
                                 }
-                            }
+                            )
                         }
-
-                ) {
-                    // Glass effect removed/commented out for solid background
-                    // Box(
-                    //     modifier = Modifier
-                    //         .matchParentSize()
-                    //         .background(Color.White.copy(alpha = 0.1f))
-                    //         .blur(16.dp)
-                    // )
-
-                    PerksBottomSheet(
-                        perks = perksOfAccountProduct,
-                        navController = navController,
-                        productId = card.accountProductId?.toString() ?: "",
-                        accountId = card.id.toString()?: "",
-                        onDismiss = {
-                            showBottomSheet = false
-                            sheetExpanded = false
-                            selectedCard = null
-                            cardAnimationTrigger = false
-                        }
-                    )
+                    }
                 }
             }
 
@@ -670,7 +702,7 @@ fun WalletScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 50.dp)
+                        .padding(bottom = 120.dp)
                         .zIndex(1000f)
                 ) {
                     Row(
@@ -697,7 +729,7 @@ fun WalletScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-                        
+
                         // Counter with circle background
                         Box(
                             modifier = Modifier
@@ -729,10 +761,11 @@ fun WalletScreen(
                     animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
                     label = "waveAlpha"
                 )
-                
+
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
+                        .offset(y = (-70).dp)
                         .size(300.dp)
                         .graphicsLayer(
                             scaleX = waveScale,

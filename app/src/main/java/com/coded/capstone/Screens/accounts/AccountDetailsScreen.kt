@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +52,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -69,23 +71,25 @@ import com.coded.capstone.SVG.BankFillIcon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.zIndex
 import com.coded.capstone.R
 import com.coded.capstone.data.responses.kyc.KYCResponse
+import androidx.activity.compose.BackHandler
+import com.coded.capstone.composables.wallet.WalletCard
+import com.coded.capstone.respositories.AccountProductRepository
 
-// Dark theme colors
-private val DarkBackground = Color(0xFF0A0A0A)
-private val DarkSurface = Color(0xFF1A1A1A)
-private val DarkSurfaceVariant = Color(0xFF2A2A2A)
-private val DarkOnSurface = Color(0xFFE8E8E8)
-private val DarkOnSurfaceVariant = Color(0xFFB8B8B8)
-private val AccentBlue = Color(0xFF3B82F6)
-private val AccentGreen = Color(0xFF10B981)
-private val AccentRed = Color(0xFFEF4444)
+// Roboto font family (matching WalletScreen)
+private val RobotoFont = FontFamily(
+    androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
+)
 
 @Composable
-fun FilterDropdownMenu() {
+fun FilterDropdownMenu(
+    selectedFilter: String,
+    onFilterSelected: (String) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedFilter by remember { mutableStateOf("Filter") }
+
     Box {
         IconButton(onClick = { expanded = true }) {
             Icon(
@@ -99,30 +103,37 @@ fun FilterDropdownMenu() {
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
+                text = { Text("All") },
+                onClick = {
+                    onFilterSelected("All")
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
                 text = { Text("Date") },
                 onClick = {
-                    selectedFilter = "Date"
+                    onFilterSelected("Date")
                     expanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Amount") },
                 onClick = {
-                    selectedFilter = "Amount"
+                    onFilterSelected("Amount")
                     expanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Deposit") },
                 onClick = {
-                    selectedFilter = "Deposit"
+                    onFilterSelected("Deposit")
                     expanded = false
                 }
             )
             DropdownMenuItem(
                 text = { Text("Withdraw") },
                 onClick = {
-                    selectedFilter = "Withdraw"
+                    onFilterSelected("Withdraw")
                     expanded = false
                 }
             )
@@ -136,14 +147,14 @@ fun TransactionListItem(
     currentAccountNumber: String
 ) {
     val isReceived = transaction.destinationAccountNumber == currentAccountNumber
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 4.dp, vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E1E1E)
+            containerColor = Color(0xFF23272E) // Matching wallet bottom sheet color
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -190,16 +201,17 @@ fun TransactionListItem(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(16.dp))
-                
+
                 // Transaction details
                 Column {
                     Text(
                         text = transaction.category.ifEmpty { "Transaction" },
                         style = AppTypography.bodyLarge.copy(
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            fontFamily = RobotoFont
                         ),
                         color = Color.White
                     )
@@ -207,13 +219,14 @@ fun TransactionListItem(
                     Text(
                         text = formatTransactionDate(transaction.createdAt),
                         style = AppTypography.bodySmall.copy(
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            fontFamily = RobotoFont
                         ),
                         color = Color.Gray
                     )
                 }
             }
-            
+
             // Amount
             Column(
                 horizontalAlignment = Alignment.End
@@ -222,7 +235,8 @@ fun TransactionListItem(
                     text = "${if (isReceived) "+" else "-"}${String.format("%,.3f", transaction.amount.abs())} KWD",
                     style = AppTypography.bodyLarge.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        fontFamily = RobotoFont
                     ),
                     color = if (isReceived) {
                         Color(0xFF4CAF50)
@@ -234,7 +248,8 @@ fun TransactionListItem(
                 Text(
                     text = if (isReceived) "Received" else "Sent",
                     style = AppTypography.bodySmall.copy(
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        fontFamily = RobotoFont
                     ),
                     color = Color.Gray
                 )
@@ -313,12 +328,27 @@ fun AccountDetailsScreen(
         showSheet = true
     }
 
+    BackHandler {
+        onBack()
+    }
+
     AppBackground {
-        Box(Modifier.fillMaxSize()) {
-            // TopAppBar with back button
-            TopAppBar(
-                title = { },
-                navigationIcon = {
+        Box(Modifier.fillMaxSize().background(color = Color.White)) {
+            // Main content area - matching wallet layout
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+            ) {
+                // Header - matching wallet style
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp, top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Back button
                     IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
@@ -327,50 +357,77 @@ fun AccountDetailsScreen(
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                },
-                actions = {},
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
 
-            // Main content (card)
-            var cardVisible by remember { mutableStateOf(false) }
-            LaunchedEffect(Unit) { cardVisible = true }
-            when (val account = accountState) {
-                null -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = Color(0xFF8EC5FF),
-                            strokeWidth = 3.dp
-                        )
-                    }
-                }
-                else -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 20.dp)
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Spacer(modifier = Modifier.height(90.dp)) // More top space
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = cardVisible,
-                            enter = slideInHorizontally(
-                                initialOffsetX = { -it },
-                                animationSpec = tween(durationMillis = 600)
-                            ) + fadeIn(animationSpec = tween(600))
+                        Text(
+                            text = "Account Details",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = RobotoFont
+                            ),
+                            color = Color.White
+                        )
+                        if (accountState != null) {
+                            Text(
+                                text = accountState?.accountType?.uppercase() ?: "ACCOUNT",
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontSize = 12.sp,
+                                fontFamily = RobotoFont,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Empty space to balance the layout
+                    Spacer(modifier = Modifier.width(48.dp))
+                }
+
+                // Card Display Area - matching wallet layout
+                when (val account = accountState) {
+                    null -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(450.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            FlippableAccountCard(account = account)
+                            CircularProgressIndicator(
+                                color = Color(0xFF8EC5FF),
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+                    }
+                    else -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(450.dp)
+                                .background(Color.White),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            var cardVisible by remember { mutableStateOf(false) }
+                            LaunchedEffect(Unit) { cardVisible = true }
+
+                            androidx.compose.animation.AnimatedVisibility(
+                                visible = cardVisible,
+                                enter = slideInHorizontally(
+                                    initialOffsetX = { -it },
+                                    animationSpec = tween(durationMillis = 600)
+                                ) + fadeIn(animationSpec = tween(600))
+                            ) {
+                                FlippableAccountCard(account = account)
+                            }
                         }
                     }
                 }
             }
 
-            // Custom animated bottom sheet overlays the card, never pushes it
+            // Bottom Sheet - matching wallet design exactly
             AnimatedVisibility(
                 visible = showSheet,
                 enter = slideInVertically(
@@ -385,19 +442,80 @@ fun AccountDetailsScreen(
             ) {
                 when (val account = accountState) {
                     null -> {}
-                    else -> Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(sheetHeight)
-                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp))
-                    ) {
-                        TransactionHistorySheetContent(
-                            transactions = transactions,
-                            account = account,
-                            kyc = null,
-                            sheetExpanded = sheetExpanded,
-                            onToggleExpand = { sheetExpanded = !sheetExpanded }
+                    else -> {
+                        val dynamicSheetHeight by animateDpAsState(
+                            targetValue = if (sheetExpanded) 1000.dp else 510.dp,
+                            animationSpec = tween(durationMillis = 400),
+                            label = "dynamicSheetHeight"
                         )
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dynamicSheetHeight)
+                                .clip(RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp))
+                                .zIndex(100f)
+                                .background(Color(0xFF23272E))
+                                .padding(bottom = 4.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // Top row: Drag handle (center) and expand/collapse button (right) - matching wallet
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp, bottom = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Drag handle (centered)
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(32.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .width(48.dp)
+                                                .height(5.dp)
+                                                .background(
+                                                    color = Color.LightGray.copy(alpha = 0.6f),
+                                                    shape = RoundedCornerShape(2.5.dp)
+                                                )
+                                        )
+                                    }
+                                    // Expand/collapse button (top right)
+                                    IconButton(
+                                        onClick = {
+                                            sheetExpanded = !sheetExpanded
+                                        },
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                    ) {
+                                        Icon(
+                                            painter = if (sheetExpanded)
+                                                painterResource(id = R.drawable.baseline_keyboard_double_arrow_down_24)
+                                            else
+                                                painterResource(id = R.drawable.baseline_keyboard_double_arrow_up_24),
+                                            contentDescription = if (sheetExpanded) "Collapse" else "Expand",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(28.dp)
+                                        )
+                                    }
+                                }
+
+                                // Sheet content
+                                TransactionHistorySheetContent(
+                                    transactions = transactions,
+                                    account = account,
+                                    kyc = null,
+                                    sheetExpanded = sheetExpanded,
+                                    onToggleExpand = { sheetExpanded = !sheetExpanded }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -421,19 +539,37 @@ fun FlippableAccountCard(
         }
     }
 
-    val formattedAccountNumber = remember(account.accountNumber, showSensitive) {
-        if (showSensitive) {
-            account.accountNumber?.chunked(4)?.joinToString(" ") ?: ""
-        } else {
-            "**** **** **** ${account.accountNumber?.takeLast(4)}"
+    // Function to get recommendation type from account product category names
+    fun getRecommendationType(account: AccountResponse): String? {
+        // Get the account product to match the recommendation screen logic
+        val accountProduct = AccountProductRepository.accountProducts.find {
+            it.id == account.accountProductId
+        }
+
+        // Use the same logic as the recommendation screen
+        return when {
+            accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
+            accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
+            accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
+            accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
+            accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
+            accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
+            accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
+            account.accountType?.lowercase() == "credit" -> "shopping"
+            account.accountType?.lowercase() == "savings" -> "family essentials"
+            account.accountType?.lowercase() == "debit" -> "travel"
+            else -> null // Use default account type colors instead of defaulting to shopping
         }
     }
+
+    // Get recommendation type for this account
+    val recommendationType = getRecommendationType(account)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(220.dp)
-            .shadow(16.dp, RoundedCornerShape(10.dp), clip = false)
+            .shadow(16.dp, RoundedCornerShape(20.dp), clip = false)
             .graphicsLayer {
                 rotationY = if (flipped) 180f else 0f
                 cameraDistance = 8 * density
@@ -444,171 +580,29 @@ fun FlippableAccountCard(
                 interactionSource = remember { MutableInteractionSource() }
             )
     ) {
-        val cardModifier = Modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(10.dp))
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF7C8D94), // Gray
-                        Color(0xFF181A1F)  // Dark Gray
-                    )
-                )
-            )
-
         if (!flipped) {
-            FrontSide(
-                modifier = cardModifier,
+            // Front side - use WalletCard
+            WalletCard(
                 account = account,
-                formattedAccountNumber = formattedAccountNumber,
-                showSensitive = showSensitive,
-                onToggle = { showSensitive = !showSensitive }
+                onCardClick = { /* Handled by parent clickable */ },
+                modifier = Modifier.fillMaxSize(),
+                recommendationType = recommendationType
             )
         } else {
-            BackSide(modifier = cardModifier)
-        }
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun FrontSide(
-    modifier: Modifier = Modifier,
-    account: AccountResponse,
-    formattedAccountNumber: String,
-    showSensitive: Boolean,
-    onToggle: () -> Unit
-) {
-    val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
-    var showCopied by remember { mutableStateOf(false) }
-    Box(modifier) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "National Bank of Kuwait",
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 12.sp,
-                    style = AppTypography.bodySmall
-                )
-                BankFillIcon(
-                    modifier = Modifier.size(32.dp),
-                    color = Color(0xFF8EC5FF)
-                )
-            }
-
-            Column {
-                Text(
-                    text = "Balance",
-                    style = AppTypography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${String.format("%,.3f", account.balance ?: 0.0)} KWD",
-                    style = AppTypography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 32.sp
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                AnimatedContent(
-                    targetState = formattedAccountNumber,
-                    transitionSpec = { fadeIn() with fadeOut() },
-                    label = "accountNumber"
-                ) { number ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = number,
-                            fontSize = 16.sp,
-                            color = if (showSensitive) Color(0xFF8EC5FF) else Color.White,
-                            letterSpacing = 2.sp,
-                            fontWeight = FontWeight.Normal,
-                            style = AppTypography.bodyLarge
-                        )
-                        if (showSensitive && !account.accountNumber.isNullOrBlank()) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            IconButton(
-                                onClick = {
-                                    clipboardManager.setText(AnnotatedString(account.accountNumber))
-                                    showCopied = true
-                                },
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = com.coded.capstone.R.drawable.baseline_file_copy_24),
-                                    contentDescription = "Copy Account Number",
-                                    tint = Color(0xFF8EC5FF),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-                if (showCopied) {
-                    LaunchedEffect(Unit) {
-                        kotlinx.coroutines.delay(1200)
-                        showCopied = false
-                    }
-                    Text(
-                        text = "Copied!",
-                        color = Color(0xFF8EC5FF),
-                        style = AppTypography.bodySmall,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Text(
-                    text = account.accountType?.uppercase() ?: "ACCOUNT",
-                    style = AppTypography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-
-                BaselineRemoveRedEyeIcon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = onToggle
-                        ),
-                    color = if (showSensitive) Color(0xFF8EC5FF) else Color.White.copy(alpha = 0.8f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun BackSide(modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .graphicsLayer { rotationY = 180f }
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(32.dp))
+            // Back side - use WalletCard with back side content
             Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(Color.Black)
-            )
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { rotationY = 180f }
+            ) {
+                WalletCard(
+                    account = account,
+                    onCardClick = { /* Handled by parent clickable */ },
+                    modifier = Modifier.fillMaxSize(),
+                    recommendationType = recommendationType,
+                    showDetails = false // Hide details on back side
+                )
+            }
         }
     }
 }
@@ -649,7 +643,7 @@ fun QuickActionItem(icon: ImageVector, text: String) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = text,
-            style = AppTypography.bodyMedium,
+            style = AppTypography.bodyMedium.copy(fontFamily = RobotoFont),
             color = Color.White.copy(alpha = 0.9f)
         )
     }
@@ -664,186 +658,184 @@ fun TransactionHistorySheetContent(
     onToggleExpand: () -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
+    var selectedFilter by remember { mutableStateOf("All") }
     val tabTitles = listOf("Transaction History", "Details")
-    Box(
+
+    // Filter and sort transactions based on selected filter
+    val filteredAndSortedTransactions = remember(transactions, selectedFilter, account?.accountNumber) {
+        val currentAccountNumber = account?.accountNumber ?: ""
+
+        val filtered = when (selectedFilter) {
+            "Deposit" -> transactions.filter {
+                it.destinationAccountNumber == currentAccountNumber
+            }
+            "Withdraw" -> transactions.filter {
+                it.destinationAccountNumber != currentAccountNumber
+            }
+            else -> transactions // "All", "Date", "Amount" show all transactions
+        }
+
+        val sorted = when (selectedFilter) {
+            "Date" -> filtered.sortedByDescending { it.createdAt }
+            "Amount" -> filtered.sortedByDescending { it.amount.abs() }
+            else -> filtered.sortedByDescending { it.createdAt } // Default sort by date
+        }
+
+        sorted
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // AppBackground-style background
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF555D6B), // Center (light gray)
-                            Color(0xFF141818)  // Edge (dark gray)
-                        ),
-                        center = Offset(200f, 200f),
-                        radius = 1600f
-                    )
+        // Tab Row for toggling pages - matching wallet style
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = Color.Transparent,
+            contentColor = Color.White,
+            indicator = { tabPositions: List<TabPosition> ->
+                TabRowDefaults.Indicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    color = Color(0xFF8EC5FF) // Matching wallet accent color
                 )
-                .blur(24.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            }
         ) {
-            // Sheet header
-            // Expand/collapse button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(onClick = onToggleExpand) {
-                    Icon(
-                        painter = painterResource(id = if (sheetExpanded) R.drawable.baseline_keyboard_double_arrow_down_24 else R.drawable.baseline_keyboard_double_arrow_up_24),
-                        contentDescription = if (sheetExpanded) "Collapse" else "Expand",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Tab Row for toggling pages
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = Color.Transparent,
-                contentColor = Color.White,
-                indicator = { tabPositions: List<TabPosition> ->
-                    TabRowDefaults.Indicator(
-                        Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                        color = Color(0xFF8EC5FF)
-                    )
-                }
-            ) {
-                tabTitles.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = {
-                            Text(
-                                text = title,
-                                style = AppTypography.bodyLarge,
-                                color = if (selectedTab == index) Color(0xFF8EC5FF) else Color.White
-                            )
-                        }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-
-            when (selectedTab) {
-                0 -> {
-                    // Transaction History
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        FilterDropdownMenu()
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    if (transactions.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    imageVector = Icons.Default.ReceiptLong,
-                                    contentDescription = "No transactions",
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(64.dp)
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = "No transactions yet",
-                                    style = AppTypography.bodyLarge,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                        ) {
-                            items(transactions, key = { it.transactionId }) { transaction ->
-                                TransactionListItem(
-                                    transaction = transaction,
-                                    currentAccountNumber = account?.accountNumber ?: ""
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-                        }
-                    }
-                }
-
-                1 -> {
-                    // Details page
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        if (kyc != null) {
-                            Text(
-                                text = "Name: ${kyc.firstName} ${kyc.lastName}",
-                                style = AppTypography.bodyLarge,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
+            tabTitles.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = {
                         Text(
-                            text = "Account Details",
-                            style = AppTypography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
+                            text = title,
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                            color = if (selectedTab == index) Color(0xFF8EC5FF) else Color.White
+                        )
+                    }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        when (selectedTab) {
+            0 -> {
+                // Transaction History
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Show current filter
+                    Text(
+                        text = "Filter: $selectedFilter",
+                        style = AppTypography.bodyMedium.copy(fontFamily = RobotoFont),
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+
+                    FilterDropdownMenu(
+                        selectedFilter = selectedFilter,
+                        onFilterSelected = { filter ->
+                            selectedFilter = filter
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                if (filteredAndSortedTransactions.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.ReceiptLong,
+                                contentDescription = "No transactions",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(64.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = if (selectedFilter == "All") "No transactions yet" else "No ${selectedFilter.lowercase()} transactions",
+                                style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        items(filteredAndSortedTransactions, key = { it.transactionId }) { transaction ->
+                            TransactionListItem(
+                                transaction = transaction,
+                                currentAccountNumber = account?.accountNumber ?: ""
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+            }
+
+            1 -> {
+                // Details page
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    if (kyc != null) {
+                        Text(
+                            text = "Name: ${kyc.firstName} ${kyc.lastName}",
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
                             color = Color.White
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        if (account != null) {
-                            Text(
-                                "Account Type: ${account.accountType ?: "-"}",
-                                style = AppTypography.bodyLarge,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "Account Number: ${account.accountNumber ?: "-"}",
-                                style = AppTypography.bodyLarge,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "Balance: ${String.format("%,.3f", account.balance)} KWD",
-                                style = AppTypography.bodyLarge,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "Account Product ID: ${account.accountProductId ?: "-"}",
-                                style = AppTypography.bodyLarge,
-                                color = Color.White
-                            )
-                        } else {
-                            Text(
-                                "No account details available.",
-                                style = AppTypography.bodyLarge,
-                                color = Color.White
-                            )
-                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    Text(
+                        text = "Account Details",
+                        style = AppTypography.headlineSmall.copy(fontFamily = RobotoFont),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (account != null) {
+                        Text(
+                            "Account Type: ${account.accountType ?: "-"}",
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Account Number: ${account.accountNumber ?: "-"}",
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Balance: ${String.format("%,.3f", account.balance)} KWD",
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Account Product ID: ${account.accountProductId ?: "-"}",
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                            color = Color.White
+                        )
+                    } else {
+                        Text(
+                            "No account details available.",
+                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
+                            color = Color.White
+                        )
                     }
                 }
             }
@@ -873,3 +865,4 @@ data class AccountColors(
     val primary: Color,
     val secondary: Color
 )
+

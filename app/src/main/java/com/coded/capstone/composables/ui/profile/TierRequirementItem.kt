@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
- fun TierRequirementItem(
+fun TierRequirementItem(
     text: String,
     isCompleted: Boolean
 ) {
@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
                 .size(24.dp)
                 .clip(CircleShape)
                 .background(
-                    if (isCompleted) Color(0xFF4CAF50) else Color(0xFFE0E0E0)
+                    if (isCompleted) Color.White else Color.White.copy(alpha = 0.3f)
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -41,14 +41,14 @@ import androidx.compose.ui.unit.sp
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Completed",
-                    tint = Color.White,
+                    tint = Color(0xFF8EC5FF),
                     modifier = Modifier.size(16.dp)
                 )
             } else {
                 Icon(
                     imageVector = Icons.Default.Schedule,
                     contentDescription = "Pending",
-                    tint = Color.Gray,
+                    tint = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.sp
         Text(
             text = text,
             fontSize = 14.sp,
-            color = Color.Black
+            color = Color.White
         )
     }
 }

@@ -37,7 +37,7 @@ fun ProfilePage(
             }
         }
     )
-    
+
     val userXp by viewModel.userXp.collectAsState()
     val xpTiers by viewModel.xpTiers.collectAsState()
 
