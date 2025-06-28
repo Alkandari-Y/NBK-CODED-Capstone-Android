@@ -74,10 +74,10 @@ fun WalletCard(
         )
         bankName.lowercase().contains("cashback") -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFFD97706), // Amber 600
-                Color(0xFFF59E0B), // Amber 500
-                Color(0xFFB45309), // Amber 700
-                Color(0xFFD97706)  // Amber 600
+                Color(0xFF4EC5F5), // Amber 600
+                Color(0xFF7AD1F5), // Amber 500
+                Color(0xFF22ACE3), // Amber 700
+                Color(0xFF22ACE3)  // Amber 600
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)

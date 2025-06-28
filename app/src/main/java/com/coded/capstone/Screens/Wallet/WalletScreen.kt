@@ -565,7 +565,16 @@ fun WalletScreen(
                                 } else {
                                     // Apple Pay Card Stack
                                     ApplePayCardStack(
-                                        accounts = accounts,
+                                        accounts = accounts.sortedBy { account ->
+                                            // Get account product name to check if it's cashback
+                                            val accountProduct = com.coded.capstone.respositories.AccountProductRepository.accountProducts.find {
+                                                it.id == account.accountProductId
+                                            }
+                                            val productName = accountProduct?.name?.lowercase() ?: ""
+                                            
+                                            // Cashback cards first (false sorts before true)
+                                            !productName.contains("cashback")
+                                        },
                                         selectedCard = selectedCard,
                                         pagerState = pagerState,
                                         scrollVelocity = scrollVelocity,
