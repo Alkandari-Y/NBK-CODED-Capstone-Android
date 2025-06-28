@@ -241,7 +241,18 @@ fun RecommendationScreen(
                 }
 
                 // Recommendations Section
-                val uniqueRecommendations = recommendations.distinctBy { it.name to it.accountType }
+                val uniqueRecommendations = recommendations
+                    .filter { product ->
+                        // Filter out cashback and business account cards
+                        val productName = product.name?.lowercase() ?: ""
+                        val accountType = product.accountType?.lowercase() ?: ""
+                        
+                        !productName.contains("cashback") && 
+                        !accountType.contains("business") &&
+                        !productName.contains("business") &&
+                        !productName.contains("salary")
+                    }
+                    .distinctBy { it.name to it.accountType }
                 if (uniqueRecommendations.isNotEmpty()) {
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
