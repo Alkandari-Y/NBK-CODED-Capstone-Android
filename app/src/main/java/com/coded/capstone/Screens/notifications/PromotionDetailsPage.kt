@@ -1,7 +1,9 @@
 package com.coded.capstone.Screens.notifications
 
-import androidx.compose.foundation.Image
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -10,38 +12,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.coded.capstone.data.responses.promotion.PromotionResponse
+import com.coded.capstone.composables.PromotionBusinessLogo
 import com.coded.capstone.data.responses.promotion.RewardType
-import com.google.gson.annotations.SerializedName
+import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.RecommendationViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-
-
-
-
-// Sample Promotion Data
-val samplePromotion = PromotionResponse(
-    id = 1L,
-    name = "Summer Electronics Mega Sale",
-    businessPartnerId = 101L,
-    type = RewardType.DISCOUNT,
-    _startDate = "2025-06-01",
-    _endDate = "2025-08-31",
-    description = "Get up to 50% off on all premium electronics including smartphones, laptops, gaming consoles and smart home devices. Limited time offer with exclusive deals on top brands.",
-    storeId = 1001L
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,42 +36,73 @@ fun PromotionDetailPage(
     navController: NavController,
     promotionId: String? = null
 ) {
-    // Get promotion from repository based on ID, fallback to sample
-    val promotion = remember(promotionId) {
-        promotionId?.toLongOrNull()?.let { id ->
-            com.coded.capstone.respositories.PromotionRepository.promotions.find { it.id == id }
-        } ?: samplePromotion
+    val context = LocalContext.current
+    val recommendationViewModel: RecommendationViewModel = viewModel { RecommendationViewModel(context) }
+    val homeViewModel: HomeScreenViewModel = viewModel { HomeScreenViewModel(context) }
+
+    val promotion by recommendationViewModel.selectedPromotion.collectAsState()
+    val partners by recommendationViewModel.partners.collectAsState()
+    val favoriteBusinesses by recommendationViewModel.favoriteBusinesses.collectAsState()
+    val storeLocations by recommendationViewModel.storeLocations.collectAsState()
+    val userXp by homeViewModel.userXp.collectAsState()
+
+    LaunchedEffect(promotionId) {
+        promotionId?.let {
+            recommendationViewModel.fetchPromotionDetails(it)
+            recommendationViewModel.fetchBusinessPartners()
+            recommendationViewModel.fetchFavoriteBusinesses()
+            recommendationViewModel.fetchStoreLocations()
+            homeViewModel.getUserXpInfo()
+        }
     }
-    val daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), promotion.endDate)
+
+    //  loading state
+    if (promotion == null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    color = Color(0xFF8EC5FF),
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Loading promotion details...",
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
+        }
+        return
+    }
+
+    val currentPromotion = promotion!!
+    val businessPartner = partners.find { it.id == currentPromotion.businessPartnerId }
+    val daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), currentPromotion.endDate)
+    val isFavorite = favoriteBusinesses.contains(currentPromotion.businessPartnerId)
+    val storeLocation = storeLocations.find { it.partnerId == currentPromotion.businessPartnerId }
+
+    val currentTier = userXp?.xpTier?.name ?: "No Tier"
+    val tierMultiplier = userXp?.xpTier?.xpPerkMultiplier ?: 1.0
+    val xpPerPromotion = userXp?.xpTier?.xpPerPromotion ?: 100
+    val totalXp = (xpPerPromotion * tierMultiplier).toInt()
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Background Image
+        // Background - White only
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color(0xFFF8F9FA),
-                            Color(0xFFE9ECEF)
-                        )
-                    )
-                )
+                .background(Color.White)
         ) {
-            // You can replace this with actual image
-            // Image(
-            //     painter = painterResource(id = R.drawable.promotion_background),
-            //     contentDescription = "Promotion Background",
-            //     modifier = Modifier.fillMaxSize(),
-            //     contentScale = ContentScale.Crop
-            // )
-
-            // Placeholder background pattern/icon
+            // Background icon
             Icon(
-                imageVector = when (promotion.type) {
+                imageVector = when (currentPromotion.type) {
                     RewardType.DISCOUNT -> Icons.Default.LocalOffer
                     RewardType.CASHBACK -> Icons.Default.AccountBalanceWallet
                 },
@@ -94,9 +112,33 @@ fun PromotionDetailPage(
                     .size(200.dp)
                     .align(Alignment.Center)
             )
+
+            // business logo for promo image
+            businessPartner?.let { partner ->
+                Box(
+                    modifier = Modifier.align(Alignment.Center),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PromotionBusinessLogo(
+                        businessName = partner.name,
+                        promotion = currentPromotion,
+                        size = 120.dp
+                    )
+
+                    if (isFavorite) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Favorite Business",
+                            tint = Color(0xFFFFD700),
+                            modifier = Modifier
+                                .size(24.dp)
+                                .offset(x = 50.dp, y = (-50).dp)
+                        )
+                    }
+                }
+            }
         }
 
-        // Top Bar
         TopAppBar(
             title = { },
             navigationIcon = {
@@ -121,13 +163,11 @@ fun PromotionDetailPage(
             modifier = Modifier.zIndex(1f)
         )
 
-        // Bottom Sheet Content
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
         ) {
-            // Bottom Sheet Handle
             Box(
                 modifier = Modifier
                     .width(40.dp)
@@ -141,11 +181,10 @@ fun PromotionDetailPage(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Main Bottom Sheet Content
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)), // Dark navy to match app
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
             ) {
                 Column(
@@ -153,10 +192,9 @@ fun PromotionDetailPage(
                         .fillMaxWidth()
                         .padding(24.dp)
                 ) {
-                    // Promotion Type Badge
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = when (promotion.type) {
+                        color = when (currentPromotion.type) {
                             RewardType.CASHBACK -> Color(0xFF8EC5FF).copy(alpha = 0.2f)
                             RewardType.DISCOUNT -> Color(0xFFFF6B6B).copy(alpha = 0.2f)
                         }
@@ -172,8 +210,8 @@ fun PromotionDetailPage(
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = promotion.type.name,
-                                color = when (promotion.type) {
+                                text = currentPromotion.type.name,
+                                color = when (currentPromotion.type) {
                                     RewardType.CASHBACK -> Color(0xFF8EC5FF)
                                     RewardType.DISCOUNT -> Color(0xFFFF6B6B)
                                 },
@@ -192,9 +230,35 @@ fun PromotionDetailPage(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Promotion Name
+                    businessPartner?.let { partner ->
+                        Text(
+                            text = partner.name,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
+
+                        // category Chip
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFF8EC5FF).copy(alpha = 0.2f),
+                            modifier = Modifier.padding(top = 4.dp)
+                        ) {
+                            Text(
+                                text = partner.category.name,
+                                fontSize = 12.sp,
+                                color = Color(0xFF8EC5FF),
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+
+                    // promo Name
                     Text(
-                        text = promotion.name,
+                        text = currentPromotion.name,
                         color = Color.White,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
@@ -202,9 +266,8 @@ fun PromotionDetailPage(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Description
                     Text(
-                        text = promotion.description,
+                        text = currentPromotion.description,
                         color = Color.White.copy(alpha = 0.8f),
                         fontSize = 14.sp,
                         lineHeight = 20.sp
@@ -220,17 +283,21 @@ fun PromotionDetailPage(
                         StatItemCard(
                             icon = Icons.Default.AccessTime,
                             value = "${daysLeft}",
-                            label = "Days Left"
+                            label = "Days Left",
+                            isUrgent = daysLeft <= 3
                         )
                         StatItemCard(
                             icon = Icons.Default.Percent,
-                            value = "50",
-                            label = "Max Discount"
+                            value = userXp?.xpTier?.perkAmountPercentage?.toString() ?: "N/A",
+                            label = when (currentPromotion.type) {
+                                RewardType.DISCOUNT -> "% Discount"
+                                RewardType.CASHBACK -> "% Cashback"
+                            }
                         )
                         StatItemCard(
-                            icon = Icons.Default.Store,
-                            value = "100+",
-                            label = "Stores"
+                            icon = Icons.Default.EmojiEvents,
+                            value = "${totalXp} XP",
+                            label = "${currentTier} (${tierMultiplier}x)"
                         )
                     }
 
@@ -248,7 +315,7 @@ fun PromotionDetailPage(
                                 fontSize = 12.sp
                             )
                             Text(
-                                text = promotion.startDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
+                                text = currentPromotion.startDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
@@ -261,46 +328,32 @@ fun PromotionDetailPage(
                                 fontSize = 12.sp
                             )
                             Text(
-                                text = promotion.endDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
-                                color = Color.White,
+                                text = currentPromotion.endDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
+                                color = if (daysLeft <= 3) Color.Red else Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    // Store Location
+                    storeLocation?.let { location ->
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    // Action Button
-                    Button(
-                        onClick = { /* Claim promotion */ },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF8EC5FF)
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "Claim Promotion",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Icon(
-                                imageVector = Icons.Default.ArrowForward,
-                                contentDescription = "Claim",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+                        Text(
+                            text = "Click for location",
+                            color = Color(0xFF8EC5FF),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(location.googleMapUrl))
+                                context.startActivity(intent)
+                            }
+                        )
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
@@ -311,12 +364,16 @@ fun PromotionDetailPage(
 fun StatItemCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     value: String,
-    label: String
+    label: String,
+    isUrgent: Boolean = false
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.1f)
+            containerColor = if (isUrgent)
+                Color.Red.copy(alpha = 0.15f)
+            else
+                Color.White.copy(alpha = 0.1f)
         ),
         modifier = Modifier.width(100.dp)
     ) {
@@ -327,13 +384,13 @@ fun StatItemCard(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = Color(0xFF8EC5FF),
+                tint = if (isUrgent) Color.Red else Color(0xFF8EC5FF),
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = value,
-                color = Color.White,
+                color = if (isUrgent) Color.Red else Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -346,4 +403,3 @@ fun StatItemCard(
         }
     }
 }
-
