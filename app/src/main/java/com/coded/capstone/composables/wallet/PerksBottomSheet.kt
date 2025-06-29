@@ -77,11 +77,12 @@ fun PerksBottomSheet(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight(0.85f)
             .background(
-                color = Color(0xFF2A2A2A),
+                color = Color(0xFF23272E),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
-            .padding(24.dp)
+            .padding(16.dp)
     ) {
         // Header
         Row(
@@ -90,7 +91,7 @@ fun PerksBottomSheet(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Your Perks",
+                text = "Available Perks",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
@@ -99,13 +100,13 @@ fun PerksBottomSheet(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Perks Content
         if (perks.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 itemsIndexed(perks) { index, perk ->
                     AnimatedVisibility(
@@ -128,7 +129,7 @@ fun PerksBottomSheet(
 
                 // Bottom padding for last item
                 item {
-                    Spacer(modifier = Modifier.height(80.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
                 }
             }
         } else {
@@ -136,7 +137,7 @@ fun PerksBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 40.dp),
+                    .padding(vertical = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
@@ -208,8 +209,8 @@ fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: Strin
                 navController.navigate(NavRoutes.relatedVendorRoute(perk.id.toString(), productId, accountId))
             },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF374151)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
