@@ -473,6 +473,12 @@ fun WalletScreen(
                                                 onCardClick = { 
                                                     if (!isPayAnimationActive) {
                                                         showBottomSheet = true 
+
+                                                        // Go back to card stack instead of showing bottom sheet BB
+//                                                         showBottomSheet = false
+//                                                         selectedCard = null
+//                                                         cardAnimationTrigger = false
+
                                                     }
                                                 }
                                             )
@@ -519,15 +525,48 @@ fun WalletScreen(
                                                             }
                                                         },
                                                     contentAlignment = Alignment.Center
-                                                ) {
-                                                    CardTransferBoldIcon(
-                                                        modifier = Modifier.size(32.dp),
-                                                        color = Color.White
-                                                    )
-                                                }
-                                            }
 
-                                            Spacer(modifier = Modifier.width(16.dp))
+
+                                            // Transfer button positioned to the left - only show if not credit card
+//                                             if (selectedCard?.accountType?.lowercase() != "credit") {
+//                                                 Box(
+//                                                     modifier = Modifier.offset(x = transferButtonOffset)
+                                                ) {
+                                                    // Circular shadow
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(45.dp)
+                                                            .background(
+                                                                Color.Black.copy(alpha = 0.2f),
+                                                                CircleShape
+                                                            )
+                                                            .offset(y = 4.dp)
+                                                    )
+
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(45.dp)
+                                                            .background(
+                                                                Color(0xFF8EC5FF).copy(alpha = 0.99f),
+                                                                CircleShape
+                                                            )
+                                                            .clickable {
+                                                                if (!isPayAnimationActive) {
+                                                                    transferSourceAccount = selectedCard!!
+                                                                    navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
+                                                                }
+                                                            },
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        CardTransferBoldIcon(
+                                                            modifier = Modifier.size(32.dp),
+                                                            color = Color.White
+                                                        )
+                                                    }
+                                                }
+
+                                                Spacer(modifier = Modifier.width(16.dp))
+                                            }
 
                                             // Pay button positioned next to transfer
                                             Box(
@@ -570,7 +609,16 @@ fun WalletScreen(
                                 } else {
                                     // Apple Pay Card Stack
                                     ApplePayCardStack(
-                                        accounts = accounts,
+                                        accounts = accounts.sortedBy { account ->
+                                            // Get account product name to check if it's cashback
+                                            val accountProduct = com.coded.capstone.respositories.AccountProductRepository.accountProducts.find {
+                                                it.id == account.accountProductId
+                                            }
+                                            val productName = accountProduct?.name?.lowercase() ?: ""
+                                            
+                                            // Cashback cards first (false sorts before true)
+                                            !productName.contains("cashback")
+                                        },
                                         selectedCard = selectedCard,
                                         pagerState = pagerState,
                                         scrollVelocity = scrollVelocity,

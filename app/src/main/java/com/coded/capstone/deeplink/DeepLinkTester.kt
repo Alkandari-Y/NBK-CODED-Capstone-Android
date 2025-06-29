@@ -31,14 +31,15 @@ object DeepLinkTester {
         val deepLinks = listOf(
             "nbkcapstone://wallet",
             "nbkcapstone://transfer",
-            "nbkcapstone://map",
-            "nbkcapstone://kyc",
-            "nbkcapstone://xp",
             "nbkcapstone://calendar",
             "nbkcapstone://recommendations",
             "nbkcapstone://home",
             "nbkcapstone://login",
-            "nbkcapstone://signup"
+            "nbkcapstone://signup",
+            "nbkcapstone://profile",
+            "nbkcapstone://xp",
+            "nbkcapstone://notifications",
+            "nbkcapstone://promotion/123"
         )
         
         deepLinks.forEach { link ->
@@ -47,25 +48,17 @@ object DeepLinkTester {
     }
     
     /**
-     * Test HTTPS deep links (replace with your actual domain)
+     * Test specific deep link types
      */
-    fun testHttpsDeepLinks(context: Context) {
-        val domain = "your-domain.com"
-        val deepLinks = listOf(
-            "https://$domain/wallet",
-            "https://$domain/transfer",
-            "https://$domain/map",
-            "https://$domain/kyc",
-            "https://$domain/xp",
-            "https://$domain/calendar",
-            "https://$domain/recommendations",
-            "https://$domain/home",
-            "https://$domain/login",
-            "https://$domain/signup"
-        )
-        
-        deepLinks.forEach { link ->
-            testDeepLink(context, link)
-        }
+    fun testWalletDeepLink(context: Context) {
+        testDeepLink(context, "nbkcapstone://wallet")
+    }
+    
+    fun testTransferDeepLink(context: Context) {
+        testDeepLink(context, "nbkcapstone://transfer")
+    }
+    
+    fun testPromotionDeepLink(context: Context, promotionId: String) {
+        testDeepLink(context, "nbkcapstone://promotion/$promotionId")
     }
 } 

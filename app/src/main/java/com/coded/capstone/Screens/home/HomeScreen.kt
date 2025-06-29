@@ -65,6 +65,10 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.ui.draw.shadow
 import androidx.activity.compose.BackHandler
 
+import com.coded.capstone.Screens.notifications.NotificationCenter
+import com.coded.capstone.viewModels.NotificationViewModel
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -90,6 +94,11 @@ fun HomeScreen(
     val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
     val userXp by viewModel.userXp.collectAsState()
 
+    // Notification integration
+    var showNotifications by remember { mutableStateOf(false) }
+    val notificationViewModel: NotificationViewModel = viewModel { NotificationViewModel(context) }
+    val unreadCount by notificationViewModel.unreadCount.collectAsState()
+
     // Fetch accounts when HomeScreen loads
     LaunchedEffect(Unit) {
         Log.d("HomeScreen", "LaunchedEffect for fetchAccounts triggered")
@@ -99,6 +108,11 @@ fun HomeScreen(
     // Fetch user XP info when screen loads
     LaunchedEffect(Unit) {
         viewModel.getUserXpInfo()
+    }
+
+    // Fetch notifications when screen loads
+    LaunchedEffect(Unit) {
+        notificationViewModel.fetchNotifications()
     }
 
     // Separate accounts into reward cards and regular accounts
@@ -205,8 +219,6 @@ fun HomeScreen(
                                         shape = RoundedCornerShape(bottomStart = 70.dp, bottomEnd = 0.dp)
                                     )
                             ) {
-//                                Spacer(modifier = Modifier.height(30.dp))
-
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -251,7 +263,7 @@ fun HomeScreen(
                                                 .background(Color(0xFF8EC5FF))
                                         ) {
                                             IconButton(
-                                                onClick = onNotificationClick,
+                                                onClick = { showNotifications = true },
                                                 modifier = Modifier.matchParentSize()
                                             ) {
                                                 Icon(
@@ -525,4 +537,10 @@ fun HomeScreen(
             }
         }
     }
+
+    NotificationCenter(
+        isVisible = showNotifications,
+        onClose = { showNotifications = false },
+        navController = navController
+    )
 }

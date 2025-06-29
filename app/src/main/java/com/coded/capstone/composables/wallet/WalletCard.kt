@@ -17,8 +17,18 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coded.capstone.SVG.BagHeartFillIcon
+import com.coded.capstone.SVG.BaselineShoppingBasketIcon
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.respositories.AccountProductRepository
+import com.coded.capstone.SVG.RoundDiamondIcon
+import com.coded.capstone.SVG.QueenCrownIcon
+import com.coded.capstone.SVG.CoinsIcon
+import com.coded.capstone.SVG.CardTransferBoldIcon
+import com.coded.capstone.SVG.ElectricalEnergyFilledIcon
+import com.coded.capstone.SVG.SharpStarsIcon
+import com.coded.capstone.SVG.RoundBusinessCenterIcon
+import com.coded.capstone.SVG.StarFourFillIcon
 
 @Composable
 fun WalletCard(
@@ -41,6 +51,101 @@ fun WalletCard(
 
     // Modern premium card gradients based on account type and recommendation type
     val cardGradient = when {
+        // Special card cases - these take priority over recommendation types
+        bankName.lowercase().contains("diamond") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF091221), // Navy 900
+                Color(0xFF0C1628), // Navy 800
+                Color(0xFF070E1A), // Navy 700
+                Color(0xFF070E1A)  // Navy 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        bankName.lowercase().contains("platinum") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF6B7280), // Silver 500
+                Color(0xFF9CA3AF), // Silver 400
+                Color(0xFF4B5563), // Silver 600
+                Color(0xFF6B7280)  // Silver 500
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        bankName.lowercase().contains("cashback") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF4EC5F5), // Amber 600
+                Color(0xFF7AD1F5), // Amber 500
+                Color(0xFF22ACE3), // Amber 700
+                Color(0xFF22ACE3)  // Amber 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        bankName.lowercase().contains("shopping") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF6B1D45), // Red 600
+                Color(0xFF9F3B70), // Red 500
+                Color(0xFF501233), // Red 700
+                Color(0xFF4F1332)  // Red 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        bankName.lowercase().contains("salary") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF1E113D), // Blue 700
+                Color(0xFF431952), // Blue 500
+                Color(0xFF190E33), // Blue 600
+                Color(0xFF190E33)  // Blue 700
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+
+        bankName.lowercase().contains("business pro") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF3730A3), // Indigo 900
+                Color(0xFF639CF1), // Indigo 500
+                Color(0xFF4338CA), // Indigo 700
+                Color(0xFF3730A3)  // Indigo 900
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        // Youth Starter card special case
+        bankName.lowercase().contains("youth starter") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF651351), // Violet 600
+                Color(0xFF8D3077), // Violet 500
+                Color(0xFF2C1365), // Violet 700
+                Color(0xFF2C1365)  // Violet 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        // Shopper's Delight card special case
+        bankName.lowercase().contains("shopper's delight") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF520607), // Red 600
+                Color(0xFF6E0C0D), // Red 500
+                Color(0xFF440506), // Red 700
+                Color(0xFF440506)  // Red 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+        // Lifestyle Premium card special case
+        bankName.lowercase().contains("lifestyle premium") -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF222B65), // Amber 600
+                Color(0xFF3B5E93), // Amber 500
+                Color(0xFF1F173A), // Amber 700
+                Color(0xFF1F173A)  // Amber 600
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
         // Special recommendation cards
         recommendationType?.lowercase() == "travel" -> Brush.linearGradient(
             colors = listOf(
@@ -62,22 +167,12 @@ fun WalletCard(
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        recommendationType?.lowercase() == "entertainment" -> Brush.linearGradient(
+        recommendationType?.lowercase() == "youth starter" -> Brush.linearGradient(
             colors = listOf(
                 Color(0xFF651351), // Violet 600
                 Color(0xFF8D3077), // Violet 500
                 Color(0xFF2C1365), // Violet 700
                 Color(0xFF2C1365)  // Violet 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        recommendationType?.lowercase() == "shopping" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF6B1D45), // Red 600
-                Color(0xFF9F3B70), // Red 500
-                Color(0xFF501233), // Red 700
-                Color(0xFF4F1332)  // Red 600
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
@@ -168,14 +263,23 @@ fun WalletCard(
     }
 
     // Get recommendation icon
-    val recommendationIcon = when (recommendationType?.lowercase()) {
-        "travel" -> Icons.Default.Flight
-        "family essentials" -> Icons.Default.FamilyRestroom
-        "entertainment" -> Icons.Default.Movie
-        "shopping" -> Icons.Default.ShoppingCart
-        "dining" -> Icons.Default.Restaurant
-        "health" -> Icons.Default.LocalHospital
-        "education" -> Icons.Default.School
+    val recommendationIcon = when {
+        bankName.lowercase().contains("diamond") -> null // Will use RoundDiamondIcon instead
+        bankName.lowercase().contains("platinum") -> null // Will use QueenCrownIcon instead
+        bankName.lowercase().contains("cashback") -> null // Will use CoinsIcon instead
+        bankName.lowercase().contains("shopping") -> null // Will use CardTransferBoldIcon instead
+        bankName.lowercase().contains("salary") -> null // Will use SharpStarsIcon instead
+        bankName.lowercase().contains("business pro") -> null // Will use RoundBusinessCenterIcon instead
+        bankName.lowercase().contains("youth starter") -> null
+        bankName.lowercase().contains("shopper's delight") -> null
+        bankName.lowercase().contains("lifestyle premium") -> null
+        recommendationType?.lowercase() == "travel" -> Icons.Default.Flight
+        recommendationType?.lowercase() == "family essentials" -> Icons.Default.FamilyRestroom
+        recommendationType?.lowercase() == "entertainment" -> Icons.Default.Movie
+        recommendationType?.lowercase() == "shopping" -> Icons.Default.ShoppingCart
+        recommendationType?.lowercase() == "dining" -> Icons.Default.Restaurant
+        recommendationType?.lowercase() == "health" -> Icons.Default.LocalHospital
+        recommendationType?.lowercase() == "education" -> Icons.Default.School
         else -> null
     }
 
@@ -256,12 +360,59 @@ fun WalletCard(
                     )
 
                     // Recommendation icon or contactless payment icon
-                    Icon(
-                        imageVector = recommendationIcon ?: Icons.Default.Contactless,
-                        contentDescription = recommendationLabel ?: "Contactless Payment",
-                        tint = Color.White.copy(alpha = 0.9f),
-                        modifier = Modifier.size(28.dp)
-                    )
+                    if (bankName.lowercase().contains("diamond")) {
+                        RoundDiamondIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    } else if (bankName.lowercase().contains("platinum")) {
+                        QueenCrownIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    } else if (bankName.lowercase().contains("cashback")) {
+                        CoinsIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    } else if (bankName.lowercase().contains("shopping")) {
+                        BaselineShoppingBasketIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    } else if (bankName.lowercase().contains("salary")) {
+                        SharpStarsIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    } else if (bankName.lowercase().contains("business pro")) {
+                        RoundBusinessCenterIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    }else if (bankName.lowercase().contains("youth delight")) {
+                        ElectricalEnergyFilledIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    } else if (bankName.lowercase().contains("shopper's delight")) {
+                        BagHeartFillIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    }else if (bankName.lowercase().contains("lifestyle premium")) {
+                        StarFourFillIcon(
+                            modifier = Modifier.size(28.dp),
+                            color = Color.White.copy(alpha = 0.9f)
+                        )
+                    }else {
+                        Icon(
+                            imageVector = recommendationIcon ?: Icons.Default.Contactless,
+                            contentDescription = recommendationLabel ?: "Contactless Payment",
+                            tint = Color.White.copy(alpha = 0.9f),
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
 
                 // Middle section: EMV Chip

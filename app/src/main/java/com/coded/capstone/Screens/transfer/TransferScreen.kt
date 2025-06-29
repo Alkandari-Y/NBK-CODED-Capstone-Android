@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -63,11 +64,44 @@ import com.coded.capstone.viewModels.AccountsUiState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import com.coded.capstone.respositories.UserRepository
+import androidx.navigation.compose.rememberNavController
+import com.coded.capstone.ui.theme.AppTypography
+import androidx.compose.animation.EnterTransition
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.painterResource
+import com.coded.capstone.respositories.AccountProductRepository
 
 // Roboto font family
 private val RobotoFont = FontFamily(
     androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
 )
+
+// Function to get recommendation type from account product category names
+fun getRecommendationType(account: AccountResponse): String? {
+    // Get the account product to match the recommendation screen logic
+    val accountProduct = AccountProductRepository.accountProducts.find {
+        it.id == account.accountProductId
+    }
+
+    // Use the same logic as the recommendation screen
+    return when {
+        accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
+        accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
+        accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
+        accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
+        accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
+        accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
+        accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
+        account.accountType?.lowercase() == "credit" -> "shopping"
+        account.accountType?.lowercase() == "savings" -> "family essentials"
+        account.accountType?.lowercase() == "debit" -> "travel"
+        else -> null // Use default account type colors instead of defaulting to shopping
+    }
+}
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -82,10 +116,10 @@ fun TransferScreen(
     validateAmount: (BigDecimal, AccountResponse) -> String? = { _, _ -> null }
 ) {
     BackHandler { onBack() }
-    
+
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    
+
     // ViewModels
     val homeViewModel: HomeScreenViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
@@ -110,14 +144,14 @@ fun TransferScreen(
     } else {
         accounts
     }
-    
+
     // Filter accounts by type for transfer functionality
     // Source accounts: debit and cashback only (exclude credit)
     val sourceAccounts = allAccounts.filter { account ->
         val accountType = account.accountType?.lowercase()
         accountType == "debit" || accountType == "cashback"
     }
-    
+
     // Dynamic destination accounts based on source account type
     val getDestinationAccounts = { sourceAccount: AccountResponse? ->
         when (sourceAccount?.accountType?.lowercase()) {
@@ -134,22 +168,26 @@ fun TransferScreen(
                     (accountType == "debit" || accountType == "credit") && account.id != sourceAccount.id
                 }.distinctBy { it.id }
             }
+            "credit" -> {
+                // Credit accounts cannot transfer to anything
+                emptyList()
+            }
             else -> emptyList()
         }
     }
-    
+
     val actualTransferUiState by transactionViewModel.transferUiState.collectAsState()
-    
+
     // Fetch accounts if not provided
     LaunchedEffect(Unit) {
         if (accounts.isEmpty()) {
             homeViewModel.fetchAccounts()
         }
     }
-    
+
     // Initialize fromCard with a valid source account (debit or cashback)
     var fromCard by remember { mutableStateOf<AccountResponse?>(null) }
-    
+
     // Set initial source card (debit or cashback account)
     LaunchedEffect(sourceAccounts, defaultSource) {
         fromCard = if (defaultSource != null && sourceAccounts.contains(defaultSource)) {
@@ -158,10 +196,10 @@ fun TransferScreen(
             sourceAccounts.firstOrNull()
         }
     }
-    
+
     // Success message state
     var showSuccessMessage by remember { mutableStateOf(false) }
-    
+
     // Set default source card based on selectedAccountId (if it's a valid source account)
     LaunchedEffect(sourceAccounts, selectedAccountId) {
         if (selectedAccountId != null && sourceAccounts.isNotEmpty()) {
@@ -171,16 +209,16 @@ fun TransferScreen(
             }
         }
     }
-    
+
     // Handle successful transfer
     LaunchedEffect(actualTransferUiState) {
         if (actualTransferUiState is TransferUiState.Success) {
             // Show success message
             showSuccessMessage = true
-            hapticFeedback.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         }
     }
-    
+
     var currentToIndex by remember { mutableStateOf(0) }
     var isSwapping by remember { mutableStateOf(false) }
     var amount by remember { mutableStateOf("") }
@@ -188,12 +226,44 @@ fun TransferScreen(
     var selectedCurrency by remember { mutableStateOf("KWD") }
     var currencyExpanded by remember { mutableStateOf(false) }
     
-    val coroutineScope = rememberCoroutineScope()
+    // Animation states for destination cards
+    var destinationCardAnimationTrigger by remember { mutableStateOf(0) }
     
+    // Animated states for destination cards
+    val destinationCardOffset by animateDpAsState(
+        targetValue = 0.dp,
+        animationSpec = tween(durationMillis = 300),
+        label = "destinationCardOffset"
+    )
+    
+    val destinationCardScale by animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = tween(durationMillis = 300),
+        label = "destinationCardScale"
+    )
+    
+    // Horizontal slide animation for destination cards
+    var slideDirection by remember { mutableStateOf(0) } // -1 for left, 1 for right, 0 for center
+    val horizontalSlideOffset by animateDpAsState(
+        targetValue = 0.dp,
+        animationSpec = tween(durationMillis = 300),
+        label = "horizontalSlideOffset"
+    )
+    
+    val coroutineScope = rememberCoroutineScope()
+
+    // Reset slide direction after animation
+    LaunchedEffect(slideDirection) {
+        if (slideDirection != 0) {
+            delay(300) // Wait for animation to complete
+            slideDirection = 0 // Reset to center
+        }
+    }
+
     // Get available destination cards based on source account type
     val availableDestinations = getDestinationAccounts(fromCard)
     val toCard = availableDestinations.getOrNull(currentToIndex)
-    
+
     // Reset destination when source changes or available destinations change
     LaunchedEffect(fromCard, availableDestinations.size) {
         if (fromCard != null && availableDestinations.isNotEmpty()) {
@@ -203,14 +273,14 @@ fun TransferScreen(
             currentToIndex = 0
         }
     }
-    
+
     // Ensure currentToIndex is always within bounds
     LaunchedEffect(availableDestinations, currentToIndex) {
         if (availableDestinations.isNotEmpty() && currentToIndex >= availableDestinations.size) {
             currentToIndex = 0
         }
     }
-    
+
     // Validate amount when it changes
     LaunchedEffect(amount, fromCard) {
         if (amount.isNotEmpty() && fromCard != null) {
@@ -273,22 +343,6 @@ fun TransferScreen(
                 )
 
                 Spacer(modifier = Modifier.width(40.dp))
-            }
-
-            // Transfer restrictions information
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F4F6)),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    text = "Only debit and cashback accounts can send transfers. Cashback accounts can only transfer to debit accounts. Debit accounts can transfer to debit or credit accounts.",
-                    color = Color(0xFF6B7280),
-                    fontSize = 12.sp,
-                    fontFamily = RobotoFont,
-                    modifier = Modifier.padding(12.dp),
-                    textAlign = TextAlign.Center
-                )
             }
 
             // Debug information
@@ -357,125 +411,280 @@ fun TransferScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(440.dp)
+                    .height(500.dp)
                     .padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
-                    modifier = Modifier.zIndex(0f)
+                    modifier = Modifier.zIndex(0f),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // From Card
-                    AnimatedContent(
-                        targetState = fromCard,
-                        transitionSpec = {
-                            if (isSwapping) {
-                                (slideInVertically { it } + fadeIn()) with (slideOutVertically { it } + fadeOut())
-                            } else {
-                                (slideInHorizontally { it } + fadeIn()) with (slideOutHorizontally { -it } + fadeOut())
-                            }
-                        },
-                        label = "FromCard"
-                    ) { card ->
-                        if (card != null) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                            ) {
-                                WalletCard(
-                                    account = card,
-                                    onCardClick = { /* No swiping for selected card */ },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // To Card
+                    // From Card Stack
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(230.dp)
+                            .height(240.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Source account card stack
+                        sourceAccounts.forEachIndexed { index, account ->
+                            val isSelected = account.id == fromCard?.id
+                            val baseOffset = if (isSelected) 0.dp else (index * 8).dp
+                            val scale = if (isSelected) 1f else 0.95f - (index * 0.05f)
+                            val alpha = if (isSelected) 1f else 0.7f - (index * 0.2f)
+                            
+                            // Get recommendation type for proper colors
+                            val recommendationType = getRecommendationType(account)
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp)
+                                    .offset(y = baseOffset)
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        this.alpha = alpha
+                                    }
+                                    .zIndex(if (isSelected) 1000f else 100f - index)
+                                    .shadow(
+                                        elevation = if (isSelected) 20.dp else 8.dp,
+                                        shape = RoundedCornerShape(20.dp),
+                                        ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
+                                        spotColor = Color(0xFF8EC5FF).copy(alpha = 0.5f)
+                                    )
+                                    .clickable {
+                                        fromCard = account
+                                        // Reset destination index when source changes
+                                        currentToIndex = 0
+                                    },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                            ) {
+                                WalletCard(
+                                    account = account,
+                                    onCardClick = { /* Handled by parent clickable */ },
+                                    modifier = Modifier.fillMaxSize(),
+                                    recommendationType = recommendationType
+                                )
+                            }
+                        }
+
+                        // "From" label
+                        Text(
+                            text = "FROM",
+                            color = Color(0xFF6B7280),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(start = 16.dp, top = 8.dp)
+                                .background(
+                                    Color.White.copy(alpha = 0.9f),
+                                    RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // To Card Stack
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(240.dp)
                             .pointerInput(availableDestinations) {
                                 detectHorizontalDragGestures { _, dragAmount ->
                                     if (!isSwapping && availableDestinations.isNotEmpty() && availableDestinations.size > 1) {
                                         if (dragAmount < -40) {
                                             // Swipe left - go to next destination
+                                            slideDirection = -1 // Slide left
+                                            destinationCardAnimationTrigger++
                                             currentToIndex = (currentToIndex + 1) % availableDestinations.size
-                                            hapticFeedback.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         } else if (dragAmount > 40) {
                                             // Swipe right - go to previous destination
+                                            slideDirection = 1 // Slide right
+                                            destinationCardAnimationTrigger++
                                             currentToIndex = if (currentToIndex > 0) {
                                                 currentToIndex - 1
                                             } else {
                                                 availableDestinations.size - 1
                                             }
-                                            hapticFeedback.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         }
                                     }
                                 }
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        var shakeAnimation by remember { mutableStateOf(false) }
-                        
-                        // Trigger shake animation when swiping in wrong direction
-                        LaunchedEffect(shakeAnimation) {
-                            if (shakeAnimation) {
-                                delay(300)
-                                shakeAnimation = false
-                            }
-                        }
-                        
-                        AnimatedContent(
-                            targetState = toCard,
-                            transitionSpec = {
-                                if (isSwapping) {
-                                    (slideInVertically { -it } + fadeIn()) with (slideOutVertically { -it } + fadeOut())
-                                } else {
-                                    (slideInHorizontally { it } + fadeIn()) with (slideOutHorizontally { -it } + fadeOut())
-                                }
-                            },
-                            label = "ToCard"
-                        ) { card ->
-                            if (card != null) {
-                                val shakeOffset by animateDpAsState(
-                                    targetValue = if (shakeAnimation) 10.dp else 0.dp,
-                                    animationSpec = tween(durationMillis = 100)
+                        if (availableDestinations.isNotEmpty()) {
+                            // Destination account card stack
+                            availableDestinations.forEachIndexed { index, account ->
+                                val isSelected = account.id == toCard?.id
+                                val baseOffset = if (isSelected) 0.dp else (index * 8).dp
+                                val scale = if (isSelected) 1f else 0.95f - (index * 0.05f)
+                                val alpha = if (isSelected) 1f else 0.7f - (index * 0.2f)
+                                
+                                // Show multiple cards in stack (up to 3 cards visible)
+                                val isVisible = index <= currentToIndex + 2 && index >= currentToIndex - 1
+                                
+                                // Get recommendation type for proper colors
+                                val recommendationType = getRecommendationType(account)
+                                
+                                // Animated values for smooth transitions
+                                val animatedScale by animateFloatAsState(
+                                    targetValue = if (isVisible) scale else 0.8f,
+                                    animationSpec = tween(durationMillis = 300),
+                                    label = "cardScale_$index"
                                 )
                                 
-                                Box(
-                                    modifier = Modifier.offset(x = shakeOffset)
+                                val animatedAlpha by animateFloatAsState(
+                                    targetValue = if (isVisible) alpha else 0f,
+                                    animationSpec = tween(durationMillis = 300),
+                                    label = "cardAlpha_$index"
+                                )
+                                
+                                val animatedOffset by animateDpAsState(
+                                    targetValue = if (isVisible) baseOffset else 50.dp,
+                                    animationSpec = tween(durationMillis = 300),
+                                    label = "cardOffset_$index"
+                                )
+                                
+                                // Horizontal slide animation
+                                val horizontalOffset by animateDpAsState(
+                                    targetValue = when {
+                                        isSelected && slideDirection == -1 -> (-400).dp // Slide left
+                                        isSelected && slideDirection == 1 -> 400.dp // Slide right
+                                        else -> 0.dp // Center position
+                                    },
+                                    animationSpec = tween(durationMillis = 300),
+                                    label = "horizontalOffset_$index"
+                                )
+
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp)
+                                        .offset(x = horizontalOffset, y = animatedOffset)
+                                        .graphicsLayer {
+                                            scaleX = animatedScale
+                                            scaleY = animatedScale
+                                            this.alpha = animatedAlpha
+                                        }
+                                        .zIndex(if (isSelected) 1000f else 100f - index)
+                                        .shadow(
+                                            elevation = if (isSelected) 20.dp else 8.dp,
+                                            shape = RoundedCornerShape(20.dp),
+                                            ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
+                                            spotColor = Color(0xFF8EC5FF).copy(alpha = 0.5f)
+                                        ),
+                                    shape = RoundedCornerShape(20.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                                 ) {
                                     WalletCard(
-                                        account = card,
+                                        account = account,
                                         onCardClick = { /* Handled by drag */ },
-                                        modifier = Modifier.fillMaxSize()
+                                        modifier = Modifier.fillMaxSize(),
+                                        recommendationType = recommendationType
                                     )
+                                }
+                            }
+
+                            // "TO" label
+                            Text(
+                                text = "TO",
+                                color = Color(0xFF6B7280),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(start = 16.dp, top = 8.dp)
+                                    .background(
+                                        Color.White.copy(alpha = 0.9f),
+                                        RoundedCornerShape(4.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+
+                            // Swipe indicator
+                            if (availableDestinations.size > 1) {
+                                Row(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .padding(bottom = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    availableDestinations.forEachIndexed { index, _ ->
+                                        Box(
+                                            modifier = Modifier
+                                                .size(6.dp)
+                                                .background(
+                                                    if (index == currentToIndex) Color(0xFF8EC5FF) else Color(0xFFD1D5DB),
+                                                    CircleShape
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            // No destination available
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF3F4F6)),
+                                shape = RoundedCornerShape(20.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Block,
+                                            contentDescription = "No destination",
+                                            tint = Color(0xFF9CA3AF),
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "No valid destination",
+                                            color = Color(0xFF6B7280),
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = when (fromCard?.accountType?.lowercase()) {
+                                                "cashback" -> "Cashback can only transfer to debit"
+                                                "debit" -> "Debit can transfer to debit or credit"
+                                                else -> "Select a valid source account"
+                                            },
+                                            color = Color(0xFF9CA3AF),
+                                            fontSize = 12.sp,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                // Swap Button
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .zIndex(1f)
-                        .background(Color(0xFF23272E), shape = RoundedCornerShape(32.dp))
-                        .border(4.dp, Color.White, shape = RoundedCornerShape(32.dp))
-                        .clickable {
-                            if (!isSwapping && fromCard != null && toCard != null) {
-                                // Check if swap is valid:
-                                // 1. Destination card must be a valid source account (debit or cashback)
-                                // 2. Current source must be a valid destination for the swapped scenario
-                                val canToCardBeSource = sourceAccounts.contains(toCard)
-                                val willFromCardBeValidDestination = getDestinationAccounts(toCard).contains(fromCard)
-                                
-                                if (canToCardBeSource && willFromCardBeValidDestination) {
+                // Swap Button (only show if both cards are selected and swap is valid)
+                if (fromCard != null && toCard != null && sourceAccounts.contains(toCard) && getDestinationAccounts(toCard).contains(fromCard)) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .zIndex(1001f)
+                            .background(Color(0xFF23272E), shape = RoundedCornerShape(32.dp))
+                            .border(4.dp, Color.White, shape = RoundedCornerShape(32.dp))
+                            .clickable {
+                                if (!isSwapping) {
                                     coroutineScope.launch {
                                         isSwapping = true
                                         delay(300)
@@ -485,18 +694,15 @@ fun TransferScreen(
                                         delay(300)
                                         isSwapping = false
                                     }
-                                } else {
-                                    // Show feedback that swap is not allowed due to account type restrictions
-                                    hapticFeedback.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                 }
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Transfer2FillIcon(
-                        modifier = Modifier.size(32.dp),
-                        color = Color(0xFF8EC5FF)
-                    )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Transfer2FillIcon(
+                            modifier = Modifier.size(32.dp),
+                            color = Color(0xFF8EC5FF)
+                        )
+                    }
                 }
             }
 
@@ -597,28 +803,12 @@ fun TransferScreen(
                         )
                     }
                 }
-            } else {
-                // Show message when credit account is selected as source
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF2F2)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "Credit accounts cannot initiate transfers. Please select a debit or cashback account as the source.",
-                        color = Color(0xFFEF4444),
-                        fontSize = 14.sp,
-                        fontFamily = RobotoFont,
-                        modifier = Modifier.padding(16.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
-    
+
     // Success Message - positioned in the center of the screen
     Box(
         modifier = Modifier
@@ -671,9 +861,9 @@ fun TransferSuccessMessage(
                     tint = Color(0xFF8EC5FF),
                     modifier = Modifier.size(48.dp)
                 )
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Text(
                     text = "Transfer Successful!",
                     color = Color.White,
@@ -681,9 +871,9 @@ fun TransferSuccessMessage(
                     fontWeight = FontWeight.Bold,
                     fontFamily = RobotoFont
                 )
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "Your money has been transferred successfully to the destination account.",
                     color = Color.White.copy(alpha = 0.8f),
@@ -691,9 +881,9 @@ fun TransferSuccessMessage(
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     fontFamily = RobotoFont
                 )
-                
+
                 Spacer(modifier = Modifier.height(20.dp))
-                
+
                 Button(
                     onClick = onDismiss,
                     colors = ButtonDefaults.buttonColors(
