@@ -263,7 +263,7 @@ fun HomeScreen(
                                                 .background(Color(0xFF8EC5FF))
                                         ) {
                                             IconButton(
-                                                onClick = { showNotifications = true },
+                                                onClick = { navController.navigate(NavRoutes.NAV_ROUTE_NOTIFICATIONS) },
                                                 modifier = Modifier.matchParentSize()
                                             ) {
                                                 Icon(
@@ -538,9 +538,5 @@ fun HomeScreen(
         }
     }
 
-    NotificationCenter(
-        isVisible = showNotifications,
-        onClose = { showNotifications = false },
-        navController = navController
-    )
+
 }
