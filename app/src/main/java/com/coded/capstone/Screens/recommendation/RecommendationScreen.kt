@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 import com.coded.capstone.composables.recommendation.RecommendationCard
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.viewModels.HomeScreenViewModel
@@ -60,6 +62,19 @@ fun RecommendationScreen(
     
     val recommendations by viewModel.accountProducts.collectAsState()
     val accountsUiState by viewModel.accountsUiState.collectAsState()
+    
+    // Debug: Log the recommendations data
+    LaunchedEffect(recommendations) {
+        println("=== RECOMMENDATION SCREEN DEBUG ===")
+        println("Total recommendations fetched: ${recommendations.size}")
+        recommendations.forEachIndexed { index, product ->
+            println("[$index] Name: ${product.name}")
+            println("[$index] Account Type: ${product.accountType}")
+            println("[$index] Recommended: ${product.recommended}")
+            println("[$index] ID: ${product.id}")
+            println("---")
+        }
+    }
     val userAccounts = when (accountsUiState) {
         is com.coded.capstone.viewModels.AccountsUiState.Success -> (accountsUiState as com.coded.capstone.viewModels.AccountsUiState.Success).accounts
         else -> emptyList()
@@ -68,6 +83,8 @@ fun RecommendationScreen(
     // Success message state
     var showSuccessMessage by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
+    
+
 
     // Handle account creation success
     LaunchedEffect(shouldNavigate) {
@@ -93,6 +110,8 @@ fun RecommendationScreen(
             else -> {}
         }
     }
+    
+
 
     // Function to handle Apply button click
     fun handleApplyClick(accountProduct: AccountProductResponse) {
@@ -129,6 +148,7 @@ fun RecommendationScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -187,26 +207,55 @@ fun RecommendationScreen(
                         )
                     }
 
-                    IconButton(
-                        onClick = onNotificationClick,
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color.White.copy(alpha = 0.1f),
-                                        Color.White.copy(alpha = 0.05f)
+                    Row {
+                        IconButton(
+                            onClick = {
+                                println("=== MANUAL REFRESH TRIGGERED ===")
+                                viewModel.fetchAccountProducts()
+                            },
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.1f),
+                                            Color.White.copy(alpha = 0.05f)
+                                        )
                                     )
                                 )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Refresh",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
                             )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        }
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        
+                        IconButton(
+                            onClick = onNotificationClick,
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.1f),
+                                            Color.White.copy(alpha = 0.05f)
+                                        )
+                                    )
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "Notifications",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
 
@@ -272,13 +321,16 @@ fun RecommendationScreen(
                         !productName.contains("salary")
                     }
                     .distinctBy { it.name to it.accountType }
-                    .sortedBy { product ->
-                        // Sort by ownership: unowned first (false), then owned (true)
+                    .sortedWith(compareByDescending<AccountProductResponse> { product ->
+                        // First sort criterion: recommended items first (descending: true comes before false)
+                        product.recommended
+                    }.thenBy { product ->
+                        // Second sort criterion: unowned first (false), then owned (true)
                         val userHasCard = userAccounts.any { acc ->
                             acc.accountProductId == product.id
                         }
                         userHasCard
-                    }
+                    })
                 if (uniqueRecommendations.isNotEmpty()) {
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
@@ -460,9 +512,9 @@ fun RecommendationScreen(
                                                 .then(
                                                     if (!userHasCard && accountCreateState !is AccountCreateUiState.Loading)
                                                         Modifier.shadow(
-                                            elevation = 12.dp,
+                                            elevation = 3.dp,
                                             shape = RoundedCornerShape(16.dp),
-                                            ambientColor = Color.White.copy(alpha = 0.3f)
+                                            ambientColor = Color.White.copy(alpha = 0.2f)
                                                         )
                                                     else Modifier
                                                 ),
@@ -620,6 +672,8 @@ fun RecommendationScreen(
                     shape = RoundedCornerShape(75.dp)
                 )
         )
+
+
 
 //                         shape = RoundedCornerShape(75.dp)
 //                     )
