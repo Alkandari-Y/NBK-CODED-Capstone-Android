@@ -17,6 +17,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
@@ -73,6 +75,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.zIndex
 import com.coded.capstone.formstates.authentication.RegisterFormState
 import kotlinx.coroutines.delay
 import com.coded.capstone.ui.AppBackground
@@ -112,6 +115,9 @@ fun SignUpScreen(
         label = "card_fade_in"
     )
 
+    // Success message state
+    var showSuccessMessage by remember { mutableStateOf(false) }
+
     // Trigger animation on composition
     LaunchedEffect(Unit) {
         delay(300) // Small delay before starting animation
@@ -126,16 +132,13 @@ fun SignUpScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is AuthUiState.Success) {
-            Toast.makeText(context, "Account created", Toast.LENGTH_SHORT).show()
-            navController.navigate(NavRoutes.NAV_ROUTE_EDIT_KYC) {
-                popUpTo(NavRoutes.NAV_ROUTE_SIGNUP) { inclusive = true }
-            }
+            showSuccessMessage = true
         }
     }
 
     AppBackground {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
         ) {
             // Logo in top section
             Box(
@@ -176,7 +179,13 @@ fun SignUpScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
-                            Color.White
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.White,
+                                    Color(0xFFE5E7EB), // Light silver
+                                    Color(0xFFD1D5DB)  // Silver
+                                )
+                            )
                         )
                 ) {
                     Column(
@@ -231,8 +240,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -278,8 +287,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -319,8 +328,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -370,8 +379,8 @@ fun SignUpScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 unfocusedBorderColor = Color.Transparent,
                                 focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = Color(0xFFF3F4F6),
-                                focusedContainerColor = Color(0xFFF3F4F6),
+                                unfocusedContainerColor = Color(0xFFEDEEEF),
+                                focusedContainerColor = Color(0xFFEDEEEF),
                                 unfocusedTextColor = Color(0xFF374151),
                                 focusedTextColor = Color(0xFF374151),
                                 cursorColor = Color(0xFF374151)
@@ -504,6 +513,98 @@ fun SignUpScreen(
                                 .padding(8.dp)
                         )
                     }
+                }
+            }
+        }
+
+        // Success Message - positioned in the center of the screen
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1000f) // Ensure it appears above other elements
+        ) {
+            SignUpSuccessMessage(
+                isVisible = showSuccessMessage,
+                onDismiss = {
+                    showSuccessMessage = false
+                    navController.navigate(NavRoutes.NAV_ROUTE_EDIT_KYC) {
+                        popUpTo(NavRoutes.NAV_ROUTE_SIGNUP) { inclusive = true }
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SignUpSuccessMessage(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2E)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Success",
+                    tint = Color(0xFF8EC5FF),
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Account Created Successfully!",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Your account has been created successfully. Please complete your KYC to continue.",
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 14.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Continue",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }

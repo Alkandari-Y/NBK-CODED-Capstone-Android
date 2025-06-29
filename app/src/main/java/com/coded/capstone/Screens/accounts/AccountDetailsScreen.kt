@@ -333,7 +333,19 @@ fun AccountDetailsScreen(
     }
 
     AppBackground {
-        Box(Modifier.fillMaxSize().background(color = Color.White)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White,
+                            Color(0xFFE5E7EB), // Light silver
+                            Color(0xFFD1D5DB)  // Silver
+                        )
+                    )
+                )
+        ) {
             // Main content area - matching wallet layout
             Column(
                 modifier = Modifier
@@ -367,9 +379,10 @@ fun AccountDetailsScreen(
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
+                                 color = Color(0xFF374151),
                                 fontFamily = RobotoFont
                             ),
-                            color = Color.White
+//                            color = Color.White
                         )
                         if (accountState != null) {
                             Text(
@@ -407,7 +420,7 @@ fun AccountDetailsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(450.dp)
-                                .background(Color.White),
+                                .background(Color.Transparent),
                             contentAlignment = Alignment.TopCenter
                         ) {
                             var cardVisible by remember { mutableStateOf(false) }
@@ -784,58 +797,274 @@ fun TransactionHistorySheetContent(
             }
 
             1 -> {
-                // Details page
-                Column(
+                // Details page - similar to recommendations screen
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp),
-                    horizontalAlignment = Alignment.Start
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    if (kyc != null) {
-                        Text(
-                            text = "Name: ${kyc.firstName} ${kyc.lastName}",
-                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
+                    // Get account product details
+                    val accountProduct = AccountProductRepository.accountProducts.find {
+                        it.id == account?.accountProductId
                     }
-                    Text(
-                        text = "Account Details",
-                        style = AppTypography.headlineSmall.copy(fontFamily = RobotoFont),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    if (account != null) {
+
+                    // Main title
+                    item {
                         Text(
-                            "Account Type: ${account.accountType ?: "-"}",
-                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
-                            color = Color.White
+                            text = "Account Details",
+                            style = AppTypography.headlineMedium.copy(fontFamily = RobotoFont),
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF374151), // Dark gray
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    // Account product name header
+                    item {
                         Text(
-                            "Account Number: ${account.accountNumber ?: "-"}",
-                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
-                            color = Color.White
+                            text = accountProduct?.name?.uppercase() ?: "ACCOUNT DETAILS",
+                            style = AppTypography.headlineSmall.copy(fontFamily = RobotoFont),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Account type subtitle
                         Text(
-                            "Balance: ${String.format("%,.3f", account.balance)} KWD",
-                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
-                            color = Color.White
+                            text = account?.accountType?.uppercase() ?: "ACCOUNT",
+                            color = Color(0xFF8EC5FF),
+                            fontSize = 14.sp,
+                            fontFamily = RobotoFont,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    // Account Information Section (at the top)
+                    item {
                         Text(
-                            "Account Product ID: ${account.accountProductId ?: "-"}",
-                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
-                            color = Color.White
+                            text = "Account Information",
+                            style = AppTypography.titleMedium.copy(fontFamily = RobotoFont),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
-                    } else {
+
+                        // Account details in the same style
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Account Number",
+                                    color = Color(0xFF8EC5FF),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    fontFamily = RobotoFont
+                                )
+                                Text(
+                                    account?.accountNumber ?: "-",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    fontFamily = RobotoFont
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Current Balance",
+                                    color = Color(0xFF8EC5FF),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    fontFamily = RobotoFont
+                                )
+                                Text(
+                                    "${String.format("%,.3f", account?.balance ?: 0.0)} KWD",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    fontFamily = RobotoFont
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    "Account Type",
+                                    color = Color(0xFF8EC5FF),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    fontFamily = RobotoFont
+                                )
+                                Text(
+                                    account?.accountType?.uppercase() ?: "-",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    fontFamily = RobotoFont
+                                )
+                            }
+                        }
+                    }
+
+                    // Perks/info as premium InfoCards - matching recommendations screen style
+                    item {
                         Text(
-                            "No account details available.",
-                            style = AppTypography.bodyLarge.copy(fontFamily = RobotoFont),
-                            color = Color.White
+                            text = "Product Features",
+                            style = AppTypography.titleMedium.copy(fontFamily = RobotoFont),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // Interest Rate
+                            accountProduct?.interestRate?.let {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "Interest Rate",
+                                        color = Color(0xFF8EC5FF),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                    Text(
+                                        "${it}%",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                }
+                            }
+
+                            // Credit Limit
+                            accountProduct?.creditLimit?.let {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "Credit Limit",
+                                        color = Color(0xFF8EC5FF),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                    Text(
+                                        "KD ${it.toInt()}",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                }
+                            }
+
+                            // Annual Fee
+                            accountProduct?.annualFee?.let {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "Annual Fee",
+                                        color = Color(0xFF8EC5FF),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                    Text(
+                                        if (it == 0.0) "Free" else "KD ${it.toInt()}",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                }
+                            }
+
+                            // Min Balance Required
+                            accountProduct?.minBalanceRequired?.let {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "Min Balance",
+                                        color = Color(0xFF8EC5FF),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                    Text(
+                                        "KD ${it.toInt()}",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                }
+                            }
+
+                            // Min Salary
+                            accountProduct?.minSalary?.let {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        "Min Salary",
+                                        color = Color(0xFF8EC5FF),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                    Text(
+                                        "KD ${it.toInt()}",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 15.sp,
+                                        fontFamily = RobotoFont
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Description if available
+                    accountProduct?.description?.let { description ->
+                        item {
+                            Text(
+                                text = "Description",
+                                style = AppTypography.titleMedium.copy(fontFamily = RobotoFont),
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            Text(
+                                text = description,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontSize = 14.sp,
+                                fontFamily = RobotoFont,
+                                lineHeight = 20.sp
+                            )
+                        }
                     }
                 }
             }

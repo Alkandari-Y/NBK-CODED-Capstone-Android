@@ -329,11 +329,20 @@ fun WalletScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.White
+        color = Color.Transparent
     ) {
         Box(
             modifier = modifier
                 .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White,
+                            Color(0xFFE5E7EB), // Light silver
+                            Color(0xFFD1D5DB)  // Silver
+                        )
+                    )
+                )
         ) {
             Column(
                 modifier = Modifier
@@ -365,9 +374,10 @@ fun WalletScreen(
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontSize = if (selectedCard != null) 20.sp else 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = RobotoFont
+                                fontFamily = RobotoFont,
+                                        color = Color(0xFF374151),
                             ),
-                            color = Color.White
+//                            color = Color.White
                         )
                         if (accounts.isNotEmpty() && selectedCard == null) {
                             Text(
@@ -414,7 +424,7 @@ fun WalletScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(if (selectedCard != null) 320.dp else 450.dp)
-                                    .background(Color.White),
+                                    .background(Color.Transparent),
                                 contentAlignment = Alignment.TopCenter
                             ) {
                                 if (selectedCard != null) {
@@ -460,17 +470,20 @@ fun WalletScreen(
                                         ) {
                                             SingleSelectedCard(
                                                 account = selectedCard!!,
-                                                onCardClick = {
+                                                onCardClick = { 
                                                     if (!isPayAnimationActive) {
-                                                        // Go back to card stack instead of showing bottom sheet
-                                                        showBottomSheet = false
-                                                        selectedCard = null
-                                                        cardAnimationTrigger = false
+                                                        showBottomSheet = true 
+
+                                                        // Go back to card stack instead of showing bottom sheet BB
+//                                                         showBottomSheet = false
+//                                                         selectedCard = null
+//                                                         cardAnimationTrigger = false
+
                                                     }
                                                 }
                                             )
                                         }
-
+                                        
                                         // Buttons row
                                         Spacer(modifier = Modifier.height(13.dp))
 
@@ -482,11 +495,42 @@ fun WalletScreen(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Spacer(modifier = Modifier.width(20.dp))
+                                            
+                                            // Transfer button positioned to the left
+                                            Box(
+                                                modifier = Modifier.offset(x = transferButtonOffset)
+                                            ) {
+                                                // Circular shadow
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color.Black.copy(alpha = 0.2f),
+                                                            CircleShape
+                                                        )
+                                                        .offset(y = 4.dp)
+                                                )
+                                                
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color(0xFF8EC5FF).copy(alpha = 0.99f),
+                                                            CircleShape
+                                                        )
+                                                        .clickable {
+                                                            if (!isPayAnimationActive) {
+                                                                transferSourceAccount = selectedCard!!
+                                                                navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
+                                                            }
+                                                        },
+                                                    contentAlignment = Alignment.Center
+
 
                                             // Transfer button positioned to the left - only show if not credit card
-                                            if (selectedCard?.accountType?.lowercase() != "credit") {
-                                                Box(
-                                                    modifier = Modifier.offset(x = transferButtonOffset)
+//                                             if (selectedCard?.accountType?.lowercase() != "credit") {
+//                                                 Box(
+//                                                     modifier = Modifier.offset(x = transferButtonOffset)
                                                 ) {
                                                     // Circular shadow
                                                     Box(
@@ -538,7 +582,7 @@ fun WalletScreen(
                                                         )
                                                         .offset(y = 4.dp)
                                                 )
-
+                                                
                                                 Box(
                                                     modifier = Modifier
                                                         .size(45.dp)
@@ -650,12 +694,12 @@ fun WalletScreen(
                                                 color = Color.LightGray.copy(alpha = 0.6f),
                                                 shape = RoundedCornerShape(2.5.dp)
                                             )
-                                            .pointerInput(Unit) {
-                                                detectDragGestures { change, dragAmount ->
-                                                    if (dragAmount.y > 50) {
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                if (dragAmount.y > 50) {
                                                         // Downward swipe: dismiss/collapse
-                                                        showBottomSheet = false
-                                                        sheetExpanded = false
+                                    showBottomSheet = false
+                                    sheetExpanded = false
                                                     } else if (dragAmount.y < -50) {
                                                         // Upward swipe: expand
                                                         sheetExpanded = true
@@ -684,18 +728,18 @@ fun WalletScreen(
                                 }
                             }
                             // Sheet content
-                            PerksBottomSheet(
-                                perks = perksOfAccountProduct,
-                                navController = navController,
-                                productId = card.accountProductId?.toString() ?: "",
-                                accountId = card.id.toString()?: "",
-                                onDismiss = {
-                                    showBottomSheet = false
-                                    sheetExpanded = false
-                                    selectedCard = null
-                                    cardAnimationTrigger = false
-                                }
-                            )
+                    PerksBottomSheet(
+                        perks = perksOfAccountProduct,
+                        navController = navController,
+                        productId = card.accountProductId?.toString() ?: "",
+                        accountId = card.id.toString()?: "",
+                        onDismiss = {
+                            showBottomSheet = false
+                            sheetExpanded = false
+                            selectedCard = null
+                            cardAnimationTrigger = false
+                        }
+                    )
                         }
                     }
                 }
@@ -743,7 +787,7 @@ fun WalletScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-
+                        
                         // Counter with circle background
                         Box(
                             modifier = Modifier
@@ -775,7 +819,7 @@ fun WalletScreen(
                     animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
                     label = "waveAlpha"
                 )
-
+                
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
