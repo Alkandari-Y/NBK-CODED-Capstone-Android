@@ -175,29 +175,30 @@ fun NotificationCenter(navController: NavController) {
                     Text(
                         text = "Notifications",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1E1E1E)
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF1E1E1E),
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = onClose,
+                        onClick = { navController.popBackStack() },
                         modifier = Modifier
-                            .size(44.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF8EC5FF))
+                            .padding(start = 8.dp)
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF8EC5FF).copy(alpha = 0.2f))
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color(0xFF1E1E1E)
+                            tint = Color(0xFF8EC5FF),
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color(0xFF1E1E1E),
-                    navigationIconContentColor = Color(0xFF1E1E1E)
+                    containerColor = Color.White
                 )
             )
         }
