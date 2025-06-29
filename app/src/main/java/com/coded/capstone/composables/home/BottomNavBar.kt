@@ -30,14 +30,18 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import com.coded.capstone.SVG.HomeIcon
+import com.coded.capstone.SVG.WalletCreditCard16FilledIcon
+import com.coded.capstone.SVG.CalenderIcon
+import com.coded.capstone.SVG.CalendarStar16FilledIcon
 
 @Composable
 fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
     val navItems = listOf(
-        NavItem(Icons.Filled.Home, "Home"),
-        NavItem(Icons.Filled.AccountBalanceWallet, "Wallet"),
-        NavItem(Icons.Filled.CalendarToday, "Calendar"),
-        NavItem(Icons.Filled.LocalOffer, "Recommend")
+        NavItem({ modifier, color -> HomeIcon(modifier = modifier, color = color) }, "Home"),
+        NavItem({ modifier, color -> WalletCreditCard16FilledIcon(modifier = modifier, color = color) }, "Wallet"),
+        NavItem({ modifier, color -> CalenderIcon(modifier = modifier, color = color) }, "Calendar"),
+        NavItem({ modifier, color -> CalendarStar16FilledIcon(modifier = modifier, color = color) }, "Recommend")
     )
 
     Surface(
@@ -86,7 +90,7 @@ fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
 
 @Composable
 private fun BottomNavItem(
-    icon: ImageVector,
+    icon: @Composable (Modifier, Color) -> Unit,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -134,11 +138,9 @@ private fun BottomNavItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    tint = animatedColor,
-                    modifier = Modifier.size(20.dp)
+                icon(
+                    Modifier.size(30.dp),
+                    animatedColor
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -150,17 +152,15 @@ private fun BottomNavItem(
             }
         } else {
             // Unselected item with only icon
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = animatedColor,
-                modifier = Modifier.size(22.dp)
+            icon(
+                Modifier.size(22.dp),
+                animatedColor
             )
         }
     }
 }
 
 private data class NavItem(
-    val icon: ImageVector,
+    val icon: @Composable (Modifier, Color) -> Unit,
     val label: String
 )
