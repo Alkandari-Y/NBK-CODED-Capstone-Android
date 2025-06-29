@@ -41,7 +41,7 @@ fun UserInfoSection(
     Card(
         modifier = Modifier
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF8EC5FF)),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -56,14 +56,14 @@ fun UserInfoSection(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.2f)),
+                    .background(Color(0xFF8EC5FF).copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile Avatar",
                     modifier = Modifier.size(40.dp),
-                    tint = Color.White
+                    tint = Color(0xFF8EC5FF)
                 )
             }
 
@@ -74,7 +74,7 @@ fun UserInfoSection(
                 text = "${userProfile?.firstName ?: ""} ${userProfile?.lastName ?: ""}",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color(0xFF23272E)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -87,7 +87,7 @@ fun UserInfoSection(
                 Text(
                     text = userProfile?.mobileNumber ?: "",
                     fontSize = 16.sp,
-                    color = Color.White.copy(alpha = 0.9f)
+                    color = Color(0xFF23272E).copy(alpha = 0.8f)
                 )
                 IconButton(
                     onClick = onEditClick,
@@ -97,7 +97,7 @@ fun UserInfoSection(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
                         modifier = Modifier.size(16.dp),
-                        tint = Color.White
+                        tint = Color(0xFF8EC5FF)
                     )
                 }
             }
@@ -111,7 +111,7 @@ fun UserInfoSection(
             ) {
                 // Tier Badge
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF8EC5FF)),
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Row(
@@ -122,12 +122,12 @@ fun UserInfoSection(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Tier",
-                            tint = Color(0xFF8EC5FF),
+                            tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
                             text = "${userXp?.xpTier?.name ?: "Loading"} Tier",
-                            color = Color(0xFF8EC5FF),
+                            color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -139,13 +139,13 @@ fun UserInfoSection(
                     Text(
                         text = "Total XP Earned",
                         fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = Color(0xFF23272E).copy(alpha = 0.6f)
                     )
                     Text(
                         text = "${userXp?.userXpAmount ?: 0}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White
+                        color = Color(0xFF23272E)
                     )
                 }
             }

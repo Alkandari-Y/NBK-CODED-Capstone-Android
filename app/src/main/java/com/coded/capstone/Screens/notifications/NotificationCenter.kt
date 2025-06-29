@@ -108,14 +108,7 @@ fun NotificationCenter(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color.White.copy(alpha = 0.1f),
-                                        Color.White.copy(alpha = 0.05f)
-                                    )
-                                )
-                            )
+                            .background(Color(0xFF8EC5FF))
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
