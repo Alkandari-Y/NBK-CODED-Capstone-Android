@@ -510,13 +510,10 @@ fun WalletScreen(
                                                 account = selectedCard!!,
                                                 onCardClick = { 
                                                     if (!isPayAnimationActive) {
-                                                        showBottomSheet = true 
-
-                                                        // Go back to card stack instead of showing bottom sheet BB
-//                                                         showBottomSheet = false
-//                                                         selectedCard = null
-//                                                         cardAnimationTrigger = false
-
+                                                        // Go back to card stack instead of showing bottom sheet
+                                                        showBottomSheet = false
+                                                        selectedCard = null
+                                                        cardAnimationTrigger = false
                                                     }
                                                 }
                                             )
