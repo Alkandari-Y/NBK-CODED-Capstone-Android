@@ -62,6 +62,8 @@ import com.coded.capstone.SVG.BankFillIcon
 import androidx.compose.foundation.layout.Spacer as Spacer
 import android.util.Log
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import com.coded.capstone.Screens.notifications.NotificationCenter
+import com.coded.capstone.viewModels.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +90,11 @@ fun HomeScreen(
     val userName = kyc?.let { "${it.firstName} ${it.lastName}" }
     val userXp by viewModel.userXp.collectAsState()
 
+    // Notification integration
+    var showNotifications by remember { mutableStateOf(false) }
+    val notificationViewModel: NotificationViewModel = viewModel { NotificationViewModel(context) }
+    val unreadCount by notificationViewModel.unreadCount.collectAsState()
+
     // Fetch accounts when HomeScreen loads
     LaunchedEffect(Unit) {
         Log.d("HomeScreen", "LaunchedEffect for fetchAccounts triggered")
@@ -97,6 +104,11 @@ fun HomeScreen(
     // Fetch user XP info when screen loads
     LaunchedEffect(Unit) {
         viewModel.getUserXpInfo()
+    }
+
+    // Fetch notifications when screen loads
+    LaunchedEffect(Unit) {
+        notificationViewModel.fetchNotifications()
     }
 
     // Separate accounts into reward cards and regular accounts
@@ -215,20 +227,13 @@ fun HomeScreen(
                                     }
                                 }
 
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .clip(CircleShape)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .matchParentSize()
-                                            .background(Color(0xFF6A7477).copy(alpha = 0.85f))
-                                            .blur(8.dp)
-                                    )
+                                Box {
                                     IconButton(
-                                        onClick = onNotificationClick,
-                                        modifier = Modifier.matchParentSize()
+                                        onClick = { showNotifications = true },
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFF6A7477).copy(alpha = 0.85f))
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Notifications,
@@ -236,6 +241,22 @@ fun HomeScreen(
                                             tint = Color.White,
                                             modifier = Modifier.size(24.dp)
                                         )
+                                    }
+
+                                    if (unreadCount > 0) {
+                                        Badge(
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .offset(x = (-4).dp, y = 4.dp),
+                                            containerColor = Color.Red,
+                                            contentColor = Color.White
+                                        ) {
+                                            Text(
+                                                text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -429,9 +450,6 @@ fun HomeScreen(
                                                                 }
                                                             }
                                                         }
-//                                                        if (index < displayedAccounts.size - 1) {
-//                                                            Spacer(modifier = Modifier.height(6.dp))
-//                                                        }
                                                     }
                                                 }
                                             }
@@ -482,5 +500,9 @@ fun HomeScreen(
             }
         }
     }
-
+    NotificationCenter(
+        isVisible = showNotifications,
+        onClose = { showNotifications = false },
+        navController = navController
+    )
 }
