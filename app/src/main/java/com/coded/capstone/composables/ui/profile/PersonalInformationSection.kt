@@ -35,7 +35,7 @@ fun PersonalInformationSection(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF8EC5FF)),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -53,7 +53,7 @@ fun PersonalInformationSection(
                     text = "Your Personal Details",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = Color(0xFF23272E)
                 )
                 IconButton(
                     onClick = onEditClick,
@@ -62,7 +62,7 @@ fun PersonalInformationSection(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = Color.White,
+                        tint = Color(0xFF8EC5FF),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -121,13 +121,13 @@ fun PersonalInfoItem(
             Text(
                 text = label,
                 fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.8f),
+                color = Color(0xFF23272E).copy(alpha = 0.6f),
                 modifier = Modifier.weight(1f)
             )
             Text(
                 text = value,
                 fontSize = 14.sp,
-                color = Color.White,
+                color = Color(0xFF23272E),
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.End
@@ -135,7 +135,7 @@ fun PersonalInfoItem(
         }
         if (!isLast) {
             Divider(
-                color = Color.White.copy(alpha = 0.2f),
+                color = Color(0xFF23272E).copy(alpha = 0.1f),
                 thickness = 1.dp
             )
         }

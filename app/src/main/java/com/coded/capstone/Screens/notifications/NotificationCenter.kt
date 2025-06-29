@@ -181,11 +181,11 @@ fun NotificationCenter(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {
-                            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
-                                popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = false }
-                            }
-                        }
+                        onClick = onClose,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF8EC5FF))
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,

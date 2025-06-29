@@ -123,44 +123,56 @@ fun RelatedVendorsScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.White, // Light background
         topBar = {
-                            TopAppBar(
-                title = {
-                    Text(
-                        text = "Available at",
-                        color = Color(0xFF1E1E1E),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { 
-                            navController.navigate(NavRoutes.homeWithWalletTab()) {
-                                popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(bottomStart = 40.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "Available at",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { 
+                                    navController.navigate(NavRoutes.homeWithWalletTab()) {
+                                        popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .size(40.dp)
+                                    .background(
+                                        Color(0xFF8EC5FF).copy(alpha = 0.2f),
+                                        CircleShape
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color(0xFF8EC5FF),
+                                    modifier = Modifier.size(24.dp)
+                                )
                             }
                         },
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(40.dp)
-                            .background(
-                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                                CircleShape
-                            )
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color(0xFF8EC5FF),
-                            modifier = Modifier.size(24.dp)
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent,
+                            titleContentColor = Color.White,
+                            navigationIconContentColor = Color.White
                         )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color(0xFF1E1E1E),
-                    navigationIconContentColor = Color(0xFF8EC5FF)
-                )
-            )
+                    )
+                    // Extra space to extend the dark section
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
         }
     ) { paddingValues ->
         Column(
@@ -243,10 +255,10 @@ fun RelatedVendorsScreen(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF374151)
+                            containerColor = Color(0xFF23272E)
                         ),
                         shape = RoundedCornerShape(20.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp)
@@ -347,7 +359,7 @@ fun VendorListItem(partner: PartnerDto) {
             containerColor = Color(0xFFF8F9FA)
         ),
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier

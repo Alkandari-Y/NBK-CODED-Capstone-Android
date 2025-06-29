@@ -52,7 +52,7 @@ fun TierProgressSection(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF8EC5FF)),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -70,12 +70,12 @@ fun TierProgressSection(
                     text = "Your Tier Status",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = Color(0xFF23272E)
                 )
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Info",
-                    tint = Color.White,
+                    tint = Color(0xFF8EC5FF),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -90,13 +90,13 @@ fun TierProgressSection(
                 Text(
                     text = "Current: ${currentTier?.name ?: "Loading"}",
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = Color(0xFF23272E).copy(alpha = 0.8f),
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = "Next: ${nextTier?.name ?: "Max Tier"}",
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = Color(0xFF23272E).copy(alpha = 0.8f),
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -110,8 +110,8 @@ fun TierProgressSection(
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = Color.White,
-                trackColor = Color.White.copy(alpha = 0.3f)
+                color = Color(0xFF8EC5FF),
+                trackColor = Color(0xFF8EC5FF).copy(alpha = 0.2f)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -124,14 +124,14 @@ fun TierProgressSection(
                 Text(
                     text = "${userXp?.userXpAmount ?: 0} XP",
                     fontSize = 14.sp,
-                    color = Color.White,
+                    color = Color(0xFF23272E),
                     fontWeight = FontWeight.Medium
                 )
                 if (nextTier != null) {
                     Text(
                         text = "$xpToNextTier XP to go",
                         fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = Color(0xFF23272E).copy(alpha = 0.6f)
                     )
                 }
             }
