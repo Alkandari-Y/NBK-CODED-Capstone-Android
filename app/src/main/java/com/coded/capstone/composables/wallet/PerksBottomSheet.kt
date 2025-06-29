@@ -78,7 +78,7 @@ fun PerksBottomSheet(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFF2A2A2A),
+                color = Color(0xFF23272E),
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
             .padding(24.dp)
