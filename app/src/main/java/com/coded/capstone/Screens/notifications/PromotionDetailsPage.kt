@@ -3,7 +3,9 @@ package com.coded.capstone.Screens.notifications
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -103,15 +105,16 @@ fun PromotionDetailPage(
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
-                        .background(
-                            Color.Black.copy(alpha = 0.3f),
-                            RoundedCornerShape(12.dp)
-                        )
+                        .padding(start = 8.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF8EC5FF).copy(alpha = 0.2f))
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = Color(0xFF8EC5FF),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },
