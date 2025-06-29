@@ -7,10 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.requests.partner.FavBusinessResponse
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.requests.partner.SetFavBusinessRequest
-import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
-import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.data.responses.promotion.PromotionResponse
+import com.coded.capstone.data.responses.storeLocation.StoreLocationResponse
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.BusinessRepository
 import com.coded.capstone.respositories.PromotionRepository
@@ -25,13 +24,13 @@ sealed class FavBusinessUiState {
     data class Success(val favBusinesses: FavBusinessResponse) : FavBusinessUiState()
     data class Error(val message: String) : FavBusinessUiState()
 }
+
 class RecommendationViewModel(
     private val context: Context
 ) : ViewModel() {
 
-
-private val _recommendedCard = MutableStateFlow<AccountProductResponse?>(null)
-val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
+    private val _recommendedCard = MutableStateFlow<AccountProductResponse?>(null)
+    val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
 
     private val _partners = MutableStateFlow<List<PartnerDto>>(emptyList())
     val partners: StateFlow<List<PartnerDto>> = _partners
@@ -43,14 +42,20 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
     val selectedPromotion: StateFlow<PromotionResponse?> = _selectedPromotion
 
     private val _promotionsByBusiness = MutableStateFlow<List<PromotionResponse>>(emptyList())
-    val promotionsByBusiness:  StateFlow<List<PromotionResponse>> = _promotionsByBusiness
+    val promotionsByBusiness: StateFlow<List<PromotionResponse>> = _promotionsByBusiness
 
     private val _activePromotionsByBusiness = MutableStateFlow<List<PromotionResponse>>(emptyList())
-    val activePromotionsByBusiness:  StateFlow<List<PromotionResponse>> = _activePromotionsByBusiness
+    val activePromotionsByBusiness: StateFlow<List<PromotionResponse>> = _activePromotionsByBusiness
 
-    private val _favBusinessUiState = MutableStateFlow<FavBusinessUiState>(
-        FavBusinessUiState.Idle)
+    private val _favBusinessUiState = MutableStateFlow<FavBusinessUiState>(FavBusinessUiState.Idle)
     val favBusinessUiState: StateFlow<FavBusinessUiState> = _favBusinessUiState
+
+    // NEW: Added missing StateFlows
+    private val _favoriteBusinesses = MutableStateFlow<List<Long>>(emptyList())
+    val favoriteBusinesses: StateFlow<List<Long>> = _favoriteBusinesses
+
+    private val _storeLocations = MutableStateFlow<List<StoreLocationResponse>>(emptyList())
+    val storeLocations: StateFlow<List<StoreLocationResponse>> = _storeLocations
 
     fun fetchRecommendedCard() {
         viewModelScope.launch {
@@ -58,12 +63,12 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
                 println("RecommendationViewModel: Starting API call to getOnboardingRecommendation")
                 val response = RetrofitInstance.getRecommendationServiceProvide(context).getOnboardingRecommendation()
                 println("RecommendationViewModel: API response received - isSuccessful: ${response.isSuccessful}, code: ${response.code()}")
-                
+
                 if (response.isSuccessful) {
                     val recommendedCard = response.body()
                     println("RecommendationViewModel: Response body: $recommendedCard")
                     _recommendedCard.value = recommendedCard
-                    
+
                     if (recommendedCard != null) {
                         println("RecommendationViewModel: Successfully set recommended card: ${recommendedCard.name}")
                     } else {
@@ -73,14 +78,12 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
                     println("RecommendationViewModel: API call failed with code: ${response.code()}")
                     println("RecommendationViewModel: Error body: ${response.errorBody()?.string()}")
                     Log.e("RecommendationViewModel", "Suggested Card fetch failed: ${response.code()}")
-                    // Set null to indicate failure
                     _recommendedCard.value = null
                 }
             } catch (e: Exception) {
                 println("RecommendationViewModel: Exception occurred: ${e.message}")
                 e.printStackTrace()
                 Log.e("RecommendationViewModel", "Error fetching Suggested Card: ${e.message}")
-                // Set null to indicate failure
                 _recommendedCard.value = null
             }
         }
@@ -103,6 +106,43 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
         }
     }
 
+    // NEW: Added missing functions
+    fun fetchFavoriteBusinesses() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getRecommendationServiceProvide(context).getFavoriteBusinesses()
+                if (response.isSuccessful) {
+                    val favIds = response.body()?.favBusinesses?.map { it.partnerId } ?: emptyList()
+                    _favoriteBusinesses.value = favIds
+                } else {
+                    Log.e("RecommendationViewModel", "Favorite businesses fetch failed: ${response.code()}")
+                    _favoriteBusinesses.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("RecommendationViewModel", "Error fetching favorite businesses: ${e.message}")
+                _favoriteBusinesses.value = emptyList()
+            }
+        }
+    }
+
+    fun fetchStoreLocations() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.getRecommendationServiceProvide(context).getAllStoreLocations()
+                if (response.isSuccessful) {
+                    val locations = response.body() ?: emptyList()
+                    _storeLocations.value = locations
+                } else {
+                    Log.e("RecommendationViewModel", "Store locations fetch failed: ${response.code()}")
+                    _storeLocations.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("RecommendationViewModel", "Error fetching store locations: ${e.message}")
+                _storeLocations.value = emptyList()
+            }
+        }
+    }
+
     fun submitFavoriteBusinesses(selectedBusinesses: List<String>) {
         if (selectedBusinesses.isEmpty()) return
 
@@ -116,7 +156,6 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
                 Log.d("RecommendationViewModel", "Response: $response")
 
                 response.onSuccess { result ->
-                    // Fetch recommended card before navigating
                     try {
                         val cardResponse = RetrofitInstance.getRecommendationServiceProvide(context).getOnboardingRecommendation()
                         if (cardResponse.isSuccessful) {
@@ -157,6 +196,7 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
             }
         }
     }
+
     fun fetchPromotionDetails(promotionId: String){
         viewModelScope.launch {
             try {
@@ -190,6 +230,7 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
             }
         }
     }
+
     fun fetchActivePromotionsByBusiness(businessId: String){
         viewModelScope.launch {
             try {
@@ -206,5 +247,4 @@ val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
             }
         }
     }
-
 }
