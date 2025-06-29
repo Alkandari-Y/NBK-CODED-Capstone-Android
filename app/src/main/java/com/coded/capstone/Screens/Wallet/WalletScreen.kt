@@ -534,41 +534,11 @@ fun WalletScreen(
                                         ) {
                                             Spacer(modifier = Modifier.width(20.dp))
                                             
-                                            // Transfer button positioned to the left
-                                            Box(
-                                                modifier = Modifier.offset(x = transferButtonOffset)
-                                            ) {
-                                                // Circular shadow
+                                            // Transfer button - only show for debit or cashback accounts
+                                            if (selectedCard?.accountType?.lowercase() == "debit" || 
+                                                selectedCard?.accountType?.lowercase() == "cashback") {
                                                 Box(
-                                                    modifier = Modifier
-                                                        .size(45.dp)
-                                                        .background(
-                                                            Color.Black.copy(alpha = 0.2f),
-                                                            CircleShape
-                                                        )
-                                                        .offset(y = 4.dp)
-                                                )
-                                                
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(45.dp)
-                                                        .background(
-                                                            Color(0xFF8EC5FF).copy(alpha = 0.99f),
-                                                            CircleShape
-                                                        )
-                                                        .clickable {
-                                                            if (!isPayAnimationActive) {
-                                                                transferSourceAccount = selectedCard!!
-                                                                navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
-                                                            }
-                                                        },
-                                                    contentAlignment = Alignment.Center
-
-
-                                            // Transfer button positioned to the left - only show if not credit card
-//                                             if (selectedCard?.accountType?.lowercase() != "credit") {
-//                                                 Box(
-//                                                     modifier = Modifier.offset(x = transferButtonOffset)
+                                                    modifier = Modifier.offset(x = transferButtonOffset)
                                                 ) {
                                                     // Circular shadow
                                                     Box(
@@ -580,7 +550,7 @@ fun WalletScreen(
                                                             )
                                                             .offset(y = 4.dp)
                                                     )
-
+                                                    
                                                     Box(
                                                         modifier = Modifier
                                                             .size(45.dp)
@@ -602,8 +572,9 @@ fun WalletScreen(
                                                         )
                                                     }
                                                 }
-
-                                                Spacer(modifier = Modifier.width(16.dp))
+                                                
+                                                // Add spacing between transfer and pay buttons
+                                                Spacer(modifier = Modifier.width(24.dp))
                                             }
 
                                             // Pay button positioned next to transfer
