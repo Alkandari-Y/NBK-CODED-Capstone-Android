@@ -226,37 +226,18 @@ fun TransferScreen(
     var selectedCurrency by remember { mutableStateOf("KWD") }
     var currencyExpanded by remember { mutableStateOf(false) }
     
-    // Animation states for destination cards
-    var destinationCardAnimationTrigger by remember { mutableStateOf(0) }
-    
-    // Animated states for destination cards
-    val destinationCardOffset by animateDpAsState(
-        targetValue = 0.dp,
-        animationSpec = tween(durationMillis = 300),
-        label = "destinationCardOffset"
-    )
-    
-    val destinationCardScale by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(durationMillis = 300),
-        label = "destinationCardScale"
-    )
-    
-    // Horizontal slide animation for destination cards
-    var slideDirection by remember { mutableStateOf(0) } // -1 for left, 1 for right, 0 for center
-    val horizontalSlideOffset by animateDpAsState(
-        targetValue = 0.dp,
-        animationSpec = tween(durationMillis = 300),
-        label = "horizontalSlideOffset"
-    )
+    // Animation and gesture states
+    var isAnimating by remember { mutableStateOf(false) }
+    var lastSwipeTime by remember { mutableStateOf(0L) }
+    var totalDrag by remember { mutableStateOf(0f) }
     
     val coroutineScope = rememberCoroutineScope()
-
-    // Reset slide direction after animation
-    LaunchedEffect(slideDirection) {
-        if (slideDirection != 0) {
-            delay(300) // Wait for animation to complete
-            slideDirection = 0 // Reset to center
+    
+    // Reset animation state after completion
+    LaunchedEffect(isAnimating) {
+        if (isAnimating) {
+            delay(450) // Wait for animation to complete (400ms + buffer)
+            isAnimating = false
         }
     }
 
@@ -494,101 +475,115 @@ fun TransferScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(240.dp)
-                            .pointerInput(availableDestinations) {
-                                detectHorizontalDragGestures { _, dragAmount ->
-                                    if (!isSwapping && availableDestinations.isNotEmpty() && availableDestinations.size > 1) {
-                                        if (dragAmount < -40) {
-                                            // Swipe left - go to next destination
-                                            slideDirection = -1 // Slide left
-                                            destinationCardAnimationTrigger++
-                                            currentToIndex = (currentToIndex + 1) % availableDestinations.size
-                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                        } else if (dragAmount > 40) {
-                                            // Swipe right - go to previous destination
-                                            slideDirection = 1 // Slide right
-                                            destinationCardAnimationTrigger++
-                                            currentToIndex = if (currentToIndex > 0) {
-                                                currentToIndex - 1
-                                            } else {
-                                                availableDestinations.size - 1
+                            .pointerInput(availableDestinations.size, isAnimating) {
+                                detectHorizontalDragGestures(
+                                    onDragStart = {
+                                        totalDrag = 0f
+                                    },
+                                    onDragEnd = {
+                                        // Only process gesture on drag end to prevent multiple triggers
+                                        val currentTime = System.currentTimeMillis()
+                                        val threshold = 100.dp.toPx() // Increased threshold for better reliability
+                                        
+                                        if (!isSwapping && 
+                                            !isAnimating && 
+                                            availableDestinations.size > 1 && 
+                                            currentTime - lastSwipeTime > 500 // Debounce: minimum 500ms between swipes
+                                        ) {
+                                            if (kotlin.math.abs(totalDrag) > threshold) {
+                                                lastSwipeTime = currentTime
+                                                isAnimating = true
+                                                
+                                                if (totalDrag < 0) {
+                                                    // Swipe left - go to next destination
+                                                    currentToIndex = (currentToIndex + 1) % availableDestinations.size
+                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                } else {
+                                                    // Swipe right - go to previous destination
+                                                    currentToIndex = if (currentToIndex > 0) {
+                                                        currentToIndex - 1
+                                                    } else {
+                                                        availableDestinations.size - 1
+                                                    }
+                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                }
                                             }
-                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                         }
                                     }
+                                ) { _, dragAmount -> 
+                                    // Accumulate total drag distance
+                                    totalDrag += dragAmount
                                 }
                             },
                         contentAlignment = Alignment.Center
                     ) {
                         if (availableDestinations.isNotEmpty()) {
-                            // Destination account card stack
+                            // Horizontal carousel for destination cards
                             availableDestinations.forEachIndexed { index, account ->
-                                val isSelected = account.id == toCard?.id
-                                val baseOffset = if (isSelected) 0.dp else (index * 8).dp
-                                val scale = if (isSelected) 1f else 0.95f - (index * 0.05f)
-                                val alpha = if (isSelected) 1f else 0.7f - (index * 0.2f)
-                                
-                                // Show multiple cards in stack (up to 3 cards visible)
-                                val isVisible = index <= currentToIndex + 2 && index >= currentToIndex - 1
-                                
                                 // Get recommendation type for proper colors
                                 val recommendationType = getRecommendationType(account)
                                 
-                                // Animated values for smooth transitions
-                                val animatedScale by animateFloatAsState(
-                                    targetValue = if (isVisible) scale else 0.8f,
-                                    animationSpec = tween(durationMillis = 300),
+                                // Calculate position relative to current index
+                                val positionOffset = index - currentToIndex
+                                
+                                // Horizontal slide animation - cards slide in from sides
+                                val horizontalOffset by animateDpAsState(
+                                    targetValue = when {
+                                        positionOffset == 0 -> 0.dp // Current card at center
+                                        positionOffset < 0 -> (-400 * kotlin.math.abs(positionOffset)).dp // Previous cards slide from left
+                                        else -> (400 * positionOffset).dp // Next cards slide from right
+                                    },
+                                    animationSpec = tween(durationMillis = 400),
+                                    label = "horizontalOffset_$index"
+                                )
+                                
+                                // Scale animation - only current card is full size
+                                val cardScale by animateFloatAsState(
+                                    targetValue = if (positionOffset == 0) 1f else 0.85f,
+                                    animationSpec = tween(durationMillis = 400),
                                     label = "cardScale_$index"
                                 )
                                 
-                                val animatedAlpha by animateFloatAsState(
-                                    targetValue = if (isVisible) alpha else 0f,
-                                    animationSpec = tween(durationMillis = 300),
+                                // Alpha animation - only current and adjacent cards are visible
+                                val cardAlpha by animateFloatAsState(
+                                    targetValue = when (kotlin.math.abs(positionOffset)) {
+                                        0 -> 1f // Current card fully visible
+                                        1 -> 0.6f // Adjacent cards partially visible
+                                        else -> 0f // Other cards hidden
+                                    },
+                                    animationSpec = tween(durationMillis = 400),
                                     label = "cardAlpha_$index"
                                 )
-                                
-                                val animatedOffset by animateDpAsState(
-                                    targetValue = if (isVisible) baseOffset else 50.dp,
-                                    animationSpec = tween(durationMillis = 300),
-                                    label = "cardOffset_$index"
-                                )
-                                
-                                // Horizontal slide animation
-                                val horizontalOffset by animateDpAsState(
-                                    targetValue = when {
-                                        isSelected && slideDirection == -1 -> (-400).dp // Slide left
-                                        isSelected && slideDirection == 1 -> 400.dp // Slide right
-                                        else -> 0.dp // Center position
-                                    },
-                                    animationSpec = tween(durationMillis = 300),
-                                    label = "horizontalOffset_$index"
-                                )
 
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(220.dp)
-                                        .offset(x = horizontalOffset, y = animatedOffset)
-                                        .graphicsLayer {
-                                            scaleX = animatedScale
-                                            scaleY = animatedScale
-                                            this.alpha = animatedAlpha
-                                        }
-                                        .zIndex(if (isSelected) 1000f else 100f - index)
-                                        .shadow(
-                                            elevation = if (isSelected) 20.dp else 8.dp,
-                                            shape = RoundedCornerShape(20.dp),
-                                            ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
-                                            spotColor = Color(0xFF8EC5FF).copy(alpha = 0.5f)
-                                        ),
-                                    shape = RoundedCornerShape(20.dp),
-                                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-                                ) {
-                                    WalletCard(
-                                        account = account,
-                                        onCardClick = { /* Handled by drag */ },
-                                        modifier = Modifier.fillMaxSize(),
-                                        recommendationType = recommendationType
-                                    )
+                                // Show card if it's current or adjacent
+                                if (kotlin.math.abs(positionOffset) <= 1) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(220.dp)
+                                            .offset(x = horizontalOffset)
+                                            .graphicsLayer {
+                                                scaleX = cardScale
+                                                scaleY = cardScale
+                                                alpha = cardAlpha
+                                            }
+                                            .zIndex(1000f - kotlin.math.abs(positionOffset))
+                                            .shadow(
+                                                elevation = if (positionOffset == 0) 20.dp else 8.dp,
+                                                shape = RoundedCornerShape(20.dp),
+                                                ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
+                                                spotColor = Color(0xFF8EC5FF).copy(alpha = 0.5f)
+                                            ),
+                                        shape = RoundedCornerShape(20.dp),
+                                        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                                    ) {
+                                        WalletCard(
+                                            account = account,
+                                            onCardClick = { /* Handled by drag */ },
+                                            modifier = Modifier.fillMaxSize(),
+                                            recommendationType = recommendationType
+                                        )
+                                    }
                                 }
                             }
 
