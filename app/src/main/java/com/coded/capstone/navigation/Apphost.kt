@@ -198,7 +198,13 @@ val accountViewModel = remember { AccountViewModel(context) }
             val selectedAccountId = backStackEntry.arguments?.getString("selectedAccountId")
             TransferScreen(
                 navController = navController,
-                selectedAccountId = selectedAccountId
+                selectedAccountId = selectedAccountId,
+                onBack = {
+                    // Navigate back to wallet screen with navbar (tab 1 = wallet)
+                    navController.navigate("${NavRoutes.NAV_ROUTE_HOME}?tab=1") {
+                        popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                    }
+                }
             )
         }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
