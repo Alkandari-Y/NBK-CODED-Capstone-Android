@@ -70,6 +70,10 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.painterResource
+import android.util.Log
+import android.os.Vibrator
+import android.os.VibratorManager
+import android.content.Context
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -136,6 +140,15 @@ fun WalletScreen(
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
+
+    // Get Android Vibrator for stronger vibration
+    val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        vibratorManager.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
 
     // ViewModels
     val homeViewModel: HomeScreenViewModel = viewModel(
@@ -296,8 +309,24 @@ fun WalletScreen(
             for (i in 59 downTo 0) {
                 payAnimationSeconds = i
                 waveAnimationKey++ // Trigger wave animation restart
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                delay(1000) // Wait 1 second
+                delay(50) // Small delay to ensure haptic feedback is not called too rapidly
+
+                // Use Android Vibrator for stronger vibration
+                try {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        vibrator.vibrate(android.os.VibrationEffect.createOneShot(150, 64)) // Use 64 (quarter of 255) for gentler vibration
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator.vibrate(150)
+                    }
+                } catch (e: Exception) {
+                    Log.e("WalletScreen", "Vibration failed: ${e.message}")
+                    // Fallback to haptic feedback if vibrator fails
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                }
+
+                Log.d("WalletScreen", "Vibration triggered for counter: $i")
+                delay(950) // Wait remaining time to complete 1 second
             }
             // Reset animation after completion
             isPayAnimationActive = false
@@ -317,6 +346,15 @@ fun WalletScreen(
             // Do NOT set selectedCard = null here!
             // Let the UI handle hiding the sheet first, then clear selectedCard in a LaunchedEffect
         }
+    }
+
+    // BackHandler for pay animation
+    BackHandler(enabled = isPayAnimationActive) {
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+        isPayAnimationActive = false
+        waveAnimationKey = 0
+        payAnimationSeconds = 59
+        showBottomSheet = true // Show bottom sheet again
     }
 
     // Clear selectedCard only after the sheet is fully hidden
@@ -773,6 +811,7 @@ fun WalletScreen(
                                 .size(50.dp)
                                 .background(Color(0xFF23272E), CircleShape)
                                 .clickable {
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     isPayAnimationActive = false
                                     waveAnimationKey = 0
                                     payAnimationSeconds = 59
