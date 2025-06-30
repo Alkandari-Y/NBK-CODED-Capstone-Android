@@ -187,7 +187,7 @@ fun RecommendationScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 24.dp, end = 24.dp, bottom = 0.dp)
+                    .padding(start = 15.dp, end = 15.dp, bottom = 0.dp)
             ) {
                 // Header Section
                 Row(
@@ -300,7 +300,7 @@ fun RecommendationScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Recommendations",
+                            text = "Products Available",
                             fontSize = 32.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.DarkGray,
@@ -418,7 +418,7 @@ fun RecommendationScreen(
                                             product.interestRate?.let {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            horizontalArrangement = Arrangement.SpaceAround
                                         ) {
                                             Text(
                                                 "Interest Rate",
@@ -439,7 +439,7 @@ fun RecommendationScreen(
                                 product.creditLimit?.let {
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            horizontalArrangement = Arrangement.SpaceAround
                                         ) {
                                             Text(
                                                 "Credit Limit",
@@ -460,7 +460,7 @@ fun RecommendationScreen(
                                 product.annualFee?.let {
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            horizontalArrangement = Arrangement.SpaceAround
                                         ) {
                                             Text(
                                                 "Annual Fee",
@@ -481,7 +481,7 @@ fun RecommendationScreen(
                                     product.minBalanceRequired?.let {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
+                                            horizontalArrangement = Arrangement.SpaceAround
                                         ) {
                                             Text(
                                                 "Min Balance",
@@ -502,7 +502,7 @@ fun RecommendationScreen(
                                     product.minSalary?.let {
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween
+                                                horizontalArrangement = Arrangement.SpaceAround
                                             ) {
                                                 Text(
                                                     "Min Salary",
