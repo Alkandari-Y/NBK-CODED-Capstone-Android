@@ -1,16 +1,14 @@
 package com.coded.capstone.providers
 
 
-import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.ble.BlueToothBeaconNotificationRequest
 import com.coded.capstone.data.requests.partner.FavBusinessResponse
 import com.coded.capstone.data.requests.partner.SetFavBusinessRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
-import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
-import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.promotion.PromotionResponse
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
+import com.coded.capstone.data.responses.storeLocation.StoreLocationResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -49,7 +47,11 @@ interface RecommendationServiceProvider{
     @GET("api/v1/promotions/business/{businessId}/active")
     suspend fun getActiveBusinessPromotions(@Path("businessId") businessId: String): Response<List<PromotionResponse>>
 
+    @GET("/api/v1/fav/businesses")
+    suspend fun getFavoriteBusinesses(): Response<FavBusinessResponse>
 
+    @GET("/api/v1/store-locations")
+    suspend fun getAllStoreLocations(): Response<List<StoreLocationResponse>>
 
     // ble
     @POST("/api/v1/recommendations/bluetooth-beacon")
