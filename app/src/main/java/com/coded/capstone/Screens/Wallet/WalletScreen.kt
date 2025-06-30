@@ -6,6 +6,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -74,6 +76,11 @@ import android.util.Log
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.content.Context
+import android.content.Intent
+import androidx.activity.ComponentActivity
+import com.coded.capstone.activities.PayModeActivity
+import com.coded.capstone.data.responses.payment.PaymentDetails
+import com.coded.capstone.data.responses.xp.XpHistoryDto
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -120,6 +127,149 @@ fun SuccessToast(
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun XpGainedAnimation(
+    xpAmount: Long,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier,
+    onAnimationComplete: () -> Unit = {}
+) {
+    LaunchedEffect(isVisible) {
+        if (isVisible) {
+            delay(3000) // Show for 3 seconds
+            onAnimationComplete()
+        }
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = scaleIn(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        ) + fadeIn(),
+        exit = scaleOut(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        ) + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF8EC5FF)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "XP Gained",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+                Text(
+                    text = "XP Gained!",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = RobotoFont
+                )
+                Text(
+                    text = "+$xpAmount XP",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = RobotoFont
+                )
+                Text(
+                    text = "Great job on your purchase!",
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 14.sp,
+                    fontFamily = RobotoFont
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PaymentSuccessAnimation(
+    isVisible: Boolean,
+    onAnimationComplete: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    LaunchedEffect(isVisible) {
+        if (isVisible) {
+            delay(2000) // Show for 2 seconds
+            onAnimationComplete()
+        }
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = scaleIn(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        ) + fadeIn(),
+        exit = scaleOut() + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF22C55E)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Payment Success",
+                    tint = Color.White,
+                    modifier = Modifier.size(48.dp)
+                )
+                Text(
+                    text = "Payment Successful!",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = RobotoFont
+                )
+                Text(
+                    text = "Your payment has been processed successfully",
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 14.sp,
+                    fontFamily = RobotoFont
                 )
             }
         }
@@ -173,6 +323,7 @@ fun WalletScreen(
     val perksOfAccountProduct by homeViewModel.perksOfAccountProduct.collectAsState()
     val transferUiState by transactionViewModel.transferUiState.collectAsState()
     val topUpUiState by transactionViewModel.topUpUiState.collectAsState()
+    val paymentResult by homeViewModel.paymentResult.collectAsState()
 
     // Local States
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
@@ -194,6 +345,13 @@ fun WalletScreen(
     var isPayAnimationActive by remember { mutableStateOf(false) }
     var payAnimationSeconds by remember { mutableStateOf(59) }
     var waveAnimationKey by remember { mutableStateOf(0) }
+    var isNfcWaiting by remember { mutableStateOf(false) }
+    
+    // Payment success states
+    var showPaymentSuccess by remember { mutableStateOf(false) }
+    var showXpGained by remember { mutableStateOf(false) }
+    var xpGainedAmount by remember { mutableStateOf(0L) }
+    
     val payAnimationRotation by animateFloatAsState(
         targetValue = if (isPayAnimationActive) 90f else 0f,
         animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
@@ -377,6 +535,32 @@ fun WalletScreen(
         if (!showBottomSheet && !isPayAnimationActive) {
             selectedCard = null
             cardAnimationTrigger = false
+        }
+    }
+
+    // Handle payment result
+    LaunchedEffect(paymentResult) {
+        paymentResult?.let { result ->
+            // Stop payment animation
+            isPayAnimationActive = false
+            isNfcWaiting = false
+            payAnimationSeconds = 59
+            waveAnimationKey = 0
+            
+            // Show payment success
+            showPaymentSuccess = true
+            
+            // Calculate total XP gained
+            val totalXp = result.xpHistoryRecord.sumOf { it.amount }
+            if (totalXp > 0) {
+                xpGainedAmount = totalXp
+                // Show XP animation after payment success animation
+                delay(2000)
+                showXpGained = true
+            }
+            
+            // Reset payment result
+            homeViewModel.clearPaymentResult()
         }
     }
 
@@ -610,7 +794,33 @@ fun WalletScreen(
                                                         .clickable {
                                                             if (!isPayAnimationActive) {
                                                                 isPayAnimationActive = true
+                                                                isNfcWaiting = true
                                                                 showBottomSheet = false
+                                                                
+                                                                // Set selected account for payment
+                                                                selectedCard?.let { account ->
+                                                                    homeViewModel.setSelectedAccount(account)
+                                                                }
+                                                                
+                                                                // Start NFC reading
+                                                                val payModeIntent = Intent(context, PayModeActivity::class.java)
+                                                                (context as? ComponentActivity)?.startActivity(payModeIntent)
+                                                                
+                                                                // Start countdown timer
+                                                                coroutineScope.launch {
+                                                                    while (payAnimationSeconds > 0 && isPayAnimationActive) {
+                                                                        delay(1000)
+                                                                        payAnimationSeconds--
+                                                                        waveAnimationKey++
+                                                                    }
+                                                                    if (payAnimationSeconds <= 0) {
+                                                                        isPayAnimationActive = false
+                                                                        isNfcWaiting = false
+                                                                        payAnimationSeconds = 59
+                                                                        waveAnimationKey = 0
+                                                                        showBottomSheet = true
+                                                                    }
+                                                                }
                                                             }
                                                         },
                                                     contentAlignment = Alignment.Center
@@ -774,12 +984,32 @@ fun WalletScreen(
 
             // Pay Animation Counter - positioned at the bottom
             if (isPayAnimationActive) {
-                Box(
+                Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 200.dp)
-                        .zIndex(1000f)
+                        .padding(bottom = 150.dp)
+                        .zIndex(1000f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // NFC Status Text
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF23272E).copy(alpha = 0.9f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Text(
+                            text = if (isNfcWaiting) "Waiting for NFC tap..." else "Ready to pay",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = RobotoFont,
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+                        )
+                    }
+                    
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -792,6 +1022,7 @@ fun WalletScreen(
                                 .clickable {
                                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     isPayAnimationActive = false
+                                    isNfcWaiting = false
                                     waveAnimationKey = 0
                                     payAnimationSeconds = 59
                                     showBottomSheet = true // Show bottom sheet again
@@ -924,6 +1155,36 @@ fun WalletScreen(
                     }
                 }
             }
+
+            // Payment Success Animation
+            if (showPaymentSuccess) {
+                PaymentSuccessAnimation(
+                    isVisible = showPaymentSuccess,
+                    onAnimationComplete = {
+                        showPaymentSuccess = false
+                    },
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 100.dp)
+                        .zIndex(1000f)
+                )
+            }
+
+                         // XP Gained Animation
+             if (showXpGained) {
+                 XpGainedAnimation(
+                     xpAmount = xpGainedAmount,
+                     isVisible = showXpGained,
+                     onAnimationComplete = {
+                         showXpGained = false
+                         showBottomSheet = true // Show bottom sheet again after animations
+                     },
+                     modifier = Modifier
+                         .align(Alignment.Center)
+                         .padding(top = 100.dp)
+                         .zIndex(1000f)
+                 )
+             }
         }
     }
 }

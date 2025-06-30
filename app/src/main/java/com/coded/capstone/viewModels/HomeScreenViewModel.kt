@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.requests.payment.PaymentCreateRequest
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.data.responses.account.AccountResponse
+import com.coded.capstone.data.responses.payment.PaymentDetails
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
@@ -95,6 +96,10 @@ class HomeScreenViewModel(
 
     private val _nfcPayload = MutableStateFlow<String>("NFC data not read")
     val nfcPayload: StateFlow<String> = _nfcPayload
+
+    // Payment result
+    private val _paymentResult = MutableStateFlow<PaymentDetails?>(null)
+    val paymentResult: StateFlow<PaymentDetails?> = _paymentResult
 
     // Flag to prevent duplicate API calls
     private var accountsFetched = false
@@ -354,10 +359,19 @@ class HomeScreenViewModel(
 
 
 
+    // Account selection
+    fun setSelectedAccount(account: AccountResponse) {
+        _selectedAccount.value = account
+    }
+
+    // Payment result management
+    fun clearPaymentResult() {
+        _paymentResult.value = null
+    }
+
     // purchase
 
     fun handleNfcPayload(payload: String) {
-        statusText.text = "NFC tag read!"
         try {
             val json = JSONObject(payload)
             val sourceAccountNumber = selectedAccount.value?.accountNumber
@@ -365,7 +379,7 @@ class HomeScreenViewModel(
             val amount = json.getString("amount")
 
             val requestBody = PaymentCreateRequest(
-                sourceAccountNumber = sourceAccountNumber?:"",
+                sourceAccountNumber = sourceAccountNumber ?: "",
                 destinationAccountNumber = destinationAccountNumber,
                 amount = amount.toBigDecimal(),
             )
@@ -374,24 +388,30 @@ class HomeScreenViewModel(
             makePurchase(requestBody)
 
         } catch (e: Exception) {
-            statusText.text = "Invalid NFC payload"
+            Log.e("HomeScreenViewModel", "Invalid NFC payload: ${e.message}")
         }
     }
 
     fun makePurchase(request: PaymentCreateRequest) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             try {
                 val response = RetrofitInstance.getBankingServiceProvide(context).createPayment(request)
                 if (response.isSuccessful) {
-                    val nfcPayload = response.body().toString()
-                    _nfcPayload.value = nfcPayload
+                    val paymentDetails = response.body()
+                    paymentDetails?.let { details ->
+                        _paymentResult.value = details
+                        // Also update accounts to reflect new balance
+                        fetchAccounts()
+                        // Update user XP info
+                        getUserXpInfo()
+                    }
                 } else {
-                    Log.e("HomeScreenViewModel", "xp history fetch failed: ${response.code()}")
+                    Log.e("HomeScreenViewModel", "Payment failed: ${response.code()}")
+                    Log.e("HomeScreenViewModel", "Error body: ${response.errorBody()?.string()}")
                 }
-            }catch (e: Exception) {
-//                _accountUiState.value = AccountCreateUiState.Error(e.message ?: "Something went wrong")
+            } catch (e: Exception) {
+                Log.e("HomeScreenViewModel", "Error making payment: ${e.message}")
             }
         }
-
     }
 }
