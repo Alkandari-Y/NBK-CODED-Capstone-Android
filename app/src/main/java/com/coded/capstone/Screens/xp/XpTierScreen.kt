@@ -3,6 +3,7 @@ package com.coded.capstone.screens.xp
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -99,15 +101,23 @@ fun XpTierScreen(
                     text = "XP History",
                     color = Color(0xFF4A4A4A),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 16.dp)
                 )
             },
             navigationIcon = {
-                IconButton(onClick = onBackClick) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF8EC5FF).copy(alpha = 0.2f))
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color(0xFF4A4A4A)
+                        tint = Color(0xFF8EC5FF)
                     )
                 }
             },
@@ -134,11 +144,10 @@ fun XpTierScreen(
                 color = Color(0xFF4A4A4A).copy(alpha = 0.7f)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             // Status Message
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
                     text = "Current XP Range: ${userXp?.xpTier?.minXp ?: 0} - ${userXp?.xpTier?.maxXp ?: 0}",
@@ -154,11 +163,9 @@ fun XpTierScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Points Left Progress
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -194,8 +201,6 @@ fun XpTierScreen(
                     )
                 }
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
                 val progressValue = userXp?.let { info ->
                     info.xpTier?.let { tier ->
                         val current = info.userXpAmount.toFloat()
@@ -209,58 +214,108 @@ fun XpTierScreen(
                     progress = { progressValue },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(8.dp),
+                        .height(8.dp)
+                        .padding(top = 8.dp),
                     color = Color(0xFF8EC5FF),
                     trackColor = Color(0xFF8EC5FF).copy(alpha = 0.2f)
                 )
             }
-        }
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+            
             // All Tiers Section
-            item {
-                Text(
-                    text = "All XP Tiers",
-                    color = Color.Black,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
+            Text(
+                text = "All XP Tiers",
+                color = Color.Black,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            )
 
             // All Tiers Row
-            item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 4.dp)
-                ) {
-                    items(xpTiers) { tier ->
-                        TierCard(
-                            tier = tier,
-                            isCurrentTier = tier.id == userXp?.xpTier?.id,
-                            currentXp = userXp?.userXpAmount ?: 0
-                        )
-                    }
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) {
+                items(xpTiers) { tier ->
+                    TierCard(
+                        tier = tier,
+                        isCurrentTier = tier.id == userXp?.xpTier?.id,
+                        currentXp = userXp?.userXpAmount ?: 0
+                    )
                 }
             }
+        }
 
-            // Recent XP History Section
-            item {
-                Text(
-                    text = "Recent XP Activity",
-                    color = Color.Black,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
+        // Recent XP Activity Bottom Sheet - MUCH HIGHER
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.95f)
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 8.dp),
+                shape = RoundedCornerShape(topStart = 60.dp, topEnd = 20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    // Header
+                    Text(
+                        text = "Recent XP Activity",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(start = 4.dp, top = 4.dp, bottom = 12.dp)
+                    )
 
-            items(xpHistory) { historyItem ->
-                XpHistoryCard(historyItem = historyItem)
+                    // XP History Items - Scrollable or Empty State
+                    if (xpHistory.isNotEmpty()) {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            items(xpHistory) { historyItem ->
+                                XpHistoryCard(historyItem = historyItem)
+                            }
+                        }
+                    } else {
+                        // Empty state
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 40.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = null,
+                                    tint = Color.White.copy(alpha = 0.6f),
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "No Recent Activity",
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Your XP activities will appear here",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -421,22 +476,23 @@ private fun XpHistoryCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)),
-        shape = RoundedCornerShape(8.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF374151)),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // XP Gain Method Icon
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(40.dp)
                     .background(
                         color = when (historyItem.gainMethod) {
-                            XpGainMethod.NOTIFICATION -> Color(0xFF2196F3)
-                            XpGainMethod.PERK -> Color(0xFF4CAF50)
-                            XpGainMethod.PROMOTION -> Color(0xFFFF9800)
+                            XpGainMethod.NOTIFICATION -> Color(0xFF8EC5FF)
+                            XpGainMethod.PERK -> Color(0xFF8EC5FF)
+                            XpGainMethod.PROMOTION -> Color(0xFF8EC5FF)
                         },
                         shape = CircleShape
                     ),
@@ -447,24 +503,24 @@ private fun XpHistoryCard(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notification",
                         tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                     XpGainMethod.PERK -> Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Perk",
                         tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                     XpGainMethod.PROMOTION -> Icon(
                         imageVector = Icons.Default.LocalOffer,
                         contentDescription = "Promotion",
                         tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             // Activity Info
             Column(
@@ -476,23 +532,24 @@ private fun XpHistoryCard(
                         XpGainMethod.PERK -> "Perk Redeemed"
                         XpGainMethod.PROMOTION -> "Promotion Used"
                     },
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
                 Text(
                     text = "Transaction #${historyItem.transactionId}",
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    fontSize = 14.sp,
+                    color = Color(0xFF8EC5FF),
+                    modifier = Modifier.padding(top = 2.dp)
                 )
             }
 
             // XP Amount
             Text(
                 text = "+${historyItem.amount} XP",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF4CAF50)
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF8EC5FF)
             )
         }
     }

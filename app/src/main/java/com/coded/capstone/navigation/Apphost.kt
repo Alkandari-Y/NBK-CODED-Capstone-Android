@@ -5,31 +5,34 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
+import com.coded.capstone.Screens.notifications.NotificationCenter
 import com.coded.capstone.Screens.onBoarding.CardSuggestedOnBoarding
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.viewModels.AuthViewModel
-import com.coded.capstone.screens.calender.CalendarScreen
-import com.coded.capstone.screens.accounts.AccountDetailsScreen
-import com.coded.capstone.screens.authentication.LoginScreen
-import com.coded.capstone.screens.authentication.SignUpScreen
-import com.coded.capstone.screens.recommendation.RecommendationScreen
-import com.coded.capstone.screens.onboarding.CategoryOnBoarding
-import com.coded.capstone.screens.kyc.KycScreen
-import com.coded.capstone.screens.kyc.ProfilePage
-import com.coded.capstone.screens.onboarding.VendorsOnBoarding
-import com.coded.capstone.screens.transfer.TransferScreen
-import com.coded.capstone.screens.wallet.RelatedVendorsScreen
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.KycViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
-import com.coded.capstone.screens.xp.XpTierScreen
 import com.coded.capstone.Screens.notifications.PromotionDetailPage
+import com.coded.capstone.navigation.LoadingDashboardScreen
+import com.coded.capstone.screens.accounts.AccountDetailsScreen
+import com.coded.capstone.screens.authentication.LoginScreen
+import com.coded.capstone.screens.authentication.SignUpScreen
+import com.coded.capstone.screens.calender.CalendarScreen
+import com.coded.capstone.screens.kyc.KycScreen
+import com.coded.capstone.screens.kyc.ProfilePage
+import com.coded.capstone.screens.onboarding.CategoryOnBoarding
+import com.coded.capstone.screens.onboarding.VendorsOnBoarding
+import com.coded.capstone.screens.recommendation.RecommendationScreen
+import com.coded.capstone.screens.transfer.TransferScreen
+import com.coded.capstone.screens.wallet.RelatedVendorsScreen
+import com.coded.capstone.screens.xp.XpTierScreen
 
 object NavRoutes {
     const val NAV_ROUTE_LOGIN = "login"
@@ -195,7 +198,13 @@ val accountViewModel = remember { AccountViewModel(context) }
             val selectedAccountId = backStackEntry.arguments?.getString("selectedAccountId")
             TransferScreen(
                 navController = navController,
-                selectedAccountId = selectedAccountId
+                selectedAccountId = selectedAccountId,
+                onBack = {
+                    // Navigate back to wallet screen with navbar (tab 1 = wallet)
+                    navController.navigate("${NavRoutes.NAV_ROUTE_HOME}?tab=1") {
+                        popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                    }
+                }
             )
         }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
@@ -220,6 +229,10 @@ val accountViewModel = remember { AccountViewModel(context) }
                     recommendationViewModel = recommendationViewModel
                 )
             }
+        }
+
+        composable (NavRoutes.NAV_ROUTE_NOTIFICATIONS){
+            NotificationCenter(navController = navController)
         }
     }
 }
