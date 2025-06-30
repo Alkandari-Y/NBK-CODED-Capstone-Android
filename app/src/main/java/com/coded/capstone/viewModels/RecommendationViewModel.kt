@@ -26,6 +26,13 @@ sealed class FavBusinessUiState {
     data class Error(val message: String) : FavBusinessUiState()
 }
 
+sealed class RecommendedProductsUiState {
+    data object Idle : RecommendedProductsUiState()
+    data object Loading : RecommendedProductsUiState()
+    data class Success(val products: List<RecommendedAccountProducts>) : RecommendedProductsUiState()
+    data class Error(val message: String) : RecommendedProductsUiState()
+}
+
 class RecommendationViewModel(
     private val context: Context
 ) : ViewModel() {
@@ -37,6 +44,9 @@ class RecommendationViewModel(
 
     private val _recommendedProducts = MutableStateFlow<List<RecommendedAccountProducts>>(emptyList())
     val recommendedProducts: StateFlow<List<RecommendedAccountProducts>> = _recommendedProducts
+
+    private val _recommendedProductsUiState = MutableStateFlow<RecommendedProductsUiState>(RecommendedProductsUiState.Idle)
+    val recommendedProductsUiState: StateFlow<RecommendedProductsUiState> = _recommendedProductsUiState
 
     // business partners
     private val _partners = MutableStateFlow<List<PartnerDto>>(emptyList())
@@ -121,15 +131,21 @@ class RecommendationViewModel(
     fun fetchRecommendedProducts(){
         viewModelScope.launch {
             try {
+                _recommendedProductsUiState.value = RecommendedProductsUiState.Loading
                 val response = RetrofitInstance.getRecommendationServiceProvide(context).getRecommendedProducts()
                 if (response.isSuccessful) {
                     val recommendedProducts = response.body().orEmpty()
                     _recommendedProducts.value = recommendedProducts
+                    _recommendedProductsUiState.value = RecommendedProductsUiState.Success(recommendedProducts)
                 } else {
-                    Log.e("RecommendationViewModel", "products fetch failed: ${response.code()}")
+                    val errorMessage = "Failed to fetch recommended products: ${response.code()}"
+                    Log.e("RecommendationViewModel", errorMessage)
+                    _recommendedProductsUiState.value = RecommendedProductsUiState.Error(errorMessage)
                 }
             } catch (e: Exception) {
-                Log.e("RecommendationViewModel", "Error fetching products: ${e.message}")
+                val errorMessage = "Error fetching recommended products: ${e.message}"
+                Log.e("RecommendationViewModel", errorMessage)
+                _recommendedProductsUiState.value = RecommendedProductsUiState.Error(errorMessage)
             }
         }
     }

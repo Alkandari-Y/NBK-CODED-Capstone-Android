@@ -43,7 +43,7 @@ fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
         NavItem({ modifier, color -> HomeIcon(modifier = modifier, color = color) }, "Home"),
         NavItem({ modifier, color -> WalletCreditCard16FilledIcon(modifier = modifier, color = color) }, "Wallet"),
         NavItem({ modifier, color -> CalenderIcon(modifier = modifier, color = color) }, "Calendar"),
-        NavItem({ modifier, color -> CalendarStar16FilledIcon(modifier = modifier, color = color) }, "Recommend")
+        NavItem({ modifier, color -> CalendarStar16FilledIcon(modifier = modifier, color = color) }, "Products")
     )
 
     Surface(

@@ -36,6 +36,7 @@ import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.recommendation.RecommendedAccountProducts
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
+import com.coded.capstone.viewModels.RecommendedProductsUiState
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.AccountCreateUiState
 import com.coded.capstone.composables.wallet.WalletCard
@@ -68,6 +69,7 @@ fun RecommendationScreen(
     val shouldNavigate by accountViewModel.shouldNavigate.collectAsState()
     
     val recommendedProducts by recommendationViewModel.recommendedProducts.collectAsState()
+    val recommendedProductsUiState by recommendationViewModel.recommendedProductsUiState.collectAsState()
     val accountsUiState by viewModel.accountsUiState.collectAsState()
     
     // Fetch recommended products when screen loads
@@ -219,6 +221,98 @@ fun RecommendationScreen(
                     )
                 )
         ) {
+            val currentUiState = recommendedProductsUiState
+            when (currentUiState) {
+                is RecommendedProductsUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
+                                color = Color(0xFF8EC5FF),
+                                strokeWidth = 4.dp
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Loading Products...",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF374151),
+                                fontFamily = robotoFontFamily
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Finding products tailored for you",
+                                fontSize = 14.sp,
+                                color = Color(0xFF6B7280),
+                                fontFamily = robotoFontFamily,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+                is RecommendedProductsUiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = Color(0xFFEF4444)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Failed to Load Recommendations",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF374151),
+                                fontFamily = robotoFontFamily,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = currentUiState.message,
+                                fontSize = 14.sp,
+                                color = Color(0xFF6B7280),
+                                fontFamily = robotoFontFamily,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            Button(
+                                onClick = { recommendationViewModel.fetchRecommendedProducts() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF8EC5FF)
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Retry",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                }
+                is RecommendedProductsUiState.Success, RecommendedProductsUiState.Idle -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -725,7 +819,9 @@ fun RecommendationScreen(
                     }
                 }
             }
-        }
+            } // Close Column
+                } // Close when statement Success/Idle case
+            } // Close when statement
 
         // Decorative Elements
         Box(
