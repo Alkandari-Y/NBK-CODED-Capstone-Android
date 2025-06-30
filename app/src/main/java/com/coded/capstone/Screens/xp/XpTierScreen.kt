@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
@@ -92,39 +93,52 @@ fun XpTierScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color(0xFFF8F9FA))
     ) {
-        // Top Bar
-        TopAppBar(
-            title = {
-                Text(
-                    text = "XP History",
-                    color = Color(0xFF4A4A4A),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF8EC5FF).copy(alpha = 0.2f))
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF8EC5FF)
+        // Header Card - matching profile design
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(bottomStart = 40.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Column {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "XP History",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF8EC5FF).copy(alpha = 0.2f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color(0xFF8EC5FF),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
                     )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent
-            )
-        )
+                )
+                // Extra space to extend the dark section
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -136,7 +150,7 @@ fun XpTierScreen(
                 text = "${userXp?.userXpAmount ?: 0}",
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF4A4A4A)
+                color = Color(0xFF8EC5FF)
             )
             Text(
                 text = "Total XP",
@@ -254,8 +268,8 @@ fun XpTierScreen(
                     .fillMaxWidth()
                     .fillMaxHeight(0.95f)
                     .align(Alignment.BottomCenter)
-                    .padding(horizontal = 8.dp),
-                shape = RoundedCornerShape(topStart = 60.dp, topEnd = 20.dp),
+                    .padding(horizontal = 0.dp),
+                shape = RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF23272E)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
@@ -270,7 +284,7 @@ fun XpTierScreen(
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(start = 4.dp, top = 4.dp, bottom = 12.dp)
+                        modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 12.dp ,end = 8.dp)
                     )
 
                     // XP History Items - Scrollable or Empty State
@@ -361,7 +375,7 @@ private fun TierCard(
                         tint = if (isCurrentTier) Color.White else Color(0xFFCD7F32)
                     )
                     "silver" -> Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
+                        imageVector = Icons.Default.Favorite,
                         contentDescription = tier.name,
                         tint = if (isCurrentTier) Color.White else Color(0xFFC0C0C0)
                     )
@@ -481,7 +495,7 @@ private fun XpHistoryCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // XP Gain Method Icon
