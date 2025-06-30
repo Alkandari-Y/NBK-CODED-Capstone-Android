@@ -52,8 +52,9 @@ object NavRoutes {
     const val NAV_ROUTE_ACCOUNT_VIEW_ALL = "accounts"
     const val NAV_ROUTE_EDIT_KYC = "/kyc"
     const val NAV_ROUTE_PROFILE = "/profile"
+    const val NAV_ROUTE_SETTINGS = "settings"
     const val NAV_ROUTE_XP_HISTORY = "xp_history"
-const val NAV_ROUTE_NOTIFICATIONS = "notifications"
+    const val NAV_ROUTE_NOTIFICATIONS = "notifications"
     const val NAV_ROUTE_PROMOTION_DETAILS = "promotion/{promotionId}"
 
     const val NAV_ROUTE_VENDORS = "vendors/{category}"
@@ -180,6 +181,12 @@ val accountViewModel = remember { AccountViewModel(context) }
 
         composable (NavRoutes.NAV_ROUTE_PROFILE){
             ProfilePage(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(NavRoutes.NAV_ROUTE_SETTINGS) {
+            com.coded.capstone.screens.settings.SettingsScreen(
+                navController = navController,
                 onBackClick = { navController.popBackStack() }
             )
         }

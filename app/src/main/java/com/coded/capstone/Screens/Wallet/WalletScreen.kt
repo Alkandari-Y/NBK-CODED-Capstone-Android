@@ -186,6 +186,9 @@ fun WalletScreen(
     var isFirstLoad by remember { mutableStateOf(true) }
     var cardAnimationTrigger by remember { mutableStateOf(false) }
     var externalExpandTrigger by remember { mutableStateOf(false) }
+    
+    // Toast message state
+    var showDragToast by remember { mutableStateOf(false) }
 
     // Pay animation states
     var isPayAnimationActive by remember { mutableStateOf(false) }
@@ -228,6 +231,18 @@ fun WalletScreen(
         if (isFirstLoad && accounts.isNotEmpty()) {
             // Don't auto-select a card, let users see the card stack first
             isFirstLoad = false
+            
+            // Show drag instruction toast
+            showDragToast = true
+            delay(5000) // Show for 5 seconds
+            showDragToast = false
+        }
+    }
+
+    // Hide toast when card is selected
+    LaunchedEffect(selectedCard) {
+        if (selectedCard != null) {
+            showDragToast = false
         }
     }
 
@@ -413,7 +428,7 @@ fun WalletScreen(
                                 fontSize = if (selectedCard != null) 20.sp else 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = RobotoFont,
-                                        color = Color(0xFF374151),
+                                color = Color(0xFF374151),
                             ),
 //                            color = Color.White
                         )
@@ -508,7 +523,7 @@ fun WalletScreen(
                                         ) {
                                             SingleSelectedCard(
                                                 account = selectedCard!!,
-                                                onCardClick = { 
+                                                onCardClick = {
                                                     if (!isPayAnimationActive) {
                                                         // Go back to card stack instead of showing bottom sheet
                                                         showBottomSheet = false
@@ -518,7 +533,7 @@ fun WalletScreen(
                                                 }
                                             )
                                         }
-                                        
+
                                         // Buttons row
                                         Spacer(modifier = Modifier.height(13.dp))
 
@@ -530,21 +545,18 @@ fun WalletScreen(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Spacer(modifier = Modifier.width(20.dp))
-                                            
+
                                             // Transfer button - only show for debit or cashback accounts
-                                            if (selectedCard?.accountType?.lowercase() == "debit" || 
+                                            if (selectedCard?.accountType?.lowercase() == "debit" ||
                                                 selectedCard?.accountType?.lowercase() == "cashback") {
                                                 Box(
-
                                                     modifier = Modifier.offset(x = transferButtonOffset)
-
                                                 ) {
                                                     CardTransferBoldIcon(
                                                         modifier = Modifier.size(32.dp),
                                                         color = Color.White
                                                     )
 
-                                                    
                                                     Box(
                                                         modifier = Modifier
                                                             .size(45.dp)
@@ -566,7 +578,7 @@ fun WalletScreen(
                                                         )
                                                     }
                                                 }
-                                                
+
                                                 // Add spacing between transfer and pay buttons
                                                 Spacer(modifier = Modifier.width(24.dp))
                                             }
@@ -587,7 +599,7 @@ fun WalletScreen(
                                                         )
                                                         .offset(y = 4.dp)
                                                 )
-                                                
+
                                                 Box(
                                                     modifier = Modifier
                                                         .size(45.dp)
@@ -620,7 +632,7 @@ fun WalletScreen(
                                                 it.id == account.accountProductId
                                             }
                                             val productName = accountProduct?.name?.lowercase() ?: ""
-                                            
+
                                             // Cashback cards first (false sorts before true)
                                             !productName.contains("cashback")
                                         },
@@ -699,12 +711,12 @@ fun WalletScreen(
                                                 color = Color.LightGray.copy(alpha = 0.6f),
                                                 shape = RoundedCornerShape(2.5.dp)
                                             )
-                        .pointerInput(Unit) {
-                            detectDragGestures { change, dragAmount ->
-                                if (dragAmount.y > 50) {
+                                            .pointerInput(Unit) {
+                                                detectDragGestures { change, dragAmount ->
+                                                    if (dragAmount.y > 50) {
                                                         // Downward swipe: dismiss/collapse
-                                    showBottomSheet = false
-                                    sheetExpanded = false
+                                                        showBottomSheet = false
+                                                        sheetExpanded = false
                                                     } else if (dragAmount.y < -50) {
                                                         // Upward swipe: expand
                                                         sheetExpanded = true
@@ -733,18 +745,18 @@ fun WalletScreen(
                                 }
                             }
                             // Sheet content
-                    PerksBottomSheet(
-                        perks = perksOfAccountProduct,
-                        navController = navController,
-                        productId = card.accountProductId?.toString() ?: "",
-                        accountId = card.id.toString()?: "",
-                        onDismiss = {
-                            showBottomSheet = false
-                            sheetExpanded = false
-                            selectedCard = null
-                            cardAnimationTrigger = false
-                        }
-                    )
+                            PerksBottomSheet(
+                                perks = perksOfAccountProduct,
+                                navController = navController,
+                                productId = card.accountProductId?.toString() ?: "",
+                                accountId = card.id.toString()?: "",
+                                onDismiss = {
+                                    showBottomSheet = false
+                                    sheetExpanded = false
+                                    selectedCard = null
+                                    cardAnimationTrigger = false
+                                }
+                            )
                         }
                     }
                 }
@@ -765,7 +777,7 @@ fun WalletScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 120.dp)
+                        .padding(bottom = 200.dp)
                         .zIndex(1000f)
                 ) {
                     Row(
@@ -793,7 +805,7 @@ fun WalletScreen(
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-                        
+
                         // Counter with circle background
                         Box(
                             modifier = Modifier
@@ -825,7 +837,7 @@ fun WalletScreen(
                     animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
                     label = "waveAlpha"
                 )
-                
+
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
@@ -861,6 +873,55 @@ fun WalletScreen(
                             if (amount <= BigDecimal.ZERO) "Amount must be greater than 0" else null
                         }
                     )
+                }
+            }
+            
+            // Drag instruction toast
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2000f)
+            ) {
+                AnimatedVisibility(
+                    visible = showDragToast,
+                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 100.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF23272E).copy(alpha = 0.7f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Info",
+                                tint = Color(0xFF8EC5FF),
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = "Drag card downwards to select a card",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = RobotoFont
+                            )
+                        }
+                    }
                 }
             }
         }
