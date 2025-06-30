@@ -37,6 +37,8 @@ import com.coded.capstone.SVG.CalendarStar16FilledIcon
 
 @Composable
 fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
+    val windowSize = WindowInsets.safeDrawing
+
     val navItems = listOf(
         NavItem({ modifier, color -> HomeIcon(modifier = modifier, color = color) }, "Home"),
         NavItem({ modifier, color -> WalletCreditCard16FilledIcon(modifier = modifier, color = color) }, "Wallet"),
@@ -47,6 +49,7 @@ fun BottomNavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(bottom = windowSize.asPaddingValues().calculateBottomPadding())
             .zIndex(1f),
         color = Color.Transparent,
         shadowElevation = 24.dp
@@ -96,7 +99,7 @@ private fun BottomNavItem(
     onClick: () -> Unit
 ) {
     val animatedColor by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFF4A90E2) else Color(0xFF8E8E93),
+        targetValue = if (isSelected) Color(0xFF8EC5FF) else Color(0xFF8E8E93),
         animationSpec = tween(300),
         label = "icon_color"
     )
@@ -122,7 +125,7 @@ private fun BottomNavItem(
             .then(
                 if (isSelected) {
                     Modifier.background(
-                        Color(0xFF4A90E2).copy(alpha = 0.15f),
+                        Color(0xFF8EC5FF).copy(alpha = 0.15f),
                         RoundedCornerShape(24.dp)
                     )
                 } else {

@@ -314,192 +314,216 @@ fun HomeScreen(
                                 }
                             }
 
-                            // 2. WHITE CONTAINER - Accounts list
-                            Box(
+                            // 2. CONTENT BELOW GREETINGS - Everything in LazyColumn
+                            LazyColumn(
                                 modifier = Modifier
+                                    .weight(1f)
                                     .fillMaxWidth()
-                                    .background(Color.Transparent)
-                                    .shadow(
-                                        elevation = 8.dp,
-                                        shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-                                        ambientColor = Color.Black.copy(alpha = 0.1f),
-                                        spotColor = Color.Black.copy(alpha = 0.15f)
-                                    )
+                                    .padding(bottom = 60.dp),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(0.dp)
                             ) {
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 24.dp),
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    item {
-                                        // Spacer above account list
-                                        Spacer(modifier = Modifier.height(5.dp))
-
-                                        // My Accounts Section Header
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth().background(Color.Transparent),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
+                                // Accounts Section
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(Color.Transparent)
+                                            .shadow(
+                                                elevation = 8.dp,
+                                                shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+                                                ambientColor = Color.Black.copy(alpha = 0.1f),
+                                                spotColor = Color.Black.copy(alpha = 0.15f)
+                                            )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 24.dp),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
+                                            // My Accounts Section Header
                                             Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                modifier = Modifier.fillMaxWidth().background(Color.Transparent),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                BankFillIcon(
-                                                    modifier = Modifier.size(23.dp),
-                                                    color = Color(0xFF23272E)
-                                                )
-                                                Text(
-                                                    text = "My Accounts",
-                                                    fontSize = 23.sp,
-                                                    style = AppTypography.headlineSmall,
-                                                    fontWeight = FontWeight.Bold,
-                                                    color = Color(0xFF23272E)
-                                                )
-                                            }
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(48.dp)
-                                                    .clip(CircleShape)
-                                                    .background(Color.Transparent)
-                                            ) {
-                                                IconButton(
-                                                    onClick = { isAccountsExpanded = !isAccountsExpanded },
-                                                    modifier = Modifier.matchParentSize()
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                                 ) {
-                                                    Icon(
-                                                        imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                                        contentDescription = if (isAccountsExpanded) "Collapse accounts" else "Expand accounts",
-                                                        tint = Color(0xFF8EC5FF),
-                                                        modifier = Modifier.size(32.dp)
+                                                    BankFillIcon(
+                                                        modifier = Modifier.size(23.dp),
+                                                        color = Color(0xFF23272E)
+                                                    )
+                                                    Text(
+                                                        text = "My Accounts",
+                                                        fontSize = 23.sp,
+                                                        style = AppTypography.headlineSmall,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = Color(0xFF23272E)
                                                     )
                                                 }
                                             }
-                                        }
-                                    }
 
-                                    // Handle different UI states for regular accounts
-                                    when (accountsUiState) {
-                                        is AccountsUiState.Loading -> {
-                                            item {
-                                                Box(
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    CircularProgressIndicator(
-                                                        color = Color(0xFF8EC5FF)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        is AccountsUiState.Error -> {
-                                            item {
-                                                val message = (accountsUiState as AccountsUiState.Error).message
-                                                ErrorStateCard(
-                                                    message = message,
-                                                    onRetry = { viewModel.fetchAccounts() }
-                                                )
-                                            }
-                                        }
-                                        is AccountsUiState.Success -> {
-                                            // If no regular accounts exist, show empty state
-                                            if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
-                                                item {
-                                                    EmptyAccountsCard()
-                                                }
-                                            } else {
-                                                // Account list
-                                                items(displayedAccounts.size) { index ->
-                                                    val account = displayedAccounts[index]
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(horizontal = 4.dp, vertical = 4.dp),
-                                                        shape = RoundedCornerShape(16.dp),
-                                                        colors = CardDefaults.cardColors(
-                                                            containerColor = Color(0xFF23272E) // Matching transaction history color
-                                                        ),
-                                                        elevation = CardDefaults.cardElevation(
-                                                            defaultElevation = 4.dp
-                                                        )
+                                            // Handle different UI states for regular accounts
+                                            when (accountsUiState) {
+                                                is AccountsUiState.Loading -> {
+                                                    Box(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        contentAlignment = Alignment.Center
                                                     ) {
-                                                        Row(
-                                                            modifier = Modifier
-                                                                .fillMaxWidth()
-                                                                .clickable {
-                                                                    onAccountClick(account.id.toString())
-                                                                    navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
-                                                                }
-                                                                .padding(16.dp),
-                                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                                            verticalAlignment = Alignment.CenterVertically
-                                                        ) {
-                                                            // Account icon and details
-                                                            Row(
-                                                                verticalAlignment = Alignment.CenterVertically,
-                                                                modifier = Modifier.weight(1f)
+                                                        CircularProgressIndicator(
+                                                            color = Color(0xFF8EC5FF)
+                                                        )
+                                                    }
+                                                }
+                                                is AccountsUiState.Error -> {
+                                                    val message = (accountsUiState as AccountsUiState.Error).message
+                                                    ErrorStateCard(
+                                                        message = message,
+                                                        onRetry = { viewModel.fetchAccounts() }
+                                                    )
+                                                }
+                                                is AccountsUiState.Success -> {
+                                                    // If no regular accounts exist, show empty state
+                                                    if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
+                                                        EmptyAccountsCard()
+                                                    } else {
+                                                        // Account list
+                                                        displayedAccounts.forEach { account ->
+                                                            Card(
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                                                                shape = RoundedCornerShape(16.dp),
+                                                                colors = CardDefaults.cardColors(
+                                                                    containerColor = Color(0xFF23272E) // Matching transaction history color
+                                                                ),
+                                                                elevation = CardDefaults.cardElevation(
+                                                                    defaultElevation = 4.dp
+                                                                )
                                                             ) {
-                                                                // Icon with background
-                                                                Box(
+                                                                Row(
                                                                     modifier = Modifier
-                                                                        .size(44.dp)
-                                                                        .background(
-                                                                            color = Color(0xFF8EC5FF).copy(alpha = 0.15f),
-                                                                            shape = CircleShape
-                                                                        ),
-                                                                    contentAlignment = Alignment.Center
+                                                                        .fillMaxWidth()
+                                                                        .clickable {
+                                                                            onAccountClick(account.id.toString())
+                                                                            navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                                                        }
+                                                                        .padding(16.dp),
+                                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                                    verticalAlignment = Alignment.CenterVertically
                                                                 ) {
-                                                                    BankFillIcon(
-                                                                        modifier = Modifier.size(20.dp),
-                                                                        color = Color(0xFF8EC5FF)
-                                                                    )
-                                                                }
+                                                                    // Account icon and details
+                                                                    Row(
+                                                                        verticalAlignment = Alignment.CenterVertically,
+                                                                        modifier = Modifier.weight(1f)
+                                                                    ) {
+                                                                        // Icon with background
+                                                                        Box(
+                                                                            modifier = Modifier
+                                                                                .size(44.dp)
+                                                                                .background(
+                                                                                    color = Color(0xFF8EC5FF).copy(alpha = 0.15f),
+                                                                                    shape = CircleShape
+                                                                                ),
+                                                                            contentAlignment = Alignment.Center
+                                                                        ) {
+                                                                            BankFillIcon(
+                                                                                modifier = Modifier.size(20.dp),
+                                                                                color = Color(0xFF8EC5FF)
+                                                                            )
+                                                                        }
 
-                                                                Spacer(modifier = Modifier.width(16.dp))
+                                                                        Spacer(modifier = Modifier.width(16.dp))
 
-                                                                // Account details
-                                                                Column {
-                                                                    Text(
-                                                                        text = account.accountType?.replaceFirstChar { it.uppercase() } ?: "Account",
-                                                                        style = AppTypography.bodyLarge.copy(
-                                                                            fontWeight = FontWeight.SemiBold,
-                                                                            fontSize = 16.sp
-                                                                        ),
-                                                                        color = Color.White
-                                                                    )
-                                                                    Spacer(modifier = Modifier.height(4.dp))
-                                                                    Text(
-                                                                        text = "•••• ${account.accountNumber?.takeLast(4)}",
-                                                                        style = AppTypography.bodySmall.copy(
-                                                                            fontSize = 12.sp
-                                                                        ),
-                                                                        color = Color.Gray
-                                                                    )
+                                                                        // Account details
+                                                                        Column {
+                                                                            Text(
+                                                                                text = account.accountType?.replaceFirstChar { it.uppercase() } ?: "Account",
+                                                                                style = AppTypography.bodyLarge.copy(
+                                                                                    fontWeight = FontWeight.SemiBold,
+                                                                                    fontSize = 16.sp
+                                                                                ),
+                                                                                color = Color.White
+                                                                            )
+                                                                            Spacer(modifier = Modifier.height(4.dp))
+                                                                            Text(
+                                                                                text = "•••• ${account.accountNumber?.takeLast(4)}",
+                                                                                style = AppTypography.bodySmall.copy(
+                                                                                    fontSize = 12.sp
+                                                                                ),
+                                                                                color = Color.Gray
+                                                                            )
+                                                                        }
+                                                                    }
+
+                                                                    // Balance
+                                                                    Column(
+                                                                        horizontalAlignment = Alignment.End
+                                                                    ) {
+                                                                        Text(
+                                                                            text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
+                                                                            style = AppTypography.bodyLarge.copy(
+                                                                                fontWeight = FontWeight.Bold,
+                                                                                fontSize = 16.sp
+                                                                            ),
+                                                                            color = Color(0xFF8EC5FF)
+                                                                        )
+                                                                        Spacer(modifier = Modifier.height(4.dp))
+                                                                        Text(
+                                                                            text = "Available",
+                                                                            style = AppTypography.bodySmall.copy(
+                                                                                fontSize = 12.sp
+                                                                            ),
+                                                                            color = Color.Gray
+                                                                        )
+                                                                    }
                                                                 }
                                                             }
+                                                        }
 
-                                                            // Balance
-                                                            Column(
-                                                                horizontalAlignment = Alignment.End
+                                                        // Show All button - only show if there are more than 3 accounts
+                                                        if (regularAccounts.size > 3) {
+                                                            Card(
+                                                                modifier = Modifier
+                                                                    .fillMaxWidth()
+                                                                    .padding(horizontal = 4.dp, vertical = 0.dp),
+                                                                shape = RoundedCornerShape(16.dp),
+                                                                colors = CardDefaults.cardColors(
+                                                                    containerColor = Color.Transparent
+                                                                ),
+                                                                elevation = CardDefaults.cardElevation(
+                                                                    defaultElevation = 0.dp
+                                                                )
                                                             ) {
-                                                                Text(
-                                                                    text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
-                                                                    style = AppTypography.bodyLarge.copy(
-                                                                        fontWeight = FontWeight.Bold,
-                                                                        fontSize = 16.sp
-                                                                    ),
-                                                                    color = Color(0xFF8EC5FF)
-                                                                )
-                                                                Spacer(modifier = Modifier.height(4.dp))
-                                                                Text(
-                                                                    text = "Available",
-                                                                    style = AppTypography.bodySmall.copy(
-                                                                        fontSize = 12.sp
-                                                                    ),
-                                                                    color = Color.Gray
-                                                                )
+                                                                Row(
+                                                                    modifier = Modifier
+                                                                        .fillMaxWidth()
+                                                                        .clickable {
+                                                                            isAccountsExpanded = !isAccountsExpanded
+                                                                        }
+                                                                        .padding(start=8.dp, end = 8.dp),
+                                                                    horizontalArrangement = Arrangement.Center,
+                                                                    verticalAlignment = Alignment.CenterVertically
+                                                                ) {
+                                                                    Text(
+                                                                        text = if (isAccountsExpanded) "Show Less" else "Show All",
+                                                                        style = AppTypography.bodyLarge.copy(
+                                                                            fontWeight = FontWeight.Medium,
+                                                                            fontSize = 16.sp
+                                                                        ),
+                                                                        color = Color(0xFF8EC5FF)
+                                                                    )
+                                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                                    Icon(
+                                                                        imageVector = if (isAccountsExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                                                        contentDescription = if (isAccountsExpanded) "Show less accounts" else "Show all accounts",
+                                                                        tint = Color(0xFF8EC5FF),
+                                                                        modifier = Modifier.size(24.dp)
+                                                                    )
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -508,27 +532,31 @@ fun HomeScreen(
                                         }
                                     }
                                 }
-                            }
 
-                            // Add small spacing between accounts list and rewards
-                            Spacer(modifier = Modifier.height(5.dp))
-
-                            // 3. REWARDS SECTION - At the bottom
-                            if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
-                                AnimatedVisibility(
-                                    visible = rewardCardVisible,
-                                    enter = slideInHorizontally(
-                                        initialOffsetX = { it },
-                                        animationSpec = tween(700)
-                                    ) + fadeIn(animationSpec = tween(700)) + scaleIn(initialScale = 0.95f),
-                                ) {
-                                    RewardCard(
-                                        account = rewardCards.first(),
-                                        userXp = userXp,
-                                        onClick = {
-                                            navController.navigate(NavRoutes.NAV_ROUTE_XP_HISTORY)
+                                // Rewards Section
+                                if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
+                                    item {
+                                        AnimatedVisibility(
+                                            visible = rewardCardVisible,
+                                            enter = slideInHorizontally(
+                                                initialOffsetX = { it },
+                                                animationSpec = tween(700)
+                                            ) + fadeIn(animationSpec = tween(700)) + scaleIn(initialScale = 0.95f),
+                                        ) {
+                                            RewardCard(
+                                                account = rewardCards.first(),
+                                                userXp = userXp,
+                                                onClick = {
+                                                    navController.navigate(NavRoutes.NAV_ROUTE_XP_HISTORY)
+                                                }
+                                            )
                                         }
-                                    )
+                                    }
+                                }
+
+                                // Bottom Spacer
+                                item {
+                                    Spacer(modifier = Modifier.height(60.dp))
                                 }
                             }
                         }

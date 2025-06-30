@@ -1,6 +1,8 @@
 package com.coded.capstone.navigation
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.composables.home.BottomNavBar
@@ -34,20 +37,20 @@ fun MainScaffoldWithTabs(
     var selectedTab by remember { mutableStateOf(initialTab) }
     val context = LocalContext.current
     val recommendationViewModel = remember { RecommendationViewModel(context) }
-
+    val windowSize = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
     Box(modifier = Modifier.fillMaxSize()) {
         // Main content
         Box(modifier = Modifier.fillMaxSize()) {
             when (selectedTab) {
                 0 -> HomeScreen(
-                    navController = navController, 
-                    authViewModel = authViewModel, 
+                    navController = navController,
+                    authViewModel = authViewModel,
                     onNotificationClick = {
                         navController.navigate(NavRoutes.NAV_ROUTE_NOTIFICATIONS)
                     },
                     onAccountClick = { accountId ->
                         navController.navigate(NavRoutes.accountDetailRoute(accountId))
-                    }, 
+                    },
                     onViewAllAccounts = {
                         navController.navigate(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL)
                     }
@@ -57,7 +60,7 @@ fun MainScaffoldWithTabs(
                 3 -> RecommendationScreen(viewModel = homeScreenViewModel)
             }
         }
-        
+
         // Bottom Navigation Bar overlay
         Box(
             modifier = Modifier

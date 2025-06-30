@@ -550,29 +550,12 @@ fun WalletScreen(
                                             if (selectedCard?.accountType?.lowercase() == "debit" ||
                                                 selectedCard?.accountType?.lowercase() == "cashback") {
                                                 Box(
-// <<<<<<< HomeAndNavBar
-//                                                     modifier = Modifier
-//                                                         .size(45.dp)
-//                                                         .background(
-//                                                             Color(0xFF8EC5FF).copy(alpha = 0.99f),
-//                                                             CircleShape
-//                                                         )
-//                                                         .clickable {
-//                                                             if (!isPayAnimationActive) {
-//                                                                 transferSourceAccount = selectedCard!!
-//                                                                 navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
-//                                                             }
-//                                                         },
-//                                                     contentAlignment = Alignment.Center
-// =======
                                                     modifier = Modifier.offset(x = transferButtonOffset)
-// >>>>>>> main
                                                 ) {
                                                     CardTransferBoldIcon(
                                                         modifier = Modifier.size(32.dp),
                                                         color = Color.White
                                                     )
-
 
                                                     Box(
                                                         modifier = Modifier
