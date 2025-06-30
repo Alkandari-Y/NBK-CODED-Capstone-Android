@@ -30,6 +30,7 @@ roomRuntimeAndroid = "2.7.1"
 firebaseCrashlytics = "18.6.2"
 firebaseBom = "32.7.2"
 firebaseMessagingKtx = "24.1.1"
+appcompat = "1.7.1"
 
 
 [libraries]
@@ -70,6 +71,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 
 
 [plugins]

@@ -3,6 +3,7 @@ package com.coded.capstone.providers
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
 import com.coded.capstone.data.requests.partner.PartnerDto
+import com.coded.capstone.data.requests.payment.PaymentCreateRequest
 import com.coded.capstone.data.requests.transaction.TransferCreateRequest
 import com.coded.capstone.data.responses.account.AccountCreateResponse
 import com.coded.capstone.data.responses.account.AccountResponse
@@ -10,6 +11,7 @@ import com.coded.capstone.data.responses.transaction.TransactionDetails
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
+import com.coded.capstone.data.responses.payment.PaymentDetails
 import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 import com.coded.capstone.data.responses.xp.XpHistoryDto
@@ -92,5 +94,9 @@ interface BankingServiceProvider {
     @GET("/api/v1/xp/history")
     suspend fun getUserXpHistory(): Response<List<XpHistoryDto>>
 
+
+    //Purchase
+    @POST("/api/v1/accounts/purchase")
+    suspend fun createPayment(@Body request: PaymentCreateRequest ): Response<PaymentDetails>
 
 }

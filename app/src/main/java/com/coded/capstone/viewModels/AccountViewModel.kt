@@ -1,9 +1,11 @@
 package com.coded.capstone.viewModels
 
 import android.content.Context
+import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.coded.capstone.data.requests.account.AccountCreateRequest
+import com.coded.capstone.data.requests.payment.PaymentCreateRequest
 import com.coded.capstone.data.requests.transaction.TransferCreateRequest
 import com.coded.capstone.data.responses.account.AccountCreateResponse
 import com.coded.capstone.data.responses.account.AccountResponse
@@ -13,6 +15,15 @@ import com.coded.capstone.respositories.AccountRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 import java.math.BigDecimal
 
 sealed class AccountCreateUiState {
@@ -31,7 +42,6 @@ sealed class TransferUiState {
 class AccountViewModel(
     private val context: Context
 ) : ViewModel() {
-
 
     private val _accountUiState = MutableStateFlow<AccountCreateUiState>(
        AccountCreateUiState.Idle)
