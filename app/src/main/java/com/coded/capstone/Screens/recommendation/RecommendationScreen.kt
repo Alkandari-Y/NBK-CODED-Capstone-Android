@@ -38,12 +38,16 @@ import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.AccountCreateUiState
 import com.coded.capstone.composables.wallet.WalletCard
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.shape.CircleShape
 import com.coded.capstone.composables.recommendation.InfoCard
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.zIndex
 import com.coded.capstone.R
+import com.coded.capstone.SVG.SharpStarsIcon
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +87,10 @@ fun RecommendationScreen(
     // Success message state
     var showSuccessMessage by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
+    
+    // Star button and modal state
+    var showCategoriesModal by remember { mutableStateOf(false) }
+    var selectedProductForModal by remember { mutableStateOf<AccountProductResponse?>(null) }
     
 
 
@@ -134,6 +142,23 @@ fun RecommendationScreen(
             product.accountType?.lowercase() == "savings" -> "family essentials"
             product.accountType?.lowercase() == "debit" -> "travel"
             else -> "shopping" // Default recommendation type
+        }
+    }
+
+    // Function to get categories based on product
+    fun getCategories(product: AccountProductResponse?): List<String> {
+        return when {
+            product?.name?.lowercase()?.contains("travel") == true -> listOf("Travel", "Hotels", "Flights", "Car Rental")
+            product?.name?.lowercase()?.contains("family") == true -> listOf("Family", "Education", "Healthcare", "Shopping")
+            product?.name?.lowercase()?.contains("entertainment") == true -> listOf("Movies", "Streaming", "Gaming", "Events")
+            product?.name?.lowercase()?.contains("shopping") == true -> listOf("Online Shopping", "Retail", "Fashion", "Electronics")
+            product?.name?.lowercase()?.contains("dining") == true -> listOf("Restaurants", "Food Delivery", "Cafes", "Bars")
+            product?.name?.lowercase()?.contains("health") == true -> listOf("Healthcare", "Pharmacy", "Fitness", "Wellness")
+            product?.name?.lowercase()?.contains("education") == true -> listOf("Education", "Books", "Courses", "Software")
+            product?.accountType?.lowercase() == "credit" -> listOf("Shopping", "Travel", "Dining", "Entertainment")
+            product?.accountType?.lowercase() == "savings" -> listOf("Family", "Education", "Healthcare", "Future Planning")
+            product?.accountType?.lowercase() == "debit" -> listOf("Daily Expenses", "Shopping", "Dining", "Transport")
+            else -> listOf("General", "Shopping", "Dining", "Entertainment")
         }
     }
 
@@ -380,7 +405,9 @@ fun RecommendationScreen(
                                                 }
                                         )
                                     }
+                                    
                                     Spacer(modifier = Modifier.height(8.dp))
+                                    
                                     // Perks/info as premium InfoCards
                                         Column(
                                             modifier = Modifier
@@ -577,6 +604,37 @@ fun RecommendationScreen(
                                     }
                                 }
                             }
+                            
+                            // Star Button - Top Right of each card
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(top = 4.dp, end = 4.dp)
+                                    .zIndex(10f)
+                            ) {
+                                IconButton(
+                                    onClick = { 
+                                        selectedProductForModal = product
+                                        showCategoriesModal = true 
+                                    },
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            brush = Brush.linearGradient(
+                                                colors = listOf(
+                                                    Color(0xFF8EC5FF).copy(alpha = 0.9f),
+                                                    Color(0xFF8EC5FF).copy(alpha = 0.7f)
+                                                )
+                                            )
+                                        )
+                                ) {
+                                    SharpStarsIcon(
+                                        modifier = Modifier.size(30.dp),
+                                        color = Color.White
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -698,6 +756,117 @@ fun RecommendationScreen(
             )
         }
 
+        // Categories Modal
+        if (showCategoriesModal && selectedProductForModal != null) {
+            Dialog(
+                onDismissRequest = { 
+                    showCategoriesModal = false
+                    selectedProductForModal = null
+                },
+                properties = DialogProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true
+                )
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF23272E)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Card Categories",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            IconButton(
+                                onClick = { 
+                                    showCategoriesModal = false
+                                    selectedProductForModal = null
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Close",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        // Categories Grid
+                        val categories = getCategories(selectedProductForModal)
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            categories.forEach { category ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 2.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color(0xFF8EC5FF).copy(alpha = 0.15f)
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = category,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color(0xFF8EC5FF)
+                                        )
+//                                        Icon(
+//                                            imageVector = Icons.Default.ArrowForward,
+//                                            contentDescription = null,
+//                                            tint = Color(0xFF8EC5FF).copy(alpha = 0.7f),
+//                                            modifier = Modifier.size(16.dp)
+//                                        )
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        // Description
+                        Text(
+                            text = "This card offers rewards and benefits in these categories",
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.7f),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -344,15 +344,15 @@ fun WalletCard(
                     .padding(28.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top section: Bank name and contactless
+                // Top section: Account type and contactless
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    // Bank/Product name
+                    // Account type (moved from bottom)
                     Text(
-                        text = bankName.uppercase(),
+                        text = cardType,
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
@@ -479,23 +479,23 @@ fun WalletCard(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
-                    // Bottom row: Card type and balance or just type
+                    // Bottom row: Bank name and balance or just bank name
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom
                     ) {
-                        // Account type or recommendation type
+                        // Bank name (moved from top)
                         Column {
                             Text(
-                                text = "ACCOUNT TYPE",
+                                text = "BANK NAME",
                                 color = Color.White.copy(alpha = 0.7f),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium,
                                 letterSpacing = 1.sp
                             )
                             Text(
-                                text = cardType,
+                                text = bankName.uppercase(),
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,

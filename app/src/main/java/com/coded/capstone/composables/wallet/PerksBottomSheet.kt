@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -83,6 +84,7 @@ fun PerksBottomSheet(
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
             )
             .padding(16.dp)
+            .padding(bottom = 80.dp)
     ) {
         // Header
         Row(
@@ -257,9 +259,11 @@ fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: Strin
                 }
                 // Categories
                 if (!perk.categories.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         perk.categories.forEach { category ->
                             Text(
@@ -271,10 +275,11 @@ fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: Strin
                                         color = Color(0xFF23272E).copy(alpha = 0.5f),
                                         shape = RoundedCornerShape(6.dp)
                                     )
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
             // XP Badge
