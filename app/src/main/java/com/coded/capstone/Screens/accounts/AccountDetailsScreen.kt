@@ -539,49 +539,67 @@ fun AccountDetailsScreen(
                                             )
                                         }
                                 ) {
-                                    // Single card with smooth transition
-                                    val animatedOffset by animateDpAsState(
-                                        targetValue = swipeOffset.dp,
-                                        animationSpec = tween(durationMillis = if (isSwiping) 0 else 300),
-                                        label = "swipeOffset"
-                                    )
-                                    
-                                    // Animated card transition
-                                    AnimatedContent(
-                                        targetState = currentCardIndex,
-                                        transitionSpec = {
-                                            if (targetState > initialState) {
-                                                // Swiping left - next card slides in from right
-                                                slideInHorizontally(
-                                                    initialOffsetX = { fullWidth -> fullWidth },
-                                                    animationSpec = tween(300)
-                                                ) + fadeIn(animationSpec = tween(300)) with
-                                                slideOutHorizontally(
-                                                    targetOffsetX = { fullWidth -> -fullWidth },
-                                                    animationSpec = tween(300)
-                                                ) + fadeOut(animationSpec = tween(300))
-                                            } else {
-                                                // Swiping right - previous card slides in from left
-                                                slideInHorizontally(
-                                                    initialOffsetX = { fullWidth -> -fullWidth },
-                                                    animationSpec = tween(300)
-                                                ) + fadeIn(animationSpec = tween(300)) with
-                                                slideOutHorizontally(
-                                                    targetOffsetX = { fullWidth -> fullWidth },
-                                                    animationSpec = tween(300)
-                                                ) + fadeOut(animationSpec = tween(300))
+                                    // Horizontal carousel for cards (like transfer screen)
+                                    allAccounts.forEachIndexed { index, account ->
+                                        // Calculate position relative to current index
+                                        val positionOffset = index - currentCardIndex
+                                        
+                                        // Horizontal slide animation - cards slide in from sides
+                                        val horizontalOffset by animateDpAsState(
+                                            targetValue = when {
+                                                positionOffset == 0 -> 0.dp // Current card at center
+                                                positionOffset < 0 -> (-400 * kotlin.math.abs(positionOffset)).dp // Previous cards slide from left
+                                                else -> (400 * positionOffset).dp // Next cards slide from right
+                                            },
+                                            animationSpec = tween(durationMillis = 400),
+                                            label = "horizontalOffset_$index"
+                                        )
+                                        
+                                        // Scale animation - only current card is full size
+                                        val cardScale by animateFloatAsState(
+                                            targetValue = if (positionOffset == 0) 1f else 0.85f,
+                                            animationSpec = tween(durationMillis = 400),
+                                            label = "cardScale_$index"
+                                        )
+                                        
+                                        // Alpha animation - only current and adjacent cards are visible
+                                        val cardAlpha by animateFloatAsState(
+                                            targetValue = when (kotlin.math.abs(positionOffset)) {
+                                                0 -> 1f // Current card fully visible
+                                                1 -> 0.6f // Adjacent cards partially visible
+                                                else -> 0f // Other cards hidden
+                                            },
+                                            animationSpec = tween(durationMillis = 400),
+                                            label = "cardAlpha_$index"
+                                        )
+
+                                        // Show card if it's current or adjacent
+                                        if (kotlin.math.abs(positionOffset) <= 1) {
+                                            Card(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(220.dp)
+                                                    .offset(x = horizontalOffset)
+                                                    .graphicsLayer {
+                                                        scaleX = cardScale
+                                                        scaleY = cardScale
+                                                        alpha = cardAlpha
+                                                    }
+                                                    .zIndex(1000f - kotlin.math.abs(positionOffset))
+                                                    .shadow(
+                                                        elevation = if (positionOffset == 0) 20.dp else 8.dp,
+                                                        shape = RoundedCornerShape(20.dp),
+                                                        ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.3f),
+                                                        spotColor = Color(0xFF8EC5FF).copy(alpha = 0.5f)
+                                                    ),
+                                                shape = RoundedCornerShape(20.dp),
+                                                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                                            ) {
+                                                AccountCard(
+                                                    account = account,
+                                                    modifier = Modifier.fillMaxSize()
+                                                )
                                             }
-                                        }
-                                    ) { cardIndex ->
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .offset(x = animatedOffset)
-                                        ) {
-                                            AccountCard(
-                                                account = allAccounts[cardIndex],
-                                                modifier = Modifier.fillMaxSize()
-                                            )
                                         }
                                     }
                                     
