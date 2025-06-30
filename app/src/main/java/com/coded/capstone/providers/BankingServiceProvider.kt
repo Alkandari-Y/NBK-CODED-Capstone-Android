@@ -14,6 +14,8 @@ import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 import com.coded.capstone.data.responses.xp.XpHistoryDto
 import com.coded.capstone.data.responses.xp.XpTierResponse
+import com.coded.capstone.services.PaymentCreateRequest
+import com.coded.capstone.services.PaymentResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -92,5 +94,7 @@ interface BankingServiceProvider {
     @GET("/api/v1/xp/history")
     suspend fun getUserXpHistory(): Response<List<XpHistoryDto>>
 
+    @POST("/api/v1/accounts/purchase")
+    suspend fun makePurchase(@Body request: PaymentCreateRequest): Response<PaymentResponse>
 
 }
