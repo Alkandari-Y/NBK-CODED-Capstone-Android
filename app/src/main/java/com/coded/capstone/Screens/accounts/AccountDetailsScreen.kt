@@ -75,8 +75,13 @@ import androidx.compose.ui.zIndex
 import com.coded.capstone.R
 import com.coded.capstone.data.responses.kyc.KYCResponse
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.slideOutHorizontally
 import com.coded.capstone.composables.wallet.WalletCard
 import com.coded.capstone.respositories.AccountProductRepository
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.ui.input.pointer.pointerInput
 
 // Roboto font family (matching WalletScreen)
 private val RobotoFont = FontFamily(
@@ -296,6 +301,51 @@ fun AccountDetailsScreen(
     val accountState by viewModel.selectedAccount.collectAsState()
     val transactions by viewModel.transactions.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val accountsUiState by viewModel.accountsUiState.collectAsState()
+    
+    // Swipe animation states
+    var currentCardIndex by remember { mutableStateOf(0) }
+    var swipeOffset by remember { mutableStateOf(0f) }
+    var isSwiping by remember { mutableStateOf(false) }
+    
+    // Get all accounts for swiping
+    val allAccounts = when (accountsUiState) {
+        is com.coded.capstone.viewModels.AccountsUiState.Success -> (accountsUiState as com.coded.capstone.viewModels.AccountsUiState.Success).accounts
+        else -> emptyList()
+    }
+    
+    // Debug logging for accounts
+    LaunchedEffect(allAccounts) {
+        Log.d("AccountDetailsScreen", "Available accounts: ${allAccounts.size}")
+        allAccounts.forEachIndexed { index, account ->
+            Log.d("AccountDetailsScreen", "Account $index: ${account.accountNumber} (ID: ${account.id})")
+        }
+    }
+    
+    // Find the initial card index based on the selected accountId
+    val initialCardIndex = remember(accountId, allAccounts) {
+        val index = allAccounts.indexOfFirst { it.id.toString() == accountId }.coerceAtLeast(0)
+        Log.d("AccountDetailsScreen", "Initial card index: $index for accountId: $accountId")
+        index
+    }
+    
+    // Update current card index when initialCardIndex changes
+    LaunchedEffect(initialCardIndex) {
+        currentCardIndex = initialCardIndex
+        Log.d("AccountDetailsScreen", "Set current card index to: $currentCardIndex")
+    }
+    
+    // Get current account for display
+    val currentAccount = remember(currentCardIndex, allAccounts) {
+        if (allAccounts.isNotEmpty() && currentCardIndex < allAccounts.size) {
+            val account = allAccounts[currentCardIndex]
+            Log.d("AccountDetailsScreen", "Current account: ${account.accountNumber} at index: $currentCardIndex")
+            account
+        } else {
+            Log.d("AccountDetailsScreen", "No current account available at index: $currentCardIndex")
+            null
+        }
+    }
 
     // Fetch account details and transactions
     LaunchedEffect(accountId) {
@@ -320,6 +370,14 @@ fun AccountDetailsScreen(
             error = "Failed to load account details."
             isLoading = false
             Log.e("AccountDetailsScreen", "Error fetching account details: ${e.message}")
+        }
+    }
+    
+    // Fetch transactions when current account changes
+    LaunchedEffect(currentAccount) {
+        currentAccount?.accountNumber?.let { accountNumber ->
+            Log.d("AccountDetailsScreen", "Fetching transactions for current account: $accountNumber")
+            viewModel.fetchTransactionHistory(accountNumber)
         }
     }
 
@@ -400,7 +458,7 @@ fun AccountDetailsScreen(
                 }
 
                 // Card Display Area - matching wallet layout
-                when (val account = accountState) {
+                when (val account = currentAccount) {
                     null -> {
                         Box(
                             modifier = Modifier
@@ -433,8 +491,232 @@ fun AccountDetailsScreen(
                                     animationSpec = tween(durationMillis = 600)
                                 ) + fadeIn(animationSpec = tween(600))
                             ) {
-                                FlippableAccountCard(account = account)
+                                // Swipeable Card Stack
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp)
+                                        .background(
+                                            if (isSwiping) Color.Red.copy(alpha = 0.1f) else Color.Transparent
+                                        )
+                                        .pointerInput(allAccounts.size) {
+                                            detectDragGestures(
+                                                onDragStart = { 
+                                                    isSwiping = true
+                                                    swipeOffset = 0f
+                                                    Log.d("Swipe", "Drag started")
+                                                },
+                                                onDragEnd = {
+                                                    isSwiping = false
+                                                    Log.d("Swipe", "Drag ended with offset: $swipeOffset")
+                                                    // Snap to nearest card
+                                                    when {
+                                                        swipeOffset > 30f && currentCardIndex > 0 -> {
+                                                            currentCardIndex--
+                                                            Log.d("Swipe", "Swiped to previous card: $currentCardIndex")
+                                                        }
+                                                        swipeOffset < -30f && currentCardIndex < allAccounts.size - 1 -> {
+                                                            currentCardIndex++
+                                                            Log.d("Swipe", "Swiped to next card: $currentCardIndex")
+                                                        }
+                                                    }
+                                                    swipeOffset = 0f
+                                                },
+                                                onDrag = { _, dragAmount ->
+                                                    if (allAccounts.size > 1) {
+                                                        // Prevent swiping right when at first card
+                                                        if (currentCardIndex == 0 && dragAmount.x > 0) {
+                                                            return@detectDragGestures
+                                                        }
+                                                        // Prevent swiping left when at last card
+                                                        if (currentCardIndex == allAccounts.size - 1 && dragAmount.x < 0) {
+                                                            return@detectDragGestures
+                                                        }
+                                                        swipeOffset += dragAmount.x
+                                                        Log.d("Swipe", "Drag amount: ${dragAmount.x}, Total offset: $swipeOffset")
+                                                    }
+                                                }
+                                            )
+                                        }
+                                ) {
+                                    // Single card with smooth transition
+                                    val animatedOffset by animateDpAsState(
+                                        targetValue = swipeOffset.dp,
+                                        animationSpec = tween(durationMillis = if (isSwiping) 0 else 300),
+                                        label = "swipeOffset"
+                                    )
+                                    
+                                    // Animated card transition
+                                    AnimatedContent(
+                                        targetState = currentCardIndex,
+                                        transitionSpec = {
+                                            if (targetState > initialState) {
+                                                // Swiping left - next card slides in from right
+                                                slideInHorizontally(
+                                                    initialOffsetX = { fullWidth -> fullWidth },
+                                                    animationSpec = tween(300)
+                                                ) + fadeIn(animationSpec = tween(300)) with
+                                                slideOutHorizontally(
+                                                    targetOffsetX = { fullWidth -> -fullWidth },
+                                                    animationSpec = tween(300)
+                                                ) + fadeOut(animationSpec = tween(300))
+                                            } else {
+                                                // Swiping right - previous card slides in from left
+                                                slideInHorizontally(
+                                                    initialOffsetX = { fullWidth -> -fullWidth },
+                                                    animationSpec = tween(300)
+                                                ) + fadeIn(animationSpec = tween(300)) with
+                                                slideOutHorizontally(
+                                                    targetOffsetX = { fullWidth -> fullWidth },
+                                                    animationSpec = tween(300)
+                                                ) + fadeOut(animationSpec = tween(300))
+                                            }
+                                        }
+                                    ) { cardIndex ->
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .offset(x = animatedOffset)
+                                        ) {
+                                            AccountCard(
+                                                account = allAccounts[cardIndex],
+                                                modifier = Modifier.fillMaxSize()
+                                            )
+                                        }
+                                    }
+                                    
+                                    // Debug info
+                                    if (isSwiping) {
+                                        Box(
+                                            modifier = Modifier
+                                                .align(Alignment.TopCenter)
+                                                .background(
+                                                    Color.Black.copy(alpha = 0.8f),
+                                                    RoundedCornerShape(8.dp)
+                                                )
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = "Swipe: ${swipeOffset.toInt()}",
+                                                color = Color.White,
+                                                fontSize = 12.sp,
+                                                fontFamily = RobotoFont
+                                            )
+                                        }
+                                    }
+                                    
+                                    // Card indicator dots
+                                    if (allAccounts.size > 1) {
+                                        Row(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .padding(bottom = 16.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            repeat(allAccounts.size) { index ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(8.dp)
+                                                        .background(
+                                                            color = if (index == currentCardIndex) {
+                                                                Color(0xFF8EC5FF)
+                                                            } else {
+                                                                Color.White.copy(alpha = 0.3f)
+                                                            },
+                                                            shape = CircleShape
+                                                        )
+                                                )
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Swipe hints - only show when cards are available
+                                    if (allAccounts.size > 1) {
+                                        // Left arrow hint - only show if not at the start
+                                        if (currentCardIndex > 0) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .align(Alignment.CenterStart)
+                                                    .padding(start = 16.dp)
+                                                    .size(40.dp)
+                                                    .background(
+                                                        Color.White.copy(alpha = 0.2f),
+                                                        CircleShape
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.ChevronLeft,
+                                                    contentDescription = "Previous card",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                        }
+                                        
+                                        // Right arrow hint - only show if not at the end
+                                        if (currentCardIndex < allAccounts.size - 1) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .align(Alignment.CenterEnd)
+                                                    .padding(end = 16.dp)
+                                                    .size(40.dp)
+                                                    .background(
+                                                        Color.White.copy(alpha = 0.2f),
+                                                        CircleShape
+                                                    ),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.ChevronRight,
+                                                    contentDescription = "Next card",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                        }
+                    }
+                }
+
+                // Debug info and test buttons
+                if (allAccounts.size > 1) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Text(
+                            text = "Cards: ${currentCardIndex + 1}/${allAccounts.size}",
+                            color = Color(0xFF374151),
+                            fontSize = 12.sp,
+                            fontFamily = RobotoFont
+                        )
+                        TextButton(
+                            onClick = {
+                                if (currentCardIndex > 0) {
+                                    currentCardIndex--
+                                    Log.d("AccountDetailsScreen", "Manual previous: $currentCardIndex")
+                                }
+                            },
+                            enabled = currentCardIndex > 0
+                        ) {
+                            Text("← Previous", color = Color(0xFF8EC5FF))
+                        }
+                        TextButton(
+                            onClick = {
+                                if (currentCardIndex < allAccounts.size - 1) {
+                                    currentCardIndex++
+                                    Log.d("AccountDetailsScreen", "Manual next: $currentCardIndex")
+                                }
+                            },
+                            enabled = currentCardIndex < allAccounts.size - 1
+                        ) {
+                            Text("Next →", color = Color(0xFF8EC5FF))
                         }
                     }
                 }
@@ -453,7 +735,7 @@ fun AccountDetailsScreen(
                 ),
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
-                when (val account = accountState) {
+                when (val account = currentAccount) {
                     null -> {}
                     else -> {
                         val dynamicSheetHeight by animateDpAsState(
@@ -538,20 +820,10 @@ fun AccountDetailsScreen(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun FlippableAccountCard(
+fun AccountCard(
     account: AccountResponse,
     modifier: Modifier = Modifier
 ) {
-    var flipped by remember { mutableStateOf(false) }
-    var showSensitive by remember { mutableStateOf(false) }
-
-    LaunchedEffect(showSensitive) {
-        if (showSensitive) {
-            delay(3000)
-            showSensitive = false
-        }
-    }
-
     // Function to get recommendation type from account product category names
     fun getRecommendationType(account: AccountResponse): String? {
         // Get the account product to match the recommendation screen logic
@@ -583,40 +855,13 @@ fun FlippableAccountCard(
             .fillMaxWidth()
             .height(220.dp)
             .shadow(16.dp, RoundedCornerShape(20.dp), clip = false)
-            .graphicsLayer {
-                rotationY = if (flipped) 180f else 0f
-                cameraDistance = 8 * density
-            }
-            .clickable(
-                onClick = { flipped = !flipped },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            )
     ) {
-        if (!flipped) {
-            // Front side - use WalletCard
             WalletCard(
                 account = account,
-                onCardClick = { /* Handled by parent clickable */ },
+            onCardClick = { /* No flip functionality */ },
                 modifier = Modifier.fillMaxSize(),
                 recommendationType = recommendationType
-            )
-        } else {
-            // Back side - use WalletCard with back side content
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { rotationY = 180f }
-            ) {
-                WalletCard(
-                    account = account,
-                    onCardClick = { /* Handled by parent clickable */ },
-                    modifier = Modifier.fillMaxSize(),
-                    recommendationType = recommendationType,
-                    showDetails = false // Hide details on back side
-                )
-            }
-        }
+        )
     }
 }
 
