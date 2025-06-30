@@ -623,31 +623,6 @@ fun AccountDetailsScreen(
                                         }
                                     }
                                     
-                                    // Card indicator dots
-                                    if (allAccounts.size > 1) {
-                                        Row(
-                                            modifier = Modifier
-                                                .align(Alignment.BottomCenter)
-                                                .padding(bottom = 16.dp),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            repeat(allAccounts.size) { index ->
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(8.dp)
-                                                        .background(
-                                                            color = if (index == currentCardIndex) {
-                                                                Color(0xFF8EC5FF)
-                                                            } else {
-                                                                Color.White.copy(alpha = 0.3f)
-                                                            },
-                                                            shape = CircleShape
-                                                        )
-                                                )
-                                            }
-                                        }
-                                    }
-                                    
                                     // Swipe hints - only show when cards are available
                                     if (allAccounts.size > 1) {
                                         // Left arrow hint - only show if not at the start
@@ -655,10 +630,11 @@ fun AccountDetailsScreen(
                                             Box(
                                                 modifier = Modifier
                                                     .align(Alignment.CenterStart)
-                                                    .padding(start = 16.dp)
-                                                    .size(40.dp)
+                                                    .padding(start = 8.dp)
+                                                    .size(48.dp)
+                                                    .zIndex(2000f)
                                                     .background(
-                                                        Color.White.copy(alpha = 0.2f),
+                                                        Color.Black.copy(alpha = 0.6f),
                                                         CircleShape
                                                     ),
                                                 contentAlignment = Alignment.Center
@@ -667,7 +643,7 @@ fun AccountDetailsScreen(
                                                     imageVector = Icons.Default.ChevronLeft,
                                                     contentDescription = "Previous card",
                                                     tint = Color.White,
-                                                    modifier = Modifier.size(24.dp)
+                                                    modifier = Modifier.size(28.dp)
                                                 )
                                             }
                                         }
@@ -677,10 +653,11 @@ fun AccountDetailsScreen(
                                             Box(
                                                 modifier = Modifier
                                                     .align(Alignment.CenterEnd)
-                                                    .padding(end = 16.dp)
-                                                    .size(40.dp)
+                                                    .padding(end = 8.dp)
+                                                    .size(48.dp)
+                                                    .zIndex(2000f)
                                                     .background(
-                                                        Color.White.copy(alpha = 0.2f),
+                                                        Color.Black.copy(alpha = 0.6f),
                                                         CircleShape
                                                     ),
                                                 contentAlignment = Alignment.Center
@@ -689,7 +666,28 @@ fun AccountDetailsScreen(
                                                     imageVector = Icons.Default.ChevronRight,
                                                     contentDescription = "Next card",
                                                     tint = Color.White,
-                                                    modifier = Modifier.size(24.dp)
+                                                    modifier = Modifier.size(28.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Swipe indicator dots (like transfer screen)
+                                    if (allAccounts.size > 1) {
+                                        Row(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .padding(bottom = 8.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            allAccounts.forEachIndexed { index, _ ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(6.dp)
+                                                        .background(
+                                                            if (index == currentCardIndex) Color(0xFF8EC5FF) else Color(0xFFD1D5DB),
+                                                            CircleShape
+                                                        )
                                                 )
                                             }
                                         }
