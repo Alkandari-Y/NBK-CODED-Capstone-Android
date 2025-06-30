@@ -8,6 +8,7 @@ import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.promotion.PromotionResponse
 import com.coded.capstone.data.responses.recommendation.FavCategoryResponse
+import com.coded.capstone.data.responses.recommendation.RecommendedAccountProducts
 import com.coded.capstone.data.responses.storeLocation.StoreLocationResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -56,4 +57,9 @@ interface RecommendationServiceProvider{
     // ble
     @POST("/api/v1/recommendations/bluetooth-beacon")
     suspend fun sendBleDevice(@Body payload: BlueToothBeaconNotificationRequest): Response<Void>
+
+
+    // recommended products
+    @GET("/api/v1/recommendations")
+    suspend fun getRecommendedProducts(): Response<List<RecommendedAccountProducts>>
 }
