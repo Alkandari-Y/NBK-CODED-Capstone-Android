@@ -285,6 +285,15 @@ fun TransferScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White,
+                            Color(0xFFE5E7EB), // Light silver
+                            Color(0xFFD1D5DB)  // Silver
+                        )
+                    )
+                )
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(13.dp),
@@ -296,11 +305,12 @@ fun TransferScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
+
             ) {
                 IconButton(
                     onClick = onBack,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(40.dp).padding(top = 10.dp)
                         .background(
                             Color.Black.copy(alpha = 0.6f),
                             CircleShape
