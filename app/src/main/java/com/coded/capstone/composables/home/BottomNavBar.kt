@@ -99,7 +99,7 @@ private fun BottomNavItem(
     onClick: () -> Unit
 ) {
     val animatedColor by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFF4A90E2) else Color(0xFF8E8E93),
+        targetValue = if (isSelected) Color(0xFF8EC5FF) else Color(0xFF8E8E93),
         animationSpec = tween(300),
         label = "icon_color"
     )
@@ -125,7 +125,7 @@ private fun BottomNavItem(
             .then(
                 if (isSelected) {
                     Modifier.background(
-                        Color(0xFF4A90E2).copy(alpha = 0.15f),
+                        Color(0xFF8EC5FF).copy(alpha = 0.15f),
                         RoundedCornerShape(24.dp)
                     )
                 } else {

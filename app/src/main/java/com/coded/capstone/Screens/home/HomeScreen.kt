@@ -316,9 +316,12 @@ fun HomeScreen(
 
                             // 2. CONTENT BELOW GREETINGS - Everything in LazyColumn
                             LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(bottom = 60.dp),
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                verticalArrangement = Arrangement.spacedBy(0.dp)
                             ) {
                                 // Accounts Section
                                 item {
@@ -480,13 +483,13 @@ fun HomeScreen(
                                                                 }
                                                             }
                                                         }
-                                                        
+
                                                         // Show All button - only show if there are more than 3 accounts
                                                         if (regularAccounts.size > 3) {
                                                             Card(
                                                                 modifier = Modifier
                                                                     .fillMaxWidth()
-                                                                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                                                                    .padding(horizontal = 4.dp, vertical = 0.dp),
                                                                 shape = RoundedCornerShape(16.dp),
                                                                 colors = CardDefaults.cardColors(
                                                                     containerColor = Color.Transparent
@@ -501,7 +504,7 @@ fun HomeScreen(
                                                                         .clickable {
                                                                             isAccountsExpanded = !isAccountsExpanded
                                                                         }
-                                                                        .padding(16.dp),
+                                                                        .padding(start=8.dp, end = 8.dp),
                                                                     horizontalArrangement = Arrangement.Center,
                                                                     verticalAlignment = Alignment.CenterVertically
                                                                 ) {
@@ -549,6 +552,11 @@ fun HomeScreen(
                                             )
                                         }
                                     }
+                                }
+
+                                // Bottom Spacer
+                                item {
+                                    Spacer(modifier = Modifier.height(60.dp))
                                 }
                             }
                         }
