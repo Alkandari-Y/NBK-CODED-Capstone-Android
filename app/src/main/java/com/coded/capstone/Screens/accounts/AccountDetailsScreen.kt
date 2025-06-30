@@ -767,7 +767,7 @@ fun AccountDetailsScreen(
                                 .clip(RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp))
                                 .zIndex(100f)
                                 .background(Color(0xFF23272E))
-                                .padding(bottom = 4.dp)
+                                .padding(bottom = 80.dp)
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
