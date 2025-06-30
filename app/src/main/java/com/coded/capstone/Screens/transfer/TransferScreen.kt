@@ -71,6 +71,8 @@ import com.coded.capstone.respositories.UserRepository
 import androidx.navigation.compose.rememberNavController
 import com.coded.capstone.ui.theme.AppTypography
 import androidx.compose.animation.EnterTransition
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.painterResource
 import com.coded.capstone.respositories.AccountProductRepository
@@ -301,14 +303,14 @@ fun TransferScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .background(
-                            Color(0xFF23272E).copy(alpha = 0.1f),
+                            Color.Black.copy(alpha = 0.6f),
                             CircleShape
-                        )
+                        ),
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color(0xFF23272E),
+                        tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -602,6 +604,55 @@ fun TransferScreen(
                                     )
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             )
+
+                            // Swipe arrows - only show when multiple destinations are available
+                            if (availableDestinations.size > 1) {
+                                // Left arrow hint - only show if not at the start
+                                if (currentToIndex > 0) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterStart)
+                                            .padding(start = 4.dp)
+                                            .size(56.dp)
+                                            .zIndex(2000f)
+                                            .background(
+                                                Color.Black.copy(alpha = 0.6f),
+                                                CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ChevronLeft,
+                                            contentDescription = "Previous card",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
+                                
+                                // Right arrow hint - only show if not at the end
+                                if (currentToIndex < availableDestinations.size - 1) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .padding(end = 4.dp)
+                                            .size(56.dp)
+                                            .zIndex(2000f)
+                                            .background(
+                                                Color.Black.copy(alpha = 0.6f),
+                                                CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ChevronRight,
+                                            contentDescription = "Next card",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
+                            }
 
                             // Swipe indicator
                             if (availableDestinations.size > 1) {

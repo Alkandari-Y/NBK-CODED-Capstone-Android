@@ -630,8 +630,8 @@ fun AccountDetailsScreen(
                                             Box(
                                                 modifier = Modifier
                                                     .align(Alignment.CenterStart)
-                                                    .padding(start = 8.dp)
-                                                    .size(48.dp)
+                                                    .padding(start = 4.dp)
+                                                    .size(56.dp)
                                                     .zIndex(2000f)
                                                     .background(
                                                         Color.Black.copy(alpha = 0.6f),
@@ -643,7 +643,7 @@ fun AccountDetailsScreen(
                                                     imageVector = Icons.Default.ChevronLeft,
                                                     contentDescription = "Previous card",
                                                     tint = Color.White,
-                                                    modifier = Modifier.size(28.dp)
+                                                    modifier = Modifier.size(32.dp)
                                                 )
                                             }
                                         }
@@ -653,8 +653,8 @@ fun AccountDetailsScreen(
                                             Box(
                                                 modifier = Modifier
                                                     .align(Alignment.CenterEnd)
-                                                    .padding(end = 8.dp)
-                                                    .size(48.dp)
+                                                    .padding(end = 4.dp)
+                                                    .size(56.dp)
                                                     .zIndex(2000f)
                                                     .background(
                                                         Color.Black.copy(alpha = 0.6f),
@@ -666,7 +666,7 @@ fun AccountDetailsScreen(
                                                     imageVector = Icons.Default.ChevronRight,
                                                     contentDescription = "Next card",
                                                     tint = Color.White,
-                                                    modifier = Modifier.size(28.dp)
+                                                    modifier = Modifier.size(32.dp)
                                                 )
                                             }
                                         }
