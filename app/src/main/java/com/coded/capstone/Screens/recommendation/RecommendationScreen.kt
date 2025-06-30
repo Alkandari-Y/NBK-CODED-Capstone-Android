@@ -33,7 +33,9 @@ import androidx.compose.ui.unit.sp
 
 import com.coded.capstone.composables.recommendation.RecommendationCard
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
+import com.coded.capstone.data.responses.recommendation.RecommendedAccountProducts
 import com.coded.capstone.viewModels.HomeScreenViewModel
+import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.viewModels.AccountViewModel
 import com.coded.capstone.viewModels.AccountCreateUiState
 import com.coded.capstone.composables.wallet.WalletCard
@@ -61,24 +63,52 @@ fun RecommendationScreen(
 ) {
     val context = LocalContext.current
     val accountViewModel = remember { AccountViewModel(context) }
+    val recommendationViewModel = remember { RecommendationViewModel(context) }
     val accountCreateState by accountViewModel.accountUiState.collectAsState()
     val shouldNavigate by accountViewModel.shouldNavigate.collectAsState()
     
-    val recommendations by viewModel.accountProducts.collectAsState()
+    val recommendedProducts by recommendationViewModel.recommendedProducts.collectAsState()
     val accountsUiState by viewModel.accountsUiState.collectAsState()
     
+    // Fetch recommended products when screen loads
+    LaunchedEffect(Unit) {
+        recommendationViewModel.fetchRecommendedProducts()
+    }
+    
     // Debug: Log the recommendations data
-    LaunchedEffect(recommendations) {
+    LaunchedEffect(recommendedProducts) {
         println("=== RECOMMENDATION SCREEN DEBUG ===")
-        println("Total recommendations fetched: ${recommendations.size}")
-        recommendations.forEachIndexed { index, product ->
+        println("Total recommended products fetched: ${recommendedProducts.size}")
+        recommendedProducts.forEachIndexed { index, product ->
             println("[$index] Name: ${product.name}")
             println("[$index] Account Type: ${product.accountType}")
             println("[$index] Recommended: ${product.recommended}")
+            println("[$index] Is Owned: ${product.isOwned}")
             println("[$index] ID: ${product.id}")
             println("---")
         }
     }
+    
+    // Convert RecommendedAccountProducts to AccountProductResponse for UI compatibility
+    val recommendations = recommendedProducts.map { recommendedProduct ->
+        AccountProductResponse(
+            id = recommendedProduct.id,
+            name = recommendedProduct.name,
+            accountType = recommendedProduct.accountType,
+            description = recommendedProduct.description,
+            interestRate = recommendedProduct.interestRate.toDouble(),
+            minBalanceRequired = recommendedProduct.minBalanceRequired.toDouble(),
+            creditLimit = recommendedProduct.creditLimit.toDouble(),
+            annualFee = recommendedProduct.annualFee.toDouble(),
+            minSalary = recommendedProduct.minSalary.toDouble(),
+            image = recommendedProduct.image,
+            perks = recommendedProduct.perks,
+            categoryIds = recommendedProduct.categoryIds.toList(),
+            categoryNames = recommendedProduct.categoryNames.toList(),
+            recommended = recommendedProduct.recommended
+        )
+    }
+    
     val userAccounts = when (accountsUiState) {
         is com.coded.capstone.viewModels.AccountsUiState.Success -> (accountsUiState as com.coded.capstone.viewModels.AccountsUiState.Success).accounts
         else -> emptyList()
@@ -161,6 +191,11 @@ fun RecommendationScreen(
             else -> listOf("General", "Shopping", "Dining", "Entertainment")
         }
     }
+    
+    // Function to check if product is owned using isOwned flag from recommended products
+    fun isProductOwned(productId: Long?): Boolean {
+        return recommendedProducts.find { it.id == productId }?.isOwned ?: false
+    }
 
     // Define Roboto font family
     val robotoFontFamily =
@@ -236,7 +271,7 @@ fun RecommendationScreen(
                         IconButton(
                             onClick = {
                                 println("=== MANUAL REFRESH TRIGGERED ===")
-                                viewModel.fetchAccountProducts()
+                                recommendationViewModel.fetchRecommendedProducts()
                             },
                             modifier = Modifier
                                 .size(44.dp)
@@ -351,10 +386,7 @@ fun RecommendationScreen(
                         product.recommended
                     }.thenBy { product ->
                         // Second sort criterion: unowned first (false), then owned (true)
-                        val userHasCard = userAccounts.any { acc ->
-                            acc.accountProductId == product.id
-                        }
-                        userHasCard
+                        isProductOwned(product.id)
                     })
                 if (uniqueRecommendations.isNotEmpty()) {
                         LazyRow(
@@ -527,17 +559,16 @@ fun RecommendationScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        val userHasCard = userAccounts.any { acc ->
-                                            acc.accountProductId == product.id
-                                        }
+                                        val isOwned = isProductOwned(product.id)
+                                        
                                 Button(
                                     onClick = { handleApplyClick(product) },
-                                            enabled = accountCreateState is AccountCreateUiState.Loading == false && !userHasCard,
+                                            enabled = accountCreateState is AccountCreateUiState.Loading == false && !isOwned,
                                     modifier = Modifier
                                                 .width(330.dp)
                                                 .height(48.dp)
                                                 .then(
-                                                    if (!userHasCard && accountCreateState !is AccountCreateUiState.Loading)
+                                                    if (!isOwned && accountCreateState !is AccountCreateUiState.Loading)
                                                         Modifier.shadow(
                                             elevation = 3.dp,
                                             shape = RoundedCornerShape(16.dp),
@@ -545,7 +576,7 @@ fun RecommendationScreen(
                                                         )
                                                     else Modifier
                                                 ),
-                                            colors = if (userHasCard) {
+                                            colors = if (isOwned) {
                                                 ButtonDefaults.buttonColors(
                                                     containerColor = Color.LightGray,
                                                     contentColor = Color.White,
@@ -584,14 +615,14 @@ fun RecommendationScreen(
                                             )
                                         } else {
                                             Text(
-                                                        text = if (userHasCard) "Already Owned" else "Apply Now",
+                                                        text = if (isOwned) "Already Owned" else "Apply Now",
                                                         fontSize = 18.sp,
                                                         fontWeight = FontWeight.Bold,
                                                         fontFamily = robotoFontFamily,
                                                         color = Color.White
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
-                                                    if (!userHasCard) {
+                                                    if (!isOwned) {
                                             Icon(
                                                 imageVector = Icons.Filled.ArrowForward,
                                                 contentDescription = null,
