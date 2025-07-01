@@ -17,11 +17,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -124,24 +126,15 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
         ) {
             // Logo in top section
-            Box(
+            Image(
+                painter = painterResource(id = R.drawable.klue),
+                contentDescription = "KLUE Logo",
                 modifier = Modifier
-                    .size(60.dp)
-                    .offset(y = 32.dp)
+                    .size(90.dp)
+                    .offset(y = 50.dp)
                     .align(Alignment.TopCenter)
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(15.dp)
-            ) {
-                // Use actual KLUE logo from drawable
-                Image(
-                    painter = painterResource(id = R.drawable.klue),
-                    contentDescription = "KLUE Logo",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            )
+            Spacer(modifier = Modifier.width(15.dp))
 
             // Animated Login Card - Full Width
             Card(

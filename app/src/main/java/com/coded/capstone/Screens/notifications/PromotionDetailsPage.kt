@@ -24,13 +24,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.coded.capstone.composables.PromotionBusinessLogo
 import com.coded.capstone.data.responses.promotion.RewardType
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import androidx.compose.ui.layout.ContentScale
+import com.coded.capstone.composables.businessPartners.BusinessLogo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,16 +116,20 @@ fun PromotionDetailPage(
                     .align(Alignment.Center)
             )
 
-            // business logo for promo image
+
+            // business logo for promo image - FULL SCREEN
             businessPartner?.let { partner ->
                 Box(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .fillMaxSize() // Fill entire white area
+                        .align(Alignment.Center),
                     contentAlignment = Alignment.Center
                 ) {
-                    PromotionBusinessLogo(
+                    BusinessLogo(
                         businessName = partner.name,
-                        promotion = currentPromotion,
-                        size = 120.dp
+                        size = 400.dp, // Much larger size to fill screen
+                        shape = null, // No shape - raw image
+                        contentScale = ContentScale.Crop // Crop to fill
                     )
 
                     if (isFavorite) {
@@ -133,8 +138,9 @@ fun PromotionDetailPage(
                             contentDescription = "Favorite Business",
                             tint = Color(0xFFFFD700),
                             modifier = Modifier
-                                .size(24.dp)
-                                .offset(x = 50.dp, y = (-50).dp)
+                                .size(32.dp)
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-8).dp, y = 15.dp) // Just 8dp from edges
                         )
                     }
                 }

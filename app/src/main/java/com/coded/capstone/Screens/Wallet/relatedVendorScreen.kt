@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.coded.capstone.screens.wallet
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,20 +19,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.coded.capstone.R
-import com.coded.capstone.composables.getPartnerLogoResource
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.navigation.NavRoutes
+import com.coded.capstone.composables.businessPartners.BusinessLogo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +84,7 @@ fun RelatedVendorsScreen(
     val filteredPartners = remember(partners, perkCategories, searchQuery) {
         println("Starting filtering with ${partners.size} total partners")
         println("Looking for partners matching any of these categories: $perkCategories")
-        
+
         val filtered = partners.filter { partner ->
             val matchesCategory = if (perkCategories.isEmpty()) {
                 println("No perk categories found, no partners will be shown")
@@ -101,16 +98,16 @@ fun RelatedVendorsScreen(
                 println("Partner '${partner.name}' final match result: $matches")
                 matches
             }
-            
-            val matchesSearch = searchQuery.isBlank() || 
-                partner.name.contains(searchQuery, ignoreCase = true) ||
-                partner.category.name.contains(searchQuery, ignoreCase = true)
-            
+
+            val matchesSearch = searchQuery.isBlank() ||
+                    partner.name.contains(searchQuery, ignoreCase = true) ||
+                    partner.category.name.contains(searchQuery, ignoreCase = true)
+
             val finalResult = matchesCategory && matchesSearch
             println("Partner '${partner.name}' final inclusion: $finalResult (category match: $matchesCategory, search match: $matchesSearch)")
             finalResult
         }
-        
+
         println("Final filtered partners count: ${filtered.size}")
         filtered
     }
@@ -146,7 +143,7 @@ fun RelatedVendorsScreen(
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { 
+                                onClick = {
                                     navController.navigate(NavRoutes.homeWithWalletTab()) {
                                         popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
                                     }
@@ -220,16 +217,16 @@ fun RelatedVendorsScreen(
             } else {
                 // Add top spacing
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Search Bar
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    placeholder = { 
+                    placeholder = {
                         Text(
-                            "Search vendors...", 
+                            "Search vendors...",
                             color = Color(0xFF8E8E93)
-                        ) 
+                        )
                     },
                     leadingIcon = {
                         Icon(
@@ -312,7 +309,7 @@ fun RelatedVendorsScreen(
                         items(filteredPartners) { partner ->
                             VendorListItem(partner = partner)
                         }
-                        
+
                         // Bottom padding
                         item {
                             Spacer(modifier = Modifier.height(80.dp))
@@ -355,9 +352,6 @@ fun RelatedVendorsScreen(
 
 @Composable
 fun VendorListItem(partner: PartnerDto) {
-    val context = LocalContext.current
-    val logoRes = getPartnerLogoResource(context, partner)
-    
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -374,38 +368,16 @@ fun VendorListItem(partner: PartnerDto) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Vendor logo
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                if (logoRes == R.drawable.default_promotion) {
-                    // Fallback: blue background with partner name initial
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color(0xFF8EC5FF)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = partner.name.firstOrNull()?.toString()?.uppercase() ?: "?",
-                            color = Color.White,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                } else {
-                    // Use local drawable image
-                    Image(
-                        painter = painterResource(id = logoRes),
-                        contentDescription = "${partner.name} logo",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
+            // Use BusinessLogo component instead of placeholder
+            BusinessLogo(
+                businessName = partner.name,
+                modifier = Modifier,
+                size = 60.dp,
+                isExpired = false,
+                showExpiredOverlay = false,
+                shape = RoundedCornerShape(16.dp),
+                contentScale = ContentScale.Crop
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -427,9 +399,7 @@ fun VendorListItem(partner: PartnerDto) {
                     fontSize = 14.sp,
                     modifier = Modifier.padding(top = 2.dp)
                 )
- 
             }
         }
     }
 }
-
