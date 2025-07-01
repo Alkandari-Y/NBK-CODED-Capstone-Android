@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BluetoothConnected
 import androidx.compose.material.icons.filled.BluetoothDisabled
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,8 +25,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.coded.capstone.MapAndGeofencing.GeofenceManager
+import com.coded.capstone.MapAndGeofencing.LocationManager
 import com.coded.capstone.R
 import com.coded.capstone.SVG.BluetoothSolidIcon
+import com.coded.capstone.managers.GeofencePreferenceManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -40,6 +47,14 @@ fun SettingsScreen(
 ) {
     var isBluetoothEnabled by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+
+    var isGeofencingEnabled by remember {
+        mutableStateOf(
+            GeofencePreferenceManager
+                .isGeofencingEnabled(context)
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -225,30 +240,81 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    ),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp)
-                    ) {
-                        Text(
-                            text = "More Settings",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF23272E),
-                                fontFamily = RobotoFont
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        // Header
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = if (isGeofencingEnabled) Color(0xFF8EC5FF) else Color(0xFF6B7280),
+                                modifier = Modifier.size(28.dp)
                             )
-                        )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Geofencing",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF23272E),
+                                    fontFamily = RobotoFont
+                                )
+                            )
+                        }
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Additional settings will be available here in future updates",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = Color(0xFF6B7280),
-                                fontFamily = RobotoFont
+
+                        // Description + Toggle
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (isGeofencingEnabled) "Geofencing Enabled" else "Geofencing Disabled",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color(0xFF23272E),
+                                        fontFamily = RobotoFont
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = if (isGeofencingEnabled)
+                                        "Get notified about offers near malls automatically."
+                                    else
+                                        "Enable to get automatic notifications when near malls.",
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = Color(0xFF6B7280),
+                                        fontFamily = RobotoFont
+                                    )
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Switch(
+                                checked = isGeofencingEnabled,
+                                onCheckedChange = { enabled ->
+                                    isGeofencingEnabled = enabled
+                                    GeofencePreferenceManager.setGeofencingEnabled(context, enabled)
+
+                                    if (enabled) {
+                                        LocationManager.startGeofenceService(context)
+                                    } else {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            GeofenceManager.stopGeofencing(context)
+                                        }
+                                    }
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = Color(0xFF8EC5FF),
+                                    uncheckedThumbColor = Color.White,
+                                    uncheckedTrackColor = Color(0xFF6B7280)
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

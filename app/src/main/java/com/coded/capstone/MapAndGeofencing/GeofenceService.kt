@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationServices
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import android.Manifest
+import com.coded.capstone.managers.GeofencePreferenceManager
 
 class GeofenceService : Service() {
     private val TAG = "GeofenceService"
@@ -50,6 +51,12 @@ class GeofenceService : Service() {
         Log.d(TAG, "GeofenceService onStartCommand")
         serviceScope.launch {
             try {
+                if (!GeofencePreferenceManager.isGeofencingEnabled(applicationContext)) {
+                    Log.d(TAG, "Geofencing disabled in preferences; stopping service.")
+                    stopSelf()
+                    return@launch
+                }
+
                 if (!GeofenceManager.isGeofencingActive()) {
                     Log.d(TAG, "Starting geofencing in service")
                     GeofenceManager.startGeofencing(applicationContext)
@@ -92,16 +99,28 @@ class GeofenceService : Service() {
         }
         releaseWakeLock()
         super.onDestroy()
-        
-        restartService()
+
+        if (GeofencePreferenceManager.isGeofencingEnabled(applicationContext)) {
+            Log.d(TAG, "Geofencing enabled in preferences; restarting service.")
+            restartService()
+        } else {
+            Log.d(TAG, "Geofencing disabled in preferences; not restarting service.")
+        }
     }
+
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.d(TAG, "GeofenceService onTaskRemoved")
         super.onTaskRemoved(rootIntent)
-        // Restart the service if it's killed
-        restartService()
+
+        if (GeofencePreferenceManager.isGeofencingEnabled(applicationContext)) {
+            Log.d(TAG, "Geofencing enabled in preferences; restarting service on task removed.")
+            restartService()
+        } else {
+            Log.d(TAG, "Geofencing disabled in preferences; not restarting service on task removed.")
+        }
     }
+
 
     private fun restartService() {
         Log.d(TAG, "Attempting to restart service")
