@@ -23,9 +23,11 @@ import androidx.navigation.NavController
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.coded.capstone.MapAndGeofencing.LocationPermissionHandler
 import com.coded.capstone.MapAndGeofencing.GeofenceManager
 import com.coded.capstone.deeplink.DeepLinkHandler
+import com.coded.capstone.managers.GeofencePreferenceManager
 import com.coded.capstone.navigation.AppHost
 import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.services.NfcPaymentService
@@ -59,6 +61,9 @@ class MainActivity : ComponentActivity() {
         if (!hasBluetoothPermissions(this)) {
             ActivityCompat.requestPermissions(this, getBluetoothPermissions(), permissionRequestCode)
         }
+
+        GeofencePreferenceManager.ensureDefaultDisabled(this)
+
         enableEdgeToEdge()
         
         // Initialize NFC payment service
@@ -78,8 +83,10 @@ class MainActivity : ComponentActivity() {
                             LocationPermissionHandler(
                                 onPermissionGranted = {
                                     // Permissions granted, so we start the geofence service directly.
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        GeofenceManager.startGeofencing(applicationContext)
+                                    if (GeofencePreferenceManager.isGeofencingEnabled(applicationContext)) {
+                                        lifecycleScope.launch {
+                                            GeofenceManager.startGeofencing(applicationContext)
+                                        }
                                     }
                                 }
                             )

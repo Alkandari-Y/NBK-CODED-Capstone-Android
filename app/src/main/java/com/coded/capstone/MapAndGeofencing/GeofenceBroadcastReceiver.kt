@@ -10,6 +10,7 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import android.Manifest
+import com.coded.capstone.managers.GeofencePreferenceManager
 import com.coded.capstone.managers.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -98,6 +99,12 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val hasForegroundServiceLocation = if (android.os.Build.VERSION.SDK_INT >= 34) {
             ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE_LOCATION) == PackageManager.PERMISSION_GRANTED
         } else true
+
+        // modification to allow users to toggle geofencing on or off
+        if (!GeofencePreferenceManager.isGeofencingEnabled(context)) {
+            Log.d(TAG, "Geofencing disabled in preferences; not starting service on boot.")
+            return
+        }
         if (hasFineLocation && hasBackgroundLocation && hasForegroundServiceLocation) {
             val serviceIntent = Intent(context, GeofenceService::class.java)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
