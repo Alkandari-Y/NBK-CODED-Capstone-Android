@@ -32,10 +32,17 @@ interface BankingServiceProvider {
         @Body accountCreateRequestDto: AccountCreateRequest,
     ): Response<AccountCreateResponse>
 
+
     @GET("/api/v1/accounts/details")
     suspend fun getAccountDetails(
         @Query("accountId") accountId: String,
     ): Response<AccountResponse>
+
+    // onBoarding Account Create
+    @POST("/api/v1/accounts/onboarding/create")
+    suspend fun onboardingCreateCard(
+        @Body accountCreateRequestDto: AccountCreateRequest,
+    ): Response<AccountCreateResponse>
 
     // Categories controller
     @GET("/api/v1/categories")

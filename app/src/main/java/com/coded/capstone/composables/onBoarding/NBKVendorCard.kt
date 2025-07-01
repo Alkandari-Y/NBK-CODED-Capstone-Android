@@ -39,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coded.capstone.R
+import com.coded.capstone.composables.getPartnerLogoResource
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.screens.onboarding.getCategoryIcon
 
@@ -84,10 +86,11 @@ fun NBKVendorCard(
                     .fillMaxSize()
                     .padding(12.dp)
             ) {
-                // Logo - use AsyncImage for network image
-                if (vendor.logoUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = vendor.logoUrl,
+                // Logo - use local drawable image
+                val logoRes = getPartnerLogoResource(context, vendor)
+                if (logoRes != R.drawable.default_promotion) {
+                    Image(
+                        painter = painterResource(id = logoRes),
                         contentDescription = "${vendor.name} logo",
                         modifier = Modifier
                             .size(28.dp)
