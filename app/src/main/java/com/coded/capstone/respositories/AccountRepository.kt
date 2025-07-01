@@ -36,5 +36,31 @@ object AccountRepository{
         }
     }
 
+    suspend fun createOnboardingAccount(request: AccountCreateRequest,context: Context): Result<AccountCreateResponse>{
+        return try {
+            val service = RetrofitInstance.getBankingServiceProvide(context)
+            val response = service.onboardingCreateCard(request)
+            if (response.isSuccessful) {
+                val body = response.body()!!
+
+                val accountResponse = AccountResponse(
+                    id = body.id,
+                    accountNumber = body.accountNumber,
+                    balance = body.balance,
+                    ownerId = body.ownerId,
+                    ownerType = body.ownerType,
+                    accountProductId = body.accountProduct.id,
+                    accountType = body.accountType
+                )
+
+                myAccounts.add(accountResponse)
+                Result.success(body)
+            } else {
+                Result.failure(Exception("Server error: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
     fun getCachedAccounts(): List<AccountResponse> = myAccounts
 }

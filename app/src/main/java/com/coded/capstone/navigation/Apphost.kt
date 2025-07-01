@@ -142,21 +142,27 @@ val accountViewModel = remember { AccountViewModel(context) }
             )
         }
         composable(
-            route = NavRoutes.NAV_ROUTE_HOME + "?tab={tab}",
+            route = NavRoutes.NAV_ROUTE_HOME + "?tab={tab}&refreshAccounts={refreshAccounts}",
             arguments = listOf(
                 androidx.navigation.navArgument("tab") {
                     type = androidx.navigation.NavType.IntType
                     defaultValue = 0
+                },
+                androidx.navigation.navArgument("refreshAccounts") {
+                    type = androidx.navigation.NavType.BoolType
+                    defaultValue = false
                 }
             )
         ) { backStackEntry ->
             val authViewModel = remember { AuthViewModel(context) }
             val initialTab = backStackEntry.arguments?.getInt("tab") ?: 0
+            val refreshAccounts = backStackEntry.arguments?.getBoolean("refreshAccounts") ?: false
             MainScaffoldWithTabs(
                 navController = navController, 
                 authViewModel = authViewModel, 
                 homeScreenViewModel = homeScreenViewModel,
-                initialTab = initialTab
+                initialTab = initialTab,
+                refreshAccounts = refreshAccounts
             )
         }
 //        composable(NavRoutes.NAV_ROUTE_ACCOUNT_VIEW_ALL) {

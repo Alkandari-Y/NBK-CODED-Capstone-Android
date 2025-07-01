@@ -72,14 +72,14 @@ import androidx.compose.ui.unit.sp
                     }
                 },
                 actions = {
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+//                    IconButton(onClick = onSettingsClick) {
+//                        Icon(
+//                            imageVector = Icons.Default.Settings,
+//                            contentDescription = "Settings",
+//                            tint = Color.White,
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent

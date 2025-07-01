@@ -30,7 +30,8 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/klue"
+
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -89,11 +90,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".services.BLEForegroundService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="location" />
         <receiver
             android:name=".MapAndGeofencing.GeofenceBroadcastReceiver"
             android:enabled="true"

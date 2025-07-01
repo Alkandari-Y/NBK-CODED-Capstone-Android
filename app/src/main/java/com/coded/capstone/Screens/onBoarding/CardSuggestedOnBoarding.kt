@@ -25,6 +25,7 @@ import com.coded.capstone.R
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.navigation.NavRoutes
 import com.coded.capstone.viewModels.AccountViewModel
+import com.coded.capstone.viewModels.OnBoardingAccountUiState
 import com.coded.capstone.viewModels.RecommendationViewModel
 
 
@@ -43,6 +44,10 @@ fun CardSuggestedOnBoarding(
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val recommendedCard by recommendationViewModel.recommendedCard.collectAsState()
+    
+    // Monitor account creation state
+    val onBoardingAccountUiState by accountViewModel.onBoardingAccountUiState.collectAsState()
+    var isCreatingAccount by remember { mutableStateOf(false) }
 
     // Fetch recommended card when screen is first displayed
     LaunchedEffect(Unit) {
@@ -71,6 +76,27 @@ fun CardSuggestedOnBoarding(
                 errorMessage = "No recommended card available. Please check your network connection."
                 println("CardSuggestedOnBoarding: Timeout - no card received after 5 seconds")
             }
+        }
+    }
+
+    // Handle account creation completion
+    LaunchedEffect(onBoardingAccountUiState) {
+        when (val state = onBoardingAccountUiState) {
+            is OnBoardingAccountUiState.Success -> {
+                isCreatingAccount = false
+                // Navigate to home screen and pass refresh flag
+                navController.navigate("${NavRoutes.NAV_ROUTE_HOME}?refreshAccounts=true") {
+                    popUpTo(0)
+                }
+            }
+            is OnBoardingAccountUiState.Error -> {
+                isCreatingAccount = false
+                errorMessage = "Failed to create account: ${state.message}"
+            }
+            is OnBoardingAccountUiState.Loading -> {
+                isCreatingAccount = true
+            }
+            else -> { /* Idle state */ }
         }
     }
 
@@ -394,12 +420,10 @@ fun CardSuggestedOnBoarding(
                     onClick = {
                         userWillApply = true
                         card.id?.let { cardId ->
-                            accountViewModel.createAccount(cardId)
-                        }
-                        navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
-                            popUpTo(0)
+                            accountViewModel.onboardingCreateCard(cardId)
                         }
                     },
+                    enabled = !isCreatingAccount,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(60.dp)
@@ -411,21 +435,42 @@ fun CardSuggestedOnBoarding(
                         ),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF8EC5FF)
+                        containerColor = if (isCreatingAccount) Color(0xFF6B7280) else Color(0xFF8EC5FF)
                     ),
                     elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 4.dp,
                         pressedElevation = 8.dp
                     )
                 ) {
-                    Text(
-                        text = "Open This Account",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        fontFamily = RobotoFont,
-                        letterSpacing = 0.5.sp
-                    )
+                    if (isCreatingAccount) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Creating Account...",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                fontFamily = RobotoFont,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = "Open This Account",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            fontFamily = RobotoFont,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

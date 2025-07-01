@@ -64,6 +64,9 @@ import android.util.Log
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.ui.draw.shadow
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.coded.capstone.R
 
 import com.coded.capstone.Screens.notifications.NotificationCenter
 import com.coded.capstone.viewModels.NotificationViewModel
@@ -74,6 +77,7 @@ import com.coded.capstone.viewModels.NotificationViewModel
 fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
+    refreshAccounts: Boolean = false,
     onNotificationClick: () -> Unit = {},
     onAccountClick: (String) -> Unit = {},
     onViewAllAccounts: () -> Unit = {},
@@ -103,6 +107,14 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         Log.d("HomeScreen", "LaunchedEffect for fetchAccounts triggered")
         viewModel.fetchAccounts()
+    }
+
+    // Refresh accounts when coming from onboarding
+    LaunchedEffect(refreshAccounts) {
+        if (refreshAccounts) {
+            Log.d("HomeScreen", "Refreshing accounts after onboarding")
+            viewModel.fetchAccounts()
+        }
     }
 
     // Fetch user XP info when screen loads
@@ -145,10 +157,10 @@ fun HomeScreen(
     // Get time-based greeting
     val greeting = remember {
         when (LocalTime.now().hour) {
-            in 5..11 -> "Good morning"
-            in 12..16 -> "Good afternoon"
-            in 17..21 -> "Good evening"
-            else -> "Good night"
+            in 5..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            in 17..21 -> "Good Evening"
+            else -> "Good Night"
         }
     }
 
@@ -218,7 +230,18 @@ fun HomeScreen(
                                         color = Color(0xFF23272E),
                                         shape = RoundedCornerShape(bottomStart = 70.dp, bottomEnd = 0.dp)
                                     )
+
                             ) {
+                                // Add the KLUE Logo at the top center
+                                Image(
+                                    painter = painterResource(id = R.drawable.klue),
+                                    contentDescription = "KLUE Logo",
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .offset(y = 50.dp)
+                                        .align(Alignment.TopCenter)
+                                )
+
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -299,16 +322,10 @@ fun HomeScreen(
                                                     text = "$greeting, $userName",
                                                     style = AppTypography.headlineMedium,
                                                     fontWeight = FontWeight.Bold,
-                                                    fontSize = 23.sp,
+                                                    fontSize = 15.sp,
                                                     color = Color.White
                                                 )
                                             }
-                                            Text(
-                                                text = "Welcome back to KLUE",
-                                                style = AppTypography.bodySmall,
-                                                fontSize = 18.sp,
-                                                color = Color(0xFF8EC5FF).copy(alpha = 0.8f)
-                                            )
                                         }
                                     }
                                 }
@@ -565,6 +582,4 @@ fun HomeScreen(
             }
         }
     }
-
-
 }

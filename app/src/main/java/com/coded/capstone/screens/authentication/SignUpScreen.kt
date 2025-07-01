@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -79,6 +80,7 @@ import androidx.compose.ui.zIndex
 import com.coded.capstone.formstates.authentication.RegisterFormState
 import kotlinx.coroutines.delay
 import com.coded.capstone.ui.AppBackground
+import com.coded.capstone.R
 
 
 @Composable
@@ -141,24 +143,15 @@ fun SignUpScreen(
             modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
         ) {
             // Logo in top section
-            Box(
+            Image(
+                painter = painterResource(id = R.drawable.klue),
+                contentDescription = "KLUE Logo",
                 modifier = Modifier
-                    .size(60.dp)
-                    .offset(y = 32.dp)
+                    .size(90.dp)
+                    .offset(y = 50.dp)
                     .align(Alignment.TopCenter)
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(15.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = com.coded.capstone.R.drawable.klue),
-                    contentDescription = "KLUE Logo",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-
+            )
+            Spacer(modifier = Modifier.width(15.dp))
             // Animated Sign Up Card - Full Width
             Card(
                 modifier = Modifier
