@@ -96,14 +96,15 @@ class MainActivity : ComponentActivity() {
     
     override fun onResume() {
         super.onResume()
-        // NFC is now controlled manually via startNfcPayment() and stopNfcPayment()
+        if (nfcPaymentService.isNfcAvailable() && nfcPaymentService.isNfcEnabled()) {
+            nfcPaymentService.enableForegroundDispatch(this)
+        }
     }
     
     override fun onPause() {
         super.onPause()
-        // Stop NFC if it's active when app goes to background
-        if (isNfcActive) {
-            stopNfcPayment()
+        if (nfcPaymentService.isNfcAvailable() && nfcPaymentService.isNfcEnabled()) {
+            nfcPaymentService.disableForegroundDispatch(this)
         }
     }
     
@@ -112,6 +113,12 @@ class MainActivity : ComponentActivity() {
      */
     private fun handleNfcTag(tag: Tag) {
         Log.d("MainActivity", "NFC tag discovered: ${tag.id.toHexString()}")
+        
+        // Only process if NFC payment is active
+        if (!isNfcActive) {
+            Log.d("MainActivity", "NFC payment not active, ignoring tag")
+            return
+        }
         
         // Stop NFC scanning immediately after detecting a tag
         stopNfcPayment()
@@ -124,6 +131,8 @@ class MainActivity : ComponentActivity() {
             }
             return
         }
+        
+        Log.d("MainActivity", "Processing NFC payment with source account: $currentSourceAccountNumber")
         
         // Process payment with the discovered tag
         CoroutineScope(Dispatchers.Main).launch {
@@ -183,18 +192,45 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         
-        // Handle NFC intent
-        if (NfcAdapter.ACTION_TECH_DISCOVERED == intent.action) {
-            val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+        Log.d("MainActivity", "onNewIntent called with action: ${intent.action}")
+        
+        // Handle all possible NFC intents
+        when (intent.action) {
+            NfcAdapter.ACTION_TECH_DISCOVERED,
+            NfcAdapter.ACTION_TAG_DISCOVERED,
+            NfcAdapter.ACTION_NDEF_DISCOVERED -> {
+                Log.d("MainActivity", "NFC intent detected: ${intent.action}")
+                
+                val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+                }
+                
+                if (tag != null) {
+                    Log.d("MainActivity", "NFC tag found: ${tag.id.toHexString()}")
+                    Log.d("MainActivity", "NFC payment active: $isNfcActive")
+                    
+                    if (isNfcActive) {
+                        Log.d("MainActivity", "NFC tag detected while payment is active - processing payment")
+                        handleNfcTag(tag)
+                    } else {
+                        Log.d("MainActivity", "NFC tag detected but payment is not active - ignoring")
+                        // Show a toast to indicate tag was detected but payment not active
+                        runOnUiThread {
+                            android.widget.Toast.makeText(this, "NFC tag detected but payment not active", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Log.e("MainActivity", "NFC intent received but no tag found")
+                }
             }
-            tag?.let { handleNfcTag(it) }
-        } else {
-            // Handle deep link
-            handleDeepLink(intent)
+            else -> {
+                Log.d("MainActivity", "Non-NFC intent: ${intent.action}")
+                // Handle deep link
+                handleDeepLink(intent)
+            }
         }
     }
     
@@ -233,7 +269,6 @@ class MainActivity : ComponentActivity() {
     fun startNfcPayment() {
         if (!isNfcActive) {
             Log.d("MainActivity", "Starting NFC payment scanning...")
-            nfcPaymentService.enableForegroundDispatch(this)
             isNfcActive = true
         }
     }
@@ -244,7 +279,6 @@ class MainActivity : ComponentActivity() {
     fun stopNfcPayment() {
         if (isNfcActive) {
             Log.d("MainActivity", "Stopping NFC payment scanning...")
-            nfcPaymentService.disableForegroundDispatch(this)
             isNfcActive = false
         }
     }
