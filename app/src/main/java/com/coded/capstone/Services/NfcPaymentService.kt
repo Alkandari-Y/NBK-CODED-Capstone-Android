@@ -150,11 +150,12 @@ class NfcPaymentService(private val context: android.content.Context) {
                     // Make payment request to backend
                     val success = makePaymentRequest(sourceAccountNumber, cardData.destinationAccount, cardData.amount)
                     
-                    if (success) {
+                    if (success == true) {
                         val transactionId = "TXN${System.currentTimeMillis()}"
                         callback.onPaymentSuccess(transactionId)
                         true
-                    } else {
+                    }
+                    else {
                         callback.onPaymentFailed("Payment request failed")
                         false
                     }
@@ -292,12 +293,13 @@ class NfcPaymentService(private val context: android.content.Context) {
             // Make HTTP request to backend
             val response = bankingApiService.makePurchase(paymentRequest)
             
-            Log.d(TAG, "Payment request response: ${response.code()} - ${response.message()}")
+            Log.d(TAG, "Payment request response: ${response.code()}")
             
             if (response.isSuccessful) {
                 val paymentResponse = response.body()
                 Log.d(TAG, "Payment response: $paymentResponse")
-                paymentResponse?.success == true
+//                paymentResponse?.success == true
+                true
             } else {
                 Log.e(TAG, "Payment request failed: ${response.code()} - ${response.errorBody()?.string()}")
                 false

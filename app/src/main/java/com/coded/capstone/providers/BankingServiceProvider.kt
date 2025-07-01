@@ -1,5 +1,6 @@
 package com.coded.capstone.providers
 
+import com.coded.capstone.Screens.Wallet.PaymentDetails
 import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
 import com.coded.capstone.data.requests.partner.PartnerDto
@@ -95,6 +96,6 @@ interface BankingServiceProvider {
     suspend fun getUserXpHistory(): Response<List<XpHistoryDto>>
 
     @POST("/api/v1/accounts/purchase")
-    suspend fun makePurchase(@Body request: PaymentCreateRequest): Response<PaymentResponse>
+    suspend fun makePurchase(@Body request: PaymentCreateRequest): Response<PaymentDetails>
 
 }

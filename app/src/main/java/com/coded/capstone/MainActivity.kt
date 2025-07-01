@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val permissionRequestCode = 101
     private lateinit var nfcPaymentService: NfcPaymentService
+    private var isNfcActive = false // Track NFC state
     
     // NFC callback interface
     interface NfcPaymentCallback {
@@ -95,14 +96,15 @@ class MainActivity : ComponentActivity() {
     
     override fun onResume() {
         super.onResume()
-        // Enable NFC foreground dispatch when activity is in foreground
-        nfcPaymentService.enableForegroundDispatch(this)
+        // NFC is now controlled manually via startNfcPayment() and stopNfcPayment()
     }
     
     override fun onPause() {
         super.onPause()
-        // Disable NFC foreground dispatch when activity is in background
-        nfcPaymentService.disableForegroundDispatch(this)
+        // Stop NFC if it's active when app goes to background
+        if (isNfcActive) {
+            stopNfcPayment()
+        }
     }
     
     /**
@@ -111,10 +113,15 @@ class MainActivity : ComponentActivity() {
     private fun handleNfcTag(tag: Tag) {
         Log.d("MainActivity", "NFC tag discovered: ${tag.id.toHexString()}")
         
+        // Stop NFC scanning immediately after detecting a tag
+        stopNfcPayment()
+        
         // Check if we have a source account number
         if (currentSourceAccountNumber == null) {
             Log.e("MainActivity", "No source account number set")
-            nfcCallback?.onPaymentFailed("No source account selected")
+            runOnUiThread {
+                nfcCallback?.onPaymentFailed("No source account selected")
+            }
             return
         }
         
@@ -126,32 +133,44 @@ class MainActivity : ComponentActivity() {
                 callback = object : NfcPaymentService.NfcPaymentCallback {
                     override fun onPaymentStarted() {
                         Log.d("MainActivity", "Payment started")
-                        nfcCallback?.onPaymentStarted()
+                        runOnUiThread {
+                            nfcCallback?.onPaymentStarted()
+                        }
                     }
                     
                     override fun onPaymentSuccess(transactionId: String) {
                         Log.d("MainActivity", "Payment successful: $transactionId")
-                        nfcCallback?.onPaymentSuccess(transactionId)
+                        runOnUiThread {
+                            nfcCallback?.onPaymentSuccess(transactionId)
+                        }
                     }
                     
                     override fun onPaymentFailed(error: String) {
                         Log.e("MainActivity", "Payment failed: $error")
-                        nfcCallback?.onPaymentFailed(error)
+                        runOnUiThread {
+                            nfcCallback?.onPaymentFailed(error)
+                        }
                     }
                     
                     override fun onNfcNotAvailable() {
                         Log.w("MainActivity", "NFC not available")
-                        nfcCallback?.onNfcNotAvailable()
+                        runOnUiThread {
+                            nfcCallback?.onNfcNotAvailable()
+                        }
                     }
                     
                     override fun onNfcNotEnabled() {
                         Log.w("MainActivity", "NFC not enabled")
-                        nfcCallback?.onNfcNotEnabled()
+                        runOnUiThread {
+                            nfcCallback?.onNfcNotEnabled()
+                        }
                     }
                     
                     override fun onCardDataRead(destinationAccount: String, amount: java.math.BigDecimal) {
                         Log.d("MainActivity", "Card data read: destination=$destinationAccount, amount=$amount")
-                        nfcCallback?.onCardDataRead(destinationAccount, amount)
+                        runOnUiThread {
+                            nfcCallback?.onCardDataRead(destinationAccount, amount)
+                        }
                     }
                 }
             )
@@ -206,6 +225,35 @@ class MainActivity : ComponentActivity() {
      */
     fun isNfcEnabled(): Boolean {
         return nfcPaymentService.isNfcEnabled()
+    }
+    
+    /**
+     * Start NFC payment scanning (call this when user hits Pay button)
+     */
+    fun startNfcPayment() {
+        if (!isNfcActive) {
+            Log.d("MainActivity", "Starting NFC payment scanning...")
+            nfcPaymentService.enableForegroundDispatch(this)
+            isNfcActive = true
+        }
+    }
+    
+    /**
+     * Stop NFC payment scanning (call this when payment is complete or cancelled)
+     */
+    fun stopNfcPayment() {
+        if (isNfcActive) {
+            Log.d("MainActivity", "Stopping NFC payment scanning...")
+            nfcPaymentService.disableForegroundDispatch(this)
+            isNfcActive = false
+        }
+    }
+    
+    /**
+     * Check if NFC is currently active for payments
+     */
+    fun isNfcPaymentActive(): Boolean {
+        return isNfcActive
     }
     
     /**

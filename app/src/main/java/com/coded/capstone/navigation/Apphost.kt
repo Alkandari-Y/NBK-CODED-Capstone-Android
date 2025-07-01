@@ -60,6 +60,9 @@ object NavRoutes {
     const val NAV_ROUTE_VENDORS = "vendors/{category}"
     const val NAV_ROUTE_RELATED_VENDOR = "vendor/{perkId}/{productId}/{accountId}"
 
+    const val NAV_ROUTE_DEEPLINK_TESTING = "deeplink_testing"
+    const val NAV_ROUTE_NFC_PAYMENT = "nfc_payment"
+
     fun accountDetailRoute(accountId: String) = "accounts/manage/$accountId"
     fun vendorsRoute(category: String) = "vendors/$category"
     fun relatedVendorRoute(perkId: String, productId: String, accountId: String) = "vendor/$perkId/$productId/$accountId"
@@ -240,6 +243,18 @@ val accountViewModel = remember { AccountViewModel(context) }
 
         composable (NavRoutes.NAV_ROUTE_NOTIFICATIONS){
             NotificationCenter(navController = navController)
+        }
+
+//        composable(NavRoutes.NAV_ROUTE_DEEPLINK_TESTING) {
+//            com.coded.capstone.screens.testing.DeepLinkTestingScreen(navController = navController)
+//        }
+        
+        composable(NavRoutes.NAV_ROUTE_NFC_PAYMENT) {
+            com.coded.capstone.screens.payment.NfcPaymentScreen(
+                navController = navController,
+                amount = java.math.BigDecimal("25.50"),
+                sourceAccountNumber = "1234567890"
+            )
         }
     }
 }

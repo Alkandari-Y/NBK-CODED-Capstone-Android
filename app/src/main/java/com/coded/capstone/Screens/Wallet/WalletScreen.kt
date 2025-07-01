@@ -300,6 +300,7 @@ fun WalletScreen(
             override fun onNfcNotEnabled() {
                 nfcErrorMessage = "Please enable NFC in your device settings"
                 showNfcErrorDialog = true
+                showNfcErrorDialog = true
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
         })
