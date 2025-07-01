@@ -209,8 +209,8 @@ class GeofenceService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Mall Deals Active")
-            .setContentText("You'll be notified about nearby mall deals")
+            .setContentTitle("Geo Offers Activated")
+            .setContentText("You'll be notified about nearby mall promotions!")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

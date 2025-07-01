@@ -124,7 +124,6 @@ fun SettingsScreen(
             }
 
             item {
-                // Bluetooth Settings Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -136,7 +135,6 @@ fun SettingsScreen(
                     Column(
                         modifier = Modifier.padding(24.dp)
                     ) {
-                        // Section Header
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
@@ -154,7 +152,7 @@ fun SettingsScreen(
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(
-                                text = "Bluetooth",
+                                text = "Blue Deals",
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF23272E),
@@ -165,7 +163,6 @@ fun SettingsScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Bluetooth Toggle Section
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -224,7 +221,6 @@ fun SettingsScreen(
             }
 
             item {
-                // Additional Settings Card (placeholder for future settings)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
@@ -232,7 +228,6 @@ fun SettingsScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
-                        // Header
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.LocationOn,
@@ -242,7 +237,7 @@ fun SettingsScreen(
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(
-                                text = "Geofencing",
+                                text = "Geo Offers",
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF23272E),
@@ -251,8 +246,6 @@ fun SettingsScreen(
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        // Description + Toggle
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,

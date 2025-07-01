@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.coded.capstone.Services.FirebaseToken
 import com.coded.capstone.data.requests.authentication.LoginRequest
 import com.coded.capstone.data.requests.authentication.RegisterCreateRequest
 import com.coded.capstone.data.requests.notifications.TestFirebaseTokenRequest
