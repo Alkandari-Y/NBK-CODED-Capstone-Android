@@ -507,6 +507,8 @@ private fun XpHistoryCard(
                             XpGainMethod.NOTIFICATION -> Color(0xFF8EC5FF)
                             XpGainMethod.PERK -> Color(0xFF8EC5FF)
                             XpGainMethod.PROMOTION -> Color(0xFF8EC5FF)
+                            XpGainMethod.ONBOARDING -> Color(0xFF8EC5FF)
+
                         },
                         shape = CircleShape
                     ),
@@ -531,6 +533,12 @@ private fun XpHistoryCard(
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
+                    XpGainMethod.ONBOARDING -> Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "Onboarding",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
 
@@ -545,6 +553,7 @@ private fun XpHistoryCard(
                         XpGainMethod.NOTIFICATION -> "Notification Viewed"
                         XpGainMethod.PERK -> "Perk Redeemed"
                         XpGainMethod.PROMOTION -> "Promotion Used"
+                        XpGainMethod.ONBOARDING -> "Onboarding Completed"
                     },
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
