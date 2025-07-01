@@ -29,6 +29,9 @@ import com.coded.capstone.MapAndGeofencing.GeofenceManager
 import com.coded.capstone.MapAndGeofencing.LocationManager
 import com.coded.capstone.R
 import com.coded.capstone.SVG.BluetoothSolidIcon
+import android.content.Intent
+import com.coded.capstone.managers.BlePreferenceManager
+import com.coded.capstone.services.BleScanService
 import com.coded.capstone.managers.GeofencePreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,8 +48,10 @@ fun SettingsScreen(
     navController: NavController,
     onBackClick: () -> Unit = {}
 ) {
-    var isBluetoothEnabled by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var isBluetoothEnabled by remember {
+        mutableStateOf(BlePreferenceManager.isBleEnabled(context))
+    }
 
 
     var isGeofencingEnabled by remember {
@@ -179,9 +184,9 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = if (isBluetoothEnabled) 
-                                        "Connect to nearby devices for payments and data transfer" 
+                                        "Find nearby deals"
                                     else 
-                                        "Enable Bluetooth to connect to devices and make contactless payments",
+                                        "Enable Bluetooth to search for nearby partners",
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         color = Color(0xFF6B7280),
                                         fontFamily = RobotoFont
@@ -194,9 +199,16 @@ fun SettingsScreen(
                             // Toggle Switch
                             Switch(
                                 checked = isBluetoothEnabled,
-                                onCheckedChange = { 
-                                    isBluetoothEnabled = it
-                                    // Here you would typically handle the actual Bluetooth state change
+                                onCheckedChange = { enabled ->
+                                    isBluetoothEnabled = enabled
+                                    BlePreferenceManager.setBleEnabled(context, enabled)
+
+                                    val intent = Intent(context, BleScanService::class.java)
+                                    if (enabled) {
+                                        context.startService(intent)
+                                    } else {
+                                        context.stopService(intent)
+                                    }
                                 },
                                 colors = SwitchDefaults.colors(
                                     checkedThumbColor = Color.White,

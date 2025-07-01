@@ -15,5 +15,5 @@ data class XpHistoryDto(
 )
 
 enum class XpGainMethod {
-    NOTIFICATION, PERK, PROMOTION
+    NOTIFICATION, PERK, PROMOTION, ONBOARDING
 }

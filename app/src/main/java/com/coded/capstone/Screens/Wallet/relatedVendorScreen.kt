@@ -30,6 +30,7 @@ import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.viewModels.HomeScreenViewModel
 import com.coded.capstone.viewModels.RecommendationViewModel
 import com.coded.capstone.navigation.NavRoutes
+import com.coded.capstone.composables.businessPartners.BusinessLogo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +84,7 @@ fun RelatedVendorsScreen(
     val filteredPartners = remember(partners, perkCategories, searchQuery) {
         println("Starting filtering with ${partners.size} total partners")
         println("Looking for partners matching any of these categories: $perkCategories")
-        
+
         val filtered = partners.filter { partner ->
             val matchesCategory = if (perkCategories.isEmpty()) {
                 println("No perk categories found, no partners will be shown")
@@ -97,16 +98,16 @@ fun RelatedVendorsScreen(
                 println("Partner '${partner.name}' final match result: $matches")
                 matches
             }
-            
-            val matchesSearch = searchQuery.isBlank() || 
-                partner.name.contains(searchQuery, ignoreCase = true) ||
-                partner.category.name.contains(searchQuery, ignoreCase = true)
-            
+
+            val matchesSearch = searchQuery.isBlank() ||
+                    partner.name.contains(searchQuery, ignoreCase = true) ||
+                    partner.category.name.contains(searchQuery, ignoreCase = true)
+
             val finalResult = matchesCategory && matchesSearch
             println("Partner '${partner.name}' final inclusion: $finalResult (category match: $matchesCategory, search match: $matchesSearch)")
             finalResult
         }
-        
+
         println("Final filtered partners count: ${filtered.size}")
         filtered
     }
@@ -142,7 +143,7 @@ fun RelatedVendorsScreen(
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { 
+                                onClick = {
                                     navController.navigate(NavRoutes.homeWithWalletTab()) {
                                         popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
                                     }
@@ -216,16 +217,16 @@ fun RelatedVendorsScreen(
             } else {
                 // Add top spacing
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Search Bar
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    placeholder = { 
+                    placeholder = {
                         Text(
-                            "Search vendors...", 
+                            "Search vendors...",
                             color = Color(0xFF8E8E93)
-                        ) 
+                        )
                     },
                     leadingIcon = {
                         Icon(
@@ -308,7 +309,7 @@ fun RelatedVendorsScreen(
                         items(filteredPartners) { partner ->
                             VendorListItem(partner = partner)
                         }
-                        
+
                         // Bottom padding
                         item {
                             Spacer(modifier = Modifier.height(80.dp))
@@ -367,31 +368,16 @@ fun VendorListItem(partner: PartnerDto) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Vendor logo placeholder
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF8EC5FF)),
-                contentAlignment = Alignment.Center
-            ) {
-                if (!partner.logoUrl.isNullOrBlank()) {
-                    AsyncImage(
-                        model = partner.logoUrl,
-                        contentDescription = "Vendor Logo",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    // Default blue background with white text
-                    Text(
-                        text = partner.name.firstOrNull()?.toString()?.uppercase() ?: "?",
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            // Use BusinessLogo component instead of placeholder
+            BusinessLogo(
+                businessName = partner.name,
+                modifier = Modifier,
+                size = 60.dp,
+                isExpired = false,
+                showExpiredOverlay = false,
+                shape = RoundedCornerShape(16.dp),
+                contentScale = ContentScale.Crop
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -413,9 +399,7 @@ fun VendorListItem(partner: PartnerDto) {
                     fontSize = 14.sp,
                     modifier = Modifier.padding(top = 2.dp)
                 )
- 
             }
         }
     }
 }
-

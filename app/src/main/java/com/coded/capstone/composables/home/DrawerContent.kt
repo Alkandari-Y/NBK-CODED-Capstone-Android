@@ -63,7 +63,7 @@ fun DrawerContent(
                         .weight(1f)
                         .background(Color.White)
                 )
-                
+
                 // Right section - Dark gray background
                 Box(
                     modifier = Modifier
@@ -72,7 +72,7 @@ fun DrawerContent(
                         .background(Color(0xFF23272E))
                 )
             }
-            
+
             // Content above the background
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -84,7 +84,7 @@ fun DrawerContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        // Remove scaffoldPadding to eliminate top space
+                    // Remove scaffoldPadding to eliminate top space
                 ) {
                     // Main content
                     Column(
@@ -144,7 +144,7 @@ fun DrawerContent(
                             }
 
 //                            Spacer(modifier = Modifier.height(24.dp))
-                            
+
 //                            HorizontalDivider(
 //                                color = Color(0xFF2A2A2A).copy(alpha = 0.1f),
 //                                thickness = 1.dp
@@ -186,14 +186,12 @@ fun DrawerContent(
 
                         // Bottom section with logout
                         Column {
-                            // Logout in white container
+                            // Logout in dark container - same styling as Profile and Settings
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth().fillMaxHeight()
                                     .background(
-//                                        Color.White,
-                                        Color(0xFF23272E),
-//                                        shape = RoundedCornerShape(35.dp) // Rounded edges
+                                        Color(0xFF23272E)
                                     )
                                     .padding(end = 16.dp) // Right padding so it doesn't take full width
                             ) {
@@ -204,7 +202,8 @@ fun DrawerContent(
                                         icon = Icons.AutoMirrored.Filled.ExitToApp,
                                         title = "Logout",
                                         onClick = onLogoutClick,
-                                        isDestructive = true
+                                        isDestructive = false, // Changed from true to false
+                                        color = Color(0xFF8EC5FF) // Changed from Color.White to blue
                                     )
                                     Spacer(modifier = Modifier.height(45.dp))
                                 }
