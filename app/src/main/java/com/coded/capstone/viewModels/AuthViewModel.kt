@@ -18,6 +18,7 @@ import com.coded.capstone.data.responses.authentication.JwtContents
 import com.coded.capstone.data.responses.authentication.JwtResponse
 import com.coded.capstone.data.responses.errors.ApiErrorResponse
 import com.coded.capstone.data.responses.errors.ValidationError
+import com.coded.capstone.managers.BlePreferenceManager
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.providers.UserDeviceFBTokenRequest
@@ -83,7 +84,9 @@ class AuthViewModel(
                         sendFcmTokenToServer()
                         UserRepository.loadUserInfo(context)
                         uiState.value = AuthUiState.Success(jwtResponse)
-                        startBleScanService()
+                        if (BlePreferenceManager.isBleEnabled(context)) {
+                            startBleScanService()
+                        }
                     }
                 } else {
                     if (response.code() == 400) {
@@ -115,7 +118,9 @@ class AuthViewModel(
                         decodedToken.value = TokenManager.decodeAccessToken(context)
                         TokenManager.setUserIdInSharedPref(context, decodedToken.value!!.userId)
                         sendFcmTokenToServer()
-                        startBleScanService()
+                        if (BlePreferenceManager.isBleEnabled(context)) {
+                            startBleScanService()
+                        }
                         // Load user info after successful login
                         UserRepository.loadUserInfo(context)
 

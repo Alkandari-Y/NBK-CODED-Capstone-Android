@@ -7,12 +7,14 @@ import android.bluetooth.le.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelUuid
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
+import com.coded.capstone.R
 import com.coded.capstone.data.requests.ble.BlueToothBeaconNotificationRequest
 import com.coded.capstone.managers.TokenManager
 import com.coded.capstone.providers.RetrofitInstance
@@ -32,9 +34,9 @@ class BleScanService : Service() {
     private val BEACON_ID_PATTERN = Regex("""^nbk-(\d+)$""")
     private val lastSentMap = mutableMapOf<Long, Long>()
 
-    private val debounceIntervalMillis = 10_000L // 10 seconds
-    private val scanIntervalMillis = 10_000L
-    private val scanDurationMillis = 1_000L
+    private val debounceIntervalMillis = 30_000L
+    private val scanIntervalMillis = 20_000L
+    private val scanDurationMillis = 500L
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("BLEScan", "BleScanService started")
@@ -58,7 +60,9 @@ class BleScanService : Service() {
         val channelId = "ble_scan_channel"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                channelId, "BLE Scan", NotificationManager.IMPORTANCE_LOW
+                channelId,
+                "BLE Scan",
+                NotificationManager.IMPORTANCE_LOW
             )
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
@@ -66,7 +70,10 @@ class BleScanService : Service() {
         return NotificationCompat.Builder(this, channelId)
             .setContentTitle("Rewards Scanning")
             .setContentText("Searching for nearby Klue partners")
-            .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
+//            .setSmallIcon(R.drawable.klue)
+//            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.klue))
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .build()
     }
 
@@ -80,12 +87,23 @@ class BleScanService : Service() {
             return
         }
 
+        val scanMode = if (isAppInForeground()) {
+            ScanSettings.SCAN_MODE_LOW_LATENCY
+        } else {
+            ScanSettings.SCAN_MODE_BALANCED
+        }
         val settings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setScanMode(scanMode)
             .build()
 
         scanJob = scope.launch {
             while (this.isActive) {
+                if (!isBleReady()) {
+                    Log.e("BLEScan", "Bluetooth turned off during scan, stopping service.")
+                    stopSelf()
+                    break
+                }
+
                 Log.d("BLEScan", "Starting scan cycle...")
                 bluetoothLeScanner.startScan(null, settings, scanCallback)
 
@@ -198,9 +216,24 @@ class BleScanService : Service() {
 
     private fun cleanOldEntries() {
         val now = System.currentTimeMillis()
-        lastSentMap.entries.removeIf { now - it.value > 60_000 } // purge after 1 minute
+        lastSentMap.entries.removeIf { now - it.value > 60_000 * 5 } // purge after 5 minutes
     }
 
+    private fun isAppInForeground(): Boolean {
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager.runningAppProcesses ?: return false
+
+        val packageName = applicationContext.packageName
+        for (appProcess in appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+                appProcess.processName == packageName) {
+                return true
+            }
+        }
+        return false
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+
 }
