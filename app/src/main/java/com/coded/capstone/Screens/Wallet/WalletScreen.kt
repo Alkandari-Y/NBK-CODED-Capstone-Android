@@ -80,6 +80,12 @@ private val RobotoFont = FontFamily(
     androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
 )
 
+// Data class for payment details
+data class PaymentDetails(
+    val destinationAccount: String,
+    val amount: java.math.BigDecimal
+)
+
 @Composable
 fun SuccessToast(
     message: String,
@@ -98,7 +104,7 @@ fun SuccessToast(
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF22C55E) // Green success color
+                containerColor = Color(0xFF374151) // Dark gray background instead of green
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -121,6 +127,81 @@ fun SuccessToast(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun NfcPaymentSuccessMessage(
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2E)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Success",
+                    tint = Color(0xFF8EC5FF),
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Payment Completed Successfully!",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = RobotoFont
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Your NFC payment has been processed and completed successfully.",
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 14.sp,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    fontFamily = RobotoFont
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF8EC5FF),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Continue",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        fontFamily = RobotoFont
+                    )
+                }
             }
         }
     }
@@ -194,6 +275,14 @@ fun WalletScreen(
     var isPayAnimationActive by remember { mutableStateOf(false) }
     var payAnimationSeconds by remember { mutableStateOf(59) }
     var waveAnimationKey by remember { mutableStateOf(0) }
+    
+    // NFC Payment states
+    var isNfcPaymentActive by remember { mutableStateOf(false) }
+    var nfcPaymentStatus by remember { mutableStateOf<String?>(null) }
+    var showNfcErrorDialog by remember { mutableStateOf(false) }
+    var nfcErrorMessage by remember { mutableStateOf("") }
+    var paymentDetails by remember { mutableStateOf<PaymentDetails?>(null) }
+    
     val payAnimationRotation by animateFloatAsState(
         targetValue = if (isPayAnimationActive) 90f else 0f,
         animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
@@ -223,8 +312,68 @@ fun WalletScreen(
     // Toast states
     var showSuccessToast by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
+    var showNfcPaymentSuccess by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState(pageCount = { accounts.size })
+
+    // Get MainActivity reference for NFC
+    val mainActivity = context as? com.coded.capstone.MainActivity
+
+    // Set source account number when card is selected
+    LaunchedEffect(selectedCard) {
+        selectedCard?.let { card ->
+            mainActivity?.setSourceAccountNumber(card.accountNumber ?: "")
+        }
+    }
+
+    // NFC Payment callback
+    LaunchedEffect(mainActivity) {
+        mainActivity?.setNfcPaymentCallback(object : com.coded.capstone.MainActivity.NfcPaymentCallback {
+            override fun onPaymentStarted() {
+                isNfcPaymentActive = true
+                nfcPaymentStatus = "Reading payment details..."
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+            
+            override fun onCardDataRead(destinationAccount: String, amount: java.math.BigDecimal) {
+                paymentDetails = PaymentDetails(destinationAccount, amount)
+                nfcPaymentStatus = "Processing payment of ${amount} to $destinationAccount..."
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+            
+            override fun onPaymentSuccess(transactionId: String) {
+                isNfcPaymentActive = false
+                isPayAnimationActive = false
+                nfcPaymentStatus = null
+                paymentDetails = null
+                showNfcPaymentSuccess = true // Show KYC-style success message
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+            
+            override fun onPaymentFailed(error: String) {
+                isNfcPaymentActive = false
+                isPayAnimationActive = false
+                nfcPaymentStatus = null
+                paymentDetails = null
+                nfcErrorMessage = error
+                showNfcErrorDialog = true
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+            
+            override fun onNfcNotAvailable() {
+                nfcErrorMessage = "NFC is not available on this device"
+                showNfcErrorDialog = true
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+            
+            override fun onNfcNotEnabled() {
+                nfcErrorMessage = "Please enable NFC in your device settings"
+                showNfcErrorDialog = true
+                showNfcErrorDialog = true
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            }
+        })
+    }
 
     // Auto-trigger bottom sheet on first load when accounts are available
     LaunchedEffect(accounts, isFirstLoad) {
@@ -608,9 +757,37 @@ fun WalletScreen(
                                                             CircleShape
                                                         )
                                                         .clickable {
-                                                            if (!isPayAnimationActive) {
-                                                                isPayAnimationActive = true
-                                                                showBottomSheet = false
+                                                            if (!isPayAnimationActive && !isNfcPaymentActive) {
+                                                                // Check NFC availability
+                                                                if (mainActivity?.isNfcAvailable() == true) {
+                                                                    if (mainActivity.isNfcEnabled()) {
+                                                                        // Start NFC payment
+                                                                        mainActivity.startNfcPayment()
+                                                                        isPayAnimationActive = true
+                                                                        showBottomSheet = false
+                                                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                                        
+                                                                        // Show NFC payment instruction
+                                                                        successMessage = "Hold your phone near the NFC card to make payment"
+                                                                        showSuccessToast = true
+                                                                        
+                                                                        // Auto-hide instruction after 2 seconds
+                                                                        coroutineScope.launch {
+                                                                            delay(2000)
+                                                                            showSuccessToast = false
+                                                                        }
+                                                                    } else {
+                                                                        // NFC not enabled
+                                                                        nfcErrorMessage = "Please enable NFC in your device settings"
+                                                                        showNfcErrorDialog = true
+                                                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                                    }
+                                                                } else {
+                                                                    // NFC not available
+                                                                    nfcErrorMessage = "NFC is not available on this device"
+                                                                    showNfcErrorDialog = true
+                                                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                                                }
                                                             }
                                                         },
                                                     contentAlignment = Alignment.Center
@@ -772,6 +949,23 @@ fun WalletScreen(
                     .zIndex(1000f) // Ensure it appears above other elements
             )
 
+            // NFC Payment Success Message - KYC style
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2000f) // Ensure it appears above other elements
+            ) {
+                NfcPaymentSuccessMessage(
+                    isVisible = showNfcPaymentSuccess,
+                    onDismiss = {
+                        showNfcPaymentSuccess = false
+                    },
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
             // Pay Animation Counter - positioned at the bottom
             if (isPayAnimationActive) {
                 Box(
@@ -799,7 +993,7 @@ fun WalletScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Cancel payment",
                                 tint = Color.White,
                                 modifier = Modifier.size(24.dp)
@@ -923,6 +1117,210 @@ fun WalletScreen(
                         }
                     }
                 }
+            }
+            
+            // NFC Payment Status Display
+            if (isNfcPaymentActive && nfcPaymentStatus != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(3000f)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(32.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF23272E)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            // NFC Icon with animation
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .background(
+                                        Color(0xFF8EC5FF).copy(alpha = 0.2f),
+                                        CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                RoundTapAndPlayIcon(
+                                    modifier = Modifier.size(48.dp),
+                                    color = Color(0xFF8EC5FF)
+                                )
+                            }
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Text(
+                                text = "NFC Payment",
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = RobotoFont
+                            )
+                            
+                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            Text(
+                                text = nfcPaymentStatus!!,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontSize = 16.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                fontFamily = RobotoFont
+                            )
+                            
+                            // Show payment details if available
+                            paymentDetails?.let { details ->
+                                Spacer(modifier = Modifier.height(16.dp))
+                                
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color(0xFF374151)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp)
+                                    ) {
+                                        Text(
+                                            text = "Payment Details",
+                                            color = Color(0xFF8EC5FF),
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontFamily = RobotoFont
+                                        )
+                                        
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = "To:",
+                                                color = Color.White.copy(alpha = 0.7f),
+                                                fontSize = 14.sp,
+                                                fontFamily = RobotoFont
+                                            )
+                                            Text(
+                                                text = details.destinationAccount,
+                                                color = Color.White,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                fontFamily = RobotoFont
+                                            )
+                                        }
+                                        
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = "Amount:",
+                                                color = Color.White.copy(alpha = 0.7f),
+                                                fontSize = 14.sp,
+                                                fontFamily = RobotoFont
+                                            )
+                                            Text(
+                                                text = "KWD ${details.amount}",
+                                                color = Color(0xFF8EC5FF),
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                fontFamily = RobotoFont
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Cancel button
+                            Button(
+                                onClick = {
+                                    isNfcPaymentActive = false
+                                    isPayAnimationActive = false
+                                    nfcPaymentStatus = null
+                                    paymentDetails = null
+                                    showBottomSheet = true
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF8EC5FF)
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "Cancel Payment",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = RobotoFont
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // NFC Error Dialog
+            if (showNfcErrorDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showNfcErrorDialog = false
+                        nfcErrorMessage = ""
+                    },
+                    title = {
+                        Text(
+                            text = "NFC Payment Error",
+                            color = Color(0xFF4A4A4A),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = RobotoFont
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = nfcErrorMessage,
+                            color = Color(0xFF4A4A4A),
+                            fontSize = 16.sp,
+                            fontFamily = RobotoFont
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                showNfcErrorDialog = false
+                                nfcErrorMessage = ""
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF8EC5FF)
+                            ),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "OK",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = RobotoFont
+                            )
+                        }
+                    },
+                    containerColor = Color.White,
+                    shape = RoundedCornerShape(16.dp)
+                )
             }
         }
     }
