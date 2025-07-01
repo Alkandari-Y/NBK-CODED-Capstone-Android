@@ -104,7 +104,7 @@ fun SuccessToast(
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF22C55E) // Green success color
+                containerColor = Color(0xFF22C55E) // Green success color for transfers and top-ups
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -118,6 +118,52 @@ fun SuccessToast(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Success",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = message,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NfcInstructionToast(
+    message: String,
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = modifier
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF374151) // Dark gray background for NFC instructions
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Nfc,
+                    contentDescription = "NFC",
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
@@ -208,6 +254,10 @@ fun WalletScreen(
     var nfcErrorMessage by remember { mutableStateOf("") }
     var paymentDetails by remember { mutableStateOf<PaymentDetails?>(null) }
     
+    // NFC Instruction toast states
+    var showNfcInstructionToast by remember { mutableStateOf(false) }
+    var nfcInstructionMessage by remember { mutableStateOf("") }
+    
     val payAnimationRotation by animateFloatAsState(
         targetValue = if (isPayAnimationActive) 90f else 0f,
         animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
@@ -270,7 +320,7 @@ fun WalletScreen(
                 isPayAnimationActive = false
                 nfcPaymentStatus = null
                 paymentDetails = null
-                successMessage = "Payment successful! Transaction ID: $transactionId"
+                successMessage = "NFC Payment completed successfully!"
                 showSuccessToast = true
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 
@@ -698,13 +748,13 @@ fun WalletScreen(
                                                                         hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                                                         
                                                                         // Show NFC payment instruction
-                                                                        successMessage = "Hold your phone near the payment terminal"
-                                                                        showSuccessToast = true
+                                                                        nfcInstructionMessage = "Hold your phone near the NFC card to make payment"
+                                                                        showNfcInstructionToast = true
                                                                         
                                                                         // Auto-hide instruction after 2 seconds
                                                                         coroutineScope.launch {
                                                                             delay(2000)
-                                                                            showSuccessToast = false
+                                                                            showNfcInstructionToast = false
                                                                         }
                                                                     } else {
                                                                         // NFC not enabled
@@ -873,6 +923,16 @@ fun WalletScreen(
             SuccessToast(
                 message = successMessage,
                 isVisible = showSuccessToast,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 100.dp) // Position below the header
+                    .zIndex(1000f) // Ensure it appears above other elements
+            )
+            
+            // NFC Instruction Toast - positioned at the top with high z-index
+            NfcInstructionToast(
+                message = nfcInstructionMessage,
+                isVisible = showNfcInstructionToast,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 100.dp) // Position below the header

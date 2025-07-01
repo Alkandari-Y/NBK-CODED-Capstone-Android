@@ -19,6 +19,13 @@ import com.coded.capstone.MainActivity
 import java.math.BigDecimal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 
 @Composable
 fun NfcPaymentScreen(
@@ -28,7 +35,7 @@ fun NfcPaymentScreen(
 ) {
     val context = LocalContext.current
     val mainActivity = context as MainActivity
-    
+
     var paymentStatus by remember { mutableStateOf("Ready to pay") }
     var isNfcActive by remember { mutableStateOf(false) }
     var showPaymentDialog by remember { mutableStateOf(false) }
@@ -37,7 +44,7 @@ fun NfcPaymentScreen(
     var successMessage by remember { mutableStateOf("") }
     var showNfcErrorDialog by remember { mutableStateOf(false) }
     var nfcErrorMessage by remember { mutableStateOf("") }
-    
+
     // Set up NFC callback
     LaunchedEffect(Unit) {
         mainActivity.setSourceAccountNumber(sourceAccountNumber)
@@ -46,49 +53,42 @@ fun NfcPaymentScreen(
                 Log.d("NfcPaymentScreen", "Payment started callback received")
                 paymentStatus = "Payment started..."
             }
-            
+
             override fun onPaymentSuccess(transactionId: String) {
                 Log.d("NfcPaymentScreen", "Payment success callback received: $transactionId")
                 paymentStatus = "Payment completed successfully!"
-                successMessage = "Payment completed successfully!"
-                showSuccessToast = true
-                
-                // Auto-hide success message after 3 seconds
-                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                    delay(3000)
-                    showSuccessToast = false
-                    navController.popBackStack()
-                }
+                // Remove success toast - will be handled in WalletScreen
+                navController.popBackStack()
             }
-            
+
             override fun onPaymentFailed(error: String) {
                 Log.d("NfcPaymentScreen", "Payment failed callback received: $error")
                 paymentStatus = "Payment failed"
                 nfcErrorMessage = error
                 showNfcErrorDialog = true
             }
-            
+
             override fun onNfcNotAvailable() {
                 Log.d("NfcPaymentScreen", "NFC not available callback received")
                 paymentStatus = "NFC not available"
                 nfcErrorMessage = "NFC is not available on this device"
                 showNfcErrorDialog = true
             }
-            
+
             override fun onNfcNotEnabled() {
                 Log.d("NfcPaymentScreen", "NFC not enabled callback received")
                 paymentStatus = "NFC not enabled"
                 nfcErrorMessage = "Please enable NFC in your device settings"
                 showNfcErrorDialog = true
             }
-            
+
             override fun onCardDataRead(destinationAccount: String, amount: BigDecimal) {
                 Log.d("NfcPaymentScreen", "Card data read callback received: $destinationAccount, $amount")
                 paymentStatus = "Card detected: $${amount} to $destinationAccount"
             }
         })
     }
-    
+
     // Add a timeout mechanism to show results even if callbacks don't fire
     LaunchedEffect(isNfcActive) {
         if (isNfcActive) {
@@ -102,14 +102,14 @@ fun NfcPaymentScreen(
             }
         }
     }
-    
+
     // Clean up NFC when leaving screen
     DisposableEffect(Unit) {
         onDispose {
             mainActivity.stopNfcPayment()
         }
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -122,7 +122,7 @@ fun NfcPaymentScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -141,9 +141,9 @@ fun NfcPaymentScreen(
                 Text("Status: $paymentStatus")
             }
         }
-        
+
         Spacer(modifier = Modifier.weight(1f))
-        
+
         // Pay Button - Only show when NFC is not active
         if (!isNfcActive) {
             Button(
@@ -151,10 +151,10 @@ fun NfcPaymentScreen(
                     if (mainActivity.isNfcAvailable() && mainActivity.isNfcEnabled()) {
                         mainActivity.startNfcPayment()
                         isNfcActive = true
-                        paymentStatus = "Hold your phone near the payment terminal"
-                        successMessage = "Hold your phone near the payment terminal"
+                        paymentStatus = "Hold your phone near the NFC card to make payment"
+                        successMessage = "Hold your phone near the NFC card to make payment"
                         showSuccessToast = true
-                        
+
                         // Auto-hide instruction after 2 seconds
                         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
                             delay(2000)
@@ -171,11 +171,14 @@ fun NfcPaymentScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
             ) {
-                Text("Pay with NFC", fontSize = 18.sp)
+                Text("Pay with NFC", fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
             }
-            
+
             // Test button to verify callbacks work
             Button(
                 onClick = {
@@ -188,10 +191,10 @@ fun NfcPaymentScreen(
                     .fillMaxWidth()
                     .height(40.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             ) {
-                Text("Test UI (Simulate Error)", fontSize = 14.sp)
+                Text("Test UI (Simulate Error)", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             // Cancel Button - Show when NFC is active
@@ -212,37 +215,48 @@ fun NfcPaymentScreen(
             }
         }
     }
-    
+
     // Success Toast (matching your existing style)
     if (showSuccessToast) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        AnimatedVisibility(
+            visible = showSuccessToast,
+            enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF374151) // Dark gray background instead of green
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Success",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-                Text(
-                    text = successMessage,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Medium
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Nfc,
+                        contentDescription = "NFC",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(
+                        text = successMessage,
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
     }
-    
+
     // NFC Error Dialog (matching your existing style)
     if (showNfcErrorDialog) {
         AlertDialog(
@@ -288,4 +302,4 @@ fun NfcPaymentScreen(
             }
         )
     }
-} 
+}
