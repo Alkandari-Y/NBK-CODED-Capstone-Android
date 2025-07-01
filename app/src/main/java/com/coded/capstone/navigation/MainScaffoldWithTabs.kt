@@ -32,7 +32,8 @@ fun MainScaffoldWithTabs(
     navController: NavController,
     authViewModel: AuthViewModel,
     homeScreenViewModel: HomeScreenViewModel,
-    initialTab: Int = 0
+    initialTab: Int = 0,
+    refreshAccounts: Boolean = false
 ) {
     var selectedTab by remember { mutableStateOf(initialTab) }
     val context = LocalContext.current
@@ -45,6 +46,7 @@ fun MainScaffoldWithTabs(
                 0 -> HomeScreen(
                     navController = navController,
                     authViewModel = authViewModel,
+                    refreshAccounts = refreshAccounts,
                     onNotificationClick = {
                         navController.navigate(NavRoutes.NAV_ROUTE_NOTIFICATIONS)
                     },

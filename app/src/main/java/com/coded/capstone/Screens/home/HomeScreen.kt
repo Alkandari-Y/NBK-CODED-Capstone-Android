@@ -77,6 +77,7 @@ import com.coded.capstone.viewModels.NotificationViewModel
 fun HomeScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
+    refreshAccounts: Boolean = false,
     onNotificationClick: () -> Unit = {},
     onAccountClick: (String) -> Unit = {},
     onViewAllAccounts: () -> Unit = {},
@@ -106,6 +107,14 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         Log.d("HomeScreen", "LaunchedEffect for fetchAccounts triggered")
         viewModel.fetchAccounts()
+    }
+
+    // Refresh accounts when coming from onboarding
+    LaunchedEffect(refreshAccounts) {
+        if (refreshAccounts) {
+            Log.d("HomeScreen", "Refreshing accounts after onboarding")
+            viewModel.fetchAccounts()
+        }
     }
 
     // Fetch user XP info when screen loads
