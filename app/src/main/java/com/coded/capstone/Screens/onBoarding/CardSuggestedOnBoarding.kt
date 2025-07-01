@@ -394,7 +394,7 @@ fun CardSuggestedOnBoarding(
                     onClick = {
                         userWillApply = true
                         card.id?.let { cardId ->
-                            accountViewModel.createAccount(cardId)
+                            accountViewModel.onboardingCreateCard(cardId)
                         }
                         navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
                             popUpTo(0)

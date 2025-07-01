@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coded.capstone.R
+import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.responses.promotion.PromotionResponse
 import java.time.LocalDate
 
@@ -38,6 +39,35 @@ fun getBusinessLogoResource(context: android.content.Context, businessName: Stri
         .replace("&", "and")
         .replace(".", "")
         .replace("-", "_")
+
+    val resourceId = context.resources.getIdentifier(
+        resourceName,
+        "drawable",
+        context.packageName
+    )
+
+    return if (resourceId != 0) resourceId else R.drawable.default_promotion
+}
+
+// Function to get partner logo resource from logoUrl or partner name
+@DrawableRes
+fun getPartnerLogoResource(context: android.content.Context, partner: PartnerDto): Int {
+    val searchName = when {
+        partner.logoUrl.isNotBlank() -> partner.logoUrl
+        else -> partner.name
+    }
+    
+    if (searchName.isBlank()) return R.drawable.default_promotion
+
+    val resourceName = searchName
+        .lowercase()
+        .replace(" ", "_")
+        .replace("&", "and")
+        .replace(".", "")
+        .replace("-", "_")
+        .replace("'", "")
+        .replace("(", "")
+        .replace(")", "")
 
     val resourceId = context.resources.getIdentifier(
         resourceName,

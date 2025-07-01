@@ -9,6 +9,7 @@ import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.requests.partner.SetFavBusinessRequest
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.promotion.PromotionResponse
+import com.coded.capstone.data.responses.recommendation.RecommendedAccountProducts
 import com.coded.capstone.data.responses.storeLocation.StoreLocationResponse
 import com.coded.capstone.providers.RetrofitInstance
 import com.coded.capstone.respositories.BusinessRepository
@@ -25,16 +26,34 @@ sealed class FavBusinessUiState {
     data class Error(val message: String) : FavBusinessUiState()
 }
 
+sealed class RecommendedProductsUiState {
+    data object Idle : RecommendedProductsUiState()
+    data object Loading : RecommendedProductsUiState()
+    data class Success(val products: List<RecommendedAccountProducts>) : RecommendedProductsUiState()
+    data class Error(val message: String) : RecommendedProductsUiState()
+}
+
 class RecommendationViewModel(
     private val context: Context
 ) : ViewModel() {
 
+
+    // recommendations
     private val _recommendedCard = MutableStateFlow<AccountProductResponse?>(null)
     val recommendedCard: StateFlow<AccountProductResponse?> = _recommendedCard
 
+    private val _recommendedProducts = MutableStateFlow<List<RecommendedAccountProducts>>(emptyList())
+    val recommendedProducts: StateFlow<List<RecommendedAccountProducts>> = _recommendedProducts
+
+    private val _recommendedProductsUiState = MutableStateFlow<RecommendedProductsUiState>(RecommendedProductsUiState.Idle)
+    val recommendedProductsUiState: StateFlow<RecommendedProductsUiState> = _recommendedProductsUiState
+
+    // business partners
     private val _partners = MutableStateFlow<List<PartnerDto>>(emptyList())
     val partners: StateFlow<List<PartnerDto>> = _partners
 
+
+    // promotions
     private val _promotions = MutableStateFlow<List<PromotionResponse>>(emptyList())
     val promotions: StateFlow<List<PromotionResponse>> = _promotions
 
@@ -47,6 +66,8 @@ class RecommendationViewModel(
     private val _activePromotionsByBusiness = MutableStateFlow<List<PromotionResponse>>(emptyList())
     val activePromotionsByBusiness: StateFlow<List<PromotionResponse>> = _activePromotionsByBusiness
 
+
+    // favorite business
     private val _favBusinessUiState = MutableStateFlow<FavBusinessUiState>(FavBusinessUiState.Idle)
     val favBusinessUiState: StateFlow<FavBusinessUiState> = _favBusinessUiState
 
@@ -102,6 +123,29 @@ class RecommendationViewModel(
                 }
             } catch (e: Exception) {
                 Log.e("RecommendationViewModel", "Error fetching Businesses: ${e.message}")
+            }
+        }
+    }
+
+    // get recommended products
+    fun fetchRecommendedProducts(){
+        viewModelScope.launch {
+            try {
+                _recommendedProductsUiState.value = RecommendedProductsUiState.Loading
+                val response = RetrofitInstance.getRecommendationServiceProvide(context).getRecommendedProducts()
+                if (response.isSuccessful) {
+                    val recommendedProducts = response.body().orEmpty()
+                    _recommendedProducts.value = recommendedProducts
+                    _recommendedProductsUiState.value = RecommendedProductsUiState.Success(recommendedProducts)
+                } else {
+                    val errorMessage = "Failed to fetch recommended products: ${response.code()}"
+                    Log.e("RecommendationViewModel", errorMessage)
+                    _recommendedProductsUiState.value = RecommendedProductsUiState.Error(errorMessage)
+                }
+            } catch (e: Exception) {
+                val errorMessage = "Error fetching recommended products: ${e.message}"
+                Log.e("RecommendationViewModel", errorMessage)
+                _recommendedProductsUiState.value = RecommendedProductsUiState.Error(errorMessage)
             }
         }
     }

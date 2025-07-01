@@ -21,6 +21,13 @@ sealed class AccountCreateUiState {
     data class Success(val account: AccountCreateResponse) : AccountCreateUiState()
     data class Error(val message: String) : AccountCreateUiState()
 }
+
+sealed class OnBoardingAccountUiState {
+    data object Idle : OnBoardingAccountUiState()
+    data object Loading : OnBoardingAccountUiState()
+    data class Success(val account: AccountCreateResponse) : OnBoardingAccountUiState()
+    data class Error(val message: String) : OnBoardingAccountUiState()
+}
 sealed class TransferUiState {
     data object Idle : TransferUiState()
     data object Loading : TransferUiState()
@@ -36,6 +43,10 @@ class AccountViewModel(
     private val _accountUiState = MutableStateFlow<AccountCreateUiState>(
        AccountCreateUiState.Idle)
     val accountUiState: StateFlow<AccountCreateUiState> = _accountUiState
+
+    private val _onBoardingAccountUiState = MutableStateFlow<OnBoardingAccountUiState>(
+        OnBoardingAccountUiState.Idle)
+    val onBoardingAccountUiState: StateFlow<OnBoardingAccountUiState> = _onBoardingAccountUiState
 
     private val _shouldNavigate = MutableStateFlow(false)
     val shouldNavigate: StateFlow<Boolean> = _shouldNavigate
@@ -69,6 +80,30 @@ class AccountViewModel(
 
             } catch (e: Exception) {
                 _accountUiState.value = AccountCreateUiState.Error(e.message ?: "Something went wrong")
+            }
+        }
+    }
+
+    fun onboardingCreateCard(accountProductId:Long){
+        _onBoardingAccountUiState.value = OnBoardingAccountUiState.Loading
+
+        viewModelScope.launch {
+            try {
+                val request = AccountCreateRequest(
+                    accountProductId = accountProductId,
+                )
+
+                val result = AccountRepository.createOnboardingAccount(request, context)
+
+                result.onSuccess {
+                    _onBoardingAccountUiState.value = OnBoardingAccountUiState.Success(it)
+                    _shouldNavigate.value = true
+                }.onFailure {
+                    _onBoardingAccountUiState.value = OnBoardingAccountUiState.Error(it.message ?: "Unknown error")
+                }
+
+            } catch (e: Exception) {
+                _onBoardingAccountUiState.value = OnBoardingAccountUiState.Error(e.message ?: "Something went wrong")
             }
         }
     }

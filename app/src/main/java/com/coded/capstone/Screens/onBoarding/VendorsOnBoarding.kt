@@ -208,7 +208,7 @@ fun VendorsOnBoarding(
                 .background(Color(0xFF374151))
                 .padding(paddingValues)
         ) {
-            // Logo in top section - same as CategoryOnBoarding
+            // Logo
             Image(
                 painter = painterResource(id = R.drawable.klue),
                 contentDescription = "KLUE Logo",
@@ -218,7 +218,7 @@ fun VendorsOnBoarding(
                     .align(Alignment.TopCenter)
             )
             Spacer(modifier = Modifier.width(15.dp))
-            // Animated Main Content Card - same as CategoryOnBoarding
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
