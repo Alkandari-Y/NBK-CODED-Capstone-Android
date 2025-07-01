@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.coded.capstone.screens.wallet
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,12 +20,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.coded.capstone.R
+import com.coded.capstone.composables.getPartnerLogoResource
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.responses.perk.PerkDto
 import com.coded.capstone.viewModels.HomeScreenViewModel
@@ -351,6 +355,9 @@ fun RelatedVendorsScreen(
 
 @Composable
 fun VendorListItem(partner: PartnerDto) {
+    val context = LocalContext.current
+    val logoRes = getPartnerLogoResource(context, partner)
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -367,28 +374,35 @@ fun VendorListItem(partner: PartnerDto) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Vendor logo placeholder
+            // Vendor logo
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF8EC5FF)),
+                    .clip(RoundedCornerShape(16.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                if (!partner.logoUrl.isNullOrBlank()) {
-                    AsyncImage(
-                        model = partner.logoUrl,
-                        contentDescription = "Vendor Logo",
+                if (logoRes == R.drawable.default_promotion) {
+                    // Fallback: blue background with partner name initial
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFF8EC5FF)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = partner.name.firstOrNull()?.toString()?.uppercase() ?: "?",
+                            color = Color.White,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    // Use local drawable image
+                    Image(
+                        painter = painterResource(id = logoRes),
+                        contentDescription = "${partner.name} logo",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
-                    )
-                } else {
-                    // Default blue background with white text
-                    Text(
-                        text = partner.name.firstOrNull()?.toString()?.uppercase() ?: "?",
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
                     )
                 }
             }
