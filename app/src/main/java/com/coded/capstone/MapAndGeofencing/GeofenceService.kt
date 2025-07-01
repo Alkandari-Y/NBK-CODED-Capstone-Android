@@ -100,11 +100,12 @@ class GeofenceService : Service() {
         releaseWakeLock()
         super.onDestroy()
 
-        if (GeofencePreferenceManager.isGeofencingEnabled(applicationContext)) {
-            Log.d(TAG, "Geofencing enabled in preferences; restarting service.")
+        val enabled = GeofencePreferenceManager.isGeofencingEnabled(applicationContext)
+        Log.d(TAG, "onDestroy: Geofencing enabled: $enabled")
+        if (enabled) {
             restartService()
         } else {
-            Log.d(TAG, "Geofencing disabled in preferences; not restarting service.")
+            Log.d(TAG, "Geofencing disabled; service will not restart.")
         }
     }
 

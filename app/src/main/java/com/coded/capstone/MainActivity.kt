@@ -43,6 +43,9 @@ class MainActivity : ComponentActivity() {
         if (!hasBluetoothPermissions(this)) {
             ActivityCompat.requestPermissions(this, getBluetoothPermissions(), permissionRequestCode)
         }
+
+        GeofencePreferenceManager.ensureDefaultDisabled(this)
+
         enableEdgeToEdge()
 
         setContent {

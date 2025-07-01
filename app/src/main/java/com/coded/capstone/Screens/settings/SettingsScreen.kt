@@ -30,6 +30,7 @@ import com.coded.capstone.MapAndGeofencing.LocationManager
 import com.coded.capstone.R
 import com.coded.capstone.SVG.BluetoothSolidIcon
 import android.content.Intent
+import com.coded.capstone.MapAndGeofencing.GeofenceService
 import com.coded.capstone.managers.BlePreferenceManager
 import com.coded.capstone.services.BleScanService
 import com.coded.capstone.managers.GeofencePreferenceManager
@@ -184,9 +185,9 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = if (isBluetoothEnabled) 
-                                        "Find nearby deals"
+                                        "Searching for nearby reward opportunities near you!"
                                     else 
-                                        "Enable Bluetooth to search for nearby partners",
+                                        "Enable Bluetooth to search for nearby partners near you!",
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         color = Color(0xFF6B7280),
                                         fontFamily = RobotoFont
@@ -217,31 +218,6 @@ fun SettingsScreen(
                                     uncheckedTrackColor = Color(0xFF6B7280)
                                 )
                             )
-                        }
-
-                        // Status indicator
-                        if (isBluetoothEnabled) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .background(
-                                            Color(0xFF10B981),
-                                            CircleShape
-                                        )
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Ready to connect",
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        color = Color(0xFF10B981),
-                                        fontFamily = RobotoFont
-                                    )
-                                )
-                            }
                         }
                     }
                 }
@@ -317,6 +293,7 @@ fun SettingsScreen(
                                         CoroutineScope(Dispatchers.IO).launch {
                                             GeofenceManager.stopGeofencing(context)
                                         }
+                                        context.stopService(Intent(context, GeofenceService::class.java))
                                     }
                                 },
                                 colors = SwitchDefaults.colors(

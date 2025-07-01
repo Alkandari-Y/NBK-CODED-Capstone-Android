@@ -3,8 +3,10 @@ package com.coded.capstone.MapAndGeofencing
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -19,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.coded.capstone.managers.GeofencePreferenceManager
 
 class LocationManager(private val context: Context) {
     companion object {
@@ -78,10 +81,14 @@ class LocationManager(private val context: Context) {
         }
 
         fun startGeofenceService(context: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(android.content.Intent(context, GeofenceService::class.java))
+            if (GeofencePreferenceManager.isGeofencingEnabled(context)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(Intent(context, GeofenceService::class.java))
+                } else {
+                    context.startService(Intent(context, GeofenceService::class.java))
+                }
             } else {
-                context.startService(android.content.Intent(context, GeofenceService::class.java))
+                Log.d("LocationManager", "Geofencing disabled in preferences; service not started.")
             }
         }
     }
