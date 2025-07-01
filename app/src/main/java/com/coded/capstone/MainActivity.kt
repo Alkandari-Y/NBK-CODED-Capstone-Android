@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val permissionRequestCode = 101
-
+    private var navController: NavController? = null
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,15 +59,20 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
-                            AppHost()
+                            AppHost(
+                                onNavControllerReady = { controller ->
+                                    navController = controller
+                                    // Handle deep link if app was launched via deep link
+                                    handleDeepLink(intent, controller)
+                                    // Check for pending deep links from notifications
+                                    DeepLinkHandler.checkPendingDeepLinks(controller, this)
+                                }
+                            )
                         }
                     }
                 }
             }
         }
-        
-        // Handle deep link if app was launched via deep link
-        handleDeepLink(intent)
     }
     
     /**
@@ -75,16 +80,16 @@ class MainActivity : ComponentActivity() {
      */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleDeepLink(intent)
+        navController?.let { controller ->
+            handleDeepLink(intent, controller)
+        }
     }
     
     /**
      * Process deep link intent
      */
-    private fun handleDeepLink(intent: Intent) {
-        // Note: You'll need to pass the NavController from AppHost
-        // For now, this is a placeholder that can be connected later
-        // DeepLinkHandler.handleDeepLink(intent, navController, this)
+    private fun handleDeepLink(intent: Intent, navController: NavController) {
+        DeepLinkHandler.handleDeepLink(intent, navController, this)
     }
 
     private fun requestFirebaseNotificationPermission() {

@@ -1,5 +1,6 @@
 package com.coded.capstone.screens.authentication
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -113,8 +114,28 @@ fun LoginScreen(
 
     LaunchedEffect(token) {
         if (token?.access?.isNotBlank() == true) {
-            navController.navigate(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
-                popUpTo(NavRoutes.NAV_ROUTE_LOGIN) { inclusive = true }
+            try {
+                // Check for pending deep links first
+                val pendingDeepLink = com.coded.capstone.deeplink.DeepLinkUtils.getPendingDeepLink(context)
+                if (pendingDeepLink != null) {
+                    // Process the pending deep link
+                    com.coded.capstone.deeplink.DeepLinkUtils.processPendingDeepLink(context, navController)
+                } else {
+                    // No pending deep link, navigate to loading dashboard as usual
+                    navController.navigate(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
+                        popUpTo(NavRoutes.NAV_ROUTE_LOGIN) { inclusive = true }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("LoginScreen", "Error handling post-login navigation", e)
+                // Fallback to loading dashboard
+                try {
+                    navController.navigate(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
+                        popUpTo(NavRoutes.NAV_ROUTE_LOGIN) { inclusive = true }
+                    }
+                } catch (navException: Exception) {
+                    Log.e("LoginScreen", "Error navigating to loading dashboard", navException)
+                }
             }
         }
     }

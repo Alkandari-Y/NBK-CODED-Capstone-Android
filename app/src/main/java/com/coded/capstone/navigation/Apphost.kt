@@ -56,6 +56,7 @@ object NavRoutes {
     const val NAV_ROUTE_XP_HISTORY = "xp_history"
     const val NAV_ROUTE_NOTIFICATIONS = "notifications"
     const val NAV_ROUTE_PROMOTION_DETAILS = "promotion/{promotionId}"
+    const val NAV_ROUTE_DEEPLINK_TESTING = "deeplink_testing"
 
     const val NAV_ROUTE_VENDORS = "vendors/{category}"
     const val NAV_ROUTE_RELATED_VENDOR = "vendor/{perkId}/{productId}/{accountId}"
@@ -71,11 +72,18 @@ object NavRoutes {
 fun AppHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    onNavControllerReady: ((NavController) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val homeScreenViewModel = remember { HomeScreenViewModel(context) }
     val recommendationViewModel = remember { RecommendationViewModel(context) }
-val accountViewModel = remember { AccountViewModel(context) }
+    val accountViewModel = remember { AccountViewModel(context) }
+    
+    // Notify when NavController is ready
+    LaunchedEffect(navController) {
+        onNavControllerReady?.invoke(navController)
+    }
+    
     LaunchedEffect(Unit) {
         if (
             TokenManager.getToken(context) != null &&
@@ -240,6 +248,11 @@ val accountViewModel = remember { AccountViewModel(context) }
 
         composable (NavRoutes.NAV_ROUTE_NOTIFICATIONS){
             NotificationCenter(navController = navController)
+        }
+        
+        // Deep Link Testing Screen (for development)
+        composable(NavRoutes.NAV_ROUTE_DEEPLINK_TESTING) {
+            com.coded.capstone.screens.testing.DeepLinkTestingScreen(navController = navController)
         }
     }
 }
