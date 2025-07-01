@@ -4,9 +4,11 @@ import com.coded.capstone.data.requests.account.AccountCreateRequest
 import com.coded.capstone.data.requests.kyc.KYCRequest
 import com.coded.capstone.data.requests.partner.PartnerDto
 import com.coded.capstone.data.requests.transaction.TransferCreateRequest
+import com.coded.capstone.data.requests.transaction.PaymentCreateRequest // Add this import
 import com.coded.capstone.data.responses.account.AccountCreateResponse
 import com.coded.capstone.data.responses.account.AccountResponse
 import com.coded.capstone.data.responses.transaction.TransactionDetails
+import com.coded.capstone.data.responses.transaction.PaymentDetails // Add this import
 import com.coded.capstone.data.responses.accountProduct.AccountProductResponse
 import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.responses.kyc.KYCResponse
@@ -36,6 +38,12 @@ interface BankingServiceProvider {
     suspend fun getAccountDetails(
         @Query("accountId") accountId: String,
     ): Response<AccountResponse>
+
+    // NFC Payment endpoint - Add this
+    @POST("/api/v1/accounts/purchase")
+    suspend fun purchase(
+        @Body paymentRequest: PaymentCreateRequest
+    ): Response<PaymentDetails>
 
     // Categories controller
     @GET("/api/v1/categories")
@@ -78,7 +86,6 @@ interface BankingServiceProvider {
     @GET("/api/v1/partners")
     suspend fun getBusinessPartners(): Response<List<PartnerDto>>
 
-
     // XP Tier
     @GET("/api/v1/xp/tiers")
     suspend fun getAllXpTiers(): Response<List<XpTierResponse>>
@@ -91,6 +98,4 @@ interface BankingServiceProvider {
 
     @GET("/api/v1/xp/history")
     suspend fun getUserXpHistory(): Response<List<XpHistoryDto>>
-
-
 }

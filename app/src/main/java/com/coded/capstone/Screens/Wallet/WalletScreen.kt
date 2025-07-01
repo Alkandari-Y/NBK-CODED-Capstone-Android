@@ -74,6 +74,9 @@ import android.util.Log
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.content.Context
+import androidx.compose.ui.text.style.TextAlign
+import com.coded.capstone.managers.NFCManager
+import com.coded.capstone.viewModels.NfcState
 
 // Roboto font family
 private val RobotoFont = FontFamily(
@@ -120,6 +123,64 @@ fun SuccessToast(
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NfcStatusIndicator(nfcState: NfcState) {
+    val backgroundColor = when (nfcState) {
+        is NfcState.Listening -> Color(0xFF8EC5FF)
+        is NfcState.Processing -> Color(0xFFFFA726)
+        is NfcState.Success -> Color(0xFF4CAF50)
+        is NfcState.Error -> Color(0xFFF44336)
+        else -> Color(0xFF9E9E9E)
+    }
+
+    val statusText = when (nfcState) {
+        is NfcState.Listening -> "Tap NFC card to pay"
+        is NfcState.Processing -> "Processing payment..."
+        is NfcState.Success -> "Payment successful!"
+        is NfcState.Error -> "Payment failed"
+        else -> "NFC Ready"
+    }
+
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // NFC Icon
+            Icon(
+                imageVector = Icons.Default.Nfc,
+                contentDescription = "NFC",
+                tint = Color.White,
+                modifier = Modifier.size(20.dp)
+            )
+
+            Text(
+                text = statusText,
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = RobotoFont
+            )
+
+            // Processing indicator
+            if (nfcState is NfcState.Processing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
                 )
             }
         }
@@ -174,6 +235,10 @@ fun WalletScreen(
     val transferUiState by transactionViewModel.transferUiState.collectAsState()
     val topUpUiState by transactionViewModel.topUpUiState.collectAsState()
 
+    // NFC States
+    val nfcState by transactionViewModel.nfcState.collectAsState()
+    val lastPaymentData by transactionViewModel.lastPaymentData.collectAsState()
+
     // Local States
     var selectedCard by remember { mutableStateOf<AccountResponse?>(null) }
     var currentCardIndex by remember { mutableStateOf(0) }
@@ -186,7 +251,7 @@ fun WalletScreen(
     var isFirstLoad by remember { mutableStateOf(true) }
     var cardAnimationTrigger by remember { mutableStateOf(false) }
     var externalExpandTrigger by remember { mutableStateOf(false) }
-    
+
     // Toast message state
     var showDragToast by remember { mutableStateOf(false) }
 
@@ -226,12 +291,71 @@ fun WalletScreen(
 
     val pagerState = rememberPagerState(pageCount = { accounts.size })
 
+    // NFC Integration - Register TransactionViewModel with NFCManager
+    LaunchedEffect(transactionViewModel) {
+        NFCManager.setTransactionViewModel(transactionViewModel)
+    }
+
+    // NFC Integration - Sync NFC listening with payment animation state
+    LaunchedEffect(isPayAnimationActive) {
+        if (isPayAnimationActive) {
+            transactionViewModel.activateNfcListening()
+        } else {
+            transactionViewModel.deactivateNfcListening()
+        }
+    }
+
+    // NFC Integration - Set the selected account for NFC payments when card is selected
+    LaunchedEffect(selectedCard) {
+        selectedCard?.let { account ->
+            transactionViewModel.setCurrentSelectedAccount(account)
+        }
+    }
+
+    // NFC Integration - Handle NFC payment success/error
+    LaunchedEffect(nfcState) {
+        when (val state = nfcState) {
+            is NfcState.Success -> {
+                // Show success feedback
+                successMessage = "NFC Payment completed successfully!"
+                showSuccessToast = true
+
+                // Stop payment animation
+                isPayAnimationActive = false
+                showBottomSheet = true
+
+                // Refresh accounts to show updated balance
+                homeViewModel.fetchAccounts()
+
+                // Vibration feedback
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
+                // Auto-hide toast after 3 seconds
+                delay(3000)
+                showSuccessToast = false
+            }
+            is NfcState.Error -> {
+                // Show error feedback
+                successMessage = "NFC Payment failed: ${state.message}"
+                showSuccessToast = true
+
+                // Continue animation to allow retry
+                // isPayAnimationActive remains true
+
+                // Auto-hide toast after 3 seconds
+                delay(3000)
+                showSuccessToast = false
+            }
+            else -> {}
+        }
+    }
+
     // Auto-trigger bottom sheet on first load when accounts are available
     LaunchedEffect(accounts, isFirstLoad) {
         if (isFirstLoad && accounts.isNotEmpty()) {
             // Don't auto-select a card, let users see the card stack first
             isFirstLoad = false
-            
+
             // Show drag instruction toast
             showDragToast = true
             delay(5000) // Show for 5 seconds
@@ -463,11 +587,13 @@ fun WalletScreen(
                             )
                         }
                     }
+
                     is AccountsUiState.Error -> {
                         ErrorCard(
                             onRetry = { homeViewModel.fetchAccounts() }
                         )
                     }
+
                     is AccountsUiState.Success -> {
                         if (accounts.isEmpty()) {
                             EmptyAccountsCard()
@@ -491,14 +617,20 @@ fun WalletScreen(
                                     // Transfer button slide-in animation
                                     val transferButtonOffset by animateDpAsState(
                                         targetValue = if (cardAnimationTrigger) 0.dp else (-100).dp,
-                                        animationSpec = tween(durationMillis = 600, delayMillis = 200),
+                                        animationSpec = tween(
+                                            durationMillis = 600,
+                                            delayMillis = 200
+                                        ),
                                         label = "transferButtonOffset"
                                     )
 
                                     // Pay button slide-in animation
                                     val payButtonOffset by animateDpAsState(
                                         targetValue = if (cardAnimationTrigger) 0.dp else 100.dp,
-                                        animationSpec = tween(durationMillis = 600, delayMillis = 200),
+                                        animationSpec = tween(
+                                            durationMillis = 600,
+                                            delayMillis = 200
+                                        ),
                                         label = "payButtonOffset"
                                     )
 
@@ -548,7 +680,8 @@ fun WalletScreen(
 
                                             // Transfer button - only show for debit or cashback accounts
                                             if (selectedCard?.accountType?.lowercase() == "debit" ||
-                                                selectedCard?.accountType?.lowercase() == "cashback") {
+                                                selectedCard?.accountType?.lowercase() == "cashback"
+                                            ) {
                                                 Box(
                                                     modifier = Modifier.offset(x = transferButtonOffset)
                                                 ) {
@@ -566,7 +699,8 @@ fun WalletScreen(
                                                             )
                                                             .clickable {
                                                                 if (!isPayAnimationActive) {
-                                                                    transferSourceAccount = selectedCard!!
+                                                                    transferSourceAccount =
+                                                                        selectedCard!!
                                                                     navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
                                                                 }
                                                             },
@@ -628,10 +762,12 @@ fun WalletScreen(
                                     ApplePayCardStack(
                                         accounts = accounts.sortedBy { account ->
                                             // Get account product name to check if it's cashback
-                                            val accountProduct = com.coded.capstone.respositories.AccountProductRepository.accountProducts.find {
-                                                it.id == account.accountProductId
-                                            }
-                                            val productName = accountProduct?.name?.lowercase() ?: ""
+                                            val accountProduct =
+                                                com.coded.capstone.respositories.AccountProductRepository.accountProducts.find {
+                                                    it.id == account.accountProductId
+                                                }
+                                            val productName =
+                                                accountProduct?.name?.lowercase() ?: ""
 
                                             // Cashback cards first (false sorts before true)
                                             !productName.contains("cashback")
@@ -749,7 +885,7 @@ fun WalletScreen(
                                 perks = perksOfAccountProduct,
                                 navController = navController,
                                 productId = card.accountProductId?.toString() ?: "",
-                                accountId = card.id.toString()?: "",
+                                accountId = card.id.toString() ?: "",
                                 onDismiss = {
                                     showBottomSheet = false
                                     sheetExpanded = false
@@ -780,146 +916,154 @@ fun WalletScreen(
                         .padding(bottom = 200.dp)
                         .zIndex(1000f)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Back handle to cancel
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .background(Color(0xFF23272E), CircleShape)
-                                .clickable {
-                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                    isPayAnimationActive = false
-                                    waveAnimationKey = 0
-                                    payAnimationSeconds = 59
-                                    showBottomSheet = true // Show bottom sheet again
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Cancel payment",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                        // NFC Status Indicator
+                        NfcStatusIndicator(nfcState = nfcState)
 
-                        // Counter with circle background
-                        Box(
-                            modifier = Modifier
-                                .size(60.dp)
-                                .background(Color(0xFF8EC5FF), CircleShape),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text(
-                                text = payAnimationSeconds.toString(),
-                                color = Color.White,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = RobotoFont
-                            )
+                            // Back handle to cancel
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .background(Color(0xFF23272E), CircleShape)
+                                    .clickable {
+                                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        isPayAnimationActive = false
+                                        waveAnimationKey = 0
+                                        payAnimationSeconds = 59
+                                        showBottomSheet = true // Show bottom sheet again
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "Cancel payment",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            // Counter with circle background
+                            Box(
+                                modifier = Modifier
+                                    .size(60.dp)
+                                    .background(Color(0xFF8EC5FF), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = payAnimationSeconds.toString(),
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = RobotoFont
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            // Wave animation - positioned absolutely in the main Box
-            if (isPayAnimationActive) {
-                val waveScale by animateFloatAsState(
-                    targetValue = if (waveAnimationKey % 2 == 0) 2f else 1.5f,
-                    animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
-                    label = "waveScale"
-                )
-                val waveAlpha by animateFloatAsState(
-                    targetValue = if (waveAnimationKey % 2 == 0) 0.3f else 0.6f,
-                    animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
-                    label = "waveAlpha"
-                )
+                // Wave animation - positioned absolutely in the main Box
+                if (isPayAnimationActive) {
+                    val waveScale by animateFloatAsState(
+                        targetValue = if (waveAnimationKey % 2 == 0) 2f else 1.5f,
+                        animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+                        label = "waveScale"
+                    )
+                    val waveAlpha by animateFloatAsState(
+                        targetValue = if (waveAnimationKey % 2 == 0) 0.3f else 0.6f,
+                        animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
+                        label = "waveAlpha"
+                    )
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .offset(y = (-70).dp)
-                        .size(300.dp)
-                        .graphicsLayer(
-                            scaleX = waveScale,
-                            scaleY = waveScale,
-                            alpha = waveAlpha
-                        )
-                        .background(
-                            Color(0xFF8EC5FF).copy(alpha = 0.6f),
-                            CircleShape
-                        )
-                        .zIndex(100f)
-                )
-            }
-
-            // Transaction Dialogs
-            if (showTopUpDialog) {
-                selectedCard?.let { account ->
-                    TopUpDialog(
-                        targetAccount = account,
-                        onTopUp = { amount ->
-                            transactionViewModel.topUp(amount)
-                        },
-                        onDismiss = {
-                            showTopUpDialog = false
-                            transactionViewModel.resetTopUpState()
-                        },
-                        topUpUiState = topUpUiState,
-                        validateAmount = { amount ->
-                            if (amount <= BigDecimal.ZERO) "Amount must be greater than 0" else null
-                        }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .offset(y = (-70).dp)
+                            .size(300.dp)
+                            .graphicsLayer(
+                                scaleX = waveScale,
+                                scaleY = waveScale,
+                                alpha = waveAlpha
+                            )
+                            .background(
+                                Color(0xFF8EC5FF).copy(alpha = 0.6f),
+                                CircleShape
+                            )
+                            .zIndex(100f)
                     )
                 }
-            }
-            
-            // Drag instruction toast
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zIndex(2000f)
-            ) {
-                AnimatedVisibility(
-                    visible = showDragToast,
-                    enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                    exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+
+                // Transaction Dialogs
+                if (showTopUpDialog) {
+                    selectedCard?.let { account ->
+                        TopUpDialog(
+                            targetAccount = account,
+                            onTopUp = { amount ->
+                                transactionViewModel.topUp(amount)
+                            },
+                            onDismiss = {
+                                showTopUpDialog = false
+                                transactionViewModel.resetTopUpState()
+                            },
+                            topUpUiState = topUpUiState,
+                            validateAmount = { amount ->
+                                if (amount <= BigDecimal.ZERO) "Amount must be greater than 0" else null
+                            }
+                        )
+                    }
+                }
+
+                // Drag instruction toast
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 100.dp, start = 16.dp, end = 16.dp)
+                        .fillMaxSize()
+                        .zIndex(2000f)
                 ) {
-                    Card(
+                    AnimatedVisibility(
+                        visible = showDragToast,
+                        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF23272E).copy(alpha = 0.7f)
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 100.dp, start = 16.dp, end = 16.dp)
                     ) {
-                        Row(
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                .padding(horizontal = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF23272E).copy(alpha = 0.7f)
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Info,
-                                contentDescription = "Info",
-                                tint = Color(0xFF8EC5FF),
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                text = "Drag card downwards to select a card",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = RobotoFont
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "Info",
+                                    tint = Color(0xFF8EC5FF),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Text(
+                                    text = "Drag card downwards to select a card",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = RobotoFont
+                                )
+                            }
                         }
                     }
                 }

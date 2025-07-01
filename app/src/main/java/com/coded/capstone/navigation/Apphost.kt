@@ -70,12 +70,12 @@ object NavRoutes {
 @Composable
 fun AppHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
     val homeScreenViewModel = remember { HomeScreenViewModel(context) }
     val recommendationViewModel = remember { RecommendationViewModel(context) }
-val accountViewModel = remember { AccountViewModel(context) }
+    val accountViewModel = remember { AccountViewModel(context) }
     LaunchedEffect(Unit) {
         if (
             TokenManager.getToken(context) != null &&
@@ -100,6 +100,7 @@ val accountViewModel = remember { AccountViewModel(context) }
                 navController
             )
         }
+
         composable(NavRoutes.NAV_ROUTE_SIGNUP) {
             val authViewModel = remember { AuthViewModel(context) }
             SignUpScreen(
@@ -107,6 +108,7 @@ val accountViewModel = remember { AccountViewModel(context) }
                 navController
             )
         }
+
         composable(NavRoutes.NAV_ROUTE_LOADING_DASHBOARD) {
             LoadingDashboardScreen(
                 navController = navController,
@@ -120,24 +122,26 @@ val accountViewModel = remember { AccountViewModel(context) }
                 navController = navController,
                 viewModel= kycViewModel)
         }
+
         composable(NavRoutes.NAV_ROUTE_CATEGORY_ONBOARDING) {
             CategoryOnBoarding(navController = navController, viewModel = homeScreenViewModel)
         }
+
         composable(NavRoutes.NAV_ROUTE_VENDORS_ONBOARDING) {
             VendorsOnBoarding(
                 navController = navController,
                 recommendationViewModel
             )
         }
+
         composable(NavRoutes.NAV_ROUTE_CARD_SUGGESTION) {
-
-
             CardSuggestedOnBoarding(
                 navController = navController,
                 recommendationViewModel,
                 accountViewModel
             )
         }
+
         composable(
             route = NavRoutes.NAV_ROUTE_HOME + "?tab={tab}",
             arguments = listOf(
@@ -184,6 +188,7 @@ val accountViewModel = remember { AccountViewModel(context) }
                 onBackClick = { navController.popBackStack() }
             )
         }
+
         composable(NavRoutes.NAV_ROUTE_SETTINGS) {
             com.coded.capstone.screens.settings.SettingsScreen(
                 navController = navController,
@@ -207,7 +212,6 @@ val accountViewModel = remember { AccountViewModel(context) }
                 navController = navController,
                 selectedAccountId = selectedAccountId,
                 onBack = {
-                    // Navigate back to wallet screen with navbar (tab 1 = wallet)
                     navController.navigate("${NavRoutes.NAV_ROUTE_HOME}?tab=1") {
                         popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
                     }
@@ -218,10 +222,12 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
             XpTierScreen(onBackClick = { navController.popBackStack() })
         }
+
         composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { backStackEntry ->
             val promotionId = backStackEntry.arguments?.getString("promotionId")
             PromotionDetailPage(navController = navController, promotionId = promotionId)
         }
+
         composable (NavRoutes.NAV_ROUTE_RELATED_VENDOR){ backStackEntry ->
             val perkId = backStackEntry.arguments?.getString("perkId")
             val productId = backStackEntry.arguments?.getString("productId")
