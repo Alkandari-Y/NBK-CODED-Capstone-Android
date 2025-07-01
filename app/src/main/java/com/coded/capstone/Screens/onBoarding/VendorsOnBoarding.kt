@@ -217,7 +217,7 @@ fun VendorsOnBoarding(
                     .offset(y = 50.dp)
                     .align(Alignment.TopCenter)
             )
-
+            Spacer(modifier = Modifier.width(15.dp))
             // Animated Main Content Card - same as CategoryOnBoarding
             Card(
                 modifier = Modifier
@@ -335,11 +335,10 @@ fun VendorsOnBoarding(
                                         border = if (partner.id?.let { selectedVendors.contains(it) } == true)
                                             BorderStroke(2.dp, Color(0xFF8EC5FF)) else null,
                                         elevation = CardDefaults.cardElevation(
-                                            defaultElevation = if (partner.id?.let { selectedVendors.contains(it) } == true) 6.dp else 2.dp
+                                            defaultElevation = 2.dp
                                         ),
                                         colors = CardDefaults.cardColors(
-                                            containerColor = if (partner.id?.let { selectedVendors.contains(it) } == true)
-                                                Color(0xFF8EC5FF).copy(alpha = 0.1f) else Color.White
+                                            containerColor = Color.White
                                         ),
                                         onClick = {
                                             partner.id?.let { partnerId ->
@@ -372,14 +371,16 @@ fun VendorsOnBoarding(
 
                                             // ONLY LOGO - NO TEXT - Centered in the grid square
                                             Box(
-                                                modifier = Modifier.fillMaxSize(),
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(8.dp),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 BusinessLogo(
                                                     businessName = partner.name,
-                                                    size = 60.dp,
-                                                    shape = null, // No shape - raw image
-                                                    contentScale = ContentScale.Crop // Fill grid squares
+                                                    size = 160.dp,
+                                                    shape = RoundedCornerShape(8.dp),
+                                                    contentScale = ContentScale.Crop
                                                 )
                                             }
                                         }

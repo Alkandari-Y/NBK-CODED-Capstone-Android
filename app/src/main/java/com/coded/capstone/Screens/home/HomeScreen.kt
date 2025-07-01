@@ -64,6 +64,9 @@ import android.util.Log
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.ui.draw.shadow
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.coded.capstone.R
 
 import com.coded.capstone.Screens.notifications.NotificationCenter
 import com.coded.capstone.viewModels.NotificationViewModel
@@ -145,10 +148,10 @@ fun HomeScreen(
     // Get time-based greeting
     val greeting = remember {
         when (LocalTime.now().hour) {
-            in 5..11 -> "Good morning"
-            in 12..16 -> "Good afternoon"
-            in 17..21 -> "Good evening"
-            else -> "Good night"
+            in 5..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            in 17..21 -> "Good Evening"
+            else -> "Good Night"
         }
     }
 
@@ -218,7 +221,18 @@ fun HomeScreen(
                                         color = Color(0xFF23272E),
                                         shape = RoundedCornerShape(bottomStart = 70.dp, bottomEnd = 0.dp)
                                     )
+
                             ) {
+                                // Add the KLUE Logo at the top center
+                                Image(
+                                    painter = painterResource(id = R.drawable.klue),
+                                    contentDescription = "KLUE Logo",
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .offset(y = 50.dp)
+                                        .align(Alignment.TopCenter)
+                                )
+
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -299,7 +313,7 @@ fun HomeScreen(
                                                     text = "$greeting, $userName",
                                                     style = AppTypography.headlineMedium,
                                                     fontWeight = FontWeight.Bold,
-                                                    fontSize = 23.sp,
+                                                    fontSize = 15.sp,
                                                     color = Color.White
                                                 )
                                             }
@@ -559,6 +573,4 @@ fun HomeScreen(
             }
         }
     }
-
-
 }

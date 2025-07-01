@@ -235,7 +235,7 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                     .offset(y = 50.dp)
                     .align(Alignment.TopCenter)
             )
-
+            Spacer(modifier = Modifier.width(15.dp))
             // Animated Main Content Card
             Card(
                 modifier = Modifier
@@ -322,18 +322,17 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                         border = if (selectedCategories.contains(category.id.toString()))
                                             BorderStroke(2.dp, Color(0xFF8EC5FF)) else null,
                                         elevation = CardDefaults.cardElevation(
-                                            defaultElevation = if (selectedCategories.contains(category.id.toString())) 6.dp else 2.dp
+                                            defaultElevation = 2.dp
                                         ),
                                         colors = CardDefaults.cardColors(
-                                            containerColor = if (selectedCategories.contains(category.id.toString()))
-                                                Color(0xFF8EC5FF).copy(alpha = 0.1f) else Color.White
+                                            containerColor = Color.White
                                         ),
                                         onClick = {
                                             if (selectedCategories.contains(category.id.toString()) || selectedCategories.size < 3) {
                                                 toggleCategory(category.id.toString())
                                             }
                                         }
-                                    )  {
+                                    ) {
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             // Selection indicator with checkmark
                                             if (selectedCategories.contains(category.id.toString())) {
