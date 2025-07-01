@@ -18,6 +18,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    
+    <!-- NFC Permissions -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+    <uses-feature android:name="android.hardware.nfc.hce" android:required="false" />
 
     <application
         android:name=".MainApplication"
@@ -60,13 +65,24 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="nbkcapstone" />
             </intent-filter>
+            
+            <!-- NFC Payment Intent Filter -->
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
         </activity>
+        
         <service
             android:name=".MapAndGeofencing.GeofenceService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location"
             android:stopWithTask="false" />
+        
         <service
             android:name=".services.FirebasePushNotificationService"
             android:exported="false">
