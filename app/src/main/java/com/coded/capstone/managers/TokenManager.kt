@@ -17,6 +17,8 @@ object TokenManager {
     private const val REFRESH_TOKEN_KEY = "refresh"
     private const val REMEMBER_ME_KEY = "remember_me"
     private const val USER_ID = "user_id"
+    private const val REMEMBERED_USERNAME_KEY = "remembered_username"
+    private const val REMEMBERED_PASSWORD_KEY = "remembered_password"
 
 
     fun getUserIdFromSharedPref(context: Context): Long {
@@ -31,6 +33,13 @@ object TokenManager {
 
     fun isRememberMeEnabled(context: Context): Boolean {
         return getPrefs(context).getBoolean(REMEMBER_ME_KEY, false)
+    }
+
+    fun setRememberMe(context: Context, enabled: Boolean) {
+        getPrefs(context).edit {
+            putBoolean(REMEMBER_ME_KEY, enabled)
+        }
+        Log.d("TokenManager", "Remember Me set to: $enabled")
     }
 
     private fun getPrefs(context: Context): SharedPreferences {
@@ -54,11 +63,21 @@ object TokenManager {
     }
 
     fun clearToken(context: Context) {
+        val rememberMeEnabled = isRememberMeEnabled(context)
+        val rememberedUsername = getRememberedUsername(context)
+        
         getPrefs(context).edit {
             remove(ACCESS_TOKEN_KEY)
             remove(REFRESH_TOKEN_KEY)
-            remove(REMEMBER_ME_KEY)
+            // Don't clear REMEMBER_ME_KEY, REMEMBERED_USERNAME_KEY, and REMEMBERED_PASSWORD_KEY if Remember Me is enabled
+            if (!rememberMeEnabled) {
+                remove(REMEMBER_ME_KEY)
+                remove(REMEMBERED_USERNAME_KEY)
+                remove(REMEMBERED_PASSWORD_KEY)
+            }
         }
+        
+        Log.d("TokenManager", "Cleared tokens, Remember Me: $rememberMeEnabled, Username preserved: $rememberedUsername")
     }
 
     fun isAccessTokenExpired(context: Context): Boolean {
@@ -106,5 +125,45 @@ object TokenManager {
             Log.e("TokenManager", "Failed to decode token: ${e.message}")
             null
         }
+    }
+
+    fun saveRememberedUsername(context: Context, username: String) {
+        getPrefs(context).edit {
+            putString(REMEMBERED_USERNAME_KEY, username)
+        }
+        Log.d("TokenManager", "Saved remembered username: $username")
+    }
+
+    fun getRememberedUsername(context: Context): String? {
+        val username = getPrefs(context).getString(REMEMBERED_USERNAME_KEY, null)
+        Log.d("TokenManager", "Retrieved remembered username: $username")
+        return username
+    }
+
+    fun saveRememberedPassword(context: Context, password: String) {
+        getPrefs(context).edit {
+            putString(REMEMBERED_PASSWORD_KEY, password)
+        }
+        Log.d("TokenManager", "Saved remembered password")
+    }
+
+    fun getRememberedPassword(context: Context): String? {
+        val password = getPrefs(context).getString(REMEMBERED_PASSWORD_KEY, null)
+        Log.d("TokenManager", "Retrieved remembered password")
+        return password
+    }
+
+    fun clearRememberedUsername(context: Context) {
+        getPrefs(context).edit {
+            remove(REMEMBERED_USERNAME_KEY)
+        }
+        Log.d("TokenManager", "Cleared remembered username")
+    }
+
+    fun clearRememberedPassword(context: Context) {
+        getPrefs(context).edit {
+            remove(REMEMBERED_PASSWORD_KEY)
+        }
+        Log.d("TokenManager", "Cleared remembered password")
     }
 }

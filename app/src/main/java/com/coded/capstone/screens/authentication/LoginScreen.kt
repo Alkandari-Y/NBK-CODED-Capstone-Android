@@ -18,6 +18,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -33,6 +34,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -70,6 +72,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.coded.capstone.formstates.authentication.LoginFormState
 import com.coded.capstone.viewModels.AuthUiState
+import com.coded.capstone.managers.TokenManager
 import kotlinx.coroutines.delay
 import com.coded.capstone.ui.AppBackground
 
@@ -82,8 +85,47 @@ fun LoginScreen(
     val context = LocalContext.current
     val token = viewModel.token.value
 
+    // Pre-fill username if Remember Me is enabled
+    var rememberMe by remember { mutableStateOf(TokenManager.isRememberMeEnabled(context)) }
     var showPassword by remember { mutableStateOf(false) }
-    var formState by remember { mutableStateOf(LoginFormState()) }
+    
+    // Initialize form state based on Remember Me setting
+    var formState by remember {
+        mutableStateOf(
+            if (TokenManager.isRememberMeEnabled(context)) {
+                val rememberedUsername = TokenManager.getRememberedUsername(context) ?: ""
+                val rememberedPassword = TokenManager.getRememberedPassword(context) ?: ""
+                Log.d("LoginScreen", "Remember Me enabled, remembered username: '$rememberedUsername', password: '${if (rememberedPassword.isNotEmpty()) "***" else ""}'")
+                LoginFormState(username = rememberedUsername, password = rememberedPassword)
+            } else {
+                Log.d("LoginScreen", "Remember Me disabled, starting with empty form")
+                LoginFormState()
+            }
+        )
+    }
+    
+    // Update form state when rememberMe changes
+    LaunchedEffect(rememberMe) {
+        if (rememberMe) {
+            val rememberedUsername = TokenManager.getRememberedUsername(context) ?: ""
+            val rememberedPassword = TokenManager.getRememberedPassword(context) ?: ""
+            Log.d("LoginScreen", "Remember Me checked, setting username to: '$rememberedUsername' and password")
+            formState = formState.copy(username = rememberedUsername, password = rememberedPassword)
+        } else {
+            Log.d("LoginScreen", "Remember Me unchecked, clearing username and password")
+            formState = formState.copy(username = "", password = "")
+        }
+    }
+    
+    // Update form state when screen is recomposed (after logout)
+    LaunchedEffect(Unit) {
+        if (TokenManager.isRememberMeEnabled(context)) {
+            val rememberedUsername = TokenManager.getRememberedUsername(context) ?: ""
+            val rememberedPassword = TokenManager.getRememberedPassword(context) ?: ""
+            Log.d("LoginScreen", "Screen recomposed, loading remembered username: '$rememberedUsername' and password")
+            formState = formState.copy(username = rememberedUsername, password = rememberedPassword)
+        }
+    }
 
     // Animation states
     var cardVisible by remember { mutableStateOf(false) }
@@ -275,7 +317,7 @@ fun LoginScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 32.dp)
+                                .padding(bottom = 8.dp)
                                 .animateContentSize(),
                             shape = RoundedCornerShape(12.dp),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -305,6 +347,29 @@ fun LoginScreen(
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                         )
+
+                        // Remember Me checkbox below password, aligned with text
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 24.dp)
+                        ) {
+                            Checkbox(
+                                checked = rememberMe,
+                                onCheckedChange = { rememberMe = it },
+                                colors = androidx.compose.material3.CheckboxDefaults.colors(
+                                    checkedColor = Color(0xFF8EC5FF), // Brand blue
+                                    uncheckedColor = Color(0xFF6B7280),
+                                    checkmarkColor = Color.White
+                                )
+                            )
+                            Text(
+                                text = "Remember Me",
+                                fontSize = 14.sp,
+                                color = Color(0xFF6B7280)
+                            )
+                        }
 
                         // Error message with animation
                         AnimatedVisibility(
@@ -345,6 +410,18 @@ fun LoginScreen(
                                 val validated = formState.validate()
                                 if (validated.formIsValid) {
                                     formState = validated
+                                    // Save Remember Me setting and credentials
+                                    Log.d("LoginScreen", "Saving Remember Me: $rememberMe")
+                                    TokenManager.setRememberMe(context, rememberMe)
+                                    if (rememberMe) {
+                                        Log.d("LoginScreen", "Saving username: ${validated.username} and password")
+                                        TokenManager.saveRememberedUsername(context, validated.username)
+                                        TokenManager.saveRememberedPassword(context, validated.password)
+                                    } else {
+                                        Log.d("LoginScreen", "Clearing remembered credentials")
+                                        TokenManager.clearRememberedUsername(context)
+                                        TokenManager.clearRememberedPassword(context)
+                                    }
                                     viewModel.login(
                                         username = validated.username,
                                         password = validated.password
@@ -403,6 +480,22 @@ fun LoginScreen(
                             modifier = Modifier
                                 .clickable {
                                     navController.navigate(NavRoutes.NAV_ROUTE_SIGNUP)
+                                }
+                                .padding(8.dp)
+                        )
+                        
+                        // Debug button (remove this after testing)
+                        Text(
+                            text = "Debug: Check Remember Me Status",
+                            fontSize = 12.sp,
+                            color = Color(0xFF8EC5FF),
+                            modifier = Modifier
+                                .clickable {
+                                    val isEnabled = TokenManager.isRememberMeEnabled(context)
+                                    val savedUsername = TokenManager.getRememberedUsername(context)
+                                    val savedPassword = TokenManager.getRememberedPassword(context)
+                                    Log.d("LoginScreen", "Debug - Remember Me enabled: $isEnabled, saved username: '$savedUsername', password: '${if (savedPassword?.isNotEmpty() == true) "***" else ""}'")
+                                    Toast.makeText(context, "Remember Me: $isEnabled, Username: '$savedUsername', Password: ${if (savedPassword?.isNotEmpty() == true) "Saved" else "Not saved"}", Toast.LENGTH_LONG).show()
                                 }
                                 .padding(8.dp)
                         )

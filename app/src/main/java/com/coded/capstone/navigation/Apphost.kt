@@ -33,6 +33,7 @@ import com.coded.capstone.screens.recommendation.RecommendationScreen
 import com.coded.capstone.screens.transfer.TransferScreen
 import com.coded.capstone.screens.wallet.RelatedVendorsScreen
 import com.coded.capstone.screens.xp.XpTierScreen
+import com.coded.capstone.deeplink.DeepLinkUtils
 
 object NavRoutes {
     const val NAV_ROUTE_LOGIN = "login"
@@ -90,8 +91,16 @@ fun AppHost(
             TokenManager.isRememberMeEnabled(context) &&
             !TokenManager.isAccessTokenExpired(context)
         ) {
-            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
-                popUpTo(0)
+            // Check for pending deep links first
+            val pendingDeepLink = DeepLinkUtils.getPendingDeepLink(context)
+            if (pendingDeepLink != null) {
+                // Process the pending deep link
+                DeepLinkUtils.processPendingDeepLink(context, navController)
+            } else {
+                // No pending deep link, navigate to home as usual
+                navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                    popUpTo(0)
+                }
             }
         }
     }
