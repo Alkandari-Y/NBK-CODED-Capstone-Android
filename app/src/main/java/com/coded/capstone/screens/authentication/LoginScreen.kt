@@ -124,24 +124,14 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
         ) {
             // Logo in top section
-            Box(
+            Image(
+                painter = painterResource(id = R.drawable.klue),
+                contentDescription = "KLUE Logo",
                 modifier = Modifier
-                    .size(60.dp)
-                    .offset(y = 32.dp)
+                    .size(90.dp)
+                    .offset(y = 50.dp)
                     .align(Alignment.TopCenter)
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(15.dp)
-            ) {
-                // Use actual KLUE logo from drawable
-                Image(
-                    painter = painterResource(id = R.drawable.klue),
-                    contentDescription = "KLUE Logo",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            )
 
             // Animated Login Card - Full Width
             Card(

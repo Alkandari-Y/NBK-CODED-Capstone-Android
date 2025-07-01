@@ -303,12 +303,6 @@ fun HomeScreen(
                                                     color = Color.White
                                                 )
                                             }
-                                            Text(
-                                                text = "Welcome back to KLUE",
-                                                style = AppTypography.bodySmall,
-                                                fontSize = 18.sp,
-                                                color = Color(0xFF8EC5FF).copy(alpha = 0.8f)
-                                            )
                                         }
                                     }
                                 }

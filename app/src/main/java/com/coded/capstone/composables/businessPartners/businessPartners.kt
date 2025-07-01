@@ -1,10 +1,9 @@
-package com.coded.capstone.composables
+package com.coded.capstone.composables.businessPartners
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
@@ -16,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,7 +63,9 @@ fun BusinessLogo(
     modifier: Modifier = Modifier,
     size: androidx.compose.ui.unit.Dp = 120.dp,
     isExpired: Boolean = false,
-    showExpiredOverlay: Boolean = true
+    showExpiredOverlay: Boolean = true,
+    shape: Shape? = null, // Optional shape - null means no shape
+    contentScale: ContentScale = ContentScale.Crop
 ) {
     val context = LocalContext.current
     val logoRes = if (isExpired) {
@@ -77,11 +79,14 @@ fun BusinessLogo(
         contentAlignment = Alignment.Center
     ) {
         if (logoRes == R.drawable.default_promotion && !isExpired) {
-            // Fallback:
+            // Fallback - with optional shape
             Box(
                 modifier = Modifier
                     .size(size)
-                    .background(Color.Gray.copy(alpha = 0.1f), CircleShape),
+                    .background(
+                        Color.Gray.copy(alpha = 0.1f),
+                        shape ?: RoundedCornerShape(8.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 businessName?.let { name ->
@@ -99,22 +104,32 @@ fun BusinessLogo(
                 )
             }
         } else {
+            // Image with optional shape
+            val imageModifier = if (shape != null) {
+                Modifier
+                    .size(size)
+                    .clip(shape)
+            } else {
+                Modifier.size(size)
+            }
+
             Image(
                 painter = painterResource(id = logoRes),
                 contentDescription = "$businessName logo",
-                modifier = Modifier
-                    .size(size)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
+                modifier = imageModifier,
+                contentScale = contentScale,
                 colorFilter = if (isExpired) ColorFilter.tint(Color.Gray.copy(alpha = 0.6f)) else null
             )
 
-            // expired
+            // expired overlay
             if (isExpired && showExpiredOverlay) {
                 Box(
                     modifier = Modifier
                         .size(size)
-                        .background(Color.Black.copy(alpha = 0.5f), CircleShape),
+                        .background(
+                            Color.Black.copy(alpha = 0.5f),
+                            shape ?: RoundedCornerShape(0.dp) // No shape for overlay too
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -147,7 +162,8 @@ fun PromotionBusinessLogo(
             businessName = businessName,
             size = size,
             isExpired = isExpired,
-            showExpiredOverlay = true
+            showExpiredOverlay = true,
+            shape = null // No shape - raw image
         )
 
         // Status indicator
