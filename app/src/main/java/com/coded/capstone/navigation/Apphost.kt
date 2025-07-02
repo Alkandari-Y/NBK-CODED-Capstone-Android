@@ -184,13 +184,21 @@ val accountViewModel = remember { AccountViewModel(context) }
                 AccountDetailsScreen(
                     accountId= accountId,
                     viewModel = homeScreenViewModel,
-                    onBack= { navController.popBackStack(NavRoutes.NAV_ROUTE_HOME, inclusive = false) })
+                    onBack= { 
+                        navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                            popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                        }
+                    })
             }
         }
 
         composable (NavRoutes.NAV_ROUTE_PROFILE){
             ProfilePage(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { 
+                    navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                        popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                    }
+                }
             )
         }
         composable(NavRoutes.NAV_ROUTE_SETTINGS) {

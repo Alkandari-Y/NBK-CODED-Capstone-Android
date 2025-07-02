@@ -72,7 +72,11 @@ fun NotificationCenter(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() },
+                        onClick = { 
+                            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                                popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                            }
+                        },
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .size(40.dp)
