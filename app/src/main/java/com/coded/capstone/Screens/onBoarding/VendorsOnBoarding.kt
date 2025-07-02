@@ -106,10 +106,6 @@ fun VendorsOnBoarding(
         viewModel.submitFavoriteBusinesses(selectedBusinessIds)
     }
 
-    fun skipStep() {
-        navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
-    }
-
     // Use Scaffold to ensure bottom bar is always visible
     Scaffold(
         bottomBar = {
@@ -123,49 +119,14 @@ fun VendorsOnBoarding(
                         .navigationBarsPadding()
                         .padding(16.dp)
                 ) {
-                    // Skip button - Left
-                    TextButton(
-                        onClick = { skipStep() },
-                        modifier = Modifier.align(Alignment.CenterStart),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = Color(0xFF6B7280)
-                        )
-                    ) {
-                        Text(
-                            text = "SKIP",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    // Progress indicator - Center
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.align(Alignment.Center)
-                    ) {
-                        repeat(3) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        if (index == 1) Color(0xFF374151) else Color(0xFFD1D5DB),
-                                        CircleShape
-                                    )
-                            )
-                            if (index < 2) {
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                        }
-                    }
-
-                    // Continue Button - Right
+                    // Continue Button - Centered (no progress indicator here anymore)
                     Button(
                         onClick = { submitFavoriteVendors() },
                         enabled = favBusinessUiState !is FavBusinessUiState.Loading,
                         modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .height(44.dp)
-                            .widthIn(min = 120.dp),
+                            .align(Alignment.Center)
+                            .height(40.dp) // Reduced from 44dp
+                            .widthIn(min = 100.dp), // Reduced from 120dp
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF8EC5FF),
@@ -242,7 +203,7 @@ fun VendorsOnBoarding(
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // Header - same structure as CategoryOnBoarding
+                        // Header with Progress Indicator on Top
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
@@ -258,6 +219,30 @@ fun VendorsOnBoarding(
                                 modifier = Modifier.fillMaxWidth()
                             )
 
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Progress indicator - moved to top
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                repeat(3) { index ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .background(
+                                                if (index == 1) Color(0xFF374151) else Color(0xFFD1D5DB),
+                                                CircleShape
+                                            )
+                                    )
+                                    if (index < 2) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
                             Text(
                                 text = "Select up to 3 of your favorite shops",
                                 fontSize = 14.sp,
@@ -265,19 +250,34 @@ fun VendorsOnBoarding(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp, bottom = 4.dp)
+                                    .padding(bottom = 4.dp)
                             )
 
-                            Text(
-                                text = "${selectedVendors.size}/3 selected",
-                                fontSize = 12.sp,
-                                color = Color(0xFF374151),
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
+                            // Updated selection counter with skip text
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 4.dp)
-                            )
+                            ) {
+                                Text(
+                                    text = "${selectedVendors.size}/3 selected",
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF374151),
+                                    fontWeight = FontWeight.Medium,
+                                    textAlign = TextAlign.Center
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = "(you can skip this step)",
+                                    fontSize = 11.sp,
+                                    color = Color(0xFF9CA3AF),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
 
                         // Search Bar
@@ -349,7 +349,7 @@ fun VendorsOnBoarding(
                                         }
                                     ) {
                                         Box(modifier = Modifier.fillMaxSize()) {
-                                            // Selection indicator with checkmark - same as CategoryOnBoarding
+                                            // Selection indicator with checkmark - SAME AS CategoryOnBoarding
                                             if (partner.id?.let { selectedVendors.contains(it) } == true) {
                                                 Box(
                                                     modifier = Modifier
