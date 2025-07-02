@@ -133,7 +133,7 @@ fun DrawerContent(
                                         text = userName,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF2A2A2A) // Dark text for white background
+                                        color = Color(0xFF23272E) // Dark text for white background
                                     )
                                     Text(
                                         text = "KLUE Banking",
@@ -156,12 +156,8 @@ fun DrawerContent(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(500.dp) // Take remaining space to extend above logout
-                                    .background(Color(0xFF23272E),   shape = RoundedCornerShape(
-                                        topStart = 40.dp, // Top-left rounded
-//                                        bottomStart = 40.dp // Bottom-left rounded
-                                    )) // Dark gray background
-
+                                    .weight(1f)
+                                    .background(Color(0xFF23272E), shape = RoundedCornerShape(topStart = 40.dp))
                                     .padding(16.dp)
                             ) {
                                 Column {

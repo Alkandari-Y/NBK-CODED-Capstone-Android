@@ -1,5 +1,6 @@
 package com.coded.capstone.screens.onboarding
 
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -15,11 +16,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -33,8 +37,8 @@ import com.coded.capstone.data.responses.category.CategoryDto
 import com.coded.capstone.data.requests.recommendation.SetFavCategoryRequest
 import com.coded.capstone.viewModels.FavCategoryUiState
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.gestures.detectTapGestures
 
-// Category icon mapping for the first 10 categories - More distinct icons
 fun getCategoryOnboardingIcon(categoryName: String): ImageVector {
     return when (categoryName.lowercase()) {
         "retail" -> Icons.Filled.Store
@@ -51,18 +55,17 @@ fun getCategoryOnboardingIcon(categoryName: String): ImageVector {
     }
 }
 
-// Category color mapping
 fun getCategoryOnboardingColor(categoryName: String): Color {
     return when (categoryName.lowercase()) {
-        "retail" -> Color(0xFF3B82F6)
+        "retail" -> Color(0xFFF44336)
         "travel" -> Color(0xFF0EA5E9)
-        "dining" -> Color(0xFFEA580C)
+        "dining" -> Color(0xFFFFC107)
         "fashion" -> Color(0xFFEC4899)
         "technology" -> Color(0xFF8B5CF6)
-        "hospitality" -> Color(0xFF059669)
+        "hospitality" -> Color(0xFF084D35)
         "education" -> Color(0xFF6366F1)
         "entertainment" -> Color(0xFFE11D48)
-        "personal care" -> Color(0xFFDC2626)
+        "personal care" -> Color(0xFF009688)
         "wholesale" -> Color(0xFFD97706)
         else -> Color(0xFF6B7280)
     }
@@ -70,24 +73,39 @@ fun getCategoryOnboardingColor(categoryName: String): Color {
 
 @Composable
 fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewModel) {
+
     var selectedCategories by remember { mutableStateOf(listOf<String>()) }
     val categories by viewModel.categories.collectAsState()
     val favCategoryUiState by viewModel.favCategoryUiState.collectAsState()
 
-    // Define the specific 10 categories we want to show
     val targetCategories = listOf(
         "retail", "travel", "dining", "fashion", "technology",
         "hospitality", "education", "entertainment", "personal care", "wholesale"
     )
 
-    // Filter categories to only show the ones we have icons for
     val filteredCategories = remember(categories) {
-        categories.filter { category ->
+        val availableCategories = categories.filter { category ->
             targetCategories.contains(category.name.lowercase())
+        }
+        targetCategories.mapNotNull { targetName ->
+            availableCategories.find { it.name.lowercase() == targetName }
         }.take(10)
     }
 
-    // Animation states
+    LaunchedEffect(categories) {
+        Log.d("CategoryOnBoarding", "Categories loaded: ${categories.size}")
+        categories.forEach { category ->
+            Log.d("CategoryOnBoarding", "Category: ${category.name} - ID: ${category.id}")
+        }
+    }
+
+    LaunchedEffect(filteredCategories) {
+        Log.d("CategoryOnBoarding", "Filtered categories: ${filteredCategories.size}")
+        filteredCategories.forEach { category ->
+            Log.d("CategoryOnBoarding", "Filtered: ${category.name}")
+        }
+    }
+
     var cardVisible by remember { mutableStateOf(false) }
     val cardOffsetY by animateDpAsState(
         targetValue = if (cardVisible) 140.dp else 800.dp,
@@ -108,17 +126,21 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
         label = "card_fade_in"
     )
 
-    // Scroll state for dynamic indicator
+    var buttonPressed by remember { mutableStateOf(false) }
+    val buttonScale by animateFloatAsState(
+        targetValue = if (buttonPressed) 0.95f else 1f,
+        animationSpec = tween(100),
+        label = "button_scale"
+    )
+
     val scrollState = rememberLazyGridState()
 
-    // Trigger animation on composition
     LaunchedEffect(Unit) {
         delay(300)
         cardVisible = true
         viewModel.fetchCategories()
     }
 
-    // Handle navigation on success
     LaunchedEffect(favCategoryUiState) {
         when (favCategoryUiState) {
             is FavCategoryUiState.Success -> {
@@ -143,7 +165,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
         viewModel.submitFavoriteCategories(selectedCategories)
     }
 
-    // Use Scaffold to ensure bottom bar is always visible
     Scaffold(
         bottomBar = {
             Surface(
@@ -156,38 +177,32 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                         .navigationBarsPadding()
                         .padding(16.dp)
                 ) {
-                    // Progress indicator - Center
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.align(Alignment.Center)
-                    ) {
-                        repeat(3) { index ->
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        if (index == 0) Color(0xFF374151) else Color(0xFFD1D5DB),
-                                        CircleShape
-                                    )
-                            )
-                            if (index < 2) {
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                        }
-                    }
-
-                    // Next Button - Right
                     Button(
                         onClick = { submitFavoriteCategories() },
                         enabled = selectedCategories.size == 3 && favCategoryUiState !is FavCategoryUiState.Loading,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .height(44.dp)
-                            .widthIn(min = 100.dp),
+                            .widthIn(min = 100.dp)
+                            .scale(buttonScale)
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onPress = {
+                                        buttonPressed = true
+                                        tryAwaitRelease()
+                                        buttonPressed = false
+                                    }
+                                )
+                            },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF8EC5FF),
+                            contentColor = Color.White,
                             disabledContainerColor = Color(0xFFE5E7EB)
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp
                         )
                     ) {
                         Row(
@@ -223,10 +238,9 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF374151))
+                .background(Color(0xFF23272E))
                 .padding(paddingValues)
         ) {
-            // Logo in top section
             Image(
                 painter = painterResource(id = R.drawable.klue),
                 contentDescription = "KLUE Logo",
@@ -236,7 +250,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                     .align(Alignment.TopCenter)
             )
             Spacer(modifier = Modifier.width(15.dp))
-            // Animated Main Content Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -260,7 +273,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // Header - Center aligned
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
@@ -276,6 +288,29 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 modifier = Modifier.fillMaxWidth()
                             )
 
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                repeat(3) { index ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .background(
+                                                if (index == 0) Color(0xFF374151) else Color(0xFFD1D5DB),
+                                                CircleShape
+                                            )
+                                    )
+                                    if (index < 2) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
                             Text(
                                 text = "Select up to 3 of your favorite categories",
                                 fontSize = 14.sp,
@@ -283,12 +318,12 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp, bottom = 4.dp)
+                                    .padding(bottom = 4.dp)
                             )
 
                             Text(
                                 text = "${selectedCategories.size}/3 selected",
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color = Color(0xFF374151),
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center,
@@ -298,7 +333,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                             )
                         }
 
-                        // Categories Grid with dynamic scroll indicator
                         Box(modifier = Modifier.weight(1f)) {
                             LazyVerticalGrid(
                                 state = scrollState,
@@ -334,7 +368,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                         }
                                     ) {
                                         Box(modifier = Modifier.fillMaxSize()) {
-                                            // Selection indicator with checkmark
                                             if (selectedCategories.contains(category.id.toString())) {
                                                 Box(
                                                     modifier = Modifier
@@ -354,7 +387,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                                 }
                                             }
 
-                                            // Content
                                             Column(
                                                 modifier = Modifier
                                                     .fillMaxSize()
@@ -373,12 +405,13 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
 
                                                 Text(
                                                     text = category.name,
-                                                    fontSize = 13.sp,
-                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.Bold,
                                                     color = if (selectedCategories.contains(category.id.toString()))
-                                                        Color(0xFF8EC5FF) else Color(0xFF374151),
+                                                        Color(0xFF8EC5FF) else Color(0xFF23272E),
                                                     textAlign = TextAlign.Center,
-                                                    maxLines = 2
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
                                                 )
                                             }
                                         }
@@ -386,7 +419,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 }
                             }
 
-                            // Dynamic scroll indicator
                             val scrollProgress = remember {
                                 derivedStateOf {
                                     if (scrollState.layoutInfo.totalItemsCount == 0) 0f
@@ -405,7 +437,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                     .width(6.dp)
                                     .height(200.dp)
                             ) {
-                                // Track background
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -415,7 +446,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                         )
                                 )
 
-                                // Moving thumb
                                 Box(
                                     modifier = Modifier
                                         .width(6.dp)
@@ -430,7 +460,6 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                         }
                     }
 
-                    // Error message display
                     if (favCategoryUiState is FavCategoryUiState.Error) {
                         Card(
                             modifier = Modifier
