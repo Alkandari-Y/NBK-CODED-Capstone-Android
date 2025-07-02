@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +49,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.ui.zIndex
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +69,14 @@ fun KycScreen(
 
     // Success message state
     var showSuccessMessage by remember { mutableStateOf(false) }
+
+    // Button animation states - SAME AS SIGNUP
+    var buttonPressed by remember { mutableStateOf(false) }
+    val buttonScale by animateFloatAsState(
+        targetValue = if (buttonPressed) 0.95f else 1f,
+        animationSpec = tween(100),
+        label = "button_press"
+    )
 
     // Animation states
     var cardVisible by remember { mutableStateOf(false) }
@@ -108,7 +119,7 @@ fun KycScreen(
 
     AppBackground {
         Box(
-            modifier = Modifier.fillMaxSize().background(Color(0xFF374151))
+            modifier = Modifier.fillMaxSize().background(Color(0xFF23272E))
 
         ) {
             // Back button
@@ -168,8 +179,9 @@ fun KycScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = if (isEditMode) "Personal Info" else "Profile",
+                            text = if (isEditMode) "Personal Information" else "Profile",
                             style = MaterialTheme.typography.headlineMedium.copy(
+                                fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF374151)
                             ),
@@ -464,17 +476,32 @@ fun KycScreen(
                         )
 
                         if (isEditMode) {
+                            // UPDATED BUTTON - SAME STYLE AS SIGNUP
                             Button(
                                 onClick = { viewModel.submitKyc() },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(50.dp),
+                                    .height(50.dp)
+                                    .scale(buttonScale)
+                                    .pointerInput(Unit) {
+                                        detectTapGestures(
+                                            onPress = {
+                                                buttonPressed = true
+                                                tryAwaitRelease()
+                                                buttonPressed = false
+                                            }
+                                        )
+                                    },
                                 enabled = status !is UiStatus.Loading,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF8EC5FF),
                                     contentColor = Color.White
                                 ),
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 4.dp,
+                                    pressedElevation = 8.dp
+                                )
                             ) {
                                 if (status is UiStatus.Loading) {
                                     CircularProgressIndicator(
@@ -482,7 +509,11 @@ fun KycScreen(
                                         color = Color.White
                                     )
                                 } else {
-                                    Text("Submit", fontSize = 16.sp)
+                                    Text(
+                                        text = "Submit",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
                                 }
                             }
                         }

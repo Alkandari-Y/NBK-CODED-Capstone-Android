@@ -159,8 +159,8 @@ fun CardSuggestedOnBoarding(
                 ) {
                     CircularProgressIndicator(
                         color = Color(0xFF8EC5FF),
-                        modifier = Modifier.size(60.dp),
-                        strokeWidth = 4.dp
+                        modifier = Modifier.size(40.dp),
+                        strokeWidth = 3.dp
                     )
                 }
 
@@ -286,7 +286,7 @@ fun CardSuggestedOnBoarding(
                 // Header Section
                 Text(
                     text = "Your Perfect Match",
-                    fontSize = 32.sp,
+                    fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF374151),
                     textAlign = TextAlign.Center,
@@ -307,7 +307,8 @@ fun CardSuggestedOnBoarding(
                 // Card Description - Floating Text
                 Text(
                     text = card.description ?: "A personalized account recommendation based on your preferences and banking needs.",
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Color(0xFF6B7280),
                     lineHeight = 24.sp,
                     fontFamily = RobotoFont,
@@ -333,7 +334,7 @@ fun CardSuggestedOnBoarding(
                             .width(150.dp), // Fixed width
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF374151) // Dark grey
+                            containerColor = Color(0xFF23272E) // Dark grey
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
@@ -440,7 +441,7 @@ fun CardSuggestedOnBoarding(
                             .width(150.dp), // Fixed width
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF374151) // Dark grey
+                            containerColor = Color(0xFF23272E) // Dark grey
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
@@ -543,19 +544,19 @@ fun CardSuggestedOnBoarding(
                         modifier = Modifier.size(24.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
 
                     Text(
-                        text = "Get Cash Back and XP when you apply!",
-                        fontSize = 16.sp,
+                        text = "Earn Cash Back and XP upon application!",
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF374151),
+                        color = Color(0xFF23272E),
                         fontFamily = RobotoFont,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f, fill = false)
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
 
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,

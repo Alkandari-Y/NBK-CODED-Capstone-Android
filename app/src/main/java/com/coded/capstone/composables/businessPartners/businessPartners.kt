@@ -36,7 +36,7 @@ fun getBusinessLogoResource(context: android.content.Context, businessName: Stri
     val resourceName = businessName
         .lowercase()
         .replace(" ", "_")
-        .replace("&", "and")
+        .replace("&", "_")
         .replace(".", "")
         .replace("-", "_")
 
@@ -49,6 +49,20 @@ fun getBusinessLogoResource(context: android.content.Context, businessName: Stri
     return if (resourceId != 0) resourceId else R.drawable.default_promotion
 }
 
+// Special case logo resource getter for H&M, else fallback to original
+@DrawableRes
+fun getBusinessLogoResourceWithSpecialCase(context: android.content.Context, businessName: String?): Int {
+    if (businessName.equals("H&M", ignoreCase = true)) {
+        val resourceId = context.resources.getIdentifier(
+            "h_m",
+            "drawable",
+            context.packageName
+        )
+        return if (resourceId != 0) resourceId else R.drawable.default_promotion
+    }
+    return getBusinessLogoResource(context, businessName)
+}
+
 // Function to get partner logo resource from logoUrl or partner name
 @DrawableRes
 fun getPartnerLogoResource(context: android.content.Context, partner: PartnerDto): Int {
@@ -56,13 +70,13 @@ fun getPartnerLogoResource(context: android.content.Context, partner: PartnerDto
         partner.logoUrl.isNotBlank() -> partner.logoUrl
         else -> partner.name
     }
-    
+
     if (searchName.isBlank()) return R.drawable.default_promotion
 
     val resourceName = searchName
         .lowercase()
         .replace(" ", "_")
-        .replace("&", "and")
+        .replace("&", "_")
         .replace(".", "")
         .replace("-", "_")
         .replace("'", "")
@@ -95,13 +109,18 @@ fun BusinessLogo(
     isExpired: Boolean = false,
     showExpiredOverlay: Boolean = true,
     shape: Shape? = null, // Optional shape - null means no shape
-    contentScale: ContentScale = ContentScale.Crop
+    contentScale: ContentScale = ContentScale.Crop,
+    useSpecialCases: Boolean = false // New parameter to enable special case handling
 ) {
     val context = LocalContext.current
     val logoRes = if (isExpired) {
         R.drawable.expired_promotion
     } else {
-        getBusinessLogoResource(context, businessName)
+        if (useSpecialCases) {
+            getBusinessLogoResourceWithSpecialCase(context, businessName)
+        } else {
+            getBusinessLogoResource(context, businessName)
+        }
     }
 
     Box(
@@ -193,7 +212,8 @@ fun PromotionBusinessLogo(
             size = size,
             isExpired = isExpired,
             showExpiredOverlay = true,
-            shape = null // No shape - raw image
+            shape = null, // No shape - raw image
+            useSpecialCases = true // Enable special case handling for promotions
         )
 
         // Status indicator

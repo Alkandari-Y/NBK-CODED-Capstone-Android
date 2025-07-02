@@ -15,14 +15,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.navigation.NavController
 import com.coded.capstone.R
 import com.coded.capstone.navigation.NavRoutes
@@ -41,6 +45,14 @@ fun VendorsOnBoarding(
     var searchQuery by remember { mutableStateOf("") }
     val partners by viewModel.partners.collectAsState()
     val favBusinessUiState by viewModel.favBusinessUiState.collectAsState()
+
+    // Button animation states
+    var buttonPressed by remember { mutableStateOf(false) }
+    val buttonScale by animateFloatAsState(
+        targetValue = if (buttonPressed) 0.95f else 1f,
+        animationSpec = tween(100),
+        label = "button_scale"
+    )
 
     // Animation states - same as CategoryOnBoarding
     var cardVisible by remember { mutableStateOf(false) }
@@ -83,13 +95,50 @@ fun VendorsOnBoarding(
         }
     }
 
-    // Filter partners based on search
+    // Custom order for partners display
+    val customOrder = listOf(
+        "Pick",
+        "Spark Gym",
+        "Kuwait Airways",
+        "Xcite Electronics",
+        "Jumeirah Hotels",
+        "Sultan Center",
+        "VOX Cinemas",
+        "H&M",
+        "Safat Home",
+        "OFK",
+        "Caribou Coffee",
+        "Chips Store",
+        "KidZania Kuwait",
+        "Grand Cinemas",
+        "Almosafer",
+        "Shake Shack"
+    )
+
+    // Filter partners based on search and exclude National Bank of Kuwait
     val filteredPartners = if (searchQuery.isBlank()) {
-        partners
+        // No search - show all partners in custom order, excluding NBK
+        val partnersExcludingNBK = partners.filterNot {
+            it.name.equals("National Bank of Kuwait", ignoreCase = true)
+        }
+
+        // Sort by custom order
+        partnersExcludingNBK.sortedBy { partner ->
+            val index = customOrder.indexOfFirst { it.equals(partner.name, ignoreCase = true) }
+            if (index != -1) index else Int.MAX_VALUE
+        }
     } else {
-        partners.filter {
-            it.name.contains(searchQuery, ignoreCase = true) ||
-                    it.category.name.contains(searchQuery, ignoreCase = true)
+        // With search - filter by search query, exclude NBK, then sort by custom order
+        val searchedPartners = partners.filter {
+            !it.name.equals("National Bank of Kuwait", ignoreCase = true) &&
+                    (it.name.contains(searchQuery, ignoreCase = true) ||
+                            it.category.name.contains(searchQuery, ignoreCase = true))
+        }
+
+        // Sort by custom order
+        searchedPartners.sortedBy { partner ->
+            val index = customOrder.indexOfFirst { it.equals(partner.name, ignoreCase = true) }
+            if (index != -1) index else Int.MAX_VALUE
         }
     }
 
@@ -101,9 +150,16 @@ fun VendorsOnBoarding(
         }
     }
 
-    fun submitFavoriteVendors() {
-        val selectedBusinessIds = selectedVendors.map { it.toString() }
-        viewModel.submitFavoriteBusinesses(selectedBusinessIds)
+    // FIXED: New function to handle continue/skip
+    fun handleContinue() {
+        if (selectedVendors.isNotEmpty()) {
+            // Submit selected vendors
+            val selectedBusinessIds = selectedVendors.map { it.toString() }
+            viewModel.submitFavoriteBusinesses(selectedBusinessIds)
+        } else {
+            // Skip - navigate directly to next screen
+            navController.navigate(NavRoutes.NAV_ROUTE_CARD_SUGGESTION)
+        }
     }
 
     // Use Scaffold to ensure bottom bar is always visible
@@ -119,18 +175,33 @@ fun VendorsOnBoarding(
                         .navigationBarsPadding()
                         .padding(16.dp)
                 ) {
-                    // Continue Button - Centered (no progress indicator here anymore)
+                    // FIXED: Continue/Skip Button
                     Button(
-                        onClick = { submitFavoriteVendors() },
+                        onClick = { handleContinue() },
                         enabled = favBusinessUiState !is FavBusinessUiState.Loading,
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .height(40.dp) // Reduced from 44dp
-                            .widthIn(min = 100.dp), // Reduced from 120dp
+                            .align(Alignment.CenterEnd)
+                            .height(44.dp)
+                            .widthIn(min = 100.dp)
+                            .scale(buttonScale)
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onPress = {
+                                        buttonPressed = true
+                                        tryAwaitRelease()
+                                        buttonPressed = false
+                                    }
+                                )
+                            },
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF8EC5FF),
+                            contentColor = Color.White,
                             disabledContainerColor = Color(0xFFE5E7EB)
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp
                         )
                     ) {
                         Row(
@@ -145,7 +216,7 @@ fun VendorsOnBoarding(
                                 )
                             } else {
                                 Text(
-                                    text = "CONTINUE",
+                                    text = if (selectedVendors.isNotEmpty()) "CONTINUE" else "SKIP",
                                     color = Color.White,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp
@@ -166,7 +237,7 @@ fun VendorsOnBoarding(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF374151))
+                .background(Color(0xFF23272E))
                 .padding(paddingValues)
         ) {
             // Logo
@@ -253,7 +324,7 @@ fun VendorsOnBoarding(
                                     .padding(bottom = 4.dp)
                             )
 
-                            // Updated selection counter with skip text
+                            // Selection counter
                             Row(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
@@ -263,7 +334,7 @@ fun VendorsOnBoarding(
                             ) {
                                 Text(
                                     text = "${selectedVendors.size}/3 selected",
-                                    fontSize = 12.sp,
+                                    fontSize = 14.sp,
                                     color = Color(0xFF374151),
                                     fontWeight = FontWeight.Medium,
                                     textAlign = TextAlign.Center
@@ -273,7 +344,7 @@ fun VendorsOnBoarding(
 
                                 Text(
                                     text = "(you can skip this step)",
-                                    fontSize = 11.sp,
+                                    fontSize = 13.sp,
                                     color = Color(0xFF9CA3AF),
                                     textAlign = TextAlign.Center
                                 )
@@ -329,7 +400,7 @@ fun VendorsOnBoarding(
                                 ) { partner ->
                                     Card(
                                         modifier = Modifier
-                                            .aspectRatio(1f)
+                                            .aspectRatio(0.85f) // FIXED: Changed aspect ratio to give more vertical space
                                             .fillMaxWidth(),
                                         shape = RoundedCornerShape(12.dp),
                                         border = if (partner.id?.let { selectedVendors.contains(it) } == true)
@@ -349,7 +420,7 @@ fun VendorsOnBoarding(
                                         }
                                     ) {
                                         Box(modifier = Modifier.fillMaxSize()) {
-                                            // Selection indicator with checkmark - SAME AS CategoryOnBoarding
+                                            // Selection indicator
                                             if (partner.id?.let { selectedVendors.contains(it) } == true) {
                                                 Box(
                                                     modifier = Modifier
@@ -369,18 +440,44 @@ fun VendorsOnBoarding(
                                                 }
                                             }
 
-                                            // ONLY LOGO - NO TEXT - Centered in the grid square
-                                            Box(
+                                            // FIXED: Content layout
+                                            Column(
                                                 modifier = Modifier
                                                     .fillMaxSize()
-                                                    .padding(8.dp),
-                                                contentAlignment = Alignment.Center
+                                                    .padding(12.dp), // Increased padding
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.Center
                                             ) {
-                                                BusinessLogo(
-                                                    businessName = partner.name,
-                                                    size = 160.dp,
-                                                    shape = RoundedCornerShape(8.dp),
-                                                    contentScale = ContentScale.Crop
+                                                // Logo container with cropping for better fit
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(90.dp) // Slightly larger for better visibility
+                                                        .weight(1f, fill = false),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    BusinessLogo(
+                                                        businessName = partner.name,
+                                                        size = 120.dp,
+                                                        shape = RoundedCornerShape(8.dp),
+                                                        contentScale = ContentScale.Crop,
+                                                        useSpecialCases = true // Enable H&M special case handling
+                                                    )
+                                                }
+
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                // FIXED: Text with better sizing
+                                                Text(
+                                                    text = partner.name,
+                                                    fontSize = 14.sp, // Slightly smaller
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = if (partner.id?.let { selectedVendors.contains(it) } == true)
+                                                        Color(0xFF8EC5FF) else Color(0xFF23272E),
+                                                    textAlign = TextAlign.Center,
+                                                    maxLines = 2,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    lineHeight = 12.sp
                                                 )
                                             }
                                         }
@@ -388,7 +485,7 @@ fun VendorsOnBoarding(
                                 }
                             }
 
-                            // Dynamic scroll indicator - same as CategoryOnBoarding
+                            // Dynamic scroll indicator
                             val scrollProgress = remember {
                                 derivedStateOf {
                                     if (scrollState.layoutInfo.totalItemsCount == 0) 0f
