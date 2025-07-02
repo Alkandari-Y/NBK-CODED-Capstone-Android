@@ -233,7 +233,11 @@ val accountViewModel = remember { AccountViewModel(context) }
         }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
         composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
-            XpTierScreen(onBackClick = { navController.popBackStack() })
+            XpTierScreen(onBackClick = { 
+                navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                    popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                }
+            })
         }
         composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { backStackEntry ->
             val promotionId = backStackEntry.arguments?.getString("promotionId")

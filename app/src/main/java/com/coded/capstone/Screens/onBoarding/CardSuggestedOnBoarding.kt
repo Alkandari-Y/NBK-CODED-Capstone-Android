@@ -50,6 +50,7 @@ fun CardSuggestedOnBoarding(
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showContent by remember { mutableStateOf(false) }
+    var noCardAvailable by remember { mutableStateOf(false) }
     val recommendedCard by recommendationViewModel.recommendedCard.collectAsState()
 
     // Monitor account creation state
@@ -83,16 +84,27 @@ fun CardSuggestedOnBoarding(
             delay(2000)
             isLoading = false
             errorMessage = null
+            noCardAvailable = false
             delay(100)
             showContent = true
             println("CardSuggestedOnBoarding: Card loaded successfully: ${recommendedCard?.name}")
         } else {
-            // Give it some time to load, then show error if still null
+            // Give it some time to load, then show no card available if still null
             delay(5000) // Wait 5 seconds
             if (recommendedCard == null) {
                 isLoading = false
-                errorMessage = "No recommended card available. Please check your network connection."
+                noCardAvailable = true
                 println("CardSuggestedOnBoarding: Timeout - no card received after 5 seconds")
+            }
+        }
+    }
+
+    // Handle no card available - redirect to home after showing message
+    LaunchedEffect(noCardAvailable) {
+        if (noCardAvailable) {
+            delay(3000) // Show the message for 3 seconds
+            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                popUpTo(0)
             }
         }
     }
@@ -206,6 +218,53 @@ fun CardSuggestedOnBoarding(
                         )
                     }
                 }
+            }
+        }
+        return
+    }
+
+    // No Card Available Screen - Show nice message and redirect to home
+    if (noCardAvailable) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "No card available",
+                    tint = Color(0xFF8EC5FF),
+                    modifier = Modifier.size(64.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "No Suggested Card Available",
+                    color = Color(0xFF374151),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = RobotoFont
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "We couldn't find a personalized card recommendation for you at this time. Don't worry, you can explore all available cards on the home screen.",
+                    color = Color(0xFF6B7280),
+                    fontSize = 14.sp,
+                    fontFamily = RobotoFont,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "Redirecting to home screen...",
+                    color = Color(0xFF8EC5FF),
+                    fontSize = 14.sp,
+                    fontFamily = RobotoFont,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
         return
