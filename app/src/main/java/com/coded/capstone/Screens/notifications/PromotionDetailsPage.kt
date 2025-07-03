@@ -117,17 +117,18 @@ fun PromotionDetailPage(
             )
 
 
-            // business logo for promo image - FULL SCREEN
+            // business logo for promo image - TOP HALF SCREEN
             businessPartner?.let { partner ->
                 Box(
                     modifier = Modifier
-                        .fillMaxSize() // Fill entire white area
-                        .align(Alignment.Center),
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f) // Take exactly half the screen height
+                        .align(Alignment.TopCenter), // Align to top half
                     contentAlignment = Alignment.Center
                 ) {
                     BusinessLogo(
                         businessName = partner.name,
-                        size = 400.dp, // Much larger size to fill screen
+                        size = 300.dp, // Adjusted size for half screen
                         shape = null, // No shape - raw image
                         contentScale = ContentScale.Crop // Crop to fill
                     )
