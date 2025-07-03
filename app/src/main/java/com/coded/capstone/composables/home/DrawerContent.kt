@@ -133,7 +133,7 @@ fun DrawerContent(
                                         text = userName,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF23272E) // Dark text for white background
+                                        color = Color(0xFF2A2A2A) // Dark text for white background
                                     )
                                     Text(
                                         text = "KLUE Banking",
@@ -156,8 +156,12 @@ fun DrawerContent(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(1f)
-                                    .background(Color(0xFF23272E), shape = RoundedCornerShape(topStart = 40.dp))
+                                    .height(500.dp) // Take remaining space to extend above logout
+                                    .background(Color(0xFF23272E),   shape = RoundedCornerShape(
+                                        topStart = 40.dp, // Top-left rounded
+//                                        bottomStart = 40.dp // Bottom-left rounded
+                                    )) // Dark gray background
+
                                     .padding(16.dp)
                             ) {
                                 Column {
@@ -182,12 +186,14 @@ fun DrawerContent(
 
                         // Bottom section with logout
                         Column {
-                            // Logout in dark container - same styling as Profile and Settings
+                            // Logout in white container
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth().fillMaxHeight()
                                     .background(
-                                        Color(0xFF23272E)
+//                                        Color.White,
+                                        Color(0xFF23272E),
+//                                        shape = RoundedCornerShape(35.dp) // Rounded edges
                                     )
                                     .padding(end = 16.dp) // Right padding so it doesn't take full width
                             ) {
@@ -198,8 +204,7 @@ fun DrawerContent(
                                         icon = Icons.AutoMirrored.Filled.ExitToApp,
                                         title = "Logout",
                                         onClick = onLogoutClick,
-                                        isDestructive = false, // Changed from true to false
-                                        color = Color(0xFF8EC5FF) // Changed from Color.White to blue
+                                        isDestructive = true
                                     )
                                     Spacer(modifier = Modifier.height(45.dp))
                                 }

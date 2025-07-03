@@ -57,7 +57,7 @@ fun VendorsOnBoarding(
     // Animation states - same as CategoryOnBoarding
     var cardVisible by remember { mutableStateOf(false) }
     val cardOffsetY by animateDpAsState(
-        targetValue = if (cardVisible) 140.dp else 800.dp,
+        targetValue = if (cardVisible) 80.dp else 800.dp,
         animationSpec = tween(
             durationMillis = 800,
             easing = FastOutSlowInEasing
@@ -392,7 +392,9 @@ fun VendorsOnBoarding(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(horizontal = 16.dp),
-                                contentPadding = PaddingValues(bottom = 20.dp)
+                                contentPadding = PaddingValues(
+                                    bottom = 100.dp // Increased bottom padding to account for bottom bar
+                                )
                             ) {
                                 items(
                                     items = filteredPartners,

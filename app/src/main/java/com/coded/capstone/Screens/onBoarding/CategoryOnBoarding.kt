@@ -108,7 +108,7 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
 
     var cardVisible by remember { mutableStateOf(false) }
     val cardOffsetY by animateDpAsState(
-        targetValue = if (cardVisible) 140.dp else 800.dp,
+        targetValue = if (cardVisible) 80.dp else 800.dp,
         animationSpec = tween(
             durationMillis = 800,
             easing = FastOutSlowInEasing
@@ -342,7 +342,9 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(horizontal = 16.dp),
-                                contentPadding = PaddingValues(bottom = 20.dp)
+                                contentPadding = PaddingValues(
+                                    bottom = 100.dp
+                                )
                             ) {
                                 items(
                                     items = filteredCategories,
