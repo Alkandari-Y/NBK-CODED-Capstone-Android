@@ -184,13 +184,21 @@ val accountViewModel = remember { AccountViewModel(context) }
                 AccountDetailsScreen(
                     accountId= accountId,
                     viewModel = homeScreenViewModel,
-                    onBack= { navController.popBackStack(NavRoutes.NAV_ROUTE_HOME, inclusive = false) })
+                    onBack= { 
+                        navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                            popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                        }
+                    })
             }
         }
 
         composable (NavRoutes.NAV_ROUTE_PROFILE){
             ProfilePage(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { 
+                    navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                        popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                    }
+                }
             )
         }
         composable(NavRoutes.NAV_ROUTE_SETTINGS) {
@@ -225,7 +233,11 @@ val accountViewModel = remember { AccountViewModel(context) }
         }
         composable(NavRoutes.NAV_ROUTE_RECOMMENDATIONS) { RecommendationScreen(viewModel = homeScreenViewModel) }
         composable(NavRoutes.NAV_ROUTE_XP_HISTORY) {
-            XpTierScreen(onBackClick = { navController.popBackStack() })
+            XpTierScreen(onBackClick = { 
+                navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                    popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                }
+            })
         }
         composable(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS) { backStackEntry ->
             val promotionId = backStackEntry.arguments?.getString("promotionId")

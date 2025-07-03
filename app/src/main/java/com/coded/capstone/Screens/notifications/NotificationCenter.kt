@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,133 +38,22 @@ import com.coded.capstone.viewModels.NotificationViewModel
 import com.coded.capstone.viewModels.NotificationUiState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
-// Data ClassesAdd commentMore actions
-data class PromotionNotification(
-    val name: String,
-    val businessName: String,
-    val type: RewardType,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val description: String,
-    val timeAgo: String
-)
-
-data class SuggestedCardNotification(
-    val name: String,
-    val accountType: String,
-    val description: String,
-    val interestRate: Double,
-    val annualFee: Double,
-    val perks: List<String>,
-    val timeAgo: String
-)
-
-enum class RewardType {
-    CASHBACK, DISCOUNT
-}
-
-enum class NotificationType {
-    PROMOTION_NEARBY,
-    SUGGESTED_CARD,
-    PROMOTION_ENDING
-}
-
-data class NotificationItem(
-    val id: String,
-    val type: NotificationType,
-    val promotionData: PromotionNotification? = null,
-    val cardData: SuggestedCardNotification? = null,
-    val isRead: Boolean = false
-)
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationCenter(navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("General", "Recommended")
-
-    val notifications = remember {
-        listOf(
-            NotificationItem(
-                id = "1",
-                type = NotificationType.PROMOTION_NEARBY,
-                promotionData = PromotionNotification(
-                    name = "25% Off Coffee & Pastries",
-                    businessName = "Starbucks Downtown",
-                    type = RewardType.DISCOUNT,
-                    startDate = LocalDate.now(),
-                    endDate = LocalDate.now().plusDays(7),
-                    description = "Get 25% off all coffee drinks and pastries",
-                    timeAgo = "2m ago"
-                )
-            ),
-            NotificationItem(
-                id = "2",
-                type = NotificationType.SUGGESTED_CARD,
-                cardData = SuggestedCardNotification(
-                    name = "Premium Rewards Card",
-                    accountType = "Credit Card",
-                    description = "Earn 3x points on dining and travel purchases",
-                    interestRate = 18.9,
-                    annualFee = 95.0,
-                    perks = listOf("No foreign transaction fees", "Travel insurance", "Priority support"),
-                    timeAgo = "5m ago"
-                )
-            ),
-            NotificationItem(
-                id = "3",
-                type = NotificationType.PROMOTION_ENDING,
-                promotionData = PromotionNotification(
-                    name = "Double Cashback Weekend",
-                    businessName = "Target",
-                    type = RewardType.CASHBACK,
-                    startDate = LocalDate.now().minusDays(5),
-                    endDate = LocalDate.now().plusDays(2),
-                    description = "Get 2x cashback on all purchases this weekend",
-                    timeAgo = "10m ago"
-                )
-            ),
-            NotificationItem(
-                id = "4",
-                type = NotificationType.PROMOTION_NEARBY,
-                promotionData = PromotionNotification(
-                    name = "Free Delivery",
-                    businessName = "McDonald's",
-                    type = RewardType.DISCOUNT,
-                    startDate = LocalDate.now(),
-                    endDate = LocalDate.now().plusDays(3),
-                    description = "Free delivery on orders over $15",
-                    timeAgo = "15m ago"
-                )
-            ),
-            NotificationItem(
-                id = "5",
-                type = NotificationType.SUGGESTED_CARD,
-                cardData = SuggestedCardNotification(
-                    name = "Cashback Plus Card",
-                    accountType = "Credit Card",
-                    description = "Unlimited 1.5% cashback on all purchases",
-                    interestRate = 16.9,
-                    annualFee = 0.0,
-                    perks = listOf("No annual fee", "0% intro APR", "Mobile app"),
-                    timeAgo = "1h ago"
-                )
-            ),
-            NotificationItem(
-                id = "6",
-                type = NotificationType.PROMOTION_ENDING,
-                promotionData = PromotionNotification(
-                    name = "50% Off First Order",
-                    businessName = "Uber Eats",
-                    type = RewardType.DISCOUNT,
-                    startDate = LocalDate.now().minusDays(10),
-                    endDate = LocalDate.now().plusDays(1),
-                    description = "Get 50% off your first order (max $20)",
-                    timeAgo = "2h ago"
-                )
-            )
-        )
+    val context = LocalContext.current
+    
+    // Use real notification data from ViewModel
+    val notificationViewModel: NotificationViewModel = viewModel { NotificationViewModel(context) }
+    val notificationsUiState by notificationViewModel.notificationsUiState.collectAsState()
+    
+    // Fetch notifications when screen loads
+    LaunchedEffect(Unit) {
+        notificationViewModel.fetchNotifications()
     }
 
     Scaffold(
@@ -182,7 +72,11 @@ fun NotificationCenter(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() },
+                        onClick = { 
+                            navController.navigate(NavRoutes.NAV_ROUTE_HOME) {
+                                popUpTo(NavRoutes.NAV_ROUTE_HOME) { inclusive = true }
+                            }
+                        },
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .size(40.dp)
@@ -209,87 +103,176 @@ fun NotificationCenter(navController: NavController) {
                 .padding(paddingValues)
                 .background(Color.White)
         ) {
-            // Tabs
-            TabRow(
-                selectedTabIndex = selectedTab,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                containerColor = Color.White,
-                indicator = { tabPositions ->
-                    TabRowDefaults.Indicator(
-                        modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                        color = Color(0xFF8EC5FF)
-                    )
+            when (notificationsUiState) {
+                is NotificationUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = Color(0xFF8EC5FF))
+                    }
                 }
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = title,
-                                    color = if (selectedTab == index) Color(0xFF8EC5FF) else Color(0xFF8E8E93),
-                                    fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
-                                )
-                                if (index == 1) {
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .size(18.dp)
-                                            .background(Color(0xFF8EC5FF), CircleShape),
-                                        contentAlignment = Alignment.Center
+                is NotificationUiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.Error,
+                                contentDescription = "Error",
+                                tint = Color(0xFFE74C3C),
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Failed to load notifications",
+                                fontSize = 16.sp,
+                                color = Color(0xFF6B7280)
+                            )
+                        }
+                    }
+                }
+                is NotificationUiState.Success -> {
+                    val currentState = notificationsUiState as NotificationUiState.Success
+                    val notifications = currentState.notifications
+                    
+                    // Filter notifications based on triggerType
+                    val generalNotifications = notifications.filter { 
+                        it.triggerType != NotificationTriggerType.POS 
+                    }
+                    val recommendedNotifications = notifications.filter { 
+                        it.triggerType == NotificationTriggerType.POS 
+                    }
+                    
+                    // Tabs
+                    TabRow(
+                        selectedTabIndex = selectedTab,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        containerColor = Color.White,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.Indicator(
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                                color = Color(0xFF8EC5FF)
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = selectedTab == index,
+                                onClick = { selectedTab = index },
+                                text = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "2",
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Bold
+                                            text = title,
+                                            color = if (selectedTab == index) Color(0xFF8EC5FF) else Color(0xFF8E8E93),
+                                            fontWeight = if (selectedTab == index) FontWeight.SemiBold else FontWeight.Normal
+                                        )
+                                        if (index == 1 && recommendedNotifications.isNotEmpty()) {
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(18.dp)
+                                                    .background(Color(0xFF8EC5FF), CircleShape),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = recommendedNotifications.size.toString(),
+                                                    color = Color.White,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Notifications List
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    ) {
+                        val filteredNotifications = if (selectedTab == 0) {
+                            generalNotifications
+                        } else {
+                            recommendedNotifications
+                        }
+
+                        items(filteredNotifications) { notification ->
+                            RealNotificationCard(
+                                notification = notification,
+                                onClick = {
+                                    // Mark as read when clicked
+                                    notificationViewModel.markAsRead(notification.id)
+                                    
+                                    // Navigate based on notification type
+                                    if (notification.recommendationId != null) {
+                                        navController.navigate(NavRoutes.NAV_ROUTE_RECOMMENDATIONS)
+                                    } else if (notification.promotionId != null) {
+                                        navController.navigate(NavRoutes.promotionDetailsRoute(notification.promotionId))
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                        
+                        if (filteredNotifications.isEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 32.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            Icons.Default.NotificationsNone,
+                                            contentDescription = "No notifications",
+                                            tint = Color(0xFF8E8E93),
+                                            modifier = Modifier.size(48.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = "No notifications yet",
+                                            fontSize = 16.sp,
+                                            color = Color(0xFF8E8E93),
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = "You'll see notifications here when they arrive",
+                                            fontSize = 14.sp,
+                                            color = Color(0xFF8E8E93),
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(top = 4.dp)
                                         )
                                     }
                                 }
                             }
                         }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Notifications List
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
-            ) {
-                val filteredNotifications = if (selectedTab == 0) {
-                    notifications.filter { it.type != NotificationType.SUGGESTED_CARD }
-                } else {
-                    notifications.filter { it.type == NotificationType.SUGGESTED_CARD }
-                }
-
-                items(filteredNotifications) { notification ->
-                    NotificationCard(
-                        notification = notification,
-                        onPromotionClick = {
-                            if (notification.type == NotificationType.PROMOTION_NEARBY ||
-                                notification.type == NotificationType.PROMOTION_ENDING) {
-                                navController.navigate(NavRoutes.NAV_ROUTE_PROMOTION_DETAILS)
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    }
                 }
             }
         }
     }
 }
 
+
+
 @Composable
-fun NotificationCard(
-    notification: NotificationItem,
-    onPromotionClick: () -> Unit = {}
+fun RealNotificationCard(
+    notification: NotificationResponseDto,
+    onClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -300,12 +283,7 @@ fun NotificationCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         ),
-        onClick = {
-            if (notification.type == NotificationType.PROMOTION_NEARBY ||
-                notification.type == NotificationType.PROMOTION_ENDING) {
-                onPromotionClick()
-            }
-        }
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -316,13 +294,13 @@ fun NotificationCard(
                 modifier = Modifier
                     .size(48.dp)
                     .background(
-                        color = getNotificationColor(notification.type),
+                        color = getRealNotificationColor(notification),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = getNotificationIcon(notification.type),
+                    imageVector = getRealNotificationIcon(notification),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -341,7 +319,7 @@ fun NotificationCard(
                     verticalAlignment = Alignment.Top
                 ) {
                     Text(
-                        text = getNotificationTitle(notification),
+                        text = notification.title,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
                         color = Color(0xFF1E1E1E),
@@ -351,7 +329,7 @@ fun NotificationCard(
                     )
 
                     Text(
-                        text = getTimeAgo(notification),
+                        text = formatTimeAgo(notification.createdAt),
                         fontSize = 12.sp,
                         color = Color(0xFF8E8E93)
                     )
@@ -360,35 +338,35 @@ fun NotificationCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = getNotificationDescription(notification),
+                    text = notification.message,
                     fontSize = 14.sp,
                     color = Color(0xFF6D6D6D),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                if (notification.type == NotificationType.PROMOTION_ENDING) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                                RoundedCornerShape(6.dp)
+                // Special handling for different notification types
+                when (notification.triggerType) {
+                    NotificationTriggerType.EXPIRING_PROMOTION -> {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    Color(0xFFE74C3C).copy(alpha = 0.1f),
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "Expires Soon",
+                                fontSize = 12.sp,
+                                color = Color(0xFFE74C3C),
+                                fontWeight = FontWeight.Medium
                             )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = "Ends ${notification.promotionData?.endDate?.format(DateTimeFormatter.ofPattern("MMM dd"))}",
-                            fontSize = 12.sp,
-                            color = Color(0xFF8EC5FF),
-                            fontWeight = FontWeight.Medium
-                        )
+                        }
                     }
-                }
-
-                if (notification.type == NotificationType.SUGGESTED_CARD) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    notification.cardData?.perks?.firstOrNull()?.let { perk ->
+                    NotificationTriggerType.POS -> {
+                        Spacer(modifier = Modifier.height(8.dp))
                         Box(
                             modifier = Modifier
                                 .background(
@@ -398,18 +376,57 @@ fun NotificationCard(
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = perk,
+                                text = "Card Recommendation",
                                 fontSize = 12.sp,
                                 color = Color(0xFF8EC5FF),
                                 fontWeight = FontWeight.Medium
                             )
                         }
                     }
+                    NotificationTriggerType.GPS -> {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    Color(0xFF10B981).copy(alpha = 0.1f),
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "Nearby Offer",
+                                fontSize = 12.sp,
+                                color = Color(0xFF10B981),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    NotificationTriggerType.BEACON -> {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    Color(0xFF8B5CF6).copy(alpha = 0.1f),
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "Special Offer",
+                                fontSize = 12.sp,
+                                color = Color(0xFF8B5CF6),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    else -> {
+                        // No special badge for unknown types
+                    }
                 }
             }
 
             // Unread indicator
-            if (!notification.isRead) {
+            if (!notification.delivered) {
                 Box(
                     modifier = Modifier
                         .size(8.dp)
@@ -420,51 +437,9 @@ fun NotificationCard(
     }
 }
 
-fun getNotificationIcon(type: NotificationType): ImageVector {
-    return when (type) {
-        NotificationType.PROMOTION_NEARBY -> Icons.Default.LocationOn
-        NotificationType.SUGGESTED_CARD -> Icons.Default.CreditCard
-        NotificationType.PROMOTION_ENDING -> Icons.Default.Schedule
-    }
-}
 
-fun getNotificationColor(type: NotificationType): Color {
-    return when (type) {
-        NotificationType.PROMOTION_NEARBY -> Color(0xFF8EC5FF)
-        NotificationType.SUGGESTED_CARD -> Color(0xFF8EC5FF)
-        NotificationType.PROMOTION_ENDING -> Color(0xFF8EC5FF)
-    }
-}
 
-fun getNotificationTitle(notification: NotificationItem): String {
-    return when (notification.type) {
-        NotificationType.PROMOTION_NEARBY -> "Promotion Nearby"
-        NotificationType.SUGGESTED_CARD -> "Suggested Card"
-        NotificationType.PROMOTION_ENDING -> "Last Chance"
-    }
-}
-
-fun getNotificationDescription(notification: NotificationItem): String {
-    return when (notification.type) {
-        NotificationType.PROMOTION_NEARBY, NotificationType.PROMOTION_ENDING -> {
-            "${notification.promotionData?.name} at ${notification.promotionData?.businessName}"
-        }
-        NotificationType.SUGGESTED_CARD -> {
-            "${notification.cardData?.name} - ${notification.cardData?.description}"
-        }
-    }
-}
-
-fun getTimeAgo(notification: NotificationItem): String {
-    return when (notification.type) {
-        NotificationType.PROMOTION_NEARBY, NotificationType.PROMOTION_ENDING ->
-            notification.promotionData?.timeAgo ?: ""
-        NotificationType.SUGGESTED_CARD ->
-            notification.cardData?.timeAgo ?: ""
-    }
-}
-
-fun getNotificationIcon(notification: NotificationResponseDto): androidx.compose.ui.graphics.vector.ImageVector {
+fun getRealNotificationIcon(notification: NotificationResponseDto): ImageVector {
     return if (notification.recommendationId != null) {
         Icons.Default.CreditCard
     } else {
@@ -472,20 +447,33 @@ fun getNotificationIcon(notification: NotificationResponseDto): androidx.compose
             NotificationTriggerType.GPS -> Icons.Default.LocationOn
             NotificationTriggerType.BEACON -> Icons.Default.Bluetooth
             NotificationTriggerType.EXPIRING_PROMOTION -> Icons.Default.Schedule
+            NotificationTriggerType.POS -> Icons.Default.CreditCard
             else -> Icons.Default.LocalOffer
         }
     }
 }
 
-fun getNotificationTitle(notification: NotificationResponseDto): String {
-    return if (notification.recommendationId != null) {
-        "Card Suggestion"
-    } else {
-        when (notification.triggerType) {
-            NotificationTriggerType.GPS -> "Promotion Nearby"
-            NotificationTriggerType.BEACON -> "Special Offer"
-            NotificationTriggerType.EXPIRING_PROMOTION -> "Last Chance"
-            else -> "Special Offer"
-        }
+fun getRealNotificationColor(notification: NotificationResponseDto): Color {
+    return when (notification.triggerType) {
+        NotificationTriggerType.GPS -> Color(0xFF10B981)
+        NotificationTriggerType.BEACON -> Color(0xFF8B5CF6)
+        NotificationTriggerType.EXPIRING_PROMOTION -> Color(0xFFE74C3C)
+        NotificationTriggerType.POS -> Color(0xFF8EC5FF)
+        else -> Color(0xFF8EC5FF)
+    }
+}
+
+fun formatTimeAgo(createdAt: java.time.LocalDateTime): String {
+    val now = java.time.LocalDateTime.now()
+    val minutes = ChronoUnit.MINUTES.between(createdAt, now)
+    val hours = ChronoUnit.HOURS.between(createdAt, now)
+    val days = ChronoUnit.DAYS.between(createdAt, now)
+    
+    return when {
+        minutes < 1 -> "Just now"
+        minutes < 60 -> "${minutes}m ago"
+        hours < 24 -> "${hours}h ago"
+        days < 7 -> "${days}d ago"
+        else -> createdAt.format(DateTimeFormatter.ofPattern("MMM dd"))
     }
 }
