@@ -86,23 +86,24 @@ fun PerksBottomSheet(
             .padding(16.dp)
             .padding(bottom = 80.dp)
     ) {
-        // Header
+        // Header - MOVED DOWN AND TO THE RIGHT
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, top = 12.dp), // Added left padding and increased top padding
+            horizontalArrangement = Arrangement.Start, // Changed from SpaceBetween to Start
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Available Perks",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                fontFamily = RobotoFont,
-                modifier = Modifier.padding(start = 8.dp, bottom = 2.dp)
+                fontSize = 22.sp, // Slightly smaller
+                fontFamily = RobotoFont
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp)) // Increased spacing
 
         // Perks Content
         if (perks.isNotEmpty()) {
@@ -120,7 +121,7 @@ fun PerksBottomSheet(
                             animationSpec = tween(400, delayMillis = index * 100)
                         )
                     ) {
-                        ModernPerkItem(
+                        SofterPerkItem(
                             perk = perk,
                             navController = navController,
                             productId = productId,
@@ -183,23 +184,27 @@ fun PerksBottomSheet(
 }
 
 @Composable
-fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: String, accountId: String, onPerkClick:(String) -> Unit = {}) {
+fun SofterPerkItem(perk: PerkDto, navController: NavController, productId: String, accountId: String, onPerkClick:(String) -> Unit = {}) {
     val isCashback = perk.type?.contains("cashback", ignoreCase = true) == true
     val isDiscount = perk.type?.contains("discount", ignoreCase = true) == true
+
+    // SOFTER COLOR PALETTE - More muted and pleasant
     val perkColor = when {
-        isCashback -> Color(0xFF8EC5FF)
-        isDiscount -> Color(0xFFA855F7)
-        else -> getPerkColor(perk.type)
+        isCashback -> Color(0xFF7DD3FC) // Softer sky blue
+        isDiscount -> Color(0xFFD8B4FE) // Softer purple
+        else -> Color(0xFF86EFAC) // Softer green
     }
+
     val xpColor = when {
-        isCashback -> Color(0xFF8EC5FF)
-        isDiscount -> Color(0xFFA855F7)
-        else -> Color(0xFF10B981)
+        isCashback -> Color(0xFF0369A1) // Darker blue for contrast
+        isDiscount -> Color(0xFF7C3AED) // Darker purple for contrast
+        else -> Color(0xFF059669) // Darker green for contrast
     }
+
     val xpBackgroundColor = when {
-        isCashback -> Color(0xFFDBEAFE)
-        isDiscount -> Color(0xFFF3E8FF)
-        else -> Color(0xFF065F46)
+        isCashback -> Color(0xFFE0F2FE) // Very light blue
+        isDiscount -> Color(0xFFF3E8FF) // Very light purple
+        else -> Color(0xFFECFDF5) // Very light green
     }
 
     Card(
@@ -211,30 +216,32 @@ fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: Strin
                 navController.navigate(NavRoutes.relatedVendorRoute(perk.id.toString(), productId, accountId))
             },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF374151)),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF374151).copy(alpha = 0.8f)), // Softer background
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(18.dp), // Increased padding for better spacing
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon
+            // Icon with softer background
             Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .background(perkColor.copy(alpha = 0.15f), CircleShape),
+                    .size(48.dp) // Slightly larger
+                    .background(perkColor.copy(alpha = 0.2f), CircleShape), // More transparent
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = getPerkIcon(perk.type),
                     contentDescription = perk.type,
                     tint = perkColor,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(26.dp) // Slightly larger icon
                 )
             }
-            Spacer(modifier = Modifier.width(16.dp))
+
+            Spacer(modifier = Modifier.width(18.dp)) // Increased spacing
+
             // Perk Info
             Column(
                 modifier = Modifier.weight(1f)
@@ -243,8 +250,10 @@ fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: Strin
                     text = perk.type?.replaceFirstChar { it.uppercase() } ?: "Perk",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    fontFamily = RobotoFont
                 )
+
                 perk.perkAmount?.let { amount ->
                     Text(
                         text = when {
@@ -254,48 +263,53 @@ fun ModernPerkItem(perk: PerkDto, navController: NavController, productId: Strin
                         },
                         color = perkColor,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        fontFamily = RobotoFont
                     )
                 }
-                // Categories
+
+                // Categories with softer styling
                 if (!perk.categories.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp)) // Increased spacing
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp), // Increased spacing
+                        verticalArrangement = Arrangement.spacedBy(6.dp), // Increased spacing
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         perk.categories.forEach { category ->
                             Text(
                                 text = category.name ?: "",
-                                color = Color(0xFF8EC5FF),
+                                color = Color(0xFF93C5FD), // Softer blue
                                 fontSize = 12.sp,
+                                fontFamily = RobotoFont,
                                 modifier = Modifier
                                     .background(
-                                        color = Color(0xFF23272E).copy(alpha = 0.5f),
-                                        shape = RoundedCornerShape(6.dp)
+                                        color = Color(0xFF1E293B).copy(alpha = 0.6f), // Softer background
+                                        shape = RoundedCornerShape(8.dp) // More rounded
                                     )
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                                    .padding(horizontal = 12.dp, vertical = 6.dp) // More padding
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
-            // XP Badge
+
+            // XP Badge with softer styling
             if (perk.rewardsXp != null) {
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(12.dp)) // Increased spacing
                 Text(
                     text = "${perk.rewardsXp} XP",
                     color = xpColor,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
+                    fontFamily = RobotoFont,
                     modifier = Modifier
                         .background(
                             color = xpBackgroundColor,
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(10.dp) // More rounded
                         )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp) // More padding
                 )
             }
         }

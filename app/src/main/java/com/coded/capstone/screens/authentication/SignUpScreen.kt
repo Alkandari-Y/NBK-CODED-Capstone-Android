@@ -191,7 +191,7 @@ fun SignUpScreen(
                         Text(
                             text = "Register",
                             style = androidx.compose.ui.text.TextStyle(
-                                fontSize = 28.sp,
+                                fontSize = 25.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF374151)
                             ),

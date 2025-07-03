@@ -342,7 +342,7 @@ fun CategoryOnBoarding(navController: NavController, viewModel: HomeScreenViewMo
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(horizontal = 16.dp),
-                                contentPadding = PaddingValues(bottom = 20.dp)
+                                contentPadding = PaddingValues(bottom = 150.dp)
                             ) {
                                 items(
                                     items = filteredCategories,

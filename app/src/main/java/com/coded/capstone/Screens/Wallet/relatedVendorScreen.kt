@@ -34,9 +34,9 @@ import com.coded.capstone.composables.businessPartners.BusinessLogo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RelatedVendorsScreen(
-    navController: NavController,
-    perkId: String,
+    fun RelatedVendorsScreen(
+navController: NavController,
+perkId: String,
     productId: String,
     accountId: String,
     homeViewModel: HomeScreenViewModel,

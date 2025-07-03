@@ -173,15 +173,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color(0xFFE5E7EB), // Light silver
-                            Color(0xFFD1D5DB)  // Silver
-                        )
-                    )
-                )
+                .background(Color.White) // Pure white background, no gradient
         ) {
             ModalNavigationDrawer(
                 drawerState = drawerState,
@@ -194,7 +186,15 @@ fun HomeScreen(
                         },
                         onSettingsClick = {
                             scope.launch { drawerState.close() }
-                            navController.navigate("settings")
+                            navController.navigate(NavRoutes.NAV_ROUTE_SETTINGS)
+                        },
+                        onXpHistoryClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(NavRoutes.NAV_ROUTE_XP_HISTORY) // or your XP History route
+                        },
+                        onAffiliationsClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate(NavRoutes.NAV_ROUTE_PARTNERS) // Takes user to wallet screen
                         },
                         onLogoutClick = {
                             scope.launch { drawerState.close() }
@@ -222,37 +222,33 @@ fun HomeScreen(
                         Column(
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            // 1. TOP CONTAINER - Dark gray with rounded bottom edges (extends to top)
+                            // 1. TOP CONTAINER - Taller dark gray with rounded bottom edges
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(100.dp) // FIXED: Made top bar taller from 100.dp to 130.dp
                                     .background(
                                         color = Color(0xFF23272E),
                                         shape = RoundedCornerShape(bottomStart = 70.dp, bottomEnd = 0.dp)
                                     )
 
                             ) {
-                                // Add the KLUE Logo at the top center
+                                // Add the KLUE Logo at the center
                                 Image(
                                     painter = painterResource(id = R.drawable.klue),
                                     contentDescription = "KLUE Logo",
                                     modifier = Modifier
                                         .size(60.dp)
-                                        .offset(y = 50.dp)
-                                        .align(Alignment.TopCenter)
+                                        .align(Alignment.Center) // FIXED: Centered the logo horizontally in the taller bar
                                 )
 
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(
-                                            start = 16.dp,
-                                            end = 16.dp,
-                                            top = 50.dp + paddingValues.calculateTopPadding(), // Add status bar height
-                                            bottom = 20.dp
-                                        )
+                                        .align(Alignment.Center) // FIXED: Centered the icons column vertically in the taller bar
+                                        .padding(horizontal = 16.dp)
                                 ) {
-                                    // Top bar with hamburger menu and notification (brand blue color)
+                                    // Top bar with transparent hamburger menu and notification - centered
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         verticalAlignment = Alignment.CenterVertically,
@@ -261,8 +257,9 @@ fun HomeScreen(
                                         Box(
                                             modifier = Modifier
                                                 .size(44.dp)
+                                                .offset(x = 20.dp) // FIXED: Moved away from edge to avoid hitting the curve
                                                 .clip(CircleShape)
-                                                .background(Color(0xFF8EC5FF))
+                                                .background(Color.Transparent)
                                         ) {
                                             IconButton(
                                                 onClick = {
@@ -273,7 +270,7 @@ fun HomeScreen(
                                                 Icon(
                                                     Icons.Default.Menu,
                                                     contentDescription = "Menu",
-                                                    tint = Color.White,
+                                                    tint = Color(0xFF8EC5FF),
                                                     modifier = Modifier.size(24.dp)
                                                 )
                                             }
@@ -282,8 +279,9 @@ fun HomeScreen(
                                         Box(
                                             modifier = Modifier
                                                 .size(44.dp)
+                                                .offset(x = (-20).dp) // FIXED: Moved away from edge to avoid hitting the curve
                                                 .clip(CircleShape)
-                                                .background(Color(0xFF8EC5FF))
+                                                .background(Color.Transparent)
                                         ) {
                                             IconButton(
                                                 onClick = { navController.navigate(NavRoutes.NAV_ROUTE_NOTIFICATIONS) },
@@ -292,16 +290,26 @@ fun HomeScreen(
                                                 Icon(
                                                     imageVector = Icons.Default.Notifications,
                                                     contentDescription = "Notifications",
-                                                    tint = Color.White,
+                                                    tint = Color(0xFF8EC5FF),
                                                     modifier = Modifier.size(24.dp)
                                                 )
                                             }
                                         }
                                     }
+                                }
+                            }
 
-                                    Spacer(modifier = Modifier.height(45.dp))
-
-                                    // Greeting Section (brand blue color)
+                            // 2. CONTENT BELOW - Everything in LazyColumn
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(bottom = 60.dp),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp), // FIXED: Reduced from 40.dp to 24.dp for tighter layout
+                                verticalArrangement = Arrangement.spacedBy(0.dp)
+                            ) {
+                                // Greeting Section - Moved here, right above My Accounts
+                                item {
                                     AnimatedVisibility(
                                         visible = greetingVisible,
                                         enter = slideInHorizontally(
@@ -310,77 +318,56 @@ fun HomeScreen(
                                         ) + fadeIn(animationSpec = tween(600)),
                                     ) {
                                         Column(
-                                            modifier = Modifier.padding(start = 24.dp)
+                                            modifier = Modifier.padding(start = 16.dp, bottom = 4.dp) // FIXED: Added small spacing back for better separation
                                         ) {
                                             if (userName == null) {
                                                 CircularProgressIndicator(
-                                                    modifier = Modifier.size(28.dp),
+                                                    modifier = Modifier.size(24.dp),
                                                     color = Color(0xFF8EC5FF)
                                                 )
                                             } else {
                                                 Text(
                                                     text = "$greeting, $userName",
                                                     style = AppTypography.headlineMedium,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 15.sp,
-                                                    color = Color.White
+                                                    fontWeight = FontWeight.Medium,
+                                                    fontSize = 16.sp,
+                                                    color = Color(0xFF23272E) // Gray color as requested
                                                 )
                                             }
                                         }
                                     }
                                 }
-                            }
-
-                            // 2. CONTENT BELOW GREETINGS - Everything in LazyColumn
-                            LazyColumn(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                                    .padding(bottom = 60.dp),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-                                verticalArrangement = Arrangement.spacedBy(0.dp)
-                            ) {
+                                item {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                }
                                 // Accounts Section
                                 item {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .background(Color.Transparent)
-                                            .shadow(
-                                                elevation = 8.dp,
-                                                shape = RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
-                                                ambientColor = Color.Black.copy(alpha = 0.1f),
-                                                spotColor = Color.Black.copy(alpha = 0.15f)
-                                            )
+                                        // FIXED: Removed .shadow() modifier completely to eliminate white highlights
                                     ) {
                                         Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(horizontal = 16.dp, vertical = 24.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                                .padding(horizontal = 16.dp, vertical = 4.dp), // FIXED: Reduced from 8.dp to 4.dp for tighter spacing
+                                            verticalArrangement = Arrangement.spacedBy(4.dp) // FIXED: Reduced from 8.dp to 4.dp
                                         ) {
-                                            // My Accounts Section Header
+                                            // My Accounts Section Header - with added spacing below
                                             Row(
-                                                modifier = Modifier.fillMaxWidth().background(Color.Transparent),
+                                                modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                                ) {
-                                                    BankFillIcon(
-                                                        modifier = Modifier.size(23.dp),
-                                                        color = Color(0xFF23272E)
-                                                    )
-                                                    Text(
-                                                        text = "My Accounts",
-                                                        fontSize = 23.sp,
-                                                        style = AppTypography.headlineSmall,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = Color(0xFF23272E)
-                                                    )
-                                                }
+                                                Text(
+                                                    text = "My Accounts",
+                                                    fontSize = 18.sp,
+                                                    style = AppTypography.headlineSmall,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color(0xFF23272E),
+                                                    modifier = Modifier.padding(bottom = 12.dp) // FIXED: Reduced from 12.dp to 6.dp for tighter spacing
+                                                )
                                             }
 
                                             // Handle different UI states for regular accounts
@@ -407,95 +394,85 @@ fun HomeScreen(
                                                     if (regularAccounts.isEmpty() && rewardCards.isEmpty()) {
                                                         EmptyAccountsCard()
                                                     } else {
-                                                        // Account list
+                                                        // Account list - with shorter spacing between cards
                                                         displayedAccounts.forEach { account ->
                                                             Card(
                                                                 modifier = Modifier
                                                                     .fillMaxWidth()
-                                                                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                                                                    .padding(vertical = 1.dp), // FIXED: Reduced from 2.dp to 1.dp for even tighter card spacing
                                                                 shape = RoundedCornerShape(16.dp),
                                                                 colors = CardDefaults.cardColors(
-                                                                    containerColor = Color(0xFF23272E) // Matching transaction history color
+                                                                    containerColor = Color.Transparent
                                                                 ),
                                                                 elevation = CardDefaults.cardElevation(
-                                                                    defaultElevation = 4.dp
+                                                                    defaultElevation = 0.dp // FIXED: Changed from 4.dp to 0.dp to remove white highlights
                                                                 )
                                                             ) {
-                                                                Row(
+                                                                Box(
                                                                     modifier = Modifier
                                                                         .fillMaxWidth()
-                                                                        .clickable {
-                                                                            onAccountClick(account.id.toString())
-                                                                            navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
-                                                                        }
-                                                                        .padding(16.dp),
-                                                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                                                    verticalAlignment = Alignment.CenterVertically
+                                                                        .background(
+                                                                            Color(0xFF23272E).copy(alpha = 0.9f), // FIXED: Less transparent, more solid like top bar
+                                                                            RoundedCornerShape(16.dp)
+                                                                        )
                                                                 ) {
-                                                                    // Account icon and details
                                                                     Row(
-                                                                        verticalAlignment = Alignment.CenterVertically,
-                                                                        modifier = Modifier.weight(1f)
+                                                                        modifier = Modifier
+                                                                            .fillMaxWidth()
+                                                                            .clickable {
+                                                                                onAccountClick(account.id.toString())
+                                                                                navController.navigate(NavRoutes.accountDetailRoute(account.id.toString()))
+                                                                            }
+                                                                            .padding(vertical = 16.dp, horizontal = 8.dp),
+                                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                                        verticalAlignment = Alignment.CenterVertically
                                                                     ) {
-                                                                        // Icon with background
-                                                                        Box(
+                                                                        // Account details - moved right with indentation
+                                                                        Column(
                                                                             modifier = Modifier
-                                                                                .size(44.dp)
-                                                                                .background(
-                                                                                    color = Color(0xFF8EC5FF).copy(alpha = 0.15f),
-                                                                                    shape = CircleShape
-                                                                                ),
-                                                                            contentAlignment = Alignment.Center
+                                                                                .weight(1f)
+                                                                                .padding(start = 8.dp) // FIXED: Added right indentation for account type
                                                                         ) {
-                                                                            BankFillIcon(
-                                                                                modifier = Modifier.size(20.dp),
-                                                                                color = Color(0xFF8EC5FF)
-                                                                            )
-                                                                        }
-
-                                                                        Spacer(modifier = Modifier.width(16.dp))
-
-                                                                        // Account details
-                                                                        Column {
                                                                             Text(
                                                                                 text = account.accountType?.replaceFirstChar { it.uppercase() } ?: "Account",
                                                                                 style = AppTypography.bodyLarge.copy(
                                                                                     fontWeight = FontWeight.SemiBold,
-                                                                                    fontSize = 16.sp
+                                                                                    fontSize = 14.sp // FIXED: Smaller font size for account type
                                                                                 ),
                                                                                 color = Color.White
                                                                             )
                                                                             Spacer(modifier = Modifier.height(4.dp))
                                                                             Text(
-                                                                                text = "•••• ${account.accountNumber?.takeLast(4)}",
+                                                                                text = "•••• •••• ${account.accountNumber?.takeLast(4)}",
                                                                                 style = AppTypography.bodySmall.copy(
-                                                                                    fontSize = 12.sp
+                                                                                    fontSize = 14.sp,
+                                                                                    fontWeight = FontWeight.Medium
+                                                                                ),
+                                                                                color = Color.White
+                                                                            )
+                                                                        }
+
+                                                                        // Balance
+                                                                        Column(
+                                                                            horizontalAlignment = Alignment.End
+                                                                        ) {
+                                                                            Text(
+                                                                                text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
+                                                                                style = AppTypography.bodyLarge.copy(
+                                                                                    fontWeight = FontWeight.Bold,
+                                                                                    fontSize = 16.sp
+                                                                                ),
+                                                                                color = Color(0xFF8EC5FF)
+                                                                            )
+                                                                            Spacer(modifier = Modifier.height(4.dp))
+                                                                            Text(
+                                                                                text = "Available Balance",
+                                                                                style = AppTypography.bodySmall.copy(
+                                                                                    fontSize = 13.sp
                                                                                 ),
                                                                                 color = Color.Gray
                                                                             )
                                                                         }
-                                                                    }
-
-                                                                    // Balance
-                                                                    Column(
-                                                                        horizontalAlignment = Alignment.End
-                                                                    ) {
-                                                                        Text(
-                                                                            text = "${String.format("%.3f", account.balance ?: 0.0)} KWD",
-                                                                            style = AppTypography.bodyLarge.copy(
-                                                                                fontWeight = FontWeight.Bold,
-                                                                                fontSize = 16.sp
-                                                                            ),
-                                                                            color = Color(0xFF8EC5FF)
-                                                                        )
-                                                                        Spacer(modifier = Modifier.height(4.dp))
-                                                                        Text(
-                                                                            text = "Available",
-                                                                            style = AppTypography.bodySmall.copy(
-                                                                                fontSize = 12.sp
-                                                                            ),
-                                                                            color = Color.Gray
-                                                                        )
                                                                     }
                                                                 }
                                                             }
@@ -506,7 +483,7 @@ fun HomeScreen(
                                                             Card(
                                                                 modifier = Modifier
                                                                     .fillMaxWidth()
-                                                                    .padding(horizontal = 4.dp, vertical = 0.dp),
+                                                                    .padding(vertical = 0.dp),
                                                                 shape = RoundedCornerShape(16.dp),
                                                                 colors = CardDefaults.cardColors(
                                                                     containerColor = Color.Transparent
@@ -521,7 +498,7 @@ fun HomeScreen(
                                                                         .clickable {
                                                                             isAccountsExpanded = !isAccountsExpanded
                                                                         }
-                                                                        .padding(start=8.dp, end = 8.dp),
+                                                                        .padding(8.dp),
                                                                     horizontalArrangement = Arrangement.Center,
                                                                     verticalAlignment = Alignment.CenterVertically
                                                                 ) {
@@ -529,7 +506,7 @@ fun HomeScreen(
                                                                         text = if (isAccountsExpanded) "Show Less" else "Show All",
                                                                         style = AppTypography.bodyLarge.copy(
                                                                             fontWeight = FontWeight.Medium,
-                                                                            fontSize = 16.sp
+                                                                            fontSize = 15.sp
                                                                         ),
                                                                         color = Color(0xFF8EC5FF)
                                                                     )
@@ -550,9 +527,10 @@ fun HomeScreen(
                                     }
                                 }
 
-                                // Rewards Section
+                                // Rewards Section - with increased spacing from accounts
                                 if (rewardCards.isNotEmpty() && accountsUiState is AccountsUiState.Success) {
                                     item {
+                                        Spacer(modifier = Modifier.height(12.dp)) // FIXED: Reduced from 16.dp to 12.dp for tighter spacing before reward card
                                         AnimatedVisibility(
                                             visible = rewardCardVisible,
                                             enter = slideInHorizontally(

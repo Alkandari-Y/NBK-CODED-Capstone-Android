@@ -121,17 +121,17 @@ fun PromotionDetailPage(
             businessPartner?.let { partner ->
                 Box(
                     modifier = Modifier
-                        .fillMaxSize() // Fill entire white area
-                        .align(Alignment.Center),
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.6f) // Only use top 60% of screen
+                        .align(Alignment.TopCenter), // Align to top instead of center
                     contentAlignment = Alignment.Center
                 ) {
                     BusinessLogo(
                         businessName = partner.name,
-                        size = 400.dp, // Much larger size to fill screen
-                        shape = null, // No shape - raw image
-                        contentScale = ContentScale.Crop // Crop to fill
+                        size = 300.dp, // Reduced size to fit in top area
+                        shape = null,
+                        contentScale = ContentScale.Fit // Use Fit instead of Crop to show full image
                     )
-
                     if (isFavorite) {
                         Icon(
                             imageVector = Icons.Default.Star,

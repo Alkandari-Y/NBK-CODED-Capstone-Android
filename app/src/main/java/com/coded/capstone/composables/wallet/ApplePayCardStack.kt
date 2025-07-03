@@ -52,31 +52,44 @@ fun ApplePayCardStack(
         label = "expansionOffset"
     )
 
-    // Drag state
-    var draggedCardIndex by remember { mutableStateOf<Int?>(null) }
-    var dragOffset by remember { mutableStateOf(0f) }
-    var isDragging by remember { mutableStateOf(false) }
-
-    // Function to get recommendation type from account product category names
+    // Function to get unified recommendation type - SAME LOGIC AS WALLETCARD
     fun getRecommendationType(account: AccountResponse): String? {
-        // Get the account product to match the recommendation screen logic
         val accountProduct = AccountProductRepository.accountProducts.find {
             it.id == account.accountProductId
         }
 
-        // Use the same logic as the recommendation screen
+        val bankName = accountProduct?.name ?: ""
+
         return when {
-            accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
-            accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
-            accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
-            accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
-            accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
-            accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
-            accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
-            account.accountType?.lowercase() == "credit" -> "shopping"
-            account.accountType?.lowercase() == "savings" -> "family essentials"
+            // Specific product names first
+            bankName.lowercase().contains("cashback") -> "retail"
+            bankName.lowercase().contains("shopping") -> "retail"
+            bankName.lowercase().contains("diamond") -> "fashion"
+            bankName.lowercase().contains("platinum") -> "wholesale"
+            bankName.lowercase().contains("salary") -> "education"
+            bankName.lowercase().contains("business pro") -> "technology"
+            bankName.lowercase().contains("youth starter") -> "entertainment"
+            bankName.lowercase().contains("shopper's delight") -> "retail"
+            bankName.lowercase().contains("lifestyle premium") -> "fashion"
+
+            // General category names
+            bankName.lowercase().contains("retail") -> "retail"
+            bankName.lowercase().contains("travel") -> "travel"
+            bankName.lowercase().contains("dining") -> "dining"
+            bankName.lowercase().contains("fashion") -> "fashion"
+            bankName.lowercase().contains("technology") -> "technology"
+            bankName.lowercase().contains("hospitality") -> "hospitality"
+            bankName.lowercase().contains("education") -> "education"
+            bankName.lowercase().contains("entertainment") -> "entertainment"
+            bankName.lowercase().contains("personal care") -> "personal care"
+            bankName.lowercase().contains("wholesale") -> "wholesale"
+
+            // Fallback based on account type
+            account.accountType?.lowercase() == "credit" -> "retail"
+            account.accountType?.lowercase() == "savings" -> "hospitality"
             account.accountType?.lowercase() == "debit" -> "travel"
-            else -> null // Use default account type colors instead of defaulting to shopping
+            account.accountType?.lowercase() == "business" -> "technology"
+            else -> "retail" // Default recommendation type
         }
     }
 
@@ -97,9 +110,6 @@ fun ApplePayCardStack(
             val scale = 0.98f - (index * 0.02f)
             val alpha = 1f // All cards have full opacity
 
-            // Drag offset for this specific card
-            val cardDragOffset = if (draggedCardIndex == index) dragOffset else 0f
-
             // Get recommendation type for this account
             val recommendationType = getRecommendationType(account)
 
@@ -107,58 +117,22 @@ fun ApplePayCardStack(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp)
-                    .offset(y = baseOffset + cardDragOffset.dp)
+                    .offset(y = baseOffset)
                     .graphicsLayer {
                         scaleX = scale
                         scaleY = scale
-                        this.alpha = if (draggedCardIndex == index && isDragging) {
-                            (1f - (dragOffset / 500f)).coerceAtLeast(0.1f)
-                        } else {
-                            alpha
-                        }
+                        this.alpha = alpha
                     }
-                    .zIndex(if (draggedCardIndex == index) 2000f else 1000f - index)
+                    .zIndex(1000f - index)
                     .shadow(
                         elevation = (32.dp - (index * 4).dp).coerceAtLeast(12.dp),
                         shape = RoundedCornerShape(20.dp),
                         ambientColor = Color(0xFF8EC5FF).copy(alpha = 0.5f),
                         spotColor = Color(0xFF8EC5FF).copy(alpha = 0.7f)
                     )
-                    .pointerInput(index) {
-                        detectDragGestures(
-                            onDragStart = {
-                                draggedCardIndex = index
-                                isDragging = true
-                            },
-                            onDragEnd = {
-                                if (dragOffset > 200f) {
-                                    // Card dragged far enough, trigger details page
-                                    onCardSelected(account)
-                                }
-                                // Reset drag state
-                                draggedCardIndex = null
-                                dragOffset = 0f
-                                isDragging = false
-                            },
-                            onDragCancel = {
-                                draggedCardIndex = null
-                                dragOffset = 0f
-                                isDragging = false
-                            },
-                            onDrag = { change, dragAmount ->
-                                change.consume()
-                                // Slow down the drag by reducing sensitivity
-                                dragOffset += dragAmount.y * 0.5f
-                                // Limit drag to prevent going too far
-                                dragOffset = dragOffset.coerceAtLeast(0f)
-                            }
-                        )
-                    }
                     .clickable {
-                        // Only select card if stack is already expanded
-                        if (isExpanded) {
-                            onCardSelected(account)
-                        }
+                        // TAP TO SELECT - removed drag functionality
+                        onCardSelected(account)
                     },
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -177,4 +151,3 @@ fun ApplePayCardStack(
         }
     }
 }
-

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.coded.capstone.data.responses.kyc.KYCResponse
 import com.coded.capstone.data.responses.xp.UserXpInfoResponse
 
+
 @Composable
 fun UserInfoSection(
     userProfile: KYCResponse?,
@@ -39,8 +40,7 @@ fun UserInfoSection(
     onEditClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp)
@@ -98,54 +98,6 @@ fun UserInfoSection(
                         contentDescription = "Edit",
                         modifier = Modifier.size(16.dp),
                         tint = Color(0xFF8EC5FF)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Tier Badge and Member Since
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Tier Badge
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF8EC5FF)),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Tier",
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            text = "${userXp?.xpTier?.name ?: "Loading"} Tier",
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-
-                // Current XP
-                Column {
-                    Text(
-                        text = "Total XP Earned",
-                        fontSize = 12.sp,
-                        color = Color(0xFF23272E).copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = "${userXp?.userXpAmount ?: 0}",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF23272E)
                     )
                 }
             }

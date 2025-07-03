@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
     private val permissionRequestCode = 101
     private lateinit var nfcPaymentService: NfcPaymentService
     private var isNfcActive = false // Track NFC state
-    
+
     // NFC callback interface
     interface NfcPaymentCallback {
         fun onPaymentStarted()
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         fun onNfcNotEnabled()
         fun onCardDataRead(destinationAccount: String, amount: java.math.BigDecimal)
     }
-    
+
     private var nfcCallback: NfcPaymentCallback? = null
     private var currentSourceAccountNumber: String? = null
 
@@ -65,7 +65,10 @@ class MainActivity : ComponentActivity() {
         GeofencePreferenceManager.ensureDefaultDisabled(this)
 
         enableEdgeToEdge()
-        
+
+        // Fix floating nav bar - make nav bar stick to bottom
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         // Initialize NFC payment service
         nfcPaymentService = NfcPaymentService(this)
         if (!nfcPaymentService.initialize(this)) {
@@ -96,40 +99,40 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        
+
         // Handle deep link if app was launched via deep link
         handleDeepLink(intent)
     }
-    
+
     override fun onResume() {
         super.onResume()
         if (nfcPaymentService.isNfcAvailable() && nfcPaymentService.isNfcEnabled()) {
             nfcPaymentService.enableForegroundDispatch(this)
         }
     }
-    
+
     override fun onPause() {
         super.onPause()
         if (nfcPaymentService.isNfcAvailable() && nfcPaymentService.isNfcEnabled()) {
             nfcPaymentService.disableForegroundDispatch(this)
         }
     }
-    
+
     /**
      * Handle NFC tag discovery
      */
     private fun handleNfcTag(tag: Tag) {
         Log.d("MainActivity", "NFC tag discovered: ${tag.id.toHexString()}")
-        
+
         // Only process if NFC payment is active
         if (!isNfcActive) {
             Log.d("MainActivity", "NFC payment not active, ignoring tag")
             return
         }
-        
+
         // Stop NFC scanning immediately after detecting a tag
         stopNfcPayment()
-        
+
         // Check if we have a source account number
         if (currentSourceAccountNumber == null) {
             Log.e("MainActivity", "No source account number set")
@@ -138,9 +141,9 @@ class MainActivity : ComponentActivity() {
             }
             return
         }
-        
+
         Log.d("MainActivity", "Processing NFC payment with source account: $currentSourceAccountNumber")
-        
+
         // Process payment with the discovered tag
         CoroutineScope(Dispatchers.Main).launch {
             nfcPaymentService.processPayment(
@@ -153,35 +156,35 @@ class MainActivity : ComponentActivity() {
                             nfcCallback?.onPaymentStarted()
                         }
                     }
-                    
+
                     override fun onPaymentSuccess(transactionId: String) {
                         Log.d("MainActivity", "Payment successful: $transactionId")
                         runOnUiThread {
                             nfcCallback?.onPaymentSuccess(transactionId)
                         }
                     }
-                    
+
                     override fun onPaymentFailed(error: String) {
                         Log.e("MainActivity", "Payment failed: $error")
                         runOnUiThread {
                             nfcCallback?.onPaymentFailed(error)
                         }
                     }
-                    
+
                     override fun onNfcNotAvailable() {
                         Log.w("MainActivity", "NFC not available")
                         runOnUiThread {
                             nfcCallback?.onNfcNotAvailable()
                         }
                     }
-                    
+
                     override fun onNfcNotEnabled() {
                         Log.w("MainActivity", "NFC not enabled")
                         runOnUiThread {
                             nfcCallback?.onNfcNotEnabled()
                         }
                     }
-                    
+
                     override fun onCardDataRead(destinationAccount: String, amount: java.math.BigDecimal) {
                         Log.d("MainActivity", "Card data read: destination=$destinationAccount, amount=$amount")
                         runOnUiThread {
@@ -192,33 +195,33 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-    
+
     /**
      * Handle deep links when app is already running
      */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        
+
         Log.d("MainActivity", "onNewIntent called with action: ${intent.action}")
-        
+
         // Handle all possible NFC intents
         when (intent.action) {
             NfcAdapter.ACTION_TECH_DISCOVERED,
             NfcAdapter.ACTION_TAG_DISCOVERED,
             NfcAdapter.ACTION_NDEF_DISCOVERED -> {
                 Log.d("MainActivity", "NFC intent detected: ${intent.action}")
-                
+
                 val tag: Tag? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
                 } else {
                     @Suppress("DEPRECATION")
                     intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
                 }
-                
+
                 if (tag != null) {
                     Log.d("MainActivity", "NFC tag found: ${tag.id.toHexString()}")
                     Log.d("MainActivity", "NFC payment active: $isNfcActive")
-                    
+
                     if (isNfcActive) {
                         Log.d("MainActivity", "NFC tag detected while payment is active - processing payment")
                         handleNfcTag(tag)
@@ -240,7 +243,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    
+
     /**
      * Set the source account number for NFC payments
      */
@@ -248,28 +251,28 @@ class MainActivity : ComponentActivity() {
         currentSourceAccountNumber = accountNumber
         Log.d("MainActivity", "Source account number set: $accountNumber")
     }
-    
+
     /**
      * Set NFC payment callback
      */
     fun setNfcPaymentCallback(callback: NfcPaymentCallback) {
         nfcCallback = callback
     }
-    
+
     /**
      * Check if NFC is available
      */
     fun isNfcAvailable(): Boolean {
         return nfcPaymentService.isNfcAvailable()
     }
-    
+
     /**
      * Check if NFC is enabled
      */
     fun isNfcEnabled(): Boolean {
         return nfcPaymentService.isNfcEnabled()
     }
-    
+
     /**
      * Start NFC payment scanning (call this when user hits Pay button)
      */
@@ -279,7 +282,7 @@ class MainActivity : ComponentActivity() {
             isNfcActive = true
         }
     }
-    
+
     /**
      * Stop NFC payment scanning (call this when payment is complete or cancelled)
      */
@@ -289,14 +292,14 @@ class MainActivity : ComponentActivity() {
             isNfcActive = false
         }
     }
-    
+
     /**
      * Check if NFC is currently active for payments
      */
     fun isNfcPaymentActive(): Boolean {
         return isNfcActive
     }
-    
+
     /**
      * Process deep link intent
      */
@@ -305,7 +308,7 @@ class MainActivity : ComponentActivity() {
         // For now, this is a placeholder that can be connected later
         // DeepLinkHandler.handleDeepLink(intent, navController, this)
     }
-    
+
     /**
      * Convert byte array to hex string
      */
@@ -366,4 +369,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

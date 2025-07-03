@@ -49,253 +49,182 @@ fun WalletCard(
     val bankName = accountProduct?.name ?: "Bank"
     val cardType = account.accountType?.uppercase() ?: "ACCOUNT"
 
-    // Modern premium card gradients based on account type and recommendation type
-    val cardGradient = when {
-        // Special card cases - these take priority over recommendation types
-        bankName.lowercase().contains("diamond") -> Brush.linearGradient(
+    // Function to determine recommendation type based on product name
+    fun getRecommendationType(bankName: String): String? {
+        return when {
+            // Specific product names
+            bankName.lowercase().contains("cashback") -> "retail"
+            bankName.lowercase().contains("shopping") -> "retail"
+            bankName.lowercase().contains("diamond") -> "fashion"
+            bankName.lowercase().contains("platinum") -> "wholesale"
+            bankName.lowercase().contains("salary") -> "education"
+            bankName.lowercase().contains("business pro") -> "technology"
+            bankName.lowercase().contains("youth starter") -> "entertainment"
+            bankName.lowercase().contains("shopper's delight") -> "retail"
+            bankName.lowercase().contains("lifestyle premium") -> "fashion"
+
+            // General category names
+            bankName.lowercase().contains("retail") -> "retail"
+            bankName.lowercase().contains("travel") -> "travel"
+            bankName.lowercase().contains("dining") -> "dining"
+            bankName.lowercase().contains("fashion") -> "fashion"
+            bankName.lowercase().contains("technology") -> "technology"
+            bankName.lowercase().contains("hospitality") -> "hospitality"
+            bankName.lowercase().contains("education") -> "education"
+            bankName.lowercase().contains("entertainment") -> "entertainment"
+            bankName.lowercase().contains("personal care") -> "personal care"
+            bankName.lowercase().contains("wholesale") -> "wholesale"
+
+            // Fallback based on account type
+            account.accountType?.lowercase() == "credit" -> "retail"
+            account.accountType?.lowercase() == "savings" -> "hospitality"
+            account.accountType?.lowercase() == "debit" -> "travel"
+            account.accountType?.lowercase() == "business" -> "technology"
+            else -> "retail" // Default recommendation type
+        }
+    }
+
+    // Use passed recommendationType or determine from bankName
+    val effectiveRecommendationType = recommendationType ?: getRecommendationType(bankName)
+
+    // CONSISTENT CARD GRADIENTS - Single source of truth matching CardSuggestedOnBoarding
+    val cardGradient = when (effectiveRecommendationType?.lowercase()) {
+        "retail" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF091221), // Navy 900
-                Color(0xFF0C1628), // Navy 800
-                Color(0xFF070E1A), // Navy 700
-                Color(0xFF070E1A)  // Navy 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        bankName.lowercase().contains("platinum") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF6B7280), // Silver 500
-                Color(0xFF9CA3AF), // Silver 400
-                Color(0xFF4B5563), // Silver 600
-                Color(0xFF6B7280)  // Silver 500
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        bankName.lowercase().contains("cashback") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF4EC5F5), // Amber 600
-                Color(0xFF7AD1F5), // Amber 500
-                Color(0xFF22ACE3), // Amber 700
-                Color(0xFF22ACE3)  // Amber 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        bankName.lowercase().contains("shopping") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF6B1D45), // Red 600
-                Color(0xFF9F3B70), // Red 500
-                Color(0xFF501233), // Red 700
-                Color(0xFF4F1332)  // Red 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        bankName.lowercase().contains("salary") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF1E113D), // Blue 700
-                Color(0xFF431952), // Blue 500
-                Color(0xFF190E33), // Blue 600
-                Color(0xFF190E33)  // Blue 700
+                Color(0xFF3B4B6B), // Lighter muted navy - still premium but more visible
+                Color(0xFF4A5A7A),
+                Color(0xFF2F3F5F),
+                Color(0xFF3B4B6B)
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
 
-        bankName.lowercase().contains("business pro") -> Brush.linearGradient(
+        "travel" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF3730A3), // Indigo 900
-                Color(0xFF639CF1), // Indigo 500
-                Color(0xFF4338CA), // Indigo 700
-                Color(0xFF3730A3)  // Indigo 900
+                Color(0xFF3F4A56), // Lighter muted charcoal - better for stacks
+                Color(0xFF4B5663),
+                Color(0xFF353E4A),
+                Color(0xFF3F4A56)
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        // Youth Starter card special case
-        bankName.lowercase().contains("youth starter") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF651351), // Violet 600
-                Color(0xFF8D3077), // Violet 500
-                Color(0xFF2C1365), // Violet 700
-                Color(0xFF2C1365)  // Violet 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        // Shopper's Delight card special case
-        bankName.lowercase().contains("shopper's delight") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF520607), // Red 600
-                Color(0xFF6E0C0D), // Red 500
-                Color(0xFF440506), // Red 700
-                Color(0xFF440506)  // Red 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        // Lifestyle Premium card special case
-        bankName.lowercase().contains("lifestyle premium") -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF222B65), // Amber 600
-                Color(0xFF3B5E93), // Amber 500
-                Color(0xFF1F173A), // Amber 700
-                Color(0xFF1F173A)  // Amber 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        // Special recommendation cards
-        recommendationType?.lowercase() == "travel" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF7AF380), // Blue 800
-                Color(0xFFA5F5A9), // Blue 500
-                Color(0xFF136870), // Blue 700
-                Color(0xFF136870)  // Blue 800
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        recommendationType?.lowercase() == "family essentials" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF49899F), // Emerald 600
-                Color(0xFF80D1EC), // Emerald 500
-                Color(0xFF115F79), // Emerald 700
-                Color(0xFF115F79)  // Emerald 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        recommendationType?.lowercase() == "youth starter" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF651351), // Violet 600
-                Color(0xFF8D3077), // Violet 500
-                Color(0xFF2C1365), // Violet 700
-                Color(0xFF2C1365)  // Violet 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        recommendationType?.lowercase() == "dining" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFFD97706), // Amber 600
-                Color(0xFFF59E0B), // Amber 500
-                Color(0xFFB45309), // Amber 700
-                Color(0xFFD97706)  // Amber 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        recommendationType?.lowercase() == "health" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF600612), // Cyan 600
-                Color(0xFF861020), // Cyan 500
-                Color(0xFF600612), // Cyan 700
-                Color(0xFF600612)  // Cyan 600
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        recommendationType?.lowercase() == "education" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF219406), // Orange 800
-                Color(0xFF8CC241), // Orange 600
-                Color(0xFF219406), // Orange 700
-                Color(0xFF219406)  // Orange 800
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        // Regular account type cards
-        account.accountType?.lowercase() == "debit" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF132138), // Slate 800
-                Color(0xFF263D64), // Slate 700
-                Color(0xFF0A121F), // Slate 600
-                Color(0xFF132138)  // Slate 500
 
+        "dining" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF3D2B1F), // Deep warm brown - restaurant warmth & appetite
+                Color(0xFF4A3529),
+                Color(0xFF2F1F15),
+                Color(0xFF3D2B1F)
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        account.accountType?.lowercase() == "credit" -> Brush.linearGradient(
-            colors = listOf(
-                Color(0xFF16191A), // Red 800
-                Color(0xFF343A3B), // Red 800
-                Color(0xFF000000), // Red 600
-                Color(0xFF16191A)  // Red 500
 
-            ),
-            start = androidx.compose.ui.geometry.Offset(0f, 0f),
-            end = androidx.compose.ui.geometry.Offset(350f, 250f)
-        )
-        account.accountType?.lowercase() == "savings" -> Brush.linearGradient(
+        "fashion" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF4E5454), // Green 900
-                Color(0xFF818A8A), // Green 800
-                Color(0xFF2F3333), // Green 600
-                Color(0xFF4E5454)  // Green 500
+                Color(0xFF4A3B47), // Sophisticated mauve - luxury fashion elegance
+                Color(0xFF564753),
+                Color(0xFF3E2F3B),
+                Color(0xFF4A3B47)
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
-        account.accountType?.lowercase() == "business" -> Brush.linearGradient(
+
+        "technology" -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF3730a3), // Indigo 900
-                Color(0xFF6862C7), // Indigo 800
-                Color(0xFF201F5B), // Indigo 600
-                Color(0xFF3730a3)  // Indigo 500
+                Color(0xFF3C3F4F), // Lighter muted blue-purple - tech but not gloomy
+                Color(0xFF484B5B),
+                Color(0xFF323543),
+                Color(0xFF3C3F4F)
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
+
+        "hospitality" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF0F1419), // Almost black with green undertones - luxury hospitality
+                Color(0xFF1A1F1A),
+                Color(0xFF0D1117),
+                Color(0xFF0F1419)
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+
+        "education" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF3D4C72), // Lighter academic blue - more visible in stacks
+                Color(0xFF495882),
+                Color(0xFF334062),
+                Color(0xFF3D4C72)
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+
+        "entertainment" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF4A2C3A), // Deep wine/burgundy - theater & entertainment elegance
+                Color(0xFF563846),
+                Color(0xFF3E202E),
+                Color(0xFF4A2C3A)
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+
+        "personal care" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF3F4A3C), // Sophisticated sage green - spa & wellness
+                Color(0xFF4B5648),
+                Color(0xFF333E30),
+                Color(0xFF3F4A3C)
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+
+        "wholesale" -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF4A5568), // Lighter professional gray - better visibility
+                Color(0xFF556175),
+                Color(0xFF3E495B),
+                Color(0xFF4A5568)
+            ),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(350f, 250f)
+        )
+
         else -> Brush.linearGradient(
             colors = listOf(
-                Color(0xFF384349), // Gray 700
-                Color(0xFF58656C), // Gray 600
-                Color(0xFF273034), // Gray 500
-                Color(0xFF384349)  // Gray 400
+                Color(0xFF3B4B6B), // Default to retail colors
+                Color(0xFF4A5A7A),
+                Color(0xFF2F3F5F),
+                Color(0xFF3B4B6B)
             ),
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(350f, 250f)
         )
     }
 
-    // Get recommendation icon
-    val recommendationIcon = when {
-        bankName.lowercase().contains("diamond") -> null // Will use RoundDiamondIcon instead
-        bankName.lowercase().contains("platinum") -> null // Will use QueenCrownIcon instead
-        bankName.lowercase().contains("cashback") -> null // Will use CoinsIcon instead
-        bankName.lowercase().contains("shopping") -> null // Will use CardTransferBoldIcon instead
-        bankName.lowercase().contains("salary") -> null // Will use SharpStarsIcon instead
-        bankName.lowercase().contains("business pro") -> null // Will use RoundBusinessCenterIcon instead
-        bankName.lowercase().contains("youth starter") -> null
-        bankName.lowercase().contains("shopper's delight") -> null
-        bankName.lowercase().contains("lifestyle premium") -> null
-        recommendationType?.lowercase() == "travel" -> Icons.Default.Flight
-        recommendationType?.lowercase() == "family essentials" -> Icons.Default.FamilyRestroom
-        recommendationType?.lowercase() == "entertainment" -> Icons.Default.Movie
-        recommendationType?.lowercase() == "shopping" -> Icons.Default.ShoppingCart
-        recommendationType?.lowercase() == "dining" -> Icons.Default.Restaurant
-        recommendationType?.lowercase() == "health" -> Icons.Default.LocalHospital
-        recommendationType?.lowercase() == "education" -> Icons.Default.School
-        else -> null
+    // Get appropriate icon based on recommendation type
+    val recommendationIcon = when (effectiveRecommendationType?.lowercase()) {
+        "travel" -> Icons.Default.Flight
+        "hospitality" -> Icons.Default.Hotel
+        "entertainment" -> Icons.Default.Movie
+        "retail" -> Icons.Default.ShoppingCart
+        "dining" -> Icons.Default.Restaurant
+        "personal care" -> Icons.Default.LocalHospital
+        "education" -> Icons.Default.School
+        "technology" -> Icons.Default.Computer
+        "fashion" -> Icons.Default.Checkroom
+        "wholesale" -> Icons.Default.Business
+        else -> Icons.Default.Contactless
     }
-
-    // Get recommendation label
-    val recommendationLabel = when (recommendationType?.lowercase()) {
-        "travel" -> "TRAVEL"
-        "family essentials" -> "FAMILY"
-        "entertainment" -> "ENTERTAINMENT"
-        "shopping" -> "SHOPPING"
-        "dining" -> "DINING"
-        "health" -> "HEALTH"
-        "education" -> "EDUCATION"
-        else -> null // Don't show recommendation label, show account type instead
-    }
-
-    val isProductCard = !showDetails
 
     Card(
         modifier = modifier
@@ -344,13 +273,13 @@ fun WalletCard(
                     .padding(28.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top section: Account type and contactless
+                // Top section: Account type and icon
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
-                    // Account type (moved from bottom)
+                    // Account type
                     Text(
                         text = cardType,
                         color = Color.White,
@@ -359,60 +288,13 @@ fun WalletCard(
                         letterSpacing = 2.sp
                     )
 
-                    // Recommendation icon or contactless payment icon
-                    if (bankName.lowercase().contains("diamond")) {
-                        RoundDiamondIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    } else if (bankName.lowercase().contains("platinum")) {
-                        QueenCrownIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    } else if (bankName.lowercase().contains("cashback")) {
-                        CoinsIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    } else if (bankName.lowercase().contains("shopping")) {
-                        BaselineShoppingBasketIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    } else if (bankName.lowercase().contains("salary")) {
-                        SharpStarsIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    } else if (bankName.lowercase().contains("business pro")) {
-                        RoundBusinessCenterIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    }else if (bankName.lowercase().contains("youth delight")) {
-                        ElectricalEnergyFilledIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    } else if (bankName.lowercase().contains("shopper's delight")) {
-                        BagHeartFillIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    }else if (bankName.lowercase().contains("lifestyle premium")) {
-                        StarFourFillIcon(
-                            modifier = Modifier.size(28.dp),
-                            color = Color.White.copy(alpha = 0.9f)
-                        )
-                    }else {
-                        Icon(
-                            imageVector = recommendationIcon ?: Icons.Default.Contactless,
-                            contentDescription = recommendationLabel ?: "Contactless Payment",
-                            tint = Color.White.copy(alpha = 0.9f),
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
+                    // Consistent icon based on recommendation type
+                    Icon(
+                        imageVector = recommendationIcon,
+                        contentDescription = effectiveRecommendationType ?: "Card",
+                        tint = Color.White.copy(alpha = 0.9f),
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
 
                 // Middle section: EMV Chip
@@ -485,7 +367,7 @@ fun WalletCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom
                     ) {
-                        // Bank name (moved from top)
+                        // Bank name
                         Column {
                             Text(
                                 text = "BANK NAME",

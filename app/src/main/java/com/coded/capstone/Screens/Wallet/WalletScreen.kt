@@ -116,7 +116,7 @@ fun SuccessToast(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
+                    imageVector = Icons.Filled.CheckCircle,
                     contentDescription = "Success",
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -159,7 +159,7 @@ fun NfcPaymentSuccessMessage(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
+                    imageVector = Icons.Filled.CheckCircle,
                     contentDescription = "Success",
                     tint = Color(0xFF8EC5FF),
                     modifier = Modifier.size(48.dp)
@@ -267,7 +267,7 @@ fun WalletScreen(
     var isFirstLoad by remember { mutableStateOf(true) }
     var cardAnimationTrigger by remember { mutableStateOf(false) }
     var externalExpandTrigger by remember { mutableStateOf(false) }
-    
+
     // Toast message state
     var showDragToast by remember { mutableStateOf(false) }
 
@@ -275,14 +275,14 @@ fun WalletScreen(
     var isPayAnimationActive by remember { mutableStateOf(false) }
     var payAnimationSeconds by remember { mutableStateOf(59) }
     var waveAnimationKey by remember { mutableStateOf(0) }
-    
+
     // NFC Payment states
     var isNfcPaymentActive by remember { mutableStateOf(false) }
     var nfcPaymentStatus by remember { mutableStateOf<String?>(null) }
     var showNfcErrorDialog by remember { mutableStateOf(false) }
     var nfcErrorMessage by remember { mutableStateOf("") }
     var paymentDetails by remember { mutableStateOf<PaymentDetails?>(null) }
-    
+
     val payAnimationRotation by animateFloatAsState(
         targetValue = if (isPayAnimationActive) 90f else 0f,
         animationSpec = tween(durationMillis = 1000, easing = EaseInOutCubic),
@@ -334,13 +334,13 @@ fun WalletScreen(
                 nfcPaymentStatus = "Reading payment details..."
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
-            
+
             override fun onCardDataRead(destinationAccount: String, amount: java.math.BigDecimal) {
                 paymentDetails = PaymentDetails(destinationAccount, amount)
                 nfcPaymentStatus = "Processing payment of ${amount} to $destinationAccount..."
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
-            
+
             override fun onPaymentSuccess(transactionId: String) {
                 isNfcPaymentActive = false
                 isPayAnimationActive = false
@@ -349,7 +349,7 @@ fun WalletScreen(
                 showNfcPaymentSuccess = true // Show KYC-style success message
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
-            
+
             override fun onPaymentFailed(error: String) {
                 isNfcPaymentActive = false
                 isPayAnimationActive = false
@@ -359,13 +359,13 @@ fun WalletScreen(
                 showNfcErrorDialog = true
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
-            
+
             override fun onNfcNotAvailable() {
                 nfcErrorMessage = "NFC is not available on this device"
                 showNfcErrorDialog = true
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
-            
+
             override fun onNfcNotEnabled() {
                 nfcErrorMessage = "Please enable NFC in your device settings"
                 showNfcErrorDialog = true
@@ -380,8 +380,8 @@ fun WalletScreen(
         if (isFirstLoad && accounts.isNotEmpty()) {
             // Don't auto-select a card, let users see the card stack first
             isFirstLoad = false
-            
-            // Show drag instruction toast
+
+            // Show tap instruction toast instead of drag
             showDragToast = true
             delay(5000) // Show for 5 seconds
             showDragToast = false
@@ -625,14 +625,13 @@ fun WalletScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(if (selectedCard != null) 320.dp else 450.dp)
-                                    .background(Color.Transparent),
+                                    .height(if (selectedCard != null) 350.dp else 450.dp), // Increased height for selected card
                                 contentAlignment = Alignment.TopCenter
                             ) {
                                 if (selectedCard != null) {
                                     // Single selected card at top - show the actual selected card
                                     val cardOffset by animateDpAsState(
-                                        targetValue = if (cardAnimationTrigger) 0.dp else (-100).dp,
+                                        targetValue = if (cardAnimationTrigger) 20.dp else (-100).dp, // Moved card down from 0.dp to 20.dp
                                         animationSpec = tween(durationMillis = 600),
                                         label = "cardOffset"
                                     )
@@ -683,8 +682,8 @@ fun WalletScreen(
                                             )
                                         }
 
-                                        // Buttons row
-                                        Spacer(modifier = Modifier.height(13.dp))
+                                        // Buttons row - increased spacing
+                                        Spacer(modifier = Modifier.height(24.dp)) // Increased from 13.dp to 24.dp
 
                                         Row(
                                             modifier = Modifier
@@ -695,46 +694,40 @@ fun WalletScreen(
                                         ) {
                                             Spacer(modifier = Modifier.width(20.dp))
 
-                                            // Transfer button - only show for debit or cashback accounts
-                                            if (selectedCard?.accountType?.lowercase() == "debit" ||
-                                                selectedCard?.accountType?.lowercase() == "cashback") {
+                                            // Transactions button - ALWAYS VISIBLE with Material 3 filled icon
+                                            Box(
+                                                modifier = Modifier.offset(x = transferButtonOffset)
+                                            ) {
                                                 Box(
-                                                    modifier = Modifier.offset(x = transferButtonOffset)
-                                                ) {
-                                                    CardTransferBoldIcon(
-                                                        modifier = Modifier.size(32.dp),
-                                                        color = Color.White
-                                                    )
-
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .size(45.dp)
-                                                            .background(
-                                                                Color(0xFF8EC5FF).copy(alpha = 0.99f),
-                                                                CircleShape
-                                                            )
-                                                            .clickable {
-                                                                if (!isPayAnimationActive) {
-                                                                    transferSourceAccount = selectedCard!!
-                                                                    navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
-                                                                }
-                                                            },
-                                                        contentAlignment = Alignment.Center
-                                                    ) {
-                                                        CardTransferBoldIcon(
-                                                            modifier = Modifier.size(32.dp),
-                                                            color = Color.White
+                                                    modifier = Modifier
+                                                        .size(45.dp)
+                                                        .background(
+                                                            Color(0xFF8EC5FF).copy(alpha = 0.99f),
+                                                            CircleShape
                                                         )
-                                                    }
+                                                        .clickable {
+                                                            if (!isPayAnimationActive) {
+                                                                transferSourceAccount = selectedCard!!
+                                                                navController.navigate("${NavRoutes.NAV_ROUTE_TRANSFER}?selectedAccountId=${selectedCard!!.id}")
+                                                            }
+                                                        },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Filled.SwapHoriz, // Material 3 filled icon
+                                                        contentDescription = "Transactions",
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(28.dp)
+                                                    )
                                                 }
-
-                                                // Add spacing between transfer and pay buttons
-                                                Spacer(modifier = Modifier.width(24.dp))
                                             }
+
+                                            // Add spacing between transfer and pay buttons
+                                            Spacer(modifier = Modifier.width(24.dp))
 
                                             Spacer(modifier = Modifier.width(32.dp))
 
-                                            // Pay button positioned next to transfer
+                                            // Pay button positioned next to transfer - ALWAYS VISIBLE with Material 3 filled icon
                                             Box(
                                                 modifier = Modifier.offset(x = payButtonOffset)
                                             ) {
@@ -766,11 +759,10 @@ fun WalletScreen(
                                                                         isPayAnimationActive = true
                                                                         showBottomSheet = false
                                                                         hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                                        
                                                                         // Show NFC payment instruction
                                                                         successMessage = "Hold your phone near the NFC card to make payment"
                                                                         showSuccessToast = true
-                                                                        
+
                                                                         // Auto-hide instruction after 2 seconds
                                                                         coroutineScope.launch {
                                                                             delay(2000)
@@ -792,16 +784,18 @@ fun WalletScreen(
                                                         },
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    RoundTapAndPlayIcon(
-                                                        modifier = Modifier.size(32.dp),
-                                                        color = Color.White
+                                                    Icon(
+                                                        imageVector = Icons.Filled.Contactless, // Material 3 filled icon
+                                                        contentDescription = "NFC Payment",
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(28.dp)
                                                     )
                                                 }
                                             }
                                         }
                                     }
                                 } else {
-                                    // Apple Pay Card Stack
+                                    // Apple Pay Card Stack with tap-to-select
                                     ApplePayCardStack(
                                         accounts = accounts.sortedBy { account ->
                                             // Get account product name to check if it's cashback
@@ -870,7 +864,7 @@ fun WalletScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 10.dp, bottom = 8.dp),
+                                    .padding(top = 20.dp, bottom = 8.dp, start = 16.dp, end = 16.dp), // Increased top padding and added horizontal padding
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 // Drag handle (centered)
@@ -1069,8 +1063,8 @@ fun WalletScreen(
                     )
                 }
             }
-            
-            // Drag instruction toast
+
+            // Tap instruction toast (changed from drag instruction)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -1102,13 +1096,13 @@ fun WalletScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Info,
+                                imageVector = Icons.Filled.Info, // Material 3 filled icon
                                 contentDescription = "Info",
                                 tint = Color(0xFF8EC5FF),
                                 modifier = Modifier.size(24.dp)
                             )
                             Text(
-                                text = "Drag card downwards to select a card",
+                                text = "Tap on any card to select it", // Changed from drag instruction
                                 color = Color.White,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium,
@@ -1118,7 +1112,7 @@ fun WalletScreen(
                     }
                 }
             }
-            
+
             // NFC Payment Status Display
             if (isNfcPaymentActive && nfcPaymentStatus != null) {
                 Box(
@@ -1152,14 +1146,16 @@ fun WalletScreen(
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                RoundTapAndPlayIcon(
-                                    modifier = Modifier.size(48.dp),
-                                    color = Color(0xFF8EC5FF)
+                                Icon(
+                                    imageVector = Icons.Filled.Contactless, // Material 3 filled icon
+                                    contentDescription = "NFC Payment",
+                                    tint = Color(0xFF8EC5FF),
+                                    modifier = Modifier.size(48.dp)
                                 )
                             }
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             Text(
                                 text = "NFC Payment",
                                 color = Color.White,
@@ -1167,9 +1163,9 @@ fun WalletScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = RobotoFont
                             )
-                            
+
                             Spacer(modifier = Modifier.height(8.dp))
-                            
+
                             Text(
                                 text = nfcPaymentStatus!!,
                                 color = Color.White.copy(alpha = 0.8f),
@@ -1177,11 +1173,11 @@ fun WalletScreen(
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 fontFamily = RobotoFont
                             )
-                            
+
                             // Show payment details if available
                             paymentDetails?.let { details ->
                                 Spacer(modifier = Modifier.height(16.dp))
-                                
+
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = CardDefaults.cardColors(
@@ -1199,9 +1195,9 @@ fun WalletScreen(
                                             fontWeight = FontWeight.Bold,
                                             fontFamily = RobotoFont
                                         )
-                                        
+
                                         Spacer(modifier = Modifier.height(8.dp))
-                                        
+
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceBetween
@@ -1220,9 +1216,9 @@ fun WalletScreen(
                                                 fontFamily = RobotoFont
                                             )
                                         }
-                                        
+
                                         Spacer(modifier = Modifier.height(4.dp))
-                                        
+
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceBetween
@@ -1244,9 +1240,9 @@ fun WalletScreen(
                                     }
                                 }
                             }
-                            
+
                             Spacer(modifier = Modifier.height(16.dp))
-                            
+
                             // Cancel button
                             Button(
                                 onClick = {
@@ -1273,7 +1269,7 @@ fun WalletScreen(
                     }
                 }
             }
-            
+
             // NFC Error Dialog
             if (showNfcErrorDialog) {
                 AlertDialog(

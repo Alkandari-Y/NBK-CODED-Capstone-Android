@@ -35,8 +35,7 @@ fun RewardCard(
 ) {
     val tierName = userXp?.xpTier?.name?.lowercase() ?: "bronze"
     val tierColors = getTierColors(tierName)
-    val tierIcon = getTierIcon(tierName)
-    
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +69,7 @@ fun RewardCard(
                         )
                     )
             )
-            
+
             // Minimal decorative element
             Box(
                 modifier = Modifier
@@ -81,7 +80,7 @@ fun RewardCard(
                         CircleShape
                     )
             )
-            
+
             // Card content
             Column(
                 modifier = Modifier
@@ -89,40 +88,34 @@ fun RewardCard(
                     .padding(20.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Header: Tier and icon
+                // Header: Tier name on left, XP on right
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(
-                            text = "${userXp?.xpTier?.name ?: "Bronze"} Cashback",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                        Text(
-                            text = "${userXp?.userXpAmount ?: 0} XP",
-                            color = tierColors.accentColor,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    
-                    Icon(
-                        imageVector = tierIcon,
-                        contentDescription = "${tierName} tier",
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
+                    // Tier name on left
+                    Text(
+                        text = "${userXp?.xpTier?.name ?: "Bronze"} Cashback",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 19.sp
+                    )
+
+                    // XP on right
+                    Text(
+                        text = "${userXp?.userXpAmount ?: 0} XP",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold // FIXED: Bold to make it obvious
                     )
                 }
-                
+
                 // Balance section - simplified
                 Column {
                     Text(
                         text = "${String.format("%.2f", account.balance ?: 0.0)} KWD",
-                        color = Color.White,
+                        color = Color(0xFF8EC5FF), // FIXED: Blue balance same as accounts
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -152,9 +145,9 @@ private fun getTierColors(tierName: String): TierColors {
             shadowColor = Color(0xFFCD7F32)
         )
         "silver" -> TierColors(
-            primary = Color(0xFF708090),
-            secondary = Color(0xFFC0C0C0),
-            tertiary = Color(0xFFDCDCDC),
+            primary = Color(0xFF5C636E),
+            secondary = Color(0xFF868686),
+            tertiary = Color(0xFFBDBDBD),
             accentColor = Color(0xFFE6E6FA),
             shadowColor = Color(0xFFC0C0C0)
         )
@@ -182,15 +175,7 @@ private fun getTierColors(tierName: String): TierColors {
     }
 }
 
-private fun getTierIcon(tierName: String): ImageVector {
-    return when (tierName) {
-        "bronze" -> Icons.Default.Star
-        "silver" -> Icons.Default.FavoriteBorder
-        "gold" -> Icons.Default.Favorite
-        "platinum" -> Icons.Default.Diamond
-        else -> Icons.Default.Redeem
-    }
-}
+// REMOVED: getTierIcon function since we don't need icons anymore
 
 private data class TierColors(
     val primary: Color,

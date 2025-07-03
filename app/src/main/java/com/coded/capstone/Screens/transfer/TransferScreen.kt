@@ -82,26 +82,45 @@ private val RobotoFont = FontFamily(
     androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
 )
 
-// Function to get recommendation type from account product category names
+// Function to get recommendation type from account product category names - MATCHES WalletCard logic exactly
 fun getRecommendationType(account: AccountResponse): String? {
-    // Get the account product to match the recommendation screen logic
+    // Get the account product to match the WalletCard logic
     val accountProduct = AccountProductRepository.accountProducts.find {
         it.id == account.accountProductId
     }
 
-    // Use the same logic as the recommendation screen
+    val bankName = accountProduct?.name ?: ""
+
     return when {
-        accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
-        accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
-        accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
-        accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
-        accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
-        accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
-        accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
-        account.accountType?.lowercase() == "credit" -> "shopping"
-        account.accountType?.lowercase() == "savings" -> "family essentials"
+        // Specific product names - matching WalletCard logic exactly
+        bankName.lowercase().contains("cashback") -> "retail"
+        bankName.lowercase().contains("shopping") -> "retail"
+        bankName.lowercase().contains("diamond") -> "fashion"
+        bankName.lowercase().contains("platinum") -> "wholesale"
+        bankName.lowercase().contains("salary") -> "education"
+        bankName.lowercase().contains("business pro") -> "technology"
+        bankName.lowercase().contains("youth starter") -> "entertainment"
+        bankName.lowercase().contains("shopper's delight") -> "retail"
+        bankName.lowercase().contains("lifestyle premium") -> "fashion"
+
+        // General category names - matching WalletCard logic exactly
+        bankName.lowercase().contains("retail") -> "retail"
+        bankName.lowercase().contains("travel") -> "travel"
+        bankName.lowercase().contains("dining") -> "dining"
+        bankName.lowercase().contains("fashion") -> "fashion"
+        bankName.lowercase().contains("technology") -> "technology"
+        bankName.lowercase().contains("hospitality") -> "hospitality"
+        bankName.lowercase().contains("education") -> "education"
+        bankName.lowercase().contains("entertainment") -> "entertainment"
+        bankName.lowercase().contains("personal care") -> "personal care"
+        bankName.lowercase().contains("wholesale") -> "wholesale"
+
+        // Fallback based on account type - matching WalletCard logic exactly
+        account.accountType?.lowercase() == "credit" -> "retail"
+        account.accountType?.lowercase() == "savings" -> "hospitality"
         account.accountType?.lowercase() == "debit" -> "travel"
-        else -> null // Use default account type colors instead of defaulting to shopping
+        account.accountType?.lowercase() == "business" -> "technology"
+        else -> "retail" // Default recommendation type - matches WalletCard
     }
 }
 
@@ -227,14 +246,14 @@ fun TransferScreen(
     var amountError by remember { mutableStateOf<String?>(null) }
     var selectedCurrency by remember { mutableStateOf("KWD") }
     var currencyExpanded by remember { mutableStateOf(false) }
-    
+
     // Animation and gesture states
     var isAnimating by remember { mutableStateOf(false) }
     var lastSwipeTime by remember { mutableStateOf(0L) }
     var totalDrag by remember { mutableStateOf(0f) }
-    
+
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Reset animation state after completion
     LaunchedEffect(isAnimating) {
         if (isAnimating) {
@@ -424,8 +443,8 @@ fun TransferScreen(
                             val baseOffset = if (isSelected) 0.dp else (index * 8).dp
                             val scale = if (isSelected) 1f else 0.95f - (index * 0.05f)
                             val alpha = if (isSelected) 1f else 0.7f - (index * 0.2f)
-                            
-                            // Get recommendation type for proper colors
+
+                            // Get recommendation type for proper colors - using the same logic as WalletCard
                             val recommendationType = getRecommendationType(account)
 
                             Card(
@@ -495,16 +514,16 @@ fun TransferScreen(
                                         // Only process gesture on drag end to prevent multiple triggers
                                         val currentTime = System.currentTimeMillis()
                                         val threshold = 100.dp.toPx() // Increased threshold for better reliability
-                                        
-                                        if (!isSwapping && 
-                                            !isAnimating && 
-                                            availableDestinations.size > 1 && 
+
+                                        if (!isSwapping &&
+                                            !isAnimating &&
+                                            availableDestinations.size > 1 &&
                                             currentTime - lastSwipeTime > 500 // Debounce: minimum 500ms between swipes
                                         ) {
                                             if (kotlin.math.abs(totalDrag) > threshold) {
                                                 lastSwipeTime = currentTime
                                                 isAnimating = true
-                                                
+
                                                 if (totalDrag < 0) {
                                                     // Swipe left - go to next destination
                                                     currentToIndex = (currentToIndex + 1) % availableDestinations.size
@@ -521,7 +540,7 @@ fun TransferScreen(
                                             }
                                         }
                                     }
-                                ) { _, dragAmount -> 
+                                ) { _, dragAmount ->
                                     // Accumulate total drag distance
                                     totalDrag += dragAmount
                                 }
@@ -531,12 +550,12 @@ fun TransferScreen(
                         if (availableDestinations.isNotEmpty()) {
                             // Horizontal carousel for destination cards
                             availableDestinations.forEachIndexed { index, account ->
-                                // Get recommendation type for proper colors
+                                // Get recommendation type for proper colors - using the same logic as WalletCard
                                 val recommendationType = getRecommendationType(account)
-                                
+
                                 // Calculate position relative to current index
                                 val positionOffset = index - currentToIndex
-                                
+
                                 // Horizontal slide animation - cards slide in from sides
                                 val horizontalOffset by animateDpAsState(
                                     targetValue = when {
@@ -547,14 +566,14 @@ fun TransferScreen(
                                     animationSpec = tween(durationMillis = 400),
                                     label = "horizontalOffset_$index"
                                 )
-                                
+
                                 // Scale animation - only current card is full size
                                 val cardScale by animateFloatAsState(
                                     targetValue = if (positionOffset == 0) 1f else 0.85f,
                                     animationSpec = tween(durationMillis = 400),
                                     label = "cardScale_$index"
                                 )
-                                
+
                                 // Alpha animation - only current and adjacent cards are visible
                                 val cardAlpha by animateFloatAsState(
                                     targetValue = when (kotlin.math.abs(positionOffset)) {
@@ -638,7 +657,7 @@ fun TransferScreen(
                                         )
                                     }
                                 }
-                                
+
                                 // Right arrow hint - only show if not at the end
                                 if (currentToIndex < availableDestinations.size - 1) {
                                     Box(

@@ -88,6 +88,48 @@ private val RobotoFont = FontFamily(
     androidx.compose.ui.text.font.Font(R.font.roboto_variablefont_wdthwght)
 )
 
+// Function to get recommendation type - MATCHES WalletCard and Transfer logic exactly
+fun getRecommendationType(account: AccountResponse): String? {
+    // Get the account product to match the WalletCard logic
+    val accountProduct = AccountProductRepository.accountProducts.find {
+        it.id == account.accountProductId
+    }
+
+    val bankName = accountProduct?.name ?: ""
+
+    return when {
+        // Specific product names - matching WalletCard logic exactly
+        bankName.lowercase().contains("cashback") -> "retail"
+        bankName.lowercase().contains("shopping") -> "retail"
+        bankName.lowercase().contains("diamond") -> "fashion"
+        bankName.lowercase().contains("platinum") -> "wholesale"
+        bankName.lowercase().contains("salary") -> "education"
+        bankName.lowercase().contains("business pro") -> "technology"
+        bankName.lowercase().contains("youth starter") -> "entertainment"
+        bankName.lowercase().contains("shopper's delight") -> "retail"
+        bankName.lowercase().contains("lifestyle premium") -> "fashion"
+
+        // General category names - matching WalletCard logic exactly
+        bankName.lowercase().contains("retail") -> "retail"
+        bankName.lowercase().contains("travel") -> "travel"
+        bankName.lowercase().contains("dining") -> "dining"
+        bankName.lowercase().contains("fashion") -> "fashion"
+        bankName.lowercase().contains("technology") -> "technology"
+        bankName.lowercase().contains("hospitality") -> "hospitality"
+        bankName.lowercase().contains("education") -> "education"
+        bankName.lowercase().contains("entertainment") -> "entertainment"
+        bankName.lowercase().contains("personal care") -> "personal care"
+        bankName.lowercase().contains("wholesale") -> "wholesale"
+
+        // Fallback based on account type - matching WalletCard logic exactly
+        account.accountType?.lowercase() == "credit" -> "retail"
+        account.accountType?.lowercase() == "savings" -> "hospitality"
+        account.accountType?.lowercase() == "debit" -> "travel"
+        account.accountType?.lowercase() == "business" -> "technology"
+        else -> "retail" // Default recommendation type - matches WalletCard
+    }
+}
+
 @Composable
 fun FilterDropdownMenu(
     selectedFilter: String,
@@ -302,18 +344,18 @@ fun AccountDetailsScreen(
     val transactions by viewModel.transactions.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val accountsUiState by viewModel.accountsUiState.collectAsState()
-    
+
     // Swipe animation states
     var currentCardIndex by remember { mutableStateOf(0) }
     var swipeOffset by remember { mutableStateOf(0f) }
     var isSwiping by remember { mutableStateOf(false) }
-    
+
     // Get all accounts for swiping
     val allAccounts = when (accountsUiState) {
         is com.coded.capstone.viewModels.AccountsUiState.Success -> (accountsUiState as com.coded.capstone.viewModels.AccountsUiState.Success).accounts
         else -> emptyList()
     }
-    
+
     // Debug logging for accounts
     LaunchedEffect(allAccounts) {
         Log.d("AccountDetailsScreen", "Available accounts: ${allAccounts.size}")
@@ -321,20 +363,20 @@ fun AccountDetailsScreen(
             Log.d("AccountDetailsScreen", "Account $index: ${account.accountNumber} (ID: ${account.id})")
         }
     }
-    
+
     // Find the initial card index based on the selected accountId
     val initialCardIndex = remember(accountId, allAccounts) {
         val index = allAccounts.indexOfFirst { it.id.toString() == accountId }.coerceAtLeast(0)
         Log.d("AccountDetailsScreen", "Initial card index: $index for accountId: $accountId")
         index
     }
-    
+
     // Update current card index when initialCardIndex changes
     LaunchedEffect(initialCardIndex) {
         currentCardIndex = initialCardIndex
         Log.d("AccountDetailsScreen", "Set current card index to: $currentCardIndex")
     }
-    
+
     // Get current account for display
     val currentAccount = remember(currentCardIndex, allAccounts) {
         if (allAccounts.isNotEmpty() && currentCardIndex < allAccounts.size) {
@@ -372,7 +414,7 @@ fun AccountDetailsScreen(
             Log.e("AccountDetailsScreen", "Error fetching account details: ${e.message}")
         }
     }
-    
+
     // Fetch transactions when current account changes
     LaunchedEffect(currentAccount) {
         currentAccount?.accountNumber?.let { accountNumber ->
@@ -390,7 +432,10 @@ fun AccountDetailsScreen(
         onBack()
     }
 
-    AppBackground {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color.White
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -404,13 +449,13 @@ fun AccountDetailsScreen(
                     )
                 )
         ) {
-            // Main content area - matching wallet layout
+            // Main content area - matching wallet layout exactly
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(20.dp)
             ) {
-                // Header - matching wallet style
+                // Header - matching wallet style exactly
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -418,8 +463,16 @@ fun AccountDetailsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Back button
-                    IconButton(onClick = onBack) {
+                    // Back button - FIXED with proper styling
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                Color.Black.copy(alpha = 0.6f),
+                                CircleShape
+                            ),
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -428,42 +481,27 @@ fun AccountDetailsScreen(
                         )
                     }
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = "Account Details",
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                 color = Color(0xFF374151),
-                                fontFamily = RobotoFont
-                            ),
-//                            color = Color.White
-                        )
-                        if (accountState != null) {
-                            Text(
-                                text = accountState?.accountType?.uppercase() ?: "ACCOUNT",
-                                color = Color.White.copy(alpha = 0.6f),
-                                fontSize = 12.sp,
-                                fontFamily = RobotoFont,
-                                modifier = Modifier.padding(top = 2.dp)
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Account Details",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = RobotoFont
+                        ),
+                        color = Color(0xFF23272E)
+                    )
 
                     // Empty space to balance the layout
-                    Spacer(modifier = Modifier.width(48.dp))
+                    Spacer(modifier = Modifier.width(40.dp))
                 }
 
-                // Card Display Area - matching wallet layout
+                // Card Display Area - FIXED positioning to match wallet screen
                 when (val account = currentAccount) {
                     null -> {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(450.dp),
+                                .height(350.dp), // Reduced height to match wallet selected card
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
@@ -477,7 +515,7 @@ fun AccountDetailsScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(450.dp)
+                                .height(350.dp) // FIXED: Reduced from 450dp to match wallet selected card height
                                 .background(Color.Transparent),
                             contentAlignment = Alignment.TopCenter
                         ) {
@@ -491,17 +529,15 @@ fun AccountDetailsScreen(
                                     animationSpec = tween(durationMillis = 600)
                                 ) + fadeIn(animationSpec = tween(600))
                             ) {
-                                // Swipeable Card Stack
+                                // Swipeable Card Stack - positioned properly
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(220.dp)
-                                        .background(
-                                            if (isSwiping) Color.Red.copy(alpha = 0.1f) else Color.Transparent
-                                        )
+                                        .offset(y = 20.dp) // FIXED: Card positioned down like wallet screen
                                         .pointerInput(allAccounts.size) {
                                             detectDragGestures(
-                                                onDragStart = { 
+                                                onDragStart = {
                                                     isSwiping = true
                                                     swipeOffset = 0f
                                                     Log.d("Swipe", "Drag started")
@@ -543,7 +579,7 @@ fun AccountDetailsScreen(
                                     allAccounts.forEachIndexed { index, account ->
                                         // Calculate position relative to current index
                                         val positionOffset = index - currentCardIndex
-                                        
+
                                         // Horizontal slide animation - cards slide in from sides
                                         val horizontalOffset by animateDpAsState(
                                             targetValue = when {
@@ -554,14 +590,14 @@ fun AccountDetailsScreen(
                                             animationSpec = tween(durationMillis = 400),
                                             label = "horizontalOffset_$index"
                                         )
-                                        
+
                                         // Scale animation - only current card is full size
                                         val cardScale by animateFloatAsState(
                                             targetValue = if (positionOffset == 0) 1f else 0.85f,
                                             animationSpec = tween(durationMillis = 400),
                                             label = "cardScale_$index"
                                         )
-                                        
+
                                         // Alpha animation - only current and adjacent cards are visible
                                         val cardAlpha by animateFloatAsState(
                                             targetValue = when (kotlin.math.abs(positionOffset)) {
@@ -602,27 +638,7 @@ fun AccountDetailsScreen(
                                             }
                                         }
                                     }
-                                    
-                                    // Debug info
-                                    if (isSwiping) {
-                                        Box(
-                                            modifier = Modifier
-                                                .align(Alignment.TopCenter)
-                                                .background(
-                                                    Color.Black.copy(alpha = 0.8f),
-                                                    RoundedCornerShape(8.dp)
-                                                )
-                                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        ) {
-                                            Text(
-                                                text = "Swipe: ${swipeOffset.toInt()}",
-                                                color = Color.White,
-                                                fontSize = 12.sp,
-                                                fontFamily = RobotoFont
-                                            )
-                                        }
-                                    }
-                                    
+
                                     // Swipe hints - only show when cards are available
                                     if (allAccounts.size > 1) {
                                         // Left arrow hint - only show if not at the start
@@ -647,7 +663,7 @@ fun AccountDetailsScreen(
                                                 )
                                             }
                                         }
-                                        
+
                                         // Right arrow hint - only show if not at the end
                                         if (currentCardIndex < allAccounts.size - 1) {
                                             Box(
@@ -671,7 +687,7 @@ fun AccountDetailsScreen(
                                             }
                                         }
                                     }
-                                    
+
                                     // Swipe indicator dots (like transfer screen)
                                     if (allAccounts.size > 1) {
                                         Row(
@@ -697,48 +713,9 @@ fun AccountDetailsScreen(
                         }
                     }
                 }
-
-                // Debug info and test buttons
-                if (allAccounts.size > 1) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(
-                            text = "Cards: ${currentCardIndex + 1}/${allAccounts.size}",
-                            color = Color(0xFF374151),
-                            fontSize = 12.sp,
-                            fontFamily = RobotoFont
-                        )
-                        TextButton(
-                            onClick = {
-                                if (currentCardIndex > 0) {
-                                    currentCardIndex--
-                                    Log.d("AccountDetailsScreen", "Manual previous: $currentCardIndex")
-                                }
-                            },
-                            enabled = currentCardIndex > 0
-                        ) {
-                            Text("← Previous", color = Color(0xFF8EC5FF))
-                        }
-                        TextButton(
-                            onClick = {
-                                if (currentCardIndex < allAccounts.size - 1) {
-                                    currentCardIndex++
-                                    Log.d("AccountDetailsScreen", "Manual next: $currentCardIndex")
-                                }
-                            },
-                            enabled = currentCardIndex < allAccounts.size - 1
-                        ) {
-                            Text("Next →", color = Color(0xFF8EC5FF))
-                        }
-                    }
-                }
             }
 
-            // Bottom Sheet - matching wallet design exactly
+            // Bottom Sheet - FIXED spacing to match wallet exactly
             AnimatedVisibility(
                 visible = showSheet,
                 enter = slideInVertically(
@@ -767,17 +744,17 @@ fun AccountDetailsScreen(
                                 .clip(RoundedCornerShape(topStart = 70.dp, topEnd = 0.dp))
                                 .zIndex(100f)
                                 .background(Color(0xFF23272E))
-                                .padding(bottom = 80.dp)
+                                .padding(bottom = 4.dp) // FIXED: Consistent with wallet
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxSize(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                // Top row: Drag handle (center) and expand/collapse button (right) - matching wallet
+                                // Top row: Drag handle (center) and expand/collapse button (right) - matching wallet exactly
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 10.dp, bottom = 8.dp),
+                                        .padding(top = 20.dp, bottom = 8.dp, start = 16.dp, end = 16.dp), // FIXED: Increased top padding like wallet
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     // Drag handle (centered)
@@ -795,6 +772,18 @@ fun AccountDetailsScreen(
                                                     color = Color.LightGray.copy(alpha = 0.6f),
                                                     shape = RoundedCornerShape(2.5.dp)
                                                 )
+                                                .pointerInput(Unit) {
+                                                    detectDragGestures { change, dragAmount ->
+                                                        if (dragAmount.y > 50) {
+                                                            // Downward swipe: dismiss/collapse
+                                                            showSheet = false
+                                                            sheetExpanded = false
+                                                        } else if (dragAmount.y < -50) {
+                                                            // Upward swipe: expand
+                                                            sheetExpanded = true
+                                                        }
+                                                    }
+                                                }
                                         )
                                     }
                                     // Expand/collapse button (top right)
@@ -840,30 +829,7 @@ fun AccountCard(
     account: AccountResponse,
     modifier: Modifier = Modifier
 ) {
-    // Function to get recommendation type from account product category names
-    fun getRecommendationType(account: AccountResponse): String? {
-        // Get the account product to match the recommendation screen logic
-        val accountProduct = AccountProductRepository.accountProducts.find {
-            it.id == account.accountProductId
-        }
-
-        // Use the same logic as the recommendation screen
-        return when {
-            accountProduct?.name?.lowercase()?.contains("travel") == true -> "travel"
-            accountProduct?.name?.lowercase()?.contains("family") == true -> "family essentials"
-            accountProduct?.name?.lowercase()?.contains("entertainment") == true -> "entertainment"
-            accountProduct?.name?.lowercase()?.contains("shopping") == true -> "shopping"
-            accountProduct?.name?.lowercase()?.contains("dining") == true -> "dining"
-            accountProduct?.name?.lowercase()?.contains("health") == true -> "health"
-            accountProduct?.name?.lowercase()?.contains("education") == true -> "education"
-            account.accountType?.lowercase() == "credit" -> "shopping"
-            account.accountType?.lowercase() == "savings" -> "family essentials"
-            account.accountType?.lowercase() == "debit" -> "travel"
-            else -> null // Use default account type colors instead of defaulting to shopping
-        }
-    }
-
-    // Get recommendation type for this account
+    // Get recommendation type for this account - using consistent logic
     val recommendationType = getRecommendationType(account)
 
     Box(
@@ -872,11 +838,11 @@ fun AccountCard(
             .height(220.dp)
             .shadow(16.dp, RoundedCornerShape(20.dp), clip = false)
     ) {
-            WalletCard(
-                account = account,
+        WalletCard(
+            account = account,
             onCardClick = { /* No flip functionality */ },
-                modifier = Modifier.fillMaxSize(),
-                recommendationType = recommendationType
+            modifier = Modifier.fillMaxSize(),
+            recommendationType = recommendationType
         )
     }
 }
@@ -1076,7 +1042,7 @@ fun TransactionHistorySheetContent(
                             text = "Account Details",
                             style = AppTypography.headlineMedium.copy(fontFamily = RobotoFont),
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF374151), // Dark gray
+                            color = Color.White,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
@@ -1090,7 +1056,7 @@ fun TransactionHistorySheetContent(
                             color = Color.White,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        
+
                         // Account type subtitle
                         Text(
                             text = account?.accountType?.uppercase() ?: "ACCOUNT",
@@ -1351,8 +1317,8 @@ fun TransactionHistorySheetContent(
         }
     }
 }
+
 data class AccountColors(
     val primary: Color,
     val secondary: Color
 )
-

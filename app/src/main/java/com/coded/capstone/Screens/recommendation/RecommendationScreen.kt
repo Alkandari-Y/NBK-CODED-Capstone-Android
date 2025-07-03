@@ -51,6 +51,7 @@ import com.coded.capstone.R
 import com.coded.capstone.SVG.SharpStarsIcon
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.border
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,16 +68,16 @@ fun RecommendationScreen(
     val recommendationViewModel = remember { RecommendationViewModel(context) }
     val accountCreateState by accountViewModel.accountUiState.collectAsState()
     val shouldNavigate by accountViewModel.shouldNavigate.collectAsState()
-    
+
     val recommendedProducts by recommendationViewModel.recommendedProducts.collectAsState()
     val recommendedProductsUiState by recommendationViewModel.recommendedProductsUiState.collectAsState()
     val accountsUiState by viewModel.accountsUiState.collectAsState()
-    
+
     // Fetch recommended products when screen loads
     LaunchedEffect(Unit) {
         recommendationViewModel.fetchRecommendedProducts()
     }
-    
+
     // Debug: Log the recommendations data
     LaunchedEffect(recommendedProducts) {
         println("=== RECOMMENDATION SCREEN DEBUG ===")
@@ -90,7 +91,7 @@ fun RecommendationScreen(
             println("---")
         }
     }
-    
+
     // Convert RecommendedAccountProducts to AccountProductResponse for UI compatibility
     val recommendations = recommendedProducts.map { recommendedProduct ->
         AccountProductResponse(
@@ -110,7 +111,7 @@ fun RecommendationScreen(
             recommended = recommendedProduct.recommended
         )
     }
-    
+
     val userAccounts = when (accountsUiState) {
         is com.coded.capstone.viewModels.AccountsUiState.Success -> (accountsUiState as com.coded.capstone.viewModels.AccountsUiState.Success).accounts
         else -> emptyList()
@@ -119,12 +120,6 @@ fun RecommendationScreen(
     // Success message state
     var showSuccessMessage by remember { mutableStateOf(false) }
     var successMessage by remember { mutableStateOf("") }
-    
-    // Star button and modal state
-    var showCategoriesModal by remember { mutableStateOf(false) }
-    var selectedProductForModal by remember { mutableStateOf<AccountProductResponse?>(null) }
-    
-
 
     // Handle account creation success
     LaunchedEffect(shouldNavigate) {
@@ -150,8 +145,6 @@ fun RecommendationScreen(
             else -> {}
         }
     }
-    
-
 
     // Function to handle Apply button click
     fun handleApplyClick(accountProduct: AccountProductResponse) {
@@ -177,31 +170,13 @@ fun RecommendationScreen(
         }
     }
 
-    // Function to get categories based on product
-    fun getCategories(product: AccountProductResponse?): List<String> {
-        return when {
-            product?.name?.lowercase()?.contains("travel") == true -> listOf("Travel", "Hotels", "Flights", "Car Rental")
-            product?.name?.lowercase()?.contains("family") == true -> listOf("Family", "Education", "Healthcare", "Shopping")
-            product?.name?.lowercase()?.contains("entertainment") == true -> listOf("Movies", "Streaming", "Gaming", "Events")
-            product?.name?.lowercase()?.contains("shopping") == true -> listOf("Online Shopping", "Retail", "Fashion", "Electronics")
-            product?.name?.lowercase()?.contains("dining") == true -> listOf("Restaurants", "Food Delivery", "Cafes", "Bars")
-            product?.name?.lowercase()?.contains("health") == true -> listOf("Healthcare", "Pharmacy", "Fitness", "Wellness")
-            product?.name?.lowercase()?.contains("education") == true -> listOf("Education", "Books", "Courses", "Software")
-            product?.accountType?.lowercase() == "credit" -> listOf("Shopping", "Travel", "Dining", "Entertainment")
-            product?.accountType?.lowercase() == "savings" -> listOf("Family", "Education", "Healthcare", "Future Planning")
-            product?.accountType?.lowercase() == "debit" -> listOf("Daily Expenses", "Shopping", "Dining", "Transport")
-            else -> listOf("General", "Shopping", "Dining", "Entertainment")
-        }
-    }
-    
     // Function to check if product is owned using isOwned flag from recommended products
     fun isProductOwned(productId: Long?): Boolean {
         return recommendedProducts.find { it.id == productId }?.isOwned ?: false
     }
 
     // Define Roboto font family
-    val robotoFontFamily =
-        FontFamily.Default // Replace with FontFamily(Font(R.font.roboto_regular)) if you have the font resource
+    val robotoFontFamily = FontFamily(Font(R.font.roboto_variablefont_wdthwght))
 
     Scaffold(
         containerColor = Color.Transparent
@@ -210,7 +185,6 @@ fun RecommendationScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -313,559 +287,592 @@ fun RecommendationScreen(
                     }
                 }
                 is RecommendedProductsUiState.Success, RecommendedProductsUiState.Idle -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 15.dp, end = 15.dp, bottom = 0.dp)
-            ) {
-                // Header Section
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color.White.copy(alpha = 0.1f),
-                                        Color.White.copy(alpha = 0.05f)
-                                    )
-                                )
-                            )
-                    ) {
-
-                    }
-
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-    //                    Text(
-    //                        text = "Recommendations",
-    //                        fontSize = 20.sp,
-    //                        fontWeight = FontWeight.Bold,
-    //                        color = Color(0xFF1E1B4B),
-    //                        textAlign = TextAlign.Center
-    //                    )
-                        Text(
-                            text = "Tailored for You",
-                            fontSize = 14.sp,
-                            color = Color.White.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    Row {
-                        IconButton(
-                            onClick = {
-                                println("=== MANUAL REFRESH TRIGGERED ===")
-                                recommendationViewModel.fetchRecommendedProducts()
-                            },
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    brush = Brush.linearGradient(
-                                        colors = listOf(
-                                            Color.White.copy(alpha = 0.1f),
-                                            Color.White.copy(alpha = 0.05f)
-                                        )
-                                    )
-                                )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Refresh",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-                        
-                        IconButton(
-                            onClick = onNotificationClick,
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    brush = Brush.linearGradient(
-                                        colors = listOf(
-                                            Color.White.copy(alpha = 0.1f),
-                                            Color.White.copy(alpha = 0.05f)
-                                        )
-                                    )
-                                )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Notifications,
-                                contentDescription = "Notifications",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
-
-                // Subtitle Section
-                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                            .fillMaxSize()
+                            .padding(start = 15.dp, end = 15.dp, bottom = 0.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color(0xFF8EC5FF),
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Products Available",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.DarkGray,
-                            fontFamily = robotoFontFamily,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Based on Your Accounts",
-                            fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Gray,
-                            fontFamily = robotoFontFamily,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Discover financial products that match your needs and goals",
-                            fontSize = 15.sp,
-                        color = Color.Gray.copy(alpha = 0.7f),
-                            fontFamily = robotoFontFamily,
-                        textAlign = TextAlign.Center,
-                            lineHeight = 20.sp
-                    )
-                }
-
-                // Recommendations Section
-                val uniqueRecommendations = recommendations
-                    .filter { product ->
-                        // Filter out cashback, business, and salary account cards
-                        val productName = product.name?.lowercase() ?: ""
-                        val accountType = product.accountType?.lowercase() ?: ""
-                        
-                        !productName.contains("cashback") && 
-                        !accountType.contains("business") &&
-                        !productName.contains("business") &&
-                        !productName.contains("salary")
-                    }
-                    .distinctBy { it.name to it.accountType }
-                    .sortedWith(compareByDescending<AccountProductResponse> { product ->
-                        // First sort criterion: recommended items first (descending: true comes before false)
-                        product.recommended
-                    }.thenBy { product ->
-                        // Second sort criterion: unowned first (false), then owned (true)
-                        isProductOwned(product.id)
-                    })
-                if (uniqueRecommendations.isNotEmpty()) {
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(0.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(uniqueRecommendations) { product ->
-                            Box(
+                        // CLEANER HEADER SECTION - Smaller and more refined
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = onBackClick,
                                 modifier = Modifier
-                                        .width(380.dp)
-                                    .height(520.dp)
-                                        .background(Color.Transparent, RoundedCornerShape(45.dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    // Centered, rotated WalletCard
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .weight(1f),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        WalletCard(
-                                            account = com.coded.capstone.data.responses.account.AccountResponse(
-                                                id = product.id ?: 0L,
-                                                accountNumber = null,
-                                                balance = java.math.BigDecimal.ZERO,
-                                                ownerId = 0L,
-                                                ownerType = null,
-                                                accountProductId = product.id,
-                                                accountType = product.accountType
-                                            ),
-                                            onCardClick = { onItemClick(product) },
-                                            recommendationType = getRecommendationType(product),
-                                            showDetails = false,
-                                            modifier = Modifier
-                                                .width(320.dp)
-                                                .height(200.dp)
-                                                .graphicsLayer {
-                                                    rotationZ = 90f
-                                                    scaleX = 1f
-                                                    scaleY = 1f
-                                                }
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(
+                                        brush = Brush.linearGradient(
+                                            colors = listOf(
+                                                Color.White.copy(alpha = 0.1f),
+                                                Color.White.copy(alpha = 0.05f)
+                                            )
                                         )
-                                    }
-                                    
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    
-                                    // Perks/info as premium InfoCards
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp),
-                                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                                        ) {
-                                            product.interestRate?.let {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceAround
-                                        ) {
-                                            Text(
-                                                "Interest Rate",
-                                                color = Color(0xFF8EC5FF),
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                            Text(
-                                                "${it}%",
-                                                color = Color(0xFF1E1B4B),
-                                                fontWeight = FontWeight.Medium,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                        }
-                                }
-                                product.creditLimit?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceAround
-                                        ) {
-                                            Text(
-                                                "Credit Limit",
-                                                color = Color(0xFF8EC5FF),
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                            Text(
-                                                "KD ${it.toInt()}",
-                                                color = Color(0xFF1E1B4B),
-                                                fontWeight = FontWeight.Medium,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                        }
-                                }
-                                product.annualFee?.let {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceAround
-                                        ) {
-                                            Text(
-                                                "Annual Fee",
-                                                color = Color(0xFF8EC5FF),
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                            Text(
-                                                if (it == 0.0) "Free" else "KD ${it.toInt()}",
-                                                color = Color(0xFF1E1B4B),
-                                                fontWeight = FontWeight.Medium,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                        }
-                                    }
-                                    product.minBalanceRequired?.let {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceAround
-                                        ) {
-                                            Text(
-                                                "Min Balance",
-                                                color = Color(0xFF8EC5FF),
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                            Text(
-                                                "KD ${it.toInt()}",
-                                                color = Color(0xFF1E1B4B),
-                                                fontWeight = FontWeight.Medium,
-                                                fontSize = 15.sp,
-                                                fontFamily = robotoFontFamily
-                                            )
-                                        }
-                                    }
-                                    product.minSalary?.let {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceAround
-                                            ) {
-                                                Text(
-                                                    "Min Salary",
-                                                    color = Color(0xFF8EC5FF),
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                                Text(
-                                                    "KD ${it.toInt()}",
-                                                    color = Color(0xFF1E1B4B),
-                                                    fontWeight = FontWeight.Medium,
-                                                    fontSize = 15.sp,
-                                                    fontFamily = robotoFontFamily
-                                                )
-                                            }
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.height(20.dp))
-                                // Premium Apply Button
-                                    Box(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        val isOwned = isProductOwned(product.id)
-                                        
-                                Button(
-                                    onClick = { handleApplyClick(product) },
-                                            enabled = accountCreateState is AccountCreateUiState.Loading == false && !isOwned,
-                                    modifier = Modifier
-                                                .width(330.dp)
-                                                .height(48.dp)
-                                                .then(
-                                                    if (!isOwned && accountCreateState !is AccountCreateUiState.Loading)
-                                                        Modifier.shadow(
-                                            elevation = 3.dp,
-                                            shape = RoundedCornerShape(16.dp),
-                                            ambientColor = Color.White.copy(alpha = 0.2f)
-                                                        )
-                                                    else Modifier
-                                                ),
-                                            colors = if (isOwned) {
-                                                ButtonDefaults.buttonColors(
-                                                    containerColor = Color.LightGray,
-                                                    contentColor = Color.White,
-                                                    disabledContainerColor = Color.LightGray,
-                                                    disabledContentColor = Color.White
-                                                )
-                                            } else {
-                                                ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF8EC5FF),
-                                                    contentColor = Color.White,
-                                                    disabledContainerColor = Color(0xFF8EC5FF).copy(
-                                                        alpha = 0.6f
-                                                    ),
-                                                    disabledContentColor = Color.White.copy(alpha = 0.6f)
-                                                )
-                                            },
-                                    shape = RoundedCornerShape(16.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        if (accountCreateState is AccountCreateUiState.Loading) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(20.dp),
-                                                color = Color(0xFF1E1B4B),
-                                                strokeWidth = 2.dp
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(
-                                                text = "Creating Account...",
-                                                fontSize = 16.sp,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontFamily = robotoFontFamily,
-                                                        color = Color.White
-                                            )
-                                        } else {
-                                            Text(
-                                                        text = if (isOwned) "Already Owned" else "Apply Now",
-                                                        fontSize = 18.sp,
-                                                        fontWeight = FontWeight.Bold,
-                                                        fontFamily = robotoFontFamily,
-                                                        color = Color.White
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                                    if (!isOwned) {
-                                            Icon(
-                                                imageVector = Icons.Filled.ArrowForward,
-                                                contentDescription = null,
-                                                            modifier = Modifier.size(20.dp),
-                                                            tint = Color.White
-                                            )
-                                                    }
-                                                }
-                                            }
-                                    }
-                                }
-                            }
-                            
-                            // Star Button - Top Right of each card
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(top = 4.dp, end = 4.dp)
-                                    .zIndex(10f)
+                                    )
                             ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Tailored for You",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray,
+                                    textAlign = TextAlign.Center,
+                                    fontFamily = robotoFontFamily
+                                )
+                            }
+
+                            Row {
                                 IconButton(
-                                    onClick = { 
-                                        selectedProductForModal = product
-                                        showCategoriesModal = true 
+                                    onClick = {
+                                        println("=== MANUAL REFRESH TRIGGERED ===")
+                                        recommendationViewModel.fetchRecommendedProducts()
                                     },
                                     modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
+                                        .size(44.dp)
+                                        .clip(RoundedCornerShape(12.dp))
                                         .background(
                                             brush = Brush.linearGradient(
                                                 colors = listOf(
-                                                    Color(0xFF8EC5FF).copy(alpha = 0.9f),
-                                                    Color(0xFF8EC5FF).copy(alpha = 0.7f)
+                                                    Color.White.copy(alpha = 0.1f),
+                                                    Color.White.copy(alpha = 0.05f)
                                                 )
                                             )
                                         )
                                 ) {
-                                    SharpStarsIcon(
-                                        modifier = Modifier.size(30.dp),
-                                        color = Color.White
+                                    Icon(
+                                        imageVector = Icons.Default.Refresh,
+                                        contentDescription = "Refresh",
+                                        tint = Color.Black,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                IconButton(
+                                    onClick = onNotificationClick,
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            brush = Brush.linearGradient(
+                                                colors = listOf(
+                                                    Color.White.copy(alpha = 0.1f),
+                                                    Color.White.copy(alpha = 0.05f)
+                                                )
+                                            )
+                                        )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Notifications,
+                                        contentDescription = "Notifications",
+                                        tint = Color.Black,
+                                        modifier = Modifier.size(24.dp)
                                     )
                                 }
                             }
                         }
-                    }
-                }
-            } else {
-                // Empty State
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Box(
+
+                        // REDESIGNED TITLE SECTION - Smaller, cleaner, no star icon
+                        Column(
                             modifier = Modifier
-                                .size(120.dp)
-                                .clip(RoundedCornerShape(60.dp))
-                                .background(
-                                    brush = Brush.radialGradient(
-                                        colors = listOf(
-                                                Color(0xFF8EC5FF).copy(alpha = 0.2f),
-                                                Color(0xFF8EC5FF).copy(alpha = 0.1f)
-                                            )
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Lightbulb,
-                                contentDescription = null,
-                                    tint = Color(0xFF8EC5FF),
-                                modifier = Modifier.size(60.dp)
+                            // Removed star icon completely
+                            Text(
+                                text = "Products Available",
+                                fontSize = 24.sp, // Reduced from 32sp
+                                fontWeight = FontWeight.Bold,
+                                color = Color.DarkGray,
+                                fontFamily = robotoFontFamily,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Discover financial products that match your goals",
+                                fontSize = 14.sp, // Reduced from 15sp
+                                color = Color.Gray.copy(alpha = 0.7f),
+                                fontFamily = robotoFontFamily,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 18.sp // Reduced from 20sp
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        // RECOMMENDATIONS SECTION WITH GOLD OUTLINE & RECOMMENDED BADGES
+                        val uniqueRecommendations = recommendations
+                            .filter { product ->
+                                // Filter out cashback, business, and salary account cards
+                                val productName = product.name?.lowercase() ?: ""
+                                val accountType = product.accountType?.lowercase() ?: ""
 
-                        Text(
-                            text = "No Recommendations Yet",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-                        )
+                                !productName.contains("cashback") &&
+                                        !accountType.contains("business") &&
+                                        !productName.contains("business") &&
+                                        !productName.contains("salary")
+                            }
+                            .distinctBy { it.name to it.accountType }
+                            .sortedWith(compareByDescending<AccountProductResponse> { product ->
+                                // First sort criterion: recommended items first (descending: true comes before false)
+                                product.recommended
+                            }.thenBy { product ->
+                                // Second sort criterion: unowned first (false), then owned (true)
+                                isProductOwned(product.id)
+                            })
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        if (uniqueRecommendations.isNotEmpty()) {
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(0.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(uniqueRecommendations) { product ->
+                                    Box(
+                                        modifier = Modifier
+                                            .width(380.dp)
+                                            .height(520.dp)
+                                            .background(Color.Transparent, RoundedCornerShape(45.dp)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.fillMaxSize(),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            // WALLET CARD WITH GOLD OUTLINE FOR RECOMMENDED CARDS
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .weight(1f),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                val isRecommended = product.recommended
 
-                        Text(
-                            text = "Complete your profile to get personalized recommendations",
-                            fontSize = 16.sp,
-                            color = Color.White.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 22.sp
-                        )
-                    }
-                }
-            }
-            } // Close Column
+                                                // Gold border wrapper for recommended cards only
+                                                if (isRecommended) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .width(324.dp) // Slightly larger than card
+                                                            .height(204.dp)
+                                                            .border(
+                                                                width = 4.dp,
+                                                                brush = Brush.linearGradient(
+                                                                    colors = listOf(
+                                                                        Color(0xFFFFD700), // Gold
+                                                                        Color(0xFFFFA500), // Orange gold
+                                                                        Color(0xFFFFD700)  // Gold
+                                                                    )
+                                                                ),
+                                                                shape = RoundedCornerShape(20.dp)
+                                                            )
+                                                            .graphicsLayer {
+                                                                rotationZ = 90f
+                                                            },
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        // RECOMMENDED BADGE - Top right of the gold outline
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .align(Alignment.TopEnd)
+                                                                .offset(x = (-8).dp, y = 8.dp)
+                                                                .zIndex(10f)
+                                                                .graphicsLayer {
+                                                                    rotationZ = -90f // Counter-rotate the badge
+                                                                }
+                                                        ) {
+                                                            Card(
+                                                                colors = CardDefaults.cardColors(
+                                                                    containerColor = Color(0xFFFFD700)
+                                                                ),
+                                                                shape = RoundedCornerShape(12.dp),
+                                                                elevation = CardDefaults.cardElevation(4.dp)
+                                                            ) {
+                                                                Text(
+                                                                    text = "RECOMMENDED",
+                                                                    color = Color.Black,
+                                                                    fontSize = 10.sp,
+                                                                    fontWeight = FontWeight.Bold,
+                                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                                    fontFamily = robotoFontFamily
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                // WALLET CARD - Rotated 90 degrees
+                                                WalletCard(
+                                                    account = com.coded.capstone.data.responses.account.AccountResponse(
+                                                        id = product.id ?: 0L,
+                                                        accountNumber = null,
+                                                        balance = java.math.BigDecimal.ZERO,
+                                                        ownerId = 0L,
+                                                        ownerType = null,
+                                                        accountProductId = product.id,
+                                                        accountType = product.accountType
+                                                    ),
+                                                    onCardClick = { onItemClick(product) },
+                                                    recommendationType = getRecommendationType(product),
+                                                    showDetails = false,
+                                                    modifier = Modifier
+                                                        .width(320.dp)
+                                                        .height(200.dp)
+                                                        .graphicsLayer {
+                                                            rotationZ = 90f
+                                                            scaleX = 1f
+                                                            scaleY = 1f
+                                                        }
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            // CLEAN PRODUCT DETAILS - Card style layout
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 16.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                product.interestRate?.let {
+                                                    Card(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        colors = CardDefaults.cardColors(
+                                                            containerColor = Color.White.copy(alpha = 0.8f)
+                                                        ),
+                                                        shape = RoundedCornerShape(12.dp),
+                                                        elevation = CardDefaults.cardElevation(2.dp)
+                                                    ) {
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                "Interest Rate",
+                                                                color = Color(0xFF8EC5FF),
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                            Text(
+                                                                "${it}%",
+                                                                color = Color(0xFF1E1B4B),
+                                                                fontWeight = FontWeight.Medium,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
+                                                product.creditLimit?.let {
+                                                    Card(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        colors = CardDefaults.cardColors(
+                                                            containerColor = Color.White.copy(alpha = 0.8f)
+                                                        ),
+                                                        shape = RoundedCornerShape(12.dp),
+                                                        elevation = CardDefaults.cardElevation(2.dp)
+                                                    ) {
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                "Credit Limit",
+                                                                color = Color(0xFF8EC5FF),
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                            Text(
+                                                                "KD ${it.toInt()}",
+                                                                color = Color(0xFF1E1B4B),
+                                                                fontWeight = FontWeight.Medium,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
+                                                product.annualFee?.let {
+                                                    Card(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        colors = CardDefaults.cardColors(
+                                                            containerColor = Color.White.copy(alpha = 0.8f)
+                                                        ),
+                                                        shape = RoundedCornerShape(12.dp),
+                                                        elevation = CardDefaults.cardElevation(2.dp)
+                                                    ) {
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                "Annual Fee",
+                                                                color = Color(0xFF8EC5FF),
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                            Text(
+                                                                if (it == 0.0) "Free" else "KD ${it.toInt()}",
+                                                                color = Color(0xFF1E1B4B),
+                                                                fontWeight = FontWeight.Medium,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
+                                                product.minBalanceRequired?.let {
+                                                    Card(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        colors = CardDefaults.cardColors(
+                                                            containerColor = Color.White.copy(alpha = 0.8f)
+                                                        ),
+                                                        shape = RoundedCornerShape(12.dp),
+                                                        elevation = CardDefaults.cardElevation(2.dp)
+                                                    ) {
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                "Min Balance",
+                                                                color = Color(0xFF8EC5FF),
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                            Text(
+                                                                "KD ${it.toInt()}",
+                                                                color = Color(0xFF1E1B4B),
+                                                                fontWeight = FontWeight.Medium,
+                                                                fontSize = 14.sp,
+                                                                fontFamily = robotoFontFamily
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            Spacer(modifier = Modifier.height(20.dp))
+
+                                            // APPLY NOW BUTTON - Premium styling
+                                            Box(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                val isOwned = isProductOwned(product.id)
+
+                                                Button(
+                                                    onClick = { handleApplyClick(product) },
+                                                    enabled = accountCreateState is AccountCreateUiState.Loading == false && !isOwned,
+                                                    modifier = Modifier
+                                                        .width(330.dp)
+                                                        .height(48.dp)
+                                                        .then(
+                                                            if (!isOwned && accountCreateState !is AccountCreateUiState.Loading)
+                                                                Modifier.shadow(
+                                                                    elevation = 3.dp,
+                                                                    shape = RoundedCornerShape(16.dp),
+                                                                    ambientColor = Color.White.copy(alpha = 0.2f)
+                                                                )
+                                                            else Modifier
+                                                        ),
+                                                    colors = if (isOwned) {
+                                                        ButtonDefaults.buttonColors(
+                                                            containerColor = Color.LightGray,
+                                                            contentColor = Color.White,
+                                                            disabledContainerColor = Color.LightGray,
+                                                            disabledContentColor = Color.White
+                                                        )
+                                                    } else {
+                                                        ButtonDefaults.buttonColors(
+                                                            containerColor = Color(0xFF8EC5FF),
+                                                            contentColor = Color.White,
+                                                            disabledContainerColor = Color(0xFF8EC5FF).copy(
+                                                                alpha = 0.6f
+                                                            ),
+                                                            disabledContentColor = Color.White.copy(alpha = 0.6f)
+                                                        )
+                                                    },
+                                                    shape = RoundedCornerShape(16.dp)
+                                                ) {
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.Center
+                                                    ) {
+                                                        if (accountCreateState is AccountCreateUiState.Loading) {
+                                                            CircularProgressIndicator(
+                                                                modifier = Modifier.size(20.dp),
+                                                                color = Color.White,
+                                                                strokeWidth = 2.dp
+                                                            )
+                                                            Spacer(modifier = Modifier.width(8.dp))
+                                                            Text(
+                                                                text = "Creating Account...",
+                                                                fontSize = 16.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontFamily = robotoFontFamily,
+                                                                color = Color.White
+                                                            )
+                                                        } else {
+                                                            Text(
+                                                                text = if (isOwned) "Already Owned" else "Apply Now",
+                                                                fontSize = 18.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontFamily = robotoFontFamily,
+                                                                color = Color.White
+                                                            )
+                                                            Spacer(modifier = Modifier.width(8.dp))
+                                                            if (!isOwned) {
+                                                                Icon(
+                                                                    imageVector = Icons.Filled.ArrowForward,
+                                                                    contentDescription = null,
+                                                                    modifier = Modifier.size(20.dp),
+                                                                    tint = Color.White
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            // EMPTY STATE - Clean design
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(120.dp)
+                                            .clip(RoundedCornerShape(60.dp))
+                                            .background(
+                                                brush = Brush.radialGradient(
+                                                    colors = listOf(
+                                                        Color(0xFF8EC5FF).copy(alpha = 0.2f),
+                                                        Color(0xFF8EC5FF).copy(alpha = 0.1f)
+                                                    )
+                                                )
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Lightbulb,
+                                            contentDescription = null,
+                                            tint = Color(0xFF8EC5FF),
+                                            modifier = Modifier.size(60.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(24.dp))
+
+                                    Text(
+                                        text = "No Recommendations Yet",
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.DarkGray,
+                                        textAlign = TextAlign.Center,
+                                        fontFamily = robotoFontFamily
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Text(
+                                        text = "Complete your profile to get personalized recommendations",
+                                        fontSize = 16.sp,
+                                        color = Color.Gray,
+                                        textAlign = TextAlign.Center,
+                                        lineHeight = 22.sp,
+                                        fontFamily = robotoFontFamily
+                                    )
+                                }
+                            }
+                        }
+                    } // Close Column
                 } // Close when statement Success/Idle case
             } // Close when statement
 
-        // Decorative Elements
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(200.dp)
-                .offset(x = 100.dp, y = (-100).dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
+            // DECORATIVE ELEMENTS - Subtle background decoration
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(200.dp)
+                    .offset(x = 100.dp, y = (-100).dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
                                 Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                            Color.Transparent
+                                Color.Transparent
+                            ),
+                            radius = 200f
                         ),
-                        radius = 200f
-                    ),
-                    shape = RoundedCornerShape(100.dp)
-                )
-        )
+                        shape = RoundedCornerShape(100.dp)
+                    )
+            )
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .size(150.dp)
-                .offset(x = (-75).dp, y = 75.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(150.dp)
+                    .offset(x = (-75).dp, y = 75.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
                                 Color(0xFF8EC5FF).copy(alpha = 0.1f),
-                            Color.Transparent
+                                Color.Transparent
+                            ),
+                            radius = 150f
                         ),
-                        radius = 150f
-                    ),
-                    shape = RoundedCornerShape(75.dp)
-                )
-        )
-
-
-
-//                         shape = RoundedCornerShape(75.dp)
-//                     )
-//             )
+                        shape = RoundedCornerShape(75.dp)
+                    )
+            )
         }
 
-        // Success Message - positioned in the center of the screen
+        // SUCCESS MESSAGE - Account creation success overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -881,118 +888,6 @@ fun RecommendationScreen(
                     .align(Alignment.Center)
                     .padding(horizontal = 16.dp)
             )
-        }
-
-        // Categories Modal
-        if (showCategoriesModal && selectedProductForModal != null) {
-            Dialog(
-                onDismissRequest = { 
-                    showCategoriesModal = false
-                    selectedProductForModal = null
-                },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true
-                )
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF23272E)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Header
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Card Categories",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            IconButton(
-                                onClick = { 
-                                    showCategoriesModal = false
-                                    selectedProductForModal = null
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "Close",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Categories Grid
-                        val categories = getCategories(selectedProductForModal)
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            categories.forEach { category ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 2.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = Color(0xFF8EC5FF).copy(alpha = 0.15f)
-                                    )
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = category,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Medium,
-                                            color = Color(0xFF8EC5FF)
-                                        )
-//                                        Icon(
-//                                            imageVector = Icons.Default.ArrowForward,
-//                                            contentDescription = null,
-//                                            tint = Color(0xFF8EC5FF).copy(alpha = 0.7f),
-//                                            modifier = Modifier.size(16.dp)
-//                                        )
-                                    }
-                                }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Description
-                        Text(
-                            text = "This card offers rewards and benefits in these categories",
-                            fontSize = 14.sp,
-                            color = Color.White.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 20.sp
-                        )
-                    }
-                }
-            }
         }
     }
 }

@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.coded.capstone.Screens.Wallet.WalletScreen
 import com.coded.capstone.Screens.notifications.NotificationCenter
 import com.coded.capstone.Screens.onBoarding.CardSuggestedOnBoarding
@@ -29,10 +31,13 @@ import com.coded.capstone.screens.kyc.KycScreen
 import com.coded.capstone.screens.kyc.ProfilePage
 import com.coded.capstone.screens.onboarding.CategoryOnBoarding
 import com.coded.capstone.screens.onboarding.VendorsOnBoarding
+import com.coded.capstone.screens.payment.NfcPaymentScreen
 import com.coded.capstone.screens.recommendation.RecommendationScreen
+import com.coded.capstone.screens.settings.SettingsScreen
 import com.coded.capstone.screens.transfer.TransferScreen
 import com.coded.capstone.screens.wallet.RelatedVendorsScreen
 import com.coded.capstone.screens.xp.XpTierScreen
+import java.math.BigDecimal
 
 object NavRoutes {
     const val NAV_ROUTE_LOGIN = "login"
@@ -144,12 +149,12 @@ val accountViewModel = remember { AccountViewModel(context) }
         composable(
             route = NavRoutes.NAV_ROUTE_HOME + "?tab={tab}&refreshAccounts={refreshAccounts}",
             arguments = listOf(
-                androidx.navigation.navArgument("tab") {
-                    type = androidx.navigation.NavType.IntType
+                navArgument("tab") {
+                    type = NavType.IntType
                     defaultValue = 0
                 },
-                androidx.navigation.navArgument("refreshAccounts") {
-                    type = androidx.navigation.NavType.BoolType
+                navArgument("refreshAccounts") {
+                    type = NavType.BoolType
                     defaultValue = false
                 }
             )
@@ -194,18 +199,19 @@ val accountViewModel = remember { AccountViewModel(context) }
             )
         }
         composable(NavRoutes.NAV_ROUTE_SETTINGS) {
-            com.coded.capstone.screens.settings.SettingsScreen(
+            SettingsScreen(
                 navController = navController,
                 onBackClick = { navController.popBackStack() }
             )
         }
+
         composable(NavRoutes.NAV_ROUTE_CALENDER) { CalendarScreen(navController = navController) }
 
         composable(
             route = NavRoutes.NAV_ROUTE_TRANSFER + "?selectedAccountId={selectedAccountId}",
             arguments = listOf(
-                androidx.navigation.navArgument("selectedAccountId") {
-                    type = androidx.navigation.NavType.StringType
+                navArgument("selectedAccountId") {
+                    type = NavType.StringType
                     defaultValue = ""
                     nullable = true
                 }
@@ -256,9 +262,9 @@ val accountViewModel = remember { AccountViewModel(context) }
 //        }
         
         composable(NavRoutes.NAV_ROUTE_NFC_PAYMENT) {
-            com.coded.capstone.screens.payment.NfcPaymentScreen(
+            NfcPaymentScreen(
                 navController = navController,
-                amount = java.math.BigDecimal("25.50"),
+                amount = BigDecimal("25.50"),
                 sourceAccountNumber = "1234567890"
             )
         }

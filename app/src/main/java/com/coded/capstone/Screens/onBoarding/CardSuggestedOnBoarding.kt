@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -310,7 +311,7 @@ fun CardSuggestedOnBoarding(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF6B7280),
-                    lineHeight = 24.sp,
+                    lineHeight = 20.sp,
                     fontFamily = RobotoFont,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -318,32 +319,25 @@ fun CardSuggestedOnBoarding(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Two-Column Layout: Details & Benefits - FIXED SIZE (swapped order)
+                // Two-Column Layout: Details & Benefits - FIXED HEIGHT TO PREVENT CUTOFF
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp), // Fixed height for both cards
+                        .height(190.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
-                    // Details Card - FIXED SIZE (now first/left)
-                    Card(
+                    // Details Card
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .width(150.dp), // Fixed width
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF23272E) // Dark grey
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                            .background(Color(0xFF6B7280), RoundedCornerShape(20.dp))
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(20.dp)
                         ) {
-                            // Header without icon
                             Text(
                                 text = "Details",
                                 fontSize = 16.sp,
@@ -352,80 +346,55 @@ fun CardSuggestedOnBoarding(
                                 fontFamily = RobotoFont
                             )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            // Fixed content area
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f) // Takes remaining space
-                            ) {
-                                // Always show exactly 4 rows, regardless of data
-                                val detailRows = mutableListOf<Pair<String, String>>()
+                            val detailRows = mutableListOf<Pair<String, String>>()
+                            card.interestRate?.let { detailRows.add("Interest" to "${String.format("%.2f", it)}%") }
+                            card.minBalanceRequired?.let { detailRows.add("Min Balance" to "${String.format("%.0f", it)} KD") }
+                            if (card.accountType?.lowercase() == "credit") {
+                                card.creditLimit?.let { detailRows.add("Credit Limit" to "${String.format("%.0f", it)} KD") }
+                            }
+                            card.annualFee?.let {
+                                detailRows.add("Annual Fee" to if (it == 0.0) "Free" else "${String.format("%.0f", it)} KD")
+                            }
 
-                                // Add available data
-                                card.interestRate?.let { rate ->
-                                    detailRows.add("Interest" to "${String.format("%.2f", rate)}%")
+                            while (detailRows.size < 4) {
+                                when (detailRows.size) {
+                                    0 -> detailRows.add("Interest" to "2.90%")
+                                    1 -> detailRows.add("Min Balance" to "0 KD")
+                                    2 -> detailRows.add("Credit Limit" to "1200 KD")
+                                    3 -> detailRows.add("Annual Fee" to "40 KD")
                                 }
-                                card.minBalanceRequired?.let { minBalance ->
-                                    detailRows.add("Min Balance" to "${String.format("%.0f", minBalance)} KD")
-                                }
-                                if (card.accountType?.lowercase() == "credit") {
-                                    card.creditLimit?.let { creditLimit ->
-                                        detailRows.add("Credit Limit" to "${String.format("%.0f", creditLimit)} KD")
-                                    }
-                                }
-                                card.annualFee?.let { fee ->
-                                    detailRows.add("Annual Fee" to if (fee == 0.0) "Free" else "${String.format("%.0f", fee)} KD")
-                                }
+                            }
 
-                                // Fill with placeholder data if needed to always have 4 rows
-                                while (detailRows.size < 4) {
-                                    when (detailRows.size) {
-                                        0 -> detailRows.add("Interest" to "2.90%")
-                                        1 -> detailRows.add("Min Balance" to "0 KD")
-                                        2 -> detailRows.add("Credit Limit" to "1200 KD")
-                                        3 -> detailRows.add("Annual Fee" to "40 KD")
-                                    }
-                                }
-
-                                // Display exactly 4 rows
-                                detailRows.take(4).forEach { (label, value) ->
-                                    Row(
+                            detailRows.take(4).forEach { (label, value) ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
                                         modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(bottom = 8.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.weight(1f)
-                                        ) {
-                                            // Unified blue circle bullet point
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(8.dp)
-                                                    .background(Color(0xFF8EC5FF), CircleShape)
-                                            )
-                                            Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = label,
-                                                fontSize = 12.sp,
-                                                color = Color.White,
-                                                fontFamily = RobotoFont,
-                                                maxLines = 1,
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                            )
-                                        }
+                                            .size(6.dp)
+                                            .background(Color(0xFF8EC5FF), CircleShape)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Column(modifier = Modifier.fillMaxWidth()) {
+                                        Text(
+                                            text = label,
+                                            fontSize = 10.sp,
+                                            color = Color.White.copy(alpha = 0.8f),
+                                            fontFamily = RobotoFont,
+                                            maxLines = 1
+                                        )
                                         Text(
                                             text = value,
-                                            fontSize = 12.sp,
+                                            fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White,
                                             fontFamily = RobotoFont,
-                                            maxLines = 1,
-                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                            maxLines = 1
                                         )
                                     }
                                 }
@@ -433,24 +402,18 @@ fun CardSuggestedOnBoarding(
                         }
                     }
 
-                    // Benefits Card - FIXED SIZE (now second/right)
-                    Card(
+                    // Benefits Card
+                    Box(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
-                            .width(150.dp), // Fixed width
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF23272E) // Dark grey
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                            .background(Color(0xFF6B7280), RoundedCornerShape(20.dp))
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(20.dp)
                         ) {
-                            // Header without icon
                             Text(
                                 text = "Benefits",
                                 fontSize = 16.sp,
@@ -459,71 +422,33 @@ fun CardSuggestedOnBoarding(
                                 fontFamily = RobotoFont
                             )
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                            // Fixed content area with scroll if needed
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f) // Takes remaining space
-                            ) {
-                                if (!card.perks.isNullOrEmpty()) {
-                                    card.perks.take(3).forEach { perk ->
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(bottom = 8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            // Unified blue circle bullet point
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(8.dp)
-                                                    .background(Color(0xFF8EC5FF), CircleShape)
-                                            )
-                                            Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = (perk.type ?: "Special Benefit").take(15), // Limit text length
-                                                fontSize = 12.sp,
-                                                color = Color.White,
-                                                fontFamily = RobotoFont,
-                                                maxLines = 1, // Single line only
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    // Default benefits if none provided
-                                    listOf("CASHBACK", "DISCOUNT", "REWARDS").forEach { benefit ->
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(bottom = 8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            // Unified blue circle bullet point
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(8.dp)
-                                                    .background(Color(0xFF8EC5FF), CircleShape)
-                                            )
-                                            Spacer(modifier = Modifier.width(12.dp))
-                                            Text(
-                                                text = benefit,
-                                                fontSize = 12.sp,
-                                                color = Color.White,
-                                                fontFamily = RobotoFont,
-                                                maxLines = 1,
-                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                            )
-                                        }
-                                    }
+                            listOf("CASHBACK", "DISCOUNT", "REWARDS").forEach { benefit ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .background(Color(0xFF8EC5FF), CircleShape)
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = benefit,
+                                        fontSize = 12.sp,
+                                        color = Color.White,
+                                        fontFamily = RobotoFont,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
                             }
                         }
                     }
-
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -1049,10 +974,7 @@ fun AccountDetailRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Unified blue circle bullet point
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
                     .size(8.dp)
@@ -1066,6 +988,7 @@ fun AccountDetailRow(
                 fontFamily = RobotoFont
             )
         }
+
         Text(
             text = value,
             fontSize = 12.sp,

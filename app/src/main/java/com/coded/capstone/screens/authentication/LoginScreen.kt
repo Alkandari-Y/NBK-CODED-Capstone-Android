@@ -176,7 +176,7 @@ fun LoginScreen(
                         Text(
                             text = "Welcome",
                             style = TextStyle(
-                                fontSize = 28.sp,
+                                fontSize = 25.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF374151)
                             ),

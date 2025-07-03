@@ -35,16 +35,19 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.material.icons.filled.Apartment
+import androidx.compose.material.icons.filled.Star
 
 @Composable
 fun DrawerContent(
     userName: String,
     onProfileClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onXpHistoryClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
     ModalDrawerSheet(
-        modifier = Modifier.width(230.dp),
+        modifier = Modifier.width(200.dp),
         drawerContainerColor = Color.Transparent, // Make transparent to show custom background
         drawerShape = RoundedCornerShape(topEnd = 32.dp, bottomEnd = 32.dp),
         windowInsets = WindowInsets(0, 0, 0, 0) // Remove default window insets
@@ -91,9 +94,8 @@ fun DrawerContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(
-//                                start = 16.dp,
                                 end = 16.dp,
-                                bottom = 47.dp // Add bottom padding back
+                                bottom = 40.dp // Add bottom padding back
                             ), // Removed top padding
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -110,17 +112,21 @@ fun DrawerContent(
                                     .padding(end = 16.dp) // Right padding so it doesn't take full width
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(26.dp)
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(26.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .size(56.dp)
+                                            .size(62.dp)
                                             .clip(CircleShape)
                                             .background(Color(0xFF8EC5FF)),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            text = userName.first().toString(),
+                                            text = userName.firstOrNull()?.toString()?.uppercase() ?: "U",
                                             color = Color.White,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold
@@ -133,7 +139,7 @@ fun DrawerContent(
                                         text = userName,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF23272E) // Dark text for white background
+                                        color = Color(0xFF2A2A2A) // Dark text for white background
                                     )
                                     Text(
                                         text = "KLUE Banking",
@@ -143,21 +149,14 @@ fun DrawerContent(
                                 }
                             }
 
-//                            Spacer(modifier = Modifier.height(24.dp))
-
-//                            HorizontalDivider(
-//                                color = Color(0xFF2A2A2A).copy(alpha = 0.1f),
-//                                thickness = 1.dp
-//                            )
-
-//                            Spacer(modifier = Modifier.height(24.dp))
-
                             // Menu items in dark gray container
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(1f)
-                                    .background(Color(0xFF23272E), shape = RoundedCornerShape(topStart = 40.dp))
+                                    .height(500.dp) // Take remaining space to extend above logout
+                                    .background(Color(0xFF23272E), shape = RoundedCornerShape(
+                                        topStart = 40.dp, // Top-left rounded
+                                    )) // Dark gray background
                                     .padding(16.dp)
                             ) {
                                 Column {
@@ -168,7 +167,7 @@ fun DrawerContent(
                                         color = Color(0xFF8EC5FF)
                                     )
 
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(4.dp))
 
                                     DrawerMenuItem(
                                         icon = Icons.Default.Settings,
@@ -176,13 +175,24 @@ fun DrawerContent(
                                         onClick = onSettingsClick,
                                         color = Color(0xFF8EC5FF)
                                     )
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    DrawerMenuItem(
+                                        icon = Icons.Default.Star,
+                                        title = "XP History",
+                                        onClick = onXpHistoryClick,
+                                        color = Color(0xFF8EC5FF)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
                                 }
                             }
                         }
 
                         // Bottom section with logout
                         Column {
-                            // Logout in dark container - same styling as Profile and Settings
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth().fillMaxHeight()
@@ -192,14 +202,14 @@ fun DrawerContent(
                                     .padding(end = 16.dp) // Right padding so it doesn't take full width
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 20.dp)
+                                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp, bottom = 16.dp)
                                 ) {
                                     DrawerMenuItem(
                                         icon = Icons.AutoMirrored.Filled.ExitToApp,
                                         title = "Logout",
                                         onClick = onLogoutClick,
-                                        isDestructive = false, // Changed from true to false
-                                        color = Color(0xFF8EC5FF) // Changed from Color.White to blue
+                                        isDestructive = false,
+                                        color = Color(0xFF8EC5FF)
                                     )
                                     Spacer(modifier = Modifier.height(45.dp))
                                 }
